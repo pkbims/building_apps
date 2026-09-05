@@ -1,0 +1,4 @@
+# Each app is its own git repo
+app_*/
+
+.DS_Store
