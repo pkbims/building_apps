@@ -62,8 +62,25 @@ a contents rail for navigation and collapsible blocks for reference tables.
 
 ## The disciplines that make it worth reading
 
-**Plain words.** No term appears without a line saying what it is. "Idempotency key"
-becomes "a unique ID the client sends so a retry doesn't create two of something."
+**Plain words, for a reader who builds nothing themselves.** Write for someone who must
+decide everything and implement none of it. Every technical term gets a short
+plain-language gloss the first time it appears, inline — not in a glossary they have to
+jump to. "Idempotency key" becomes "a unique ID the client sends so a retry doesn't
+create two of something." Spell out each acronym once. No sentence should need a second
+read. If a paragraph only makes sense to a reader who already knows the answer, rewrite
+it. Simple wording is not the same as leaving things out — the document stays complete;
+only the language gets easier.
+
+**Every technical decision is the user's to make, and every option is explained.** In
+Part 3, nothing about the stack, database, hosting, auth, vendor, client framework, queue
+or storage is chosen silently or by the author. Each one is a multiple-choice decision the
+user answers — a radio group in HTML mode, a numbered choice in terminal mode. For each
+option give three plain lines: **what it is**, **what you get and what it costs**, and
+**when you'd pick it**. You may mark one option *recommended* and give the reason in a
+sentence, but never pre-select it and never collapse the choice to a single "obvious"
+answer — the point is that the user makes the call knowingly. If you are genuinely blocked
+and must pick something to keep drafting, record it in §19 as a provisional pick to
+revisit, never as a settled default.
 
 **Surface conflicts between decisions.** Individually sensible answers routinely combine
 into an unsound whole — the widest promise plus the weakest input plus permission to ship
@@ -106,6 +123,9 @@ fraction of its detail.
 **Terminal** — work through the parts in order, in conversation. Produce `PRD.md` at the end.
 
 **HTML** — invoke `html-worker` for the mechanics. Same parts, same order, rendered as one
-page with decisions as radio groups and every block commentable. Export `PRD.md` from the
-page with `export-md.py`, and keep that exporter in the project so the PRD can be rebuilt
-after any later change. The page is the document; the markdown is a rendering of it.
+page with decisions as radio groups and every block commentable. Every decision's options
+carry the three plain lines (what it is / what you get and what it costs / when you'd pick
+it) right there in the page, so the user is never choosing between bare labels. Export
+`PRD.md` from the page with `export-md.py`, and keep that exporter in the project so the
+PRD can be rebuilt after any later change. The page is the document; the markdown is a
+rendering of it.
