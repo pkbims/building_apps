@@ -1,135 +1,178 @@
 ---
 name: research
-description: Find real, evidenced problems in a niche by mining verbatim complaints from Reddit and Google, then map the 2-3 real competitors and what people dislike about them. Returns 2-3 candidate problems to choose from. Use at stage 1 of the app pipeline, when the user names a niche to research.
+description: Stage 1 of the app pipeline. The user gives a niche and a problem. This skill finds the solutions that already exist, checks what they target and how much money they make, finds what real users complain about, and then helps brainstorm new solutions nobody has built yet — before picking one to move forward with.
 ---
 
 # Research
 
-Find problems worth building for. The output is evidence, not opinion.
+Simple version of the whole flow:
 
-Input is one niche. If the user has not named one, ask for it and stop. Do not pick a
-niche yourself.
+- **Problem** → **What already exists** → **The pattern (who, why, revenue)** →
+  **What people complain about** → **New ideas nobody built yet** → **Pick one**
 
-## The rule that matters most
+That's it. Everything below is just detail on how to do each part well.
 
-**Never write a quote you did not read.** Every quoted complaint must be text actually
-returned by a search or fetch in this session, copied verbatim, with a working link.
+## The one rule that never bends
 
-A paraphrase is not a quote. A plausible-sounding complaint you composed is a fabrication,
-and it poisons the entire pipeline downstream — the app gets built for a problem nobody
-reported. If you cannot verify it, drop it. Fewer real complaints always beats more
-invented ones.
+**Never write a quote you did not read.** Every quote has to be real text a search or a
+page gave you in this session. Copy it exactly. Add a link that works.
 
-## Phase 1 — Mine complaints
+A quote in your own words is not a quote. A made-up complaint that sounds real is a lie —
+if you can't check it's real, drop it. Ten real complaints beat fifty fake ones.
 
-Target: **50 verbatim complaints.**
+## Before you start
 
-Reddit is unreachable — blocked at the crawler level by direct fetch, its JSON endpoint,
-the search domain filter, and third-party mirrors. Do not spend turns retrying it. If the
-user wants Reddit voices, they must supply thread URLs or text themselves.
+Make sure you know:
 
-Sources that work, in order of yield:
+- The problem, in one line.
+- Any hard limit — which phone, must it fit the series stack, anything else.
 
-1. **App Store / Google Play reviews** of competing apps — highest yield, many verbatim
-   complaints per page, and they double as Phase 3 evidence about the competitors.
-2. **Trustpilot and BBB complaints** for service businesses — long, dated, attributed.
-3. **Niche forums** (Houzz for home, and the equivalent for other niches) — the genuine
-   community, but replies lazy-load, so expect only 1-2 usable quotes per thread fetch.
+If either is missing, ask. If you already have both, just go.
 
-Quora is 403. General web search returns SEO filler and affiliate content, not people —
-treat a search result as a way to find forum threads, not as evidence itself.
+---
 
-Search for the language people use when they are annoyed, not for the category name:
+## Step 1 — Write down the problem
 
-- `site:reddit.com "<niche>" "I hate"`
-- `site:reddit.com "<niche>" "why is there no"`
-- `site:reddit.com "<niche>" "anyone else"`
-- `site:reddit.com "<niche>" "workaround"`
-- `site:reddit.com "<niche>" "gave up on"`
-- `site:reddit.com "<niche>" "wish there was"`
-- `"<niche>" "waste of time"` / `"so frustrating"` / `"still doing this manually"`
+One line. Plain words. This is the thing every solution below is trying to fix.
 
-Vary the niche wording — insiders rarely use the outsider term for their own field.
+## Step 2 — Find the solutions that already exist
 
-Record each complaint as: verbatim text, source (subreddit or site), URL, and date if
-visible. Keep the person's own words including their typos. Do not clean them up.
+List **every** app or tool people use for this. Not just two or three — all of them you
+can find.
 
-Skip: marketing copy, SEO listicles, AI-generated blog filler, and anything that reads
-like a pitch rather than a person complaining.
+Where to look:
 
-**If 50 real complaints cannot be found, stop and say so.** That is a finding, not a
-failure — a niche without 50 traceable complaints probably lacks enough pain to build on.
-Report how many were found and let the user decide whether to continue or change niche.
+- App Store and Google Play search for the topic.
+- "Best [topic] apps" articles — good for finding names, not proof of anything.
+- Forums and review sites, for names people actually use.
 
-## Phase 2 — Cluster into problems
+## Step 3 — Find the pattern across them
 
-Group the complaints by the underlying problem, not by wording.
+For each solution, write down:
 
-A cluster qualifies as a candidate problem only if **at least 5 independent people**
-reported it. One loud thread is an anecdote. Discard clusters below the threshold rather
-than promoting them to reach a target count.
+- **How it actually works.** The steps a person goes through, in order — what they see,
+  what they tap, what happens next. 3-6 steps is enough. Do this before anything else in
+  this step. You cannot spot what's smart or what's broken about a solution, or think of a
+  better one, if you don't know how it actually works. Get this from real reviews, the
+  app's own screenshots or help pages, and what its users describe — not a guess.
+- **Who it's for.** The exact kind of person it's built for.
+- **Why that group.** What need it's chasing.
+- **How much money it makes.** Only from a real source — a news article, a founder
+  interview, Crunchbase, the company's own numbers. If there's no real source, write
+  "no public number." Never guess a number.
 
-Select the 2-3 strongest clusters. Strength means: reported often, reported specifically,
-and reported by people who appear to have tried to solve it already.
+Once you have this for every solution, look across all of them and ask:
 
-## Phase 3 — Competitors
+- What do they all agree on?
+- Who is nobody serving?
+- Where do they all charge the same, or all avoid a certain type of user?
 
-For each candidate problem, find **2-3 real competitors** — no more. Then search for
-complaints about those competitors the same way as Phase 1:
+## Step 4 — Find what real users complain about
 
-- `site:reddit.com "<competitor>" "alternative"`
-- `site:reddit.com "<competitor>" "cancelled"` / `"switched from"` / `"too expensive"`
+For each solution, go find real reviews — App Store, Google Play, Trustpilot. Pull the
+complaints people actually wrote, word for word.
 
-What people dislike about the incumbent is usually the actual opening. Quote it verbatim,
-same rules as Phase 1.
+- If **3 or more different people** say the same thing, that's a real pattern.
+- If only one person says it, that's just one bad day — don't count it.
 
-If a problem has no competitors at all, say so plainly and treat it with suspicion — an
-empty market more often means no willingness to pay than an untapped opportunity.
+For each solution, answer in one line: **is it actually helping people, or not really?**
 
-## Phase 4 — Write the file
+Good places to find reviews fast:
 
-Save to `<app_repo>/research/<niche>.md`. Ask where if the app repo does not exist yet.
+- The Apple review feed:
+  `https://itunes.apple.com/us/rss/customerreviews/id=<APP_ID>/page=<1-10>/sortBy=mostRecent/json`
+  — up to 50 full reviews per page, up to 10 pages.
+- Trustpilot, for anything with a company behind it.
+- Reddit is blocked for us — if the user wants Reddit voices, they have to paste the
+  links or text themselves.
 
-Use exactly this shape:
+Skip ads, "top 10" list pages, and anything that reads like a sales pitch, not a person.
+
+## Step 5 — Brainstorm new solutions
+
+Now that you know what exists and what's wrong with it, think of **1-3 new solutions**
+nobody has built yet. Each one should fix a specific complaint from Step 4 — not a vague
+new idea, a direct answer to something real people said.
+
+For each new idea, check:
+
+- **Can we actually build this?** Any phone or platform limit that would block it.
+- **Could people find it?** How would someone even hear this exists.
+
+If an idea fails both checks, cut it. A good idea that can't be built or found is not
+useful yet.
+
+## Step 6 — Decide
+
+Lay out the choice plainly: the existing solutions, and the new ideas from Step 5. Say
+which one looks strongest and why, in one line. Then stop — the user picks.
+
+---
+
+## Write the file
+
+Save to `<app_repo>/research/<niche>.md`. Ask where if the app repo doesn't exist yet.
+Use bullet points everywhere you can — short lines, not long paragraphs.
 
 ```markdown
 # Research: <niche>
 
-<date> · <N> complaints reviewed · <N> qualified
+<date>
 
-## Problem 1 — <one concrete sentence>
+## The problem
+- <one line>
 
-<N> of <N> complaints. <One sentence on who reports it and how consistently.>
+## Solutions that already exist
 
-**Evidence**
+### <Solution A name>
+- What it does: <one line>
+- How it works, step by step:
+  1. <what the person sees/taps>
+  2. <what happens next>
+  3. <...>
+- Who it's for, and why: <one line>
+- Money: <number + source, or "no public number">
+- What people complain about:
+  - "<real quote>" — <link>
+  - "<real quote>" — <link>
+- Actually helping people? <yes / kind of / no — one line>
 
-> "<verbatim>"
-> — r/<subreddit>, <url>
+### <Solution B name>
+(same shape)
 
-> "<verbatim>"
-> — r/<subreddit>, <url>
+## The pattern
+- <what they all get right>
+- <what they all get wrong>
+- <who nobody is serving>
 
-**Competitors**
+## New ideas nobody has built yet
+- **Solution D** — <one line> — fixes: <which complaint from Step 4>
+- **Solution E** — <one line> — fixes: <which complaint from Step 4>
 
-- **<Name>** — <what it does, one line>
-  > "<verbatim complaint about it>"
-  > — <url>
+## The simple picture
 
-## Problem 2 — ...
+\`\`\`mermaid
+flowchart TD
+  P[The problem] --> A[Solution A]
+  P --> B[Solution B]
+  A --> AC[Biggest complaint about A]
+  B --> BC[Biggest complaint about B]
+  AC --> D[New idea: Solution D]
+  BC --> D
+  D --> DEC{Pick one}
+  A --> DEC
+  B --> DEC
+\`\`\`
+
+## Decision
+- Strongest option: <name it>
+- Why: <one line>
 ```
 
-Then present the 2-3 problems to the user and stop. The user chooses. Do not recommend
-one unless asked, and do not begin specifying or building.
+## Not allowed in the file
 
-## Banned in the output
-
-The output is evidence and nothing else. Do not write:
-
-- Adjectives selling the opportunity: "massive", "huge", "underserved", "exciting"
-- Market-size estimates, TAM figures, or revenue projections — all of it would be invented
-- Executive summaries, "key takeaways", or a conclusion restating the sections above
-- Feature ideas or proposed solutions — that is the next stage, not this one
-- Any sentence that would survive unchanged if the niche were swapped for another one
-
-If a line is not a problem statement, a verbatim quote with a link, or a competitor fact,
-delete it.
+- Hype words: "massive", "huge", "underserved", "exciting", "game changer".
+- A made-up money number. See Step 3 — real source or "no public number".
+- Long paragraphs where a bullet list would do.
+- A summary section that just repeats what's already above.
+- Any line that would still be true if you swapped in a different niche.

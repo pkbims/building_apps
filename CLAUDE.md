@@ -34,10 +34,27 @@ Deploying locally first is acceptable.
 
 ## Stack
 
-Not yet decided. Settle the choices explicitly when app_1 starts — auth approach, database,
-hosting — rather than defaulting to something silently. The intent is that the whole series
-then reuses one stack and varies the domain, so viewers build muscle memory instead of
-relearning the plumbing every episode.
+Settled by app_1. Reused across the series so viewers build muscle memory; only the domain
+changes. Deviate only with a stated reason in that app's CLAUDE.md.
+
+- **Backend:** Python 3.12 + FastAPI, pinned exactly (the frozen OpenAPI contract is
+  regenerated from these pins). Postgres 16, plain numbered SQL migrations
+  (`migrations/NNN_name.sql`). Background work is a separate `worker` process, not a
+  thread in the API.
+- **Auth:** JWT (PyJWT), issued by the API. No third-party auth provider.
+- **Operations:** structured logging via one request middleware, `prometheus-client`
+  metrics with a self-hosted dashboard service, `sentry-sdk` for error tracking, in-app
+  rate limiting, a three-state `/health` (ok / degraded / down) that Compose uses as the
+  container healthcheck.
+- **Packaging:** one `docker-compose.yml` for every environment (`db`, `api`, `worker`,
+  `dashboard`); only env files differ.
+- **CI:** GitHub Actions — lint (ruff), types (mypy), contract-unchanged check, unit +
+  integration tests against a real Postgres, then image build. Nothing merges red.
+- **Client — one of two.** The series ships both native iOS apps and web SaaS tools:
+  - *iOS:* Swift, XcodeGen-generated project, unit + UI tests. Ship stage includes
+    signing and store review.
+  - *Web:* not yet settled — decide explicitly in the first web app, then record here.
+- **Hosting:** local via Compose so far. The first deploy to a real host settles this.
 
 ## Layout
 

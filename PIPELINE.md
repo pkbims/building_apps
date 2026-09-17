@@ -46,3 +46,7 @@ The full baseline from CLAUDE.md, then the showcase site.
 - Waitlist as early validation (before stage 5) vs. showcase after ship — likely both,
   as two separate things.
 - Which stages earn a skill, and which are one-offs. Decide after app_1.
+  - Candidate noted mid-app_1: the stage-5 orchestration pattern itself — two worker
+    agents in git worktrees, `ORCH-QUESTIONS.md` for contract questions, an orchestrator
+    giving periodic status summaries and pinging on new questions. Used once so far
+    (app_1). Revisit as a skill/`.claude/agents/` entry once a second app reuses it.
