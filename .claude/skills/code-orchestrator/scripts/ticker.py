@@ -214,7 +214,11 @@ def main():
             for w in workers:
                 st = ag.get(w)
                 if last_states.get(w) == "working" and st in ("idle", "done"):
-                    wake.append(f"{w} stopped working (now {st}) — at a checkpoint, finished, or blocked")
+                    # a worker that ended its turn to wait on its own background job ("1 monitor
+                    # still running") will be woken by that job — not a stop worth waking for
+                    waiting = re.search(r"(shell|monitor)s? still running", sh(["herdr", "agent", "read", w])[-2000:])
+                    if not waiting:
+                        wake.append(f"{w} stopped working (now {st}) — at a checkpoint, finished, or blocked")
                 if st:
                     last_states[w] = st
             if wake and x.orchestrator in ag:
