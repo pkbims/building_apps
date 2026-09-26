@@ -9,6 +9,10 @@ Every 10 s:
     which the harness can reap.
   - a new question appeared in feed.json → a macOS notification, so the user hears about it even
     with the page closed.
+Every 30 s:
+  - a worker posted a new open checkpoint or question in any worktree's ORCH-QUESTIONS.md, or a
+    worker went from working to idle/done → type a prompt into the orchestrator's pane. Workers
+    stop at each checkpoint and wait, so a missed one means idle workers (happened 2026-09-26).
 Every --interval seconds (default 5 min):
   - a status snapshot → status.json: each agent's state, each branch's latest commit, commits since
     the last check, open ORCH-QUESTIONS, and a one-line heartbeat the page shows in its feed.
@@ -50,7 +54,7 @@ def commits_since(app, since_iso):
     return len([l for l in out.splitlines() if l.strip()])
 
 
-def open_questions(app):
+def open_entries(app):
     # Workers append in their own worktree, so a question is on `main` only after a merge:
     # read every worktree's copy. Only real entries count — "## Q<number>" (the format
     # example is "## Q<n>", so its "Status: open" is ignored) wherever a worker put them —
@@ -64,9 +68,13 @@ def open_questions(app):
         except OSError:
             continue
         for title, body in re.findall(r"^## (Q\d+[^\n]*)\n(.*?)(?=^## |\Z)", text, re.M | re.S):
-            is_open = bool(re.search(r"\*\*Status:\*\*\s*open\b", body))
+            is_open = bool(re.search(r"\*\*Status:\*\*\s*(open|checkpoint)\b", body))
             status[title.strip()] = status.get(title.strip(), True) and is_open
-    return sum(status.values())
+    return {t for t, is_open in status.items() if is_open}
+
+
+def open_questions(app):
+    return len(open_entries(app))
 
 
 def commits(app, n=60):
@@ -98,6 +106,17 @@ def commits(app, n=60):
     return {k: v[:15] for k, v in lanes.items()}
 
 
+def context_use(name):
+    """A worker's context use in percent, read off its Claude status line ("ctx 53%/530k")."""
+    raw = sh(["herdr", "agent", "read", name])
+    try:                                    # plain text today; JSON if herdr ever wraps it
+        text = json.loads(raw)["result"].get("text", raw)
+    except (ValueError, KeyError, TypeError, AttributeError):
+        text = raw
+    found = re.findall(r"ctx (\d+)%/", text)
+    return int(found[-1]) if found else None
+
+
 def notify(title, text):
     esc = lambda s: s.replace("\\", "\\\\").replace('"', '\\"')
     sh(["osascript", "-e", f'display notification "{esc(text)}" with title "{esc(title)}" sound name "Glass"'])
@@ -124,6 +143,10 @@ def main():
     last_inbox = os.path.getmtime(inbox) if os.path.exists(inbox) else 0
     seen_asks = set(status.get("seen_asks", []))
     last_commits = 0.0
+    seen_entries = set(status.get("seen_entries", []))
+    last_states = {}
+    workers = [w for w in x.workers.split(",") if w]
+    ctx_alerted = status.get("ctx_alerted", {})     # worker -> highest threshold already reported
     last_beat, last_iso = 0.0, datetime.now(timezone.utc).isoformat(timespec="seconds")
 
     while True:
@@ -161,13 +184,46 @@ def main():
             if last_beat:
                 heartbeats.append({"t": now_iso, "text": line})
                 heartbeats = heartbeats[-60:]
+            # context use: wake the orchestrator once per threshold, so it can restart a worker
+            # with a fresh session at its next checkpoint (60%) or right away (80%)
+            ctx = {w: context_use(w) for w in watch if w in ag}   # shown on the page for everyone
+            for w, pct in ((w, ctx.get(w)) for w in workers):  # alerts: workers only
+                hit = max([t for t in (60, 80) if pct is not None and pct >= t], default=0)
+                if hit > ctx_alerted.get(w, 0) and x.orchestrator in ag:
+                    ctx_alerted[w] = hit
+                    sh(["herdr", "agent", "prompt", x.orchestrator,
+                        f"Worker event: {w}'s context is at {pct}%. "
+                        + ("Restart it with a fresh session at its next checkpoint."
+                           if hit == 60 else "Restart it now: have it commit and update its notes file first.")])
+                elif pct is not None and pct < 40:
+                    ctx_alerted.pop(w, None)                # a fresh session: re-arm the alerts
+            status["context"] = ctx
+            status["ctx_alerted"] = ctx_alerted
             status.update({"t": now_iso, "interval": x.interval, "agents": {w: ag.get(w, "not running") for w in watch},
                            "branches": branches(app)[:8], "open_questions": oq, "heartbeats": heartbeats})
             last_beat, last_iso = time.time(), now_iso
         if time.time() - last_commits >= 30:          # commits are cheap to read: every 30 s
             status["commits"] = commits(app)
             last_commits = time.time()
+            # 4. worker events → wake the orchestrator
+            wake = []
+            for title in sorted(open_entries(app) - seen_entries):
+                seen_entries.add(title)
+                wake.append(f"a worker posted in ORCH-QUESTIONS.md: \"{title}\"")
+            ag = agents()
+            for w in workers:
+                st = ag.get(w)
+                if last_states.get(w) == "working" and st in ("idle", "done"):
+                    wake.append(f"{w} stopped working (now {st}) — at a checkpoint, finished, or blocked")
+                if st:
+                    last_states[w] = st
+            if wake and x.orchestrator in ag:
+                sh(["herdr", "agent", "prompt", x.orchestrator,
+                    "Worker event: " + "; ".join(wake) + ". Read the worker's ORCH-QUESTIONS.md in its "
+                    "worktree and its pane (herdr agent read <name>); a checkpoint means verify, then "
+                    "merge and post it — the worker waits until you answer."])
         status["seen_asks"] = sorted(seen_asks)
+        status["seen_entries"] = sorted(seen_entries)
         status["alive"] = datetime.now(timezone.utc).isoformat(timespec="seconds")
         write_json(status_path, status)
         time.sleep(10)

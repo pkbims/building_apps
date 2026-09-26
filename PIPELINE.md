@@ -154,8 +154,10 @@ coding workers (`backend`, `ios`) run **Sonnet at high effort**. Start any of th
 
 **The orchestrator is a skill, and the user watches one page** (2026-09-26): the hand-over
 starts it with `/code-orchestrator <app>`. It sets up `<app>/build-room/`, an html-worker page
-with *Needs you* (questions, each with a recommended option, and the user's to-dos), *Now*
-(each agent's state, each branch's last commit), *Updates* and *Checkpoints*. A ticker
+with, top to bottom: *Needs you* (questions, each with a recommended option, and the
+user's to-dos — a single green line when nothing is open), *Progress* (one card per builder:
+steps done, what it's on now, how full its memory is), *Updates* (the latest 5, one line
+each) and *Commits* (backend and iOS side by side, one line each, the explanation on tap). A ticker
 script — no model — refreshes the status every 5 minutes, sends a macOS notification the
 moment a question appears, and wakes the orchestrator through herdr the moment the user
 presses *Send to the orchestrator*. Tradeoff: a heartbeat from a script costs nothing and

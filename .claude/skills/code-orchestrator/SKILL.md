@@ -103,14 +103,20 @@ PRD's build order).
 
 ## Step 5 — The loop
 
-You are woken by the ticker (a round was sent), by a worker's checkpoint, or by your own
-background checks. Each time:
+You are woken by the ticker — when the user sends a round, and (every 30 s) when a worker posts
+a new open question or checkpoint in any worktree's `ORCH-QUESTIONS.md`, or goes from working to
+idle/done. Workers post a checkpoint and **carry on**; you verify in parallel and tell them if
+something must be fixed first — a checkpoint that waits on you leaves a worker idle. Each time:
 
 1. **A round from the user** — read `build-room/INBOX.md`. Answered asks: act, then
    `post.py $ROOM resolve <id> --note "<what you did>"`. Comments: change requests → do them;
    questions → answer with `post.py update`; notes → acknowledge with `post.py update`.
    Then mark comments addressed:
-   `curl -s -X POST localhost:$(cat <app>/build-room/.port)/api/comment/addressed -d '{}'`.
+   `curl -s -X POST localhost:$(cat <app>/build-room/.port)/api/comment/addressed -d '{}'`,
+   and **always** `touch <app>/build-room/index.html` — the page's "Claude is working" bar
+   clears only when that round's comments are addressed *or* the page file changes, so a
+   round with no comments (decisions only) otherwise shows "Still waiting" forever. Re-read
+   `INBOX.md` just before marking: a new round can land while you work.
 2. **A worker question** (`ORCH-QUESTIONS.md`) — answer inline. If it is really the user's
    call (a product choice, money, an account), turn it into an ask; never guess on their
    behalf.
@@ -118,7 +124,14 @@ background checks. Each time:
    claims. Only then merge into `main` and post it:
    `post.py $ROOM checkpoint "<feature> merged" --detail "<tests run, what you checked>" --verified`.
    A claim you could not verify is posted without `--verified`, with why.
-4. **Stage changes** — update `PROGRESS.md` and the app's `CLAUDE.md`; post an update.
+   Then move the Progress meter: `post.py $ROOM step <half> <k> done --note "checked and merged <date>"`
+   and `post.py $ROOM step <half> <k+1> doing`. Set each half's steps once, from the build
+   order, with `post.py $ROOM plan <half> "<step>" …` (plain words — the user reads them).
+4. **A worker's context fills** — the ticker reports it at 60% and 80%. Workers keep
+   `<half>/WORKER-NOTES.md` current at every checkpoint; restart one with
+   `.claude/scripts/restart-agent.sh <name> sonnet high "<read AGENT.md, WORKER-NOTES.md, …>"`
+   at its next checkpoint (60%) or right after it commits (80%).
+5. **Stage changes** — update `PROGRESS.md` and the app's `CLAUDE.md`; post an update.
 
 **What to post, and when** — the user reads only the room:
 

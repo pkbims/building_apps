@@ -1,186 +1,187 @@
 <style>
   :root{--be:#3b82f6;--io:#a855f7;--ok:#22a55a;--hot:#e0672c}
-  .hero{border:1px solid var(--line);border-radius:var(--r2);padding:18px 20px;margin:0 0 18px;
-    background:linear-gradient(135deg,var(--panel),var(--bg))}
-  .hero .top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-  .hero h1{font-size:22px;margin:0;letter-spacing:-.01em}
-  .pill{font-size:11.5px;font-weight:700;border-radius:999px;padding:3px 10px;background:var(--soft);color:var(--accent);letter-spacing:.02em}
-  .pill.hot{background:var(--hot);color:#fff}
-  .live{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--muted);margin-left:auto}
-  .dot{width:8px;height:8px;border-radius:50%;background:var(--ok);animation:pulse 2s infinite}
-  .dot.stale{background:#c0392b;animation:none}
   @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(34,165,90,.55)}70%{box-shadow:0 0 0 7px rgba(34,165,90,0)}100%{box-shadow:0 0 0 0 rgba(34,165,90,0)}}
-  .beatline{font-size:12.5px;color:var(--muted);margin:8px 0 14px}
-  .team{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px}
-  .who{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--bg);display:flex;gap:11px;align-items:flex-start}
-  .av{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;color:#fff;font-weight:800;font-size:14px;flex:none}
-  .who b{display:block;font-size:14px} .who .role{font-size:11.5px;color:var(--muted)}
-  .st{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:700;margin-top:5px;color:var(--muted)}
-  .st i{width:7px;height:7px;border-radius:50%;background:var(--faint)}
-  .st.working{color:var(--ok)} .st.working i{background:var(--ok);animation:pulse 2s infinite}
-  .who .last{font-size:12px;color:var(--muted);margin-top:5px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-  #flash{display:none;background:var(--hot);color:#fff;border-radius:12px;padding:11px 16px;margin:0 0 16px;font-weight:650;cursor:pointer}
+  .strip{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 16px;font-size:13px;color:var(--muted)}
+  .strip .pill{font-size:12px;font-weight:700;border-radius:999px;padding:4px 11px;background:var(--soft);color:var(--accent)}
+  .strip .sp{flex:1}
+  .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--ok);animation:pulse 2s infinite;margin-right:6px;vertical-align:1px}
+  .dot.stale{background:#c0392b;animation:none}
   #notif{font:inherit;font-size:12px;padding:4px 11px;border:1px solid var(--line);border-radius:999px;background:var(--bg);color:var(--ink);cursor:pointer}
-  .count{display:inline-grid;place-items:center;min-width:22px;height:22px;border-radius:999px;background:var(--hot);color:#fff;font-size:12px;font-weight:800;padding:0 6px;margin-left:8px;vertical-align:3px}
-  .count.zero{background:var(--soft);color:var(--muted)}
-  .ask{border-left:4px solid var(--hot) !important}
-  .ask .from{font-size:11.5px;color:var(--muted);margin-bottom:4px}
-  .rec{font-size:10.5px;font-weight:800;color:var(--accent);margin-left:6px;text-transform:uppercase;letter-spacing:.05em}
-  .calm{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:14px;padding:6px 0}
-  .todos{margin-top:14px;border-top:1px dashed var(--line);padding-top:10px}
-  .todos h3{font-size:14px;margin:0 0 6px;display:flex;align-items:center;gap:8px}
-  .tbar{flex:1;max-width:140px;height:6px;border-radius:9px;background:var(--line);overflow:hidden}
-  .tbar i{display:block;height:100%;background:var(--ok)}
-  .todo{display:flex;gap:9px;align-items:flex-start;padding:6px 0;font-size:14px}
-  .todo .box{width:16px;height:16px;border-radius:5px;border:2px solid var(--muted);flex:none;margin-top:2px}
-  .todo.done{color:var(--muted)} .todo.done .box{background:var(--ok);border-color:var(--ok)}
+
+  /* needs you */
+  .needs{border-radius:14px;padding:14px 16px;border:1px solid var(--line);background:var(--panel)}
+  .needs.calm .ok{color:var(--ok);font-weight:700;font-size:14.5px}
+  .needs.hot{border:2px solid var(--hot)}
+  .needs h2{font-size:17px;margin:0 0 4px;display:flex;align-items:center;gap:8px}
+  .count{display:inline-grid;place-items:center;min-width:22px;height:22px;border-radius:999px;background:var(--hot);color:#fff;font-size:12px;font-weight:800;padding:0 6px}
+  .hint{font-size:12.5px;color:var(--muted);margin:0 0 8px}
+  .ask{border-left:4px solid var(--hot) !important;margin-top:10px}
+  .rec{font-size:10.5px;font-weight:800;color:var(--accent);text-transform:uppercase;letter-spacing:.05em}
+  #s-needs{padding:0;border:0;background:none;box-shadow:none}
+  .todos{margin-top:10px;border-top:1px dashed var(--line);padding-top:8px}
+  .todos .lbl{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+  .task{display:flex;gap:8px;align-items:flex-start;font-size:13.5px;padding:4px 0}
+  .task:before{content:"";width:14px;height:14px;border:2px solid var(--muted);border-radius:4px;flex:none;margin-top:2px}
+
+  /* builders */
+  .builders{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media (max-width:760px){.builders{grid-template-columns:1fr}}
+  .bcard{border:1px solid var(--line);border-top:4px solid var(--c);border-radius:14px;padding:14px 16px;background:var(--bg)}
+  .bhead{display:flex;align-items:center;gap:10px}
+  .av{width:32px;height:32px;border-radius:9px;display:grid;place-items:center;color:#fff;font-weight:800;font-size:14px;flex:none;background:var(--c)}
+  .bhead b{font-size:15px} .bhead .st{margin-left:auto;font-size:12px;font-weight:700;color:var(--muted)}
+  .bhead .st.working{color:var(--ok)}
+  .big{font-size:26px;font-weight:800;margin:10px 0 0;letter-spacing:-.02em}
+  .big small{font-size:13px;font-weight:500;color:var(--muted);margin-left:5px}
+  .segs{display:flex;gap:3px;margin:6px 0 8px}
+  .segs i{flex:1;height:9px;border-radius:3px;background:var(--soft)}
+  .segs i.done{background:var(--ok)} .segs i.doing{background:var(--c)}
+  .now{font-size:13.5px} .now span{color:var(--muted)}
+  .mem{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--muted);margin-top:8px}
+  .mem .bar{width:60px;height:5px;border-radius:3px;background:var(--soft);overflow:hidden}
+  .mem .bar i{display:block;height:100%;background:var(--ok)}
+  .mem.warn .bar i{background:#d4a017} .mem.hot .bar i{background:#c0392b}
+  .bcard details{margin-top:8px} .bcard summary{font-size:12.5px;color:var(--accent);cursor:pointer}
+  .steps{list-style:none;margin:6px 0 0;padding:0;font-size:13px}
+  .steps li{display:flex;gap:8px;padding:2px 0;color:var(--muted)}
+  .steps li b{width:14px;flex:none;text-align:center}
+  .steps li.done b{color:var(--ok)} .steps li.doing{color:var(--ink);font-weight:700} .steps li.doing b{color:var(--c)}
+  .orch{font-size:12.5px;color:var(--muted);margin:10px 0 0}
+
+  /* updates */
+  .tl{list-style:none;margin:0;padding:0}
+  .tl li{display:flex;gap:10px;align-items:baseline;padding:8px 0;border-bottom:1px solid var(--line);font-size:14px}
+  .tl li:last-child{border-bottom:0}
+  .tl .ic{flex:none;width:18px;text-align:center}
+  .tl .tx{flex:1} .tl .tm{flex:none;font-size:11.5px;color:var(--muted)}
+  .tl details{display:inline} .tl summary{display:inline;font-size:12px;color:var(--accent);cursor:pointer;margin-left:4px}
+
+  /* commits */
   .lanes{display:grid;grid-template-columns:1fr 1fr;gap:14px}
   @media (max-width:760px){.lanes{grid-template-columns:1fr}}
-  .lane h3{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
-  .lane h3 .av{width:24px;height:24px;border-radius:7px;font-size:11px}
-  .lane h3 small{font-weight:500;color:var(--muted)}
-  .cm{border:1px solid var(--line);border-left:3px solid var(--c);border-radius:10px;padding:9px 12px;margin-bottom:8px;background:var(--bg);cursor:pointer;transition:border-color .15s}
-  .cm:hover{border-color:var(--c)}
-  .cm .t{font-weight:650;font-size:13.5px;line-height:1.35}
-  .cm .w{font-size:12.5px;color:var(--muted);margin-top:3px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-  .cm.open .w{-webkit-line-clamp:unset}
-  .cm .m{font-size:11px;color:var(--faint);margin-top:5px;font-family:ui-monospace,monospace}
+  .lane h3{font-size:13.5px;margin:0 0 6px;display:flex;align-items:center;gap:7px}
+  .lane h3 i{width:10px;height:10px;border-radius:3px;background:var(--c)}
+  .cm{border-left:3px solid var(--c);padding:6px 10px;margin-bottom:6px;border-radius:6px;background:var(--bg);cursor:pointer}
+  .cm .t{font-size:13px;font-weight:600;line-height:1.35;display:flex;gap:8px}
+  .cm .t span{flex:1} .cm .t em{font-style:normal;font-weight:400;font-size:11.5px;color:var(--muted);flex:none}
+  .cm .w{display:none;font-size:12.5px;color:var(--muted);margin-top:4px}
+  .cm.open .w{display:block}
   .morebtn{font:inherit;font-size:12px;color:var(--accent);background:none;border:0;cursor:pointer;padding:2px 0}
-  .tl{list-style:none;margin:0;padding:0 0 0 14px;border-left:2px solid var(--line)}
-  .tl li{position:relative;padding:0 0 14px 12px;font-size:14px;line-height:1.5}
-  .tl li:before{content:"";position:absolute;left:-21px;top:5px;width:10px;height:10px;border-radius:50%;background:var(--accent);border:2px solid var(--panel)}
-  .tl li.q:before{background:var(--hot)} .tl li.cp:before{background:var(--ok)}
-  .tl .tm{display:block;font-size:11.5px;color:var(--muted)}
-  .tl .more{font-size:12px;color:var(--accent);cursor:pointer;margin-left:4px}
 </style>
 
-<div class="hero">
-  <div class="top"><h1 id="appname">Build room</h1><span class="pill">Building v1</span><span class="pill hot" id="needpill" style="display:none"></span>
-    <span class="live"><span class="dot" id="dot"></span><span id="alive">connecting…</span></span></div>
-  <div class="beatline" id="beatline"></div>
-  <div class="team" id="team"></div>
-</div>
-<div id="flash"></div>
+<div class="strip"><span class="pill">Building v1</span><span><span class="dot" id="dot"></span><span id="alive">connecting…</span></span>
+  <span class="sp"></span><button id="notif">🔔 Notify me</button></div>
 
 <section id="s-needs" data-anchor="needs" data-label="Needs you" data-group="Build room" data-title="Needs you">
-  <button class="cbtn">comment</button>
-  <h2>Needs you<span class="count zero" id="ncount">0</span></h2>
-  <p class="sub">Pick an answer — the recommended one is marked — or <b>comment</b> on a question to answer in your own words. Then press <b>Send to the orchestrator</b>. <button id="notif">🔔 Turn on notifications</button></p>
-  <div class="calm" id="noasks">✓ Nothing needs you right now.</div>
-  <div id="asks"></div>
-  <div class="todos"><h3>Things only you can do <span class="tbar"><i id="tbar" style="width:0"></i></span><small class="sub" id="tcount"></small></h3><div id="todos"><p class="sub">None yet.</p></div></div>
+  <div class="needs calm" id="needs"><span class="ok">✓ Nothing needs you right now.</span></div>
 </section>
 
-<section id="s-commits" data-anchor="commits" data-label="Commits" data-group="Build room" data-title="Commits">
+<section id="s-builders" data-anchor="builders" data-label="Progress" data-group="Build room" data-title="Progress">
   <button class="cbtn">comment</button>
-  <h2>Commits</h2>
-  <p class="sub">What each builder saved, newest first. Tap a commit to read its whole explanation.</p>
-  <div class="lanes">
-    <div class="lane" id="lane-backend"></div>
-    <div class="lane" id="lane-ios"></div>
-  </div>
-  <details style="margin-top:6px"><summary class="sub">From the orchestrator — contract, CI, docs (<span id="ocount">0</span>)</summary><div class="lane" id="lane-orchestrator" style="margin-top:8px"></div></details>
+  <h2>Progress</h2>
+  <div class="builders"><div class="bcard" id="b-backend"></div><div class="bcard" id="b-ios"></div></div>
+  <p class="orch" id="orch"></p>
 </section>
 
 <section id="s-updates" data-anchor="updates" data-label="Updates" data-group="Build room" data-title="Updates">
   <button class="cbtn">comment</button>
   <h2>Updates</h2>
-  <p class="sub">The latest 5 from the orchestrator.</p>
   <ul class="tl" id="feed"></ul>
+</section>
+
+<section id="s-commits" data-anchor="commits" data-label="Commits" data-group="Build room" data-title="Commits">
+  <button class="cbtn">comment</button>
+  <h2>Commits</h2>
+  <div class="lanes"><div class="lane" id="lane-backend"></div><div class="lane" id="lane-ios"></div></div>
 </section>
 
 <script>
 (()=>{
 const $$=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const ago=t=>{if(!t)return'';const s=(Date.now()-new Date(t))/1000;return s<60?'just now':s<3600?Math.round(s/60)+' min ago':s<86400?Math.round(s/3600)+' h ago':new Date(t).toLocaleDateString()};
-const short=t=>{t=String(t||'');const m=t.match(/^.{20,180}?[.!?](\s|$)/);const head=m?m[0].trim():t.slice(0,180);
-  return head.length<t.length?`${esc(head)}<details style="display:inline"><summary class="more">more</summary>${esc(t.slice(head.length))}</details>`:esc(t)};
-const WHO={'code-orchestrator':['O','var(--accent)','in charge — checks and merges'],backend:['B','var(--be)','builds the server'],ios:['i','var(--io)','builds the iPhone app']};
-let lastFeed='', showAll={}, lastS={};
+const ago=t=>{if(!t)return'';const s=(Date.now()-new Date(t))/1000;return s<60?'now':s<3600?Math.round(s/60)+'m ago':s<86400?Math.round(s/3600)+'h ago':new Date(t).toLocaleDateString()};
+// the first sentence; if that is long, cut at a word near 120 characters and add "…"
+const first=t=>{t=String(t||'');const m=t.match(/^.{15,160}?[.!?](\s|$)/);
+  let h=m?m[0].trim():t.slice(0,120).replace(/\s+\S*$/,'')+'…';
+  return h.replace(/…$/,'').length<t.trim().length?`${esc(h)}<details><summary>more</summary>${esc(t.slice(h.replace(/…$/,'').length))}</details>`:esc(t)};
+const HALF={backend:['B','var(--be)','Backend'],ios:['i','var(--io)','iPhone app']};
+let F={items:[],progress:{}}, lastFeed='', showAll={}, S2={};
 let seen=new Set(); try{seen=new Set(JSON.parse(localStorage.getItem('room-seen')||'[]'))}catch(e){}
-$$('appname').textContent=document.title.replace(/^\(\d+\) /,'');
 
-function renderAsks(items){
-  const open=items.filter(i=>i.kind==='ask'&&i.status==='open');
-  const done=items.filter(i=>i.kind==='ask'&&i.status!=='open');
-  $$('noasks').style.display=open.length?'none':'';
-  $$('ncount').textContent=open.length; $$('ncount').className='count'+(open.length?'':' zero');
-  $$('needpill').style.display=open.length?'':'none'; $$('needpill').textContent=`${open.length} need${open.length>1?'':'s'} you`;
-  $$('asks').innerHTML=open.map(a=>`
-    <div class="d open ask" data-anchor="${esc(a.id)}" data-label="Ask: ${esc(a.text.slice(0,60))}">
-      <button class="cbtn">comment</button>
-      <div class="from">code-orchestrator · ${ago(a.t)}</div>
-      <div class="q">${esc(a.text)}</div>${a.why?`<div class="why">${esc(a.why)}</div>`:''}
-      ${a.options&&a.options.length?`<div data-radio="${esc(a.id)}">${a.options.map(([v,l,d])=>`
-        <label class="opt"><input type="radio" name="${esc(a.id)}" value="${esc(v)}">
-        <span><span class="oh">${esc(l)}${v===a.rec?'<span class="rec"> · recommended</span>':''}</span><span class="od">${esc(d)}</span></span></label>`).join('')}</div>`
-        :`<p class="sub">Answer with <b>comment</b> on this question.</p>`}
-    </div>`).join('')+(done.length?`<details style="margin-top:10px"><summary class="sub">Answered (${done.length})</summary>${done.slice().reverse().map(a=>
-      `<p class="sub">✓ ${esc(a.text)}${a.note?' — '+esc(a.note):''} <i>(${ago(a.resolved)})</i></p>`).join('')}</details>`:'');
+// Needs you: a calm green line when nothing is open, an orange card with the questions when something is.
+function renderNeeds(){
+  const items=F.items||[], open=items.filter(i=>i.kind==='ask'&&i.status==='open');
+  const todos=items.filter(i=>i.kind==='todo'&&i.status!=='done');
+  const box=$$('needs');
+  box.className='needs '+(open.length?'hot':'calm');
+  box.innerHTML=(open.length
+    ?`<h2>Needs you <span class="count">${open.length}</span></h2><p class="hint">Pick an answer (or comment), then <b>Send to the orchestrator</b>.</p>`+
+      open.map(a=>`<div class="d open ask" data-anchor="${esc(a.id)}" data-label="Ask: ${esc(a.text.slice(0,60))}">
+        <button class="cbtn">comment</button><div class="q">${esc(a.text)}</div>${a.why?`<div class="why">${esc(a.why)}</div>`:''}
+        ${a.options&&a.options.length?`<div data-radio="${esc(a.id)}">${a.options.map(([v,l,d])=>`
+          <label class="opt"><input type="radio" name="${esc(a.id)}" value="${esc(v)}">
+          <span><span class="oh">${esc(l)}${v===a.rec?' <span class="rec">· recommended</span>':''}</span><span class="od">${esc(d)}</span></span></label>`).join('')}</div>`
+          :`<p class="hint">Answer with <b>comment</b>.</p>`}</div>`).join('')
+    :`<span class="ok">✓ Nothing needs you right now.</span>`)
+    +(todos.length?`<div class="todos"><div class="lbl">Only you can do</div>${todos.map(t=>`<div class="task">${esc(t.text)}</div>`).join('')}</div>`:'');
   for(const [k,v] of Object.entries(S.decisions||{})){const i=document.querySelector(`input[name="${k}"][value="${v}"]`);if(i)i.checked=true}
   document.querySelectorAll('label.opt').forEach(l=>l.classList.toggle('sel',l.querySelector('input').checked));
   post('/api/groups',{groups:[...document.querySelectorAll('[data-radio],[data-check]')].map(g=>g.dataset.radio||g.dataset.check)});
   try{renderDecisions();markAnchors()}catch(e){}
   const fresh=open.filter(a=>!seen.has(a.id));
   if(fresh.length){
-    const f=$$('flash');f.style.display='block';
-    f.textContent=`🔔 ${fresh.length} new question${fresh.length>1?'s':''} for you — tap to see.`;
-    f.onclick=()=>{$$('s-needs').scrollIntoView({behavior:'smooth'});f.style.display='none'};
     if(window.Notification&&Notification.permission==='granted')fresh.forEach(a=>new Notification('Build room — needs you',{body:a.text}));
     fresh.forEach(a=>seen.add(a.id));try{localStorage.setItem('room-seen',JSON.stringify([...seen]))}catch(e){}
   }
   document.title=(open.length?`(${open.length}) `:'')+document.title.replace(/^\(\d+\) /,'');
 }
-function renderTodos(items){
-  const t=items.filter(i=>i.kind==='todo'); if(!t.length)return;
-  const d=t.filter(i=>i.status==='done').length;
-  $$('tbar').style.width=Math.round(100*d/t.length)+'%'; $$('tcount').textContent=`${d} of ${t.length} done`;
-  const row=i=>`<div class="todo ${i.status==='done'?'done':''}"><span class="box"></span><span>${esc(i.text)}</span></div>`;
-  const openT=t.filter(i=>i.status!=='done'), doneT=t.filter(i=>i.status==='done');
-  $$('todos').innerHTML=openT.map(row).join('')+(doneT.length?`<details><summary class="sub">Done (${doneT.length})</summary>${doneT.map(row).join('')}</details>`:'');
+// How full a Claude's working memory is: amber at 60% (fresh session at the next step), red at 80%.
+function mem(p){if(p==null)return'';const c=p>=80?' hot':p>=60?' warn':'';
+  return `<div class="mem${c}" title="How full this Claude's working memory is. It gets a fresh session past 60%."><span class="bar"><i style="width:${Math.min(p,100)}%"></i></span>memory ${p}%</div>`}
+// One card per builder: status, steps done (a step turns green only once the orchestrator checked and merged it), what's now.
+function renderBuilders(){
+  const ag=S2.agents||{}, cx=S2.context||{}, P=F.progress||{};
+  ['backend','ios'].forEach(k=>{
+    const [ch,col,label]=HALF[k], steps=P[k]||[], done=steps.filter(x=>x.status==='done').length,
+          now=steps.find(x=>x.status==='doing'), next=steps.find(x=>x.status==='todo'), st=ag[k]||'not running';
+    const el=$$('b-'+k); el.style.setProperty('--c',col);
+    el.innerHTML=`<div class="bhead"><span class="av">${ch}</span><b>${label}</b><span class="st ${esc(st)}">${st==='working'?'<span class="dot"></span>':''}${esc(st)}</span></div>`+
+      (steps.length?`<div class="big">${done}/${steps.length}<small>steps done</small></div>
+        <div class="segs">${steps.map(x=>`<i class="${esc(x.status)}" title="${esc(x.name)}"></i>`).join('')}</div>
+        <div class="now">${now?`<span>Now:</span> ${esc(now.name)}`:next?`<span>Next:</span> ${esc(next.name)}`:'<span>All steps done</span>'}</div>`
+        :`<p class="hint" style="margin-top:10px">No plan posted yet.</p>`)+mem(cx[k])+
+      (steps.length?`<details><summary>All steps</summary><ol class="steps">${steps.map(x=>`<li class="${esc(x.status)}"><b>${x.status==='done'?'✓':x.status==='doing'?'●':'○'}</b><span>${esc(x.name)}</span></li>`).join('')}</ol></details>`:'');
+  });
+  const o=ag['code-orchestrator'];
+  $$('orch').innerHTML=o?`Orchestrator: <b>${esc(o)}</b>${cx['code-orchestrator']!=null?' · memory '+cx['code-orchestrator']+'%':''} · a step turns green only after it checks and merges it.`:'';
 }
-function lane(key,list){
-  const [ch,col]=WHO[key==='orchestrator'?'code-orchestrator':key];
-  const n=showAll[key]?list.length:6;
-  const title=key==='orchestrator'?'':`<h3><span class="av" style="background:${col}">${ch}</span>${key==='ios'?'iOS app':'Backend'} <small>${list.length} recent</small></h3>`;
-  return title+(list.length?list.slice(0,n).map(c=>`<div class="cm" style="--c:${col}" onclick="this.classList.toggle('open')">
-      <div class="t">${esc(c.title)}</div>${c.why?`<div class="w">${esc(c.why)}</div>`:''}
-      <div class="m">${ago(c.when)} · ${c.files} file${c.files===1?'':'s'} · ${esc(c.hash)}</div></div>`).join('')
-    +(list.length>6?`<button class="morebtn" data-lane="${key}">${showAll[key]?'Show fewer':'Show '+(list.length-6)+' more'}</button>`:'')
-    :'<p class="sub">No commits yet.</p>');
+function renderFeed(){
+  const rows=(F.items||[]).filter(i=>i.kind==='update'||i.kind==='checkpoint'||i.kind==='ask').sort((a,b)=>b.t<a.t?-1:1).slice(0,5);
+  $$('feed').innerHTML=rows.map(i=>`<li><span class="ic">${i.kind==='ask'?(i.status==='open'?'❓':'✔︎'):i.kind==='checkpoint'?'✅':'•'}</span>
+    <span class="tx">${first(i.text)}</span><span class="tm">${ago(i.t)}</span></li>`).join('')||'<li><span class="tx">Nothing yet.</span></li>';
 }
-function renderStatus(s){
-  lastS=s;
-  const alive=s.alive?(Date.now()-new Date(s.alive))/1000:1e9;
-  $$('dot').className='dot'+(alive>60?' stale':'');
-  let nx='';if(s.t&&s.interval){const m=Math.ceil((new Date(s.t).getTime()+s.interval*1000-Date.now())/60000);nx=m>0?` · next in ${m} min`:''}
-  $$('alive').textContent=alive>60?'5-minute check stopped — ask Claude to restart it':`Live · checked ${ago(s.t)}${nx}`;
-  const hb=(s.heartbeats||[]).slice(-1)[0]; $$('beatline').textContent=hb?'Last check: '+hb.text:'';
-  const C=s.commits||{}, ag=s.agents||{};
-  $$('team').innerHTML=Object.entries(ag).map(([n,st])=>{const [ch,col,role]=WHO[n]||[n[0].toUpperCase(),'var(--muted)',''];
-    const key=n==='code-orchestrator'?'orchestrator':n, last=(C[key]||[])[0];
-    return `<div class="who"><span class="av" style="background:${col}">${esc(ch)}</span><div><b>${esc(n)}</b><span class="role">${esc(role)}</span>
-      <div class="st ${esc(st)}"><i></i>${esc(st)}</div>${last?`<div class="last">Latest: ${esc(last.title)}</div>`:''}</div></div>`}).join('');
-  ['backend','ios','orchestrator'].forEach(k=>{$$('lane-'+k).innerHTML=lane(k,C[k]||[])});
-  $$('ocount').textContent=(C.orchestrator||[]).length;
-  document.querySelectorAll('.morebtn').forEach(b=>b.onclick=e=>{e.stopPropagation();showAll[b.dataset.lane]=!showAll[b.dataset.lane];renderStatus(lastS)});
+function renderCommits(){
+  const C=S2.commits||{};
+  ['backend','ios'].forEach(k=>{const [,col,label]=HALF[k], list=C[k]||[], n=showAll[k]?list.length:5;
+    const el=$$('lane-'+k); el.style.setProperty('--c',col);
+    el.innerHTML=`<h3><i></i>${label}</h3>`+(list.length?list.slice(0,n).map(c=>`<div class="cm" onclick="this.classList.toggle('open')">
+      <div class="t"><span>${esc(c.title)}</span><em>${ago(c.when)}</em></div>${c.why?`<div class="w">${esc(c.why)}</div>`:''}</div>`).join('')
+      +(list.length>5?`<button class="morebtn" data-lane="${k}">${showAll[k]?'Show fewer':'Show '+(list.length-5)+' more'}</button>`:''):'<p class="hint">No commits yet.</p>')});
+  document.querySelectorAll('.morebtn').forEach(b=>b.onclick=()=>{showAll[b.dataset.lane]=!showAll[b.dataset.lane];renderCommits()});
 }
-function renderFeed(items){
-  const rows=items.filter(i=>i.kind==='update'||i.kind==='checkpoint'||i.kind==='ask').sort((a,b)=>b.t<a.t?-1:1).slice(0,5);
-  $$('feed').innerHTML=rows.map(i=>
-    i.kind==='ask'?`<li class="q"><span class="tm">${ago(i.t)} · question${i.status!=='open'?' · answered':''}</span>${short(i.text)}</li>`:
-    i.kind==='checkpoint'?`<li class="cp"><span class="tm">${ago(i.t)} · ${i.verified?'✓ verified':'not verified yet'}</span><b>${short(i.text)}</b></li>`:
-    `<li><span class="tm">${ago(i.t)}</span>${short(i.text)}</li>`).join('')||'<li>Nothing yet.</li>';
+function renderLive(){
+  const a=S2.alive?(Date.now()-new Date(S2.alive))/1000:1e9;
+  $$('dot').className='dot'+(a>60?' stale':'');
+  let nx='';if(S2.t&&S2.interval){const m=Math.ceil((new Date(S2.t).getTime()+S2.interval*1000-Date.now())/60000);nx=m>0?` · next check in ${m} min`:''}
+  $$('alive').textContent=a>60?'Status check stopped — ask Claude to restart it':`Live${nx}`;
 }
 async function tick(){
   try{
     const [f,s]=await Promise.all([fetch('feed.json',{cache:'no-store'}).then(r=>r.json()),fetch('status.json',{cache:'no-store'}).then(r=>r.json()).catch(()=>({}))]);
-    const fj=JSON.stringify(f);
-    if(fj!==lastFeed){lastFeed=fj;renderAsks(f.items||[]);renderTodos(f.items||[])}
-    renderFeed(f.items||[]);
-    // don't re-render lanes while the user has a commit opened
-    if(!document.querySelector('.cm.open'))renderStatus(s);
+    F=f; S2=s; const fj=JSON.stringify(f);
+    if(fj!==lastFeed){lastFeed=fj;renderNeeds()}
+    renderBuilders(); renderFeed(); renderLive();
+    if(!document.querySelector('.cm.open'))renderCommits();   // don't close a commit the user opened
   }catch(e){$$('alive').textContent='page server not answering'}
 }
 const nb=$$('notif');

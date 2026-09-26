@@ -8,6 +8,11 @@
     post.py <room> resolve apple --note "Team: Bimal Saran"
     post.py <room> checkpoint "FindWhatsInTheRoom merged" --detail "12 tests, flow checked by hand" --verified
     post.py <room> todo oracle "Sign up for Oracle Cloud Always Free"      /  post.py <room> done oracle
+    post.py <room> plan backend "Skeleton" "The chain" "Baseline"      # a half's build steps, in order
+    post.py <room> step backend 2 doing                                 # done | doing | todo (1-based)
+
+A step is `done` only when the orchestrator has verified and merged it — the meter shows
+merged work, not claims.
 
 Writes <room>/feed.json atomically. Only this script writes feed.json; the page server owns
 state.json and the ticker owns status.json, so nothing races.
@@ -52,10 +57,22 @@ def main():
     c.add_argument("--verified", action="store_true")
     t = sub.add_parser("todo"); t.add_argument("id"); t.add_argument("text")
     d = sub.add_parser("done"); d.add_argument("id")
+    pl = sub.add_parser("plan"); pl.add_argument("half"); pl.add_argument("steps", nargs="+")
+    st = sub.add_parser("step"); st.add_argument("half"); st.add_argument("n", type=int)
+    st.add_argument("status", choices=["done", "doing", "todo"]); st.add_argument("--note", default="")
     x = ap.parse_args()
 
     feed = load(x.room)
     items = feed["items"]
+    progress = feed.setdefault("progress", {})
+    if x.cmd == "plan":                       # keeps the status of steps whose name is unchanged
+        old = {st["name"]: st for st in progress.get(x.half, [])}
+        progress[x.half] = [old.get(n, {"name": n, "status": "todo"}) for n in x.steps]
+    elif x.cmd == "step":
+        steps = progress.get(x.half) or []
+        if not 1 <= x.n <= len(steps):
+            raise SystemExit(f"{x.half} has {len(steps)} steps; plan them first")
+        steps[x.n - 1].update({"status": x.status, "t": now(), **({"note": x.note} if x.note else {})})
     if x.cmd == "update":
         items.append({"id": "u%d" % len(items), "kind": "update", "t": now(), "text": x.text})
     elif x.cmd == "ask":
