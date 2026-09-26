@@ -262,11 +262,11 @@ const GUIDE=[
   out:["The locked agreement","An automatic check that it never drifts"],
   gate:"You read the list of things the app can ask for. Does it match your screens?"},
 
- {n:"5", t:"Build it", skill:null, lead:"Three Claudes: code-orchestrator in charge (Opus, high), backend and ios building (Sonnet, high).",
+ {n:"5", t:"Build it — watch the build room", skill:"code-orchestrator", lead:"Three Claudes: code-orchestrator in charge (Opus, high), backend and ios building (Sonnet, high).",
   pre:["The locked wiring"],
   type:"(code-orchestrator starts both builders)",
-  body:"code-orchestrator <b>writes no code at all</b> — its only job is to check the others’ work, which it stops doing honestly the moment it writes code itself. The two builders, <b>backend</b> and <b>ios</b>, each work in their own copy of the project, down the build order, riskiest first. If one hits a problem with the locked wiring, it <b>writes the question down and carries on elsewhere</b> instead of guessing.",
-  out:["The app, on a real server","A build on TestFlight"],
+  body:"code-orchestrator <b>writes no code at all</b> — its only job is to check the others’ work, which it stops doing honestly the moment it writes code itself. The two builders, <b>backend</b> and <b>ios</b>, each work in their own copy of the project, down the build order, riskiest first. If one hits a problem with the locked wiring, it <b>writes the question down and carries on elsewhere</b> instead of guessing. <b>You only watch the build room</b>: a page with what needs you (with a recommended answer), what each Claude is doing, updates, and checkpoints — refreshed every 5 minutes, with a Mac notification the moment you are needed.",
+  out:["The build room page","The app, on a real server","A build on TestFlight"],
   gate:"code-orchestrator runs the tests itself before accepting anything. <b>The day it’s on TestFlight is v1</b> — tag it <code>v1</code>."}
 ];
 function guide(){

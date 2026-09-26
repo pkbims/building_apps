@@ -150,7 +150,16 @@ proceed to build" button. Pressing it updates `PROGRESS.md`, and the session tha
 PRD starts a new Claude session named **`code-orchestrator`** in its own herdr tab and stops
 there — the orchestrator owns stages 4 and 5. The orchestrator runs **Opus at high effort**;
 coding workers (`backend`, `ios`) run **Sonnet at high effort**. Start any of them with
-`.claude/scripts/start-agent.sh <name> <cwd> <model> <effort> "<prompt>"`. Tradeoff: the
+`.claude/scripts/start-agent.sh <name> <cwd> <model> <effort> "<prompt>"`.
+
+**The orchestrator is a skill, and the user watches one page** (2026-09-26): the hand-over
+starts it with `/code-orchestrator <app>`. It sets up `<app>/build-room/`, an html-worker page
+with *Needs you* (questions, each with a recommended option, and the user's to-dos), *Now*
+(each agent's state, each branch's last commit), *Updates* and *Checkpoints*. A ticker
+script — no model — refreshes the status every 5 minutes, sends a macOS notification the
+moment a question appears, and wakes the orchestrator through herdr the moment the user
+presses *Send to the orchestrator*. Tradeoff: a heartbeat from a script costs nothing and
+can't be reaped; only real events cost model time. Tradeoff: the
 judgement-heavy role (contract shape, verifying claims) gets the strongest model; the
 volume of code goes to the faster, cheaper one.
 

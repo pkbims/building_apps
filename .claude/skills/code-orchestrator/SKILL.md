@@ -1,0 +1,144 @@
+---
+name: code-orchestrator
+description: Run an app's build after its PRD is handed over — stage 4 (contract freeze) and stage 5 (build v1) — as the orchestrator that writes no app code, starts and checks two coding workers, and talks to the user only through a "build room" page (html-worker UI) with a 5-minute status check, instant questions and notifications. Use when the PRD page's hand-over button is pressed, when the user says "start the build", "code-orchestrator", "run the orchestrator for app_N", or asks to set up the build room.
+---
+
+# Code orchestrator
+
+Invoked as `/code-orchestrator <app>` — normally typed for you by the PRD page's hand-over
+button (`create-prd`), in a session started on **Opus at high effort**. From then on the user
+**only looks at the build room**: every update, question and checkpoint goes there, never
+only in this terminal. Extracted 2026-09-26 on the third orchestrator run (practice_1,
+practice_4, app_1).
+
+The whole flow:
+
+- **Check the hand-over** → **set up the build room** → **write HANDOFF.md** →
+  **stage 4: freeze the contract** → **brief and start the workers** →
+  **stage 5: the loop — verify, merge, post** → **v1 on TestFlight**
+
+## Before you start
+
+All of these must exist, or post nothing and tell the user in the terminal which is missing:
+
+- `<app>/PRD.md` exported, and `<app>/spec/state.json` with `prd_ready` set (the hand-over).
+- `<app>/design/HANDOFF.md` and `design/tokens.json` (the design came back).
+- `<app>/CLAUDE.md`, `../PIPELINE.md` stages 4–5, `../CLAUDE.md` (the series baseline).
+
+## Step 1 — Set up the build room
+
+```bash
+python3 .claude/skills/code-orchestrator/scripts/setup.py <app>
+```
+
+It builds `<app>/build-room/` (html-worker template + `room-body.html`), starts the page
+server and the **ticker** in the herdr `servers-tab`, and prints the URL. Re-run it any time
+— it only starts what isn't running and rebuilds the page. Then post the first update and
+give the user the URL in the terminal, once:
+
+```bash
+POST=.claude/skills/code-orchestrator/scripts/post.py; ROOM=<app>/build-room   # two variables: zsh does not split one
+python3 $POST $ROOM update "Build room is live. I'm reading the PRD and the design; next I freeze the contract."
+```
+
+What the room is made of, and who writes what — nothing races:
+
+| File | Written by | Shows |
+|---|---|---|
+| `feed.json` | you, via `post.py` only | updates, questions (asks), checkpoints, the user's to-dos |
+| `status.json` | the ticker, every 5 min | each agent's state, each branch's last commit, commits since the last check, open ORCH-QUESTIONS, the heartbeat line |
+| `state.json` | the page server | the user's answers and comments (html-worker rules) |
+
+**The ticker** (`scripts/ticker.py`, no model, no tokens): every 5 minutes a status line;
+the moment a new ask appears, a macOS notification; the moment the user presses **Send to the
+orchestrator**, it types a prompt into your herdr pane telling you to read
+`build-room/INBOX.md`. You never run a watcher of your own. If the page's dot turns red
+("the 5-minute check is not running"), re-run `setup.py`.
+
+## Step 2 — HANDOFF.md
+
+Write `<app>/HANDOFF.md`: your role, the reading order, every settled decision from the PRD
+that must not be reopened, the roster, what is in flight, gotchas. Rewrite it as things
+change — it is what lets the role survive a context reset. app_1's is the model.
+
+## Step 3 — Stage 4, the contract freeze
+
+Exactly as `PIPELINE.md` stage 4 says, copying practice_1's pattern rather than reinventing:
+`backend/app/schemas.py` + route signatures in `backend/app/main.py` from the PRD's data and
+calls sections, `contract/openapi.json` generated (never hand-edited), a CI
+regenerate-and-diff check, ruff/mypy excluding the frozen files, `ORCH-QUESTIONS.md`
+created. Done when `openapi.json` is committed and CI is green on GitHub.
+
+Things only the user can do (a GitHub repo, an Apple Developer team, a hosting account)
+become **to-dos plus an ask**, posted the moment you know you'll need them — not when you're
+already blocked:
+
+```bash
+python3 $POST $ROOM todo github "Create an empty private GitHub repo for app_1 and paste its URL"
+python3 $POST $ROOM ask github_repo "Where should app_1's code live on GitHub?" \
+  --why "CI must pass on GitHub before the contract counts as frozen." \
+  --option paste "I'll paste a repo URL" "Create an empty private repo, then comment the URL on this question." \
+  --option gh "Install gh and let you create it" "brew install gh, then gh auth login." --rec paste
+```
+
+## Step 4 — Brief and start the workers
+
+One brief per worker, `<half>/AGENT.md`: read order, what it owns, what it must not touch,
+**the one rule** (never edit the contract; append to `ORCH-QUESTIONS.md` and keep working),
+TDD, commit discipline, the build order it works down. Each in its own git worktree and
+branch, outside the app folder (app_1's layout):
+`git -C <app> worktree add ~/.herdr/worktrees/series_<app>/backend -b backend` (same for `ios`).
+Start them — **workers run Sonnet at high effort**:
+
+```bash
+W=~/.herdr/worktrees/series_<app>
+.claude/scripts/start-agent.sh backend $W/backend sonnet high "Read AGENT.md and start."
+.claude/scripts/start-agent.sh ios     $W/ios     sonnet high "Read AGENT.md and start."
+```
+
+Post an update naming both, and what each builds first (the riskiest chain first — the
+PRD's build order).
+
+## Step 5 — The loop
+
+You are woken by the ticker (a round was sent), by a worker's checkpoint, or by your own
+background checks. Each time:
+
+1. **A round from the user** — read `build-room/INBOX.md`. Answered asks: act, then
+   `post.py $ROOM resolve <id> --note "<what you did>"`. Comments: change requests → do them;
+   questions → answer with `post.py update`; notes → acknowledge with `post.py update`.
+   Then mark comments addressed:
+   `curl -s -X POST localhost:$(cat <app>/build-room/.port)/api/comment/addressed -d '{}'`.
+2. **A worker question** (`ORCH-QUESTIONS.md`) — answer inline. If it is really the user's
+   call (a product choice, money, an account), turn it into an ask; never guess on their
+   behalf.
+3. **A checkpoint** — run the worker's tests yourself, start the stack, check the flow it
+   claims. Only then merge into `main` and post it:
+   `post.py $ROOM checkpoint "<feature> merged" --detail "<tests run, what you checked>" --verified`.
+   A claim you could not verify is posted without `--verified`, with why.
+4. **Stage changes** — update `PROGRESS.md` and the app's `CLAUDE.md`; post an update.
+
+**What to post, and when** — the user reads only the room:
+
+- An **update** at every real step: stage started or finished, a worker started, a merge, CI
+  red or green, a decision you made and its tradeoff in one sentence. Not "still working" —
+  the ticker covers that every 5 minutes.
+- An **ask** the moment something needs the user. Options carry the three plain lines' worth
+  of detail and **exactly one `--rec`** (series rule). An ask with no options is answered by
+  comment. Never ask only in the terminal.
+- A **checkpoint** for every merge into `main`.
+- A **to-do** for anything only the user can do, marked `done` when it is.
+
+Plain English, short, no codes the user must remember; state the tradeoff behind each
+engineering choice in a sentence (this is narrated on camera).
+
+## Rules
+
+- **You write no app code.** You write the contract, the briefs, answers, merges and posts.
+  An orchestrator that codes stops verifying.
+- The contract changes only through `ORCH-QUESTIONS.md`, answered by you, regenerated, and
+  posted as an update.
+- Never print or commit keys. Never stop a page server for good — the user closes servers;
+  restarting one to pick up code is fine.
+- Stage 5 is done when both branches are merged, the baseline items are in, and **v1 is on
+  TestFlight, talking to a hosted backend**. Tag `v1`, post it, update `PROGRESS.md`.

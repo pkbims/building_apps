@@ -1,0 +1,143 @@
+<style>
+  .rbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin:0 0 14px}
+  .rbar .live{display:inline-block;width:8px;height:8px;border-radius:50%;background:#3aa35b;margin-right:4px}
+  .rbar .live.stale{background:#c0392b}
+  .rbar button{font:inherit;font-size:12px;padding:3px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);cursor:pointer}
+  .ask{border-left:4px solid #e0672c !important}
+  .ask .who{font-size:11.5px;color:var(--muted);margin-bottom:4px}
+  .rec{font-size:11px;font-weight:700;color:var(--accent);margin-left:6px;text-transform:uppercase;letter-spacing:.04em}
+  .todo{display:flex;gap:8px;align-items:flex-start;padding:7px 0;border-bottom:1px dashed var(--line);font-size:14px}
+  .todo.done{color:var(--muted);text-decoration:line-through}
+  .agents{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 12px}
+  .agent{border:1px solid var(--line);border-radius:10px;padding:8px 12px;min-width:150px;background:var(--bg)}
+  .agent b{display:block;font-size:13.5px} .agent span{font-size:12px;color:var(--muted)}
+  .agent.working{border-color:#3aa35b} .agent.working span{color:#3aa35b}
+  .agent.blocked span,.agent.waiting span{color:#e0672c}
+  .feed{list-style:none;margin:0;padding:0}
+  .feed li{padding:9px 0;border-bottom:1px solid var(--line);font-size:14px;line-height:1.5}
+  .feed li .tm{font-size:11.5px;color:var(--muted);display:block}
+  .feed li.beat{font-size:12.5px;color:var(--muted);padding:5px 0}
+  .feed li.cp{font-weight:600} .feed li.cp .ok{color:#3aa35b} .feed li.cp .no{color:#e0672c}
+  .feed li.ask{border-left:3px solid #e0672c;padding-left:10px}
+  .brs{font-size:12.5px;width:100%} .brs td{padding:3px 8px 3px 0;vertical-align:top} .brs td:first-child{font-weight:600;white-space:nowrap}
+  #flash{display:none;background:#e0672c;color:#fff;border-radius:10px;padding:10px 14px;margin:0 0 14px;font-weight:600}
+</style>
+
+<div id="flash"></div>
+<div class="rbar"><span><span class="live" id="live"></span><span id="alive">connecting…</span></span>
+  <span id="nextbeat"></span><span class="spacer" style="flex:1"></span>
+  <button id="notif">Turn on notifications</button></div>
+
+<section id="s-needs" data-anchor="needs" data-label="Needs you" data-group="Build room" data-title="Needs you">
+  <button class="cbtn">comment</button>
+  <h2><span class="num">1</span>Needs you</h2>
+  <p class="sub">Questions only you can answer. Pick an option (the recommended one is marked), or comment on a question to answer in your own words — then <b>Confirm &amp; send</b>. The orchestrator is woken up the moment you send.</p>
+  <div id="asks"></div>
+  <p class="sub" id="noasks">Nothing needs you right now.</p>
+  <h3 style="font-size:15px;margin:16px 0 4px">Things only you can do</h3>
+  <div id="todos"><p class="sub">None yet.</p></div>
+</section>
+
+<section id="s-now" data-anchor="now" data-label="Now" data-group="Build room" data-title="Now">
+  <button class="cbtn">comment</button>
+  <h2><span class="num">2</span>Now</h2>
+  <div class="agents" id="agents"></div>
+  <table class="brs" id="branches"></table>
+</section>
+
+<section id="s-updates" data-anchor="updates" data-label="Updates" data-group="Build room" data-title="Updates">
+  <button class="cbtn">comment</button>
+  <h2><span class="num">3</span>Updates</h2>
+  <p class="sub">Newest first. Bold lines are the orchestrator's own updates; grey lines are the 5-minute check.</p>
+  <label class="sub" style="display:block;margin:4px 0 8px"><input type="checkbox" id="beats" checked> show the 5-minute checks</label>
+  <ul class="feed" id="feed"></ul>
+</section>
+
+<section id="s-checkpoints" data-anchor="checkpoints" data-label="Checkpoints" data-group="Build room" data-title="Checkpoints">
+  <button class="cbtn">comment</button>
+  <h2><span class="num">4</span>Checkpoints</h2>
+  <p class="sub">Each one is merged into main only after the orchestrator ran the tests and checked the flow itself.</p>
+  <ul class="feed" id="cps"><li class="beat">None yet.</li></ul>
+</section>
+
+<script>
+(()=>{
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const ago=t=>{if(!t)return'';const s=(Date.now()-new Date(t))/1000;return s<60?'just now':s<3600?Math.round(s/60)+' min ago':s<86400?Math.round(s/3600)+' h ago':new Date(t).toLocaleDateString()};
+let lastFeed='', lastStatus='';
+let seen=new Set(); try{seen=new Set(JSON.parse(localStorage.getItem('room-seen')||'[]'))}catch(e){}
+
+function renderAsks(items){
+  const open=items.filter(i=>i.kind==='ask'&&i.status==='open');
+  const done=items.filter(i=>i.kind==='ask'&&i.status!=='open');
+  document.getElementById('noasks').style.display=open.length?'none':'';
+  document.getElementById('asks').innerHTML=open.map(a=>`
+    <div class="d open ask" data-anchor="${esc(a.id)}" data-label="Ask: ${esc(a.text.slice(0,60))}">
+      <button class="cbtn">comment</button>
+      <div class="who">code-orchestrator · ${ago(a.t)}</div>
+      <div class="q">${esc(a.text)}</div>${a.why?`<div class="why">${esc(a.why)}</div>`:''}
+      ${a.options&&a.options.length?`<div data-radio="${esc(a.id)}">${a.options.map(([v,l,d])=>`
+        <label class="opt"><input type="radio" name="${esc(a.id)}" value="${esc(v)}">
+        <span><span class="oh">${esc(l)}${v===a.rec?'<span class="rec">recommended</span>':''}</span><span class="od">${esc(d)}</span></span></label>`).join('')}</div>`
+        :`<p class="sub">Answer with <b>comment</b> on this question.</p>`}
+    </div>`).join('')+(done.length?`<details style="margin-top:10px"><summary class="sub">Answered (${done.length})</summary>${done.slice().reverse().map(a=>
+      `<p class="sub">✓ ${esc(a.text)}${a.note?' — '+esc(a.note):''} <i>(${ago(a.resolved)})</i></p>`).join('')}</details>`:'');
+  // restore saved answers, register the new groups with the server, refresh the right column
+  for(const [k,v] of Object.entries(S.decisions||{})){const i=document.querySelector(`input[name="${k}"][value="${v}"]`);if(i)i.checked=true}
+  document.querySelectorAll('label.opt').forEach(l=>l.classList.toggle('sel',l.querySelector('input').checked));
+  post('/api/groups',{groups:[...document.querySelectorAll('[data-radio],[data-check]')].map(g=>g.dataset.radio||g.dataset.check)});
+  try{renderDecisions();markAnchors()}catch(e){}
+  // new questions → flash, title badge, browser notification
+  const fresh=open.filter(a=>!seen.has(a.id));
+  if(fresh.length){
+    const f=document.getElementById('flash');f.style.display='block';
+    f.textContent=`${fresh.length} new question${fresh.length>1?'s':''} from the orchestrator — see “Needs you”.`;
+    if(window.Notification&&Notification.permission==='granted')fresh.forEach(a=>new Notification('Build room — needs you',{body:a.text}));
+    fresh.forEach(a=>seen.add(a.id));try{localStorage.setItem('room-seen',JSON.stringify([...seen]))}catch(e){}
+  }
+  document.title=(open.length?`(${open.length}) `:'')+document.title.replace(/^\(\d+\) /,'');
+}
+function renderTodos(items){
+  const t=items.filter(i=>i.kind==='todo');
+  if(t.length)document.getElementById('todos').innerHTML=t.map(i=>`<div class="todo ${i.status==='done'?'done':''}"><span>${i.status==='done'?'✓':'☐'}</span><span>${esc(i.text)}</span></div>`).join('');
+}
+function renderFeed(items,status){
+  const rows=items.filter(i=>i.kind==='update'||i.kind==='checkpoint'||i.kind==='ask').map(i=>({t:i.t,k:i.kind,i}));
+  if(document.getElementById('beats').checked)(status.heartbeats||[]).forEach(h=>rows.push({t:h.t,k:'beat',i:h}));
+  rows.sort((a,b)=>b.t<a.t?-1:1);
+  document.getElementById('feed').innerHTML=rows.slice(0,150).map(r=>{
+    if(r.k==='beat')return `<li class="beat">${esc(r.i.text)} <span class="tm" style="display:inline">· ${ago(r.t)}</span></li>`;
+    if(r.k==='checkpoint')return `<li class="cp"><span class="tm">${ago(r.t)}</span><span class="${r.i.verified?'ok':'no'}">${r.i.verified?'✓ verified':'• not verified yet'}</span> — ${esc(r.i.text)}${r.i.detail?`<div class="sub" style="font-weight:400">${esc(r.i.detail)}</div>`:''}</li>`;
+    if(r.k==='ask')return `<li class="ask"><span class="tm">${ago(r.t)} · question</span>${esc(r.i.text)}${r.i.status!=='open'?' <i class="sub">(answered)</i>':''}</li>`;
+    return `<li><span class="tm">${ago(r.t)}</span><b>${esc(r.i.text)}</b></li>`}).join('')||'<li class="beat">Nothing yet.</li>';
+  const cps=items.filter(i=>i.kind==='checkpoint').reverse();
+  if(cps.length)document.getElementById('cps').innerHTML=cps.map(c=>`<li class="cp"><span class="tm">${ago(c.t)}</span><span class="${c.verified?'ok':'no'}">${c.verified?'✓':'•'}</span> ${esc(c.text)}${c.detail?`<div class="sub" style="font-weight:400">${esc(c.detail)}</div>`:''}</li>`).join('');
+}
+function renderStatus(s){
+  const alive=s.alive?(Date.now()-new Date(s.alive))/1000:1e9;
+  document.getElementById('live').className='live'+(alive>60?' stale':'');
+  document.getElementById('alive').textContent=alive>60?'The 5-minute check is not running — ask Claude to restart the ticker':'Live · checked '+ago(s.t);
+  if(s.t&&s.interval){const nx=new Date(s.t).getTime()+s.interval*1000-Date.now();
+    document.getElementById('nextbeat').textContent=nx>0?'next check in '+Math.ceil(nx/60000)+' min':'next check any moment'}
+  const ag=s.agents||{};
+  document.getElementById('agents').innerHTML=Object.entries(ag).map(([n,st])=>`<div class="agent ${esc(st)}"><b>${esc(n)}</b><span>${esc(st)}</span></div>`).join('')||'<p class="sub">No agents yet.</p>';
+  document.getElementById('branches').innerHTML=(s.branches||[]).map(b=>`<tr><td>${esc(b.branch)}</td><td>${esc(b.subject)}</td><td class="sub" style="white-space:nowrap">${ago(b.when)}</td></tr>`).join('')
+    +(s.open_questions?`<tr><td>ORCH-QUESTIONS</td><td>${s.open_questions} open question${s.open_questions>1?'s':''} from the workers (the orchestrator answers these)</td><td></td></tr>`:'');
+}
+async function tick(){
+  try{
+    const [f,s]=await Promise.all([fetch('feed.json',{cache:'no-store'}).then(r=>r.json()),fetch('status.json',{cache:'no-store'}).then(r=>r.json()).catch(()=>({}))]);
+    const fj=JSON.stringify(f), sj=JSON.stringify(s);
+    if(fj!==lastFeed){lastFeed=fj;renderAsks(f.items||[]);renderTodos(f.items||[])}
+    if(fj!==lastFeed||sj!==lastStatus||true){renderFeed(f.items||[],s);renderStatus(s)}
+    lastStatus=sj;
+  }catch(e){document.getElementById('alive').textContent='page server not answering'}
+}
+document.getElementById('beats').onchange=()=>{lastStatus='';tick()};
+const nb=document.getElementById('notif');
+if(!window.Notification||Notification.permission==='granted')nb.style.display='none';
+nb.onclick=()=>Notification.requestPermission().then(p=>{if(p==='granted')nb.style.display='none'});
+// wait for the template's state load (S.decisions) before the first render
+setTimeout(tick,600); setInterval(tick,20000);
+})();
+</script>
