@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Post to the build room's feed — the orchestrator's only way to talk to the user.
+"""Post to the engineering center's feed — the orchestrator's only way to talk to the user.
 
     post.py <room> update "Contract frozen: 14 routes, CI green."
     post.py <room> ask apple "Do you have an Apple Developer team?" --why "Needed for sign-in and TestFlight." \

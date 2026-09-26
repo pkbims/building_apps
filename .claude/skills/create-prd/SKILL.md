@@ -251,7 +251,7 @@ round, update `PROGRESS.md` (the app moves to 4. Contract freeze), write `<app>/
 (the orchestrator's brief), start the **code-orchestrator** session with
 `.claude/scripts/start-agent.sh code-orchestrator <app> opus high "/code-orchestrator <app>"`,
 set `prd_ready` to `done`, and stop. The `code-orchestrator` skill takes it from there: it
-sets up the **build room** (the page the user watches from then on) and owns stages 4–5,
+sets up the **engineering center** (the page the user watches from then on) and owns stages 4–5,
 starting its workers on Sonnet at high effort.
 
 ## The disciplines that make it worth reading

@@ -1,19 +1,19 @@
 ---
 name: code-orchestrator
-description: Run an app's build after its PRD is handed over — stage 4 (contract freeze) and stage 5 (build v1) — as the orchestrator that writes no app code, starts and checks two coding workers, and talks to the user only through a "build room" page (html-worker UI) with a 5-minute status check, instant questions and notifications. Use when the PRD page's hand-over button is pressed, when the user says "start the build", "code-orchestrator", "run the orchestrator for app_N", or asks to set up the build room.
+description: Run an app's build after its PRD is handed over — stage 4 (contract freeze) and stage 5 (build v1) — as the orchestrator that writes no app code, starts and checks two coding workers, and talks to the user only through an "engineering center" page (html-worker UI) with a 5-minute status check, instant questions and notifications. Use when the PRD page's hand-over button is pressed, when the user says "start the build", "code-orchestrator", "run the orchestrator for app_N", or asks to set up the engineering center.
 ---
 
 # Code orchestrator
 
 Invoked as `/code-orchestrator <app>` — normally typed for you by the PRD page's hand-over
 button (`create-prd`), in a session started on **Opus at high effort**. From then on the user
-**only looks at the build room**: every update, question and checkpoint goes there, never
+**only looks at the engineering center**: every update, question and checkpoint goes there, never
 only in this terminal. Extracted 2026-09-26 on the third orchestrator run (practice_1,
 practice_4, app_1).
 
 The whole flow:
 
-- **Check the hand-over** → **set up the build room** → **write HANDOFF.md** →
+- **Check the hand-over** → **set up the engineering center** → **write HANDOFF.md** →
   **stage 4: freeze the contract** → **brief and start the workers** →
   **stage 5: the loop — verify, merge, post** → **v1 on TestFlight**
 
@@ -25,23 +25,23 @@ All of these must exist, or post nothing and tell the user in the terminal which
 - `<app>/design/HANDOFF.md` and `design/tokens.json` (the design came back).
 - `<app>/CLAUDE.md`, `../PIPELINE.md` stages 4–5, `../CLAUDE.md` (the series baseline).
 
-## Step 1 — Set up the build room
+## Step 1 — Set up the engineering center
 
 ```bash
 python3 .claude/skills/code-orchestrator/scripts/setup.py <app>
 ```
 
-It builds `<app>/build-room/` (html-worker template + `room-body.html`), starts the page
+It builds `<app>/engineering-center/` (html-worker template + `room-body.html`), starts the page
 server and the **ticker** in the herdr `servers-tab`, and prints the URL. Re-run it any time
 — it only starts what isn't running and rebuilds the page. Then post the first update and
 give the user the URL in the terminal, once:
 
 ```bash
-POST=.claude/skills/code-orchestrator/scripts/post.py; ROOM=<app>/build-room   # two variables: zsh does not split one
-python3 $POST $ROOM update "Build room is live. I'm reading the PRD and the design; next I freeze the contract."
+POST=.claude/skills/code-orchestrator/scripts/post.py; ROOM=<app>/engineering-center   # two variables: zsh does not split one
+python3 $POST $ROOM update "Engineering center is live. I'm reading the PRD and the design; next I freeze the contract."
 ```
 
-What the room is made of, and who writes what — nothing races:
+What the engineering center is made of, and who writes what — nothing races:
 
 | File | Written by | Shows |
 |---|---|---|
@@ -52,7 +52,7 @@ What the room is made of, and who writes what — nothing races:
 **The ticker** (`scripts/ticker.py`, no model, no tokens): every 5 minutes a status line;
 the moment a new ask appears, a macOS notification; the moment the user presses **Send to the
 orchestrator**, it types a prompt into your herdr pane telling you to read
-`build-room/INBOX.md`. You never run a watcher of your own. If the page's dot turns red
+`engineering-center/INBOX.md`. You never run a watcher of your own. If the page's dot turns red
 ("the 5-minute check is not running"), re-run `setup.py`.
 
 ## Step 2 — HANDOFF.md
@@ -86,7 +86,7 @@ python3 $POST $ROOM ask github_repo "Where should app_1's code live on GitHub?" 
 One brief per worker, `<half>/AGENT.md`: read order, what it owns, what it must not touch,
 **the one rule** (never edit the contract; append to `ORCH-QUESTIONS.md` and keep working),
 TDD, commit discipline — **every commit body opens with one plain-English sentence saying
-what changed for the app** (the build room shows that sentence under the title; the technical
+what changed for the app** (the engineering center shows that sentence under the title; the technical
 detail follows) — the build order it works down. Each in its own git worktree and
 branch, outside the app folder (app_1's layout):
 `git -C <app> worktree add ~/.herdr/worktrees/series_<app>/backend -b backend` (same for `ios`).
@@ -108,12 +108,12 @@ a new open question or checkpoint in any worktree's `ORCH-QUESTIONS.md`, or goes
 idle/done. Workers post a checkpoint and **carry on**; you verify in parallel and tell them if
 something must be fixed first — a checkpoint that waits on you leaves a worker idle. Each time:
 
-1. **A round from the user** — read `build-room/INBOX.md`. Answered asks: act, then
+1. **A round from the user** — read `engineering-center/INBOX.md`. Answered asks: act, then
    `post.py $ROOM resolve <id> --note "<what you did>"`. Comments: change requests → do them;
    questions → answer with `post.py update`; notes → acknowledge with `post.py update`.
    Then mark comments addressed:
-   `curl -s -X POST localhost:$(cat <app>/build-room/.port)/api/comment/addressed -d '{}'`,
-   and **always** `touch <app>/build-room/index.html` — the page's "Claude is working" bar
+   `curl -s -X POST localhost:$(cat <app>/engineering-center/.port)/api/comment/addressed -d '{}'`,
+   and **always** `touch <app>/engineering-center/index.html` — the page's "Claude is working" bar
    clears only when that round's comments are addressed *or* the page file changes, so a
    round with no comments (decisions only) otherwise shows "Still waiting" forever. Re-read
    `INBOX.md` just before marking: a new round can land while you work.
@@ -133,7 +133,7 @@ something must be fixed first — a checkpoint that waits on you leaves a worker
    at its next checkpoint (60%) or right after it commits (80%).
 5. **Stage changes** — update `PROGRESS.md` and the app's `CLAUDE.md`; post an update.
 
-**What to post, and when** — the user reads only the room:
+**What to post, and when** — the user reads only the engineering center:
 
 - An **update** at every real step — **one or two short sentences**; the page shows only the
   latest 5, and only the first sentence until the user opens it: stage started or finished, a worker started, a merge, CI

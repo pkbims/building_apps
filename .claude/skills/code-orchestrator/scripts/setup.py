@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Set up (or refresh) an app's build room and start its server and ticker.
+"""Set up (or refresh) an app's engineering center and start its server and ticker.
 
     setup.py <app_dir> [--orchestrator code-orchestrator] [--workers backend,ios] [--interval 300]
 
-<app>/build-room/ is an html-worker page: index.html (template + room-body.html), the
+<app>/engineering-center/ is an html-worker page: index.html (template + room-body.html), the
 html-worker server.py, feed.json (written by post.py), status.json (written by ticker.py).
 Idempotent: re-running rebuilds index.html and starts only what isn't running.
 Prints the URL.
@@ -47,7 +47,7 @@ def main():
     x = ap.parse_args()
     app = os.path.abspath(x.app)
     name = os.path.basename(app)
-    room = os.path.join(app, "build-room")
+    room = os.path.join(app, "engineering-center")
     os.makedirs(room, exist_ok=True)
 
     shutil.copy(os.path.join(HW, "server.py"), os.path.join(room, "server.py"))
@@ -56,8 +56,8 @@ def main():
     a = t.index("<!--\n  CONTENT GOES HERE")
     b = t.index("-->", a) + 3
     page = t[:a] + body + t[b:]
-    page = page.replace("<title>TITLE HERE</title>", f"<title>Build room — {name}</title>", 1)
-    page = page.replace("<h1>TITLE HERE</h1>", f"<h1>Build room — {name}</h1>", 1)
+    page = page.replace("<title>TITLE HERE</title>", f"<title>Engineering center — {name}</title>", 1)
+    page = page.replace("<h1>TITLE HERE</h1>", f"<h1>Engineering center — {name}</h1>", 1)
     page = page.replace("Confirm &amp; send", "Send to the orchestrator", 1)
     page = page.replace("`Confirm & send round ${ROUND}`", "`Send to the orchestrator`", 1)
     open(os.path.join(room, "index.html"), "w").write(page)

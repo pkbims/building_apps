@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""The build room's heartbeat. No model, no tokens — a plain loop, run in the herdr servers-tab.
+"""The engineering center's heartbeat. No model, no tokens — a plain loop, run in the herdr servers-tab.
 
     ticker.py <room> --app <app_dir> [--orchestrator code-orchestrator] [--workers backend,ios] [--interval 300]
 
@@ -156,7 +156,7 @@ def main():
             last_inbox = m
             if x.orchestrator in agents():
                 sh(["herdr", "agent", "prompt", x.orchestrator,
-                    f"The user sent a round on the build room. Read {room}/INBOX.md and act on it: answer "
+                    f"The user sent a round on the engineering center. Read {room}/INBOX.md and act on it: answer "
                     f"questions with post.py update, resolve answered asks with post.py resolve, then mark the "
                     f"comments addressed (curl -s -X POST localhost:$(cat {room}/.port)/api/comment/addressed -d '{{}}')."])
                 status["last_forwarded"] = datetime.now(timezone.utc).isoformat(timespec="seconds")
@@ -169,7 +169,7 @@ def main():
         for it in feed:
             if it.get("kind") == "ask" and it.get("status") == "open" and it["id"] not in seen_asks:
                 seen_asks.add(it["id"])
-                notify(f"{name} build room — needs you", it.get("text", "")[:180])
+                notify(f"{name} engineering center — needs you", it.get("text", "")[:180])
 
         # 3. the heartbeat
         if time.time() - last_beat >= x.interval:

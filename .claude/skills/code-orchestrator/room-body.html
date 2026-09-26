@@ -75,30 +75,30 @@
 <div class="strip"><span class="pill">Building v1</span><span><span class="dot" id="dot"></span><span id="alive">connecting…</span></span>
   <span class="sp"></span><button id="notif">🔔 Notify me</button></div>
 
-<section id="s-needs" data-anchor="needs" data-label="Needs you" data-group="Build room" data-title="Needs you">
+<section id="s-needs" data-anchor="needs" data-label="Needs you" data-group="Engineering center" data-title="Needs you">
   <div class="needs calm" id="needs"><span class="ok">✓ Nothing needs you right now.</span></div>
 </section>
 
-<section id="s-builders" data-anchor="builders" data-label="Progress" data-group="Build room" data-title="Progress">
+<section id="s-builders" data-anchor="builders" data-label="Progress" data-group="Engineering center" data-title="Progress">
   <button class="cbtn">comment</button>
   <h2>Progress</h2>
   <div class="builders"><div class="bcard" id="b-backend"></div><div class="bcard" id="b-ios"></div></div>
   <p class="orch" id="orch"></p>
 </section>
 
-<section id="s-updates" data-anchor="updates" data-label="Updates" data-group="Build room" data-title="Updates">
+<section id="s-updates" data-anchor="updates" data-label="Updates" data-group="Engineering center" data-title="Updates">
   <button class="cbtn">comment</button>
   <h2>Updates</h2>
   <ul class="tl" id="feed"></ul>
 </section>
 
-<section id="s-commits" data-anchor="commits" data-label="Commits" data-group="Build room" data-title="Commits">
+<section id="s-commits" data-anchor="commits" data-label="Commits" data-group="Engineering center" data-title="Commits">
   <button class="cbtn">comment</button>
   <h2>Commits</h2>
   <div class="lanes"><div class="lane" id="lane-backend"></div><div class="lane" id="lane-ios"></div></div>
 </section>
 
-<section id="s-later" data-anchor="later" data-label="Your to-do list" data-group="Build room" data-title="Your to-do list">
+<section id="s-later" data-anchor="later" data-label="Your to-do list" data-group="Engineering center" data-title="Your to-do list">
   <button class="cbtn">comment</button>
   <h2>Your to-do list <span class="norush">no rush</span></h2>
   <div id="later"></div>
@@ -139,7 +139,7 @@ function renderNeeds(){
   try{renderDecisions();markAnchors()}catch(e){}
   const fresh=open.filter(a=>!seen.has(a.id));
   if(fresh.length){
-    if(window.Notification&&Notification.permission==='granted')fresh.forEach(a=>new Notification('Build room — needs you',{body:a.text}));
+    if(window.Notification&&Notification.permission==='granted')fresh.forEach(a=>new Notification('Engineering center — needs you',{body:a.text}));
     fresh.forEach(a=>seen.add(a.id));try{localStorage.setItem('room-seen',JSON.stringify([...seen]))}catch(e){}
   }
   document.title=(open.length?`(${open.length}) `:'')+document.title.replace(/^\(\d+\) /,'');

@@ -153,7 +153,7 @@ coding workers (`backend`, `ios`) run **Sonnet at high effort**. Start any of th
 `.claude/scripts/start-agent.sh <name> <cwd> <model> <effort> "<prompt>"`.
 
 **The orchestrator is a skill, and the user watches one page** (2026-09-26): the hand-over
-starts it with `/code-orchestrator <app>`. It sets up `<app>/build-room/`, an html-worker page
+starts it with `/code-orchestrator <app>`. It sets up `<app>/engineering-center/`, an html-worker page
 with, top to bottom: *Needs you* (questions, each with a recommended option, and the
 user's to-dos — a single green line when nothing is open), *Progress* (one card per builder:
 steps done, what it's on now, how full its memory is), *Updates* (the latest 5, one line

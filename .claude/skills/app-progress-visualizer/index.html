@@ -7,13 +7,13 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
 <style>
   :root{--bg:#f4eee2;--panel:#fdf9f1;--ink:#2a2521;--muted:#6a6157;--faint:#978d82;
-    --line:#e3d9c7;--accent:#b0523a;--soft:#f5e4dc;--warn:#7a5a1e;--warnsoft:#f3ead3;--quote:#efe7d6;--r:10px;--r2:14px}
+    --line:#e3d9c7;--accent:#b0523a;--soft:#f5e4dc;--warn:#7a5a1e;--warnsoft:#f3ead3;--quote:#efe7d6;--r:10px;--r2:14px;--done:#6f8f5f;--donesoft:#e7eddf;--glow:rgba(176,82,58,.18);--onacc:#fff}
   :root{color-scheme:light}
   @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;
     --bg:#1b1916;--panel:#242019;--ink:#ede4d6;--muted:#a89e8f;--faint:#766d60;
-    --line:#38322a;--accent:#e28f72;--soft:#3b2a24;--warn:#dcb66e;--warnsoft:#302a1c;--quote:#2a2620}}
+    --line:#38322a;--accent:#e28f72;--soft:#3b2a24;--warn:#dcb66e;--warnsoft:#302a1c;--quote:#2a2620;--done:#8fb37c;--donesoft:#26301f;--glow:rgba(226,143,114,.22);--onacc:#241f1a}}
   :root[data-theme="dark"]{color-scheme:dark;--bg:#1b1916;--panel:#242019;--ink:#ede4d6;--muted:#a89e8f;
-    --faint:#766d60;--line:#38322a;--accent:#e28f72;--soft:#3b2a24;--warn:#dcb66e;--warnsoft:#302a1c;--quote:#2a2620}
+    --faint:#766d60;--line:#38322a;--accent:#e28f72;--soft:#3b2a24;--warn:#dcb66e;--warnsoft:#302a1c;--quote:#2a2620;--done:#8fb37c;--donesoft:#26301f;--glow:rgba(226,143,114,.22);--onacc:#241f1a}
   *{box-sizing:border-box}
   body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 "IBM Plex Sans",-apple-system,BlinkMacSystemFont,sans-serif}
   a{color:inherit}
@@ -24,7 +24,7 @@
   .views{display:flex;gap:4px;background:var(--bg);border:1px solid var(--line);border-radius:9px;padding:3px}
   .views button{background:none;border:0;font:inherit;font-size:12.5px;padding:4px 12px;border-radius:6px;
     cursor:pointer;color:var(--muted)}
-  .views button.on{background:var(--accent);color:#fff;font-weight:600}
+  .views button.on{background:var(--accent);color:var(--onacc);font-weight:600}
   .sp{flex:1}
   .meta{font-size:11.5px;color:var(--faint)}
   .tbtn{background:var(--bg);border:1px solid var(--line);color:var(--muted);font:inherit;font-size:11.5px;
@@ -35,6 +35,77 @@
   .banner{background:var(--warnsoft);border-left:3px solid var(--warn);padding:9px 14px;border-radius:0 8px 8px 0;
     font-size:12.5px;margin-bottom:18px}
   .banner b{color:var(--warn)}
+
+  /* ---------- rings, bars, sparkline: the visual layer ---------- */
+  .ring{display:block;flex:none}
+  .ring .trk{stroke:var(--line)}
+  .ring .val{stroke:var(--accent);animation:ringin 1s cubic-bezier(.22,1,.36,1) both}
+  .ring .val.full{stroke:var(--done)}
+  @keyframes ringin{from{stroke-dashoffset:var(--c)}}
+  .ring text{font:700 var(--fs,15px)/1 "IBM Plex Sans",sans-serif;fill:var(--ink)}
+  .ring text.u{font-size:8px;font-weight:600;fill:var(--faint)}
+
+  .hero{display:flex;align-items:center;gap:22px;background:var(--panel);border:1px solid var(--line);
+    border-radius:var(--r2);padding:18px 22px;margin-bottom:16px;flex-wrap:wrap;
+    background-image:radial-gradient(120% 140% at 0% 0%,var(--soft) 0%,transparent 55%)}
+  .hero .hmain{flex:1;min-width:210px}
+  .hero h2{margin:0 0 2px}
+  .hero .hwhy{font-size:12.5px;color:var(--muted);margin:0}
+  .hero .stat{display:flex;gap:20px;flex-wrap:wrap;margin-top:12px;padding-top:11px;border-top:1px solid var(--line)}
+  .hero .stat div{font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--faint);font-weight:700}
+  .hero .stat b{display:block;font-size:19px;color:var(--ink);letter-spacing:-.02em;margin-bottom:-1px}
+  .nowchip{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:650;color:var(--accent);
+    background:var(--soft);border:1px solid var(--accent);border-radius:20px;padding:3px 12px;margin-top:9px}
+  .nowchip .dot{width:7px;height:7px;border-radius:50%;background:var(--accent);animation:pulse 1.8s ease-in-out infinite}
+  @keyframes pulse{0%,100%{box-shadow:0 0 0 0 var(--glow)}50%{box-shadow:0 0 0 6px transparent}}
+
+  .spark{display:flex;align-items:flex-end;gap:2px;height:34px}
+  .spark i{flex:1;min-width:3px;background:var(--accent);border-radius:2px 2px 0 0;opacity:.75;
+    transform-origin:bottom;animation:grow .7s cubic-bezier(.22,1,.36,1) both}
+  .spark i:hover{opacity:1}
+  @keyframes grow{from{transform:scaleY(0)}}
+  .sparkw{min-width:150px}
+  .sparkw .gl{display:block;font-size:9.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--faint);margin-bottom:6px}
+
+  /* gate micro-bar, on the board and in the rail */
+  .mb{display:flex;gap:2px;margin-top:5px}
+  .mb i{height:3px;flex:1;border-radius:2px;background:var(--line)}
+  .mb i.on{background:var(--done)}
+  .cell.now .mb i{background:rgba(255,255,255,.3)} .cell.now .mb i.on{background:#fff}
+
+  /* board polish */
+  .cell{position:relative;overflow:hidden}
+  .cell:not(.todo):hover{transform:translateY(-1px)}
+  table.b tbody tr{animation:rise .5s cubic-bezier(.22,1,.36,1) both}
+  @keyframes rise{from{opacity:0;transform:translateY(7px)}}
+  .apppct{font-size:10.5px;color:var(--faint);font-weight:600;margin-top:3px}
+
+  /* rail polish */
+  .rail .st{animation:rise .45s cubic-bezier(.22,1,.36,1) both}
+  .st.done .bub{background:var(--done);border-color:var(--done);color:#fff}
+  .st.done .ln{background:linear-gradient(var(--done),var(--done))}
+  .st.now .bub{animation:pulse 2s ease-in-out infinite}
+  .snm{transition:color .12s}
+  .stagepct{font-size:10.5px;font-weight:700;color:var(--faint);letter-spacing:.03em}
+  .st.done .stagepct{color:var(--done)}
+  .gate i{transition:.12s}
+  .gate:not(.no) i{color:var(--done)}
+  .doc{transition:transform .12s,border-color .12s,color .12s}
+  .doc:hover{transform:translateY(-1px)}
+  /* what the current stage is still waiting on — the unmet gates, nothing declared */
+  .nextwrap{margin-top:16px}
+  .nextgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:12px}
+  .nx{background:var(--panel);border:1px solid var(--line);border-radius:var(--r2);padding:14px 16px;
+    cursor:pointer;transition:.14s;animation:rise .5s cubic-bezier(.22,1,.36,1) both}
+  .nx:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:0 6px 18px var(--glow)}
+  .nx .t{display:flex;align-items:baseline;gap:8px;font-weight:650;font-size:14px}
+  .nx .t .s{color:var(--accent)}
+  .nx .t .c{margin-left:auto;font-size:11px;font-weight:700;color:var(--faint)}
+  .nx ul{list-style:none;margin:9px 0 0;padding:0}
+  .nx li{display:flex;gap:8px;font-size:12.5px;color:var(--muted);padding:2px 0}
+  .nx li i{font-style:normal;color:var(--faint);flex:none}
+  .nx .ok{font-size:12.5px;color:var(--done);margin-top:8px;font-weight:600}
   /* board */
   .bwrap{overflow-x:auto;background:var(--panel);border:1px solid var(--line);border-radius:var(--r2);padding:16px}
   table.b{border-collapse:separate;border-spacing:0;width:100%;min-width:700px}
@@ -58,17 +129,24 @@
   .cell{border-radius:8px;padding:7px 8px;min-height:44px;cursor:pointer;border:1px solid transparent;transition:.12s}
   .cell:hover{border-color:var(--accent)}
   .cell.done{background:var(--soft)}
-  .cell.now{background:var(--accent);color:#fff}
+  .cell.now{background:var(--accent);color:var(--onacc)}
   .cell.todo{background:var(--quote);opacity:.5;cursor:default}
   .cell.todo:hover{border-color:transparent}
-  .cell .cn{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;opacity:.8}
-  .cell .cd{font-size:11.5px;margin-top:2px}
+  .cell .cn{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;opacity:.8;white-space:nowrap}
+  .cell .cd{font-size:11.5px;margin-top:2px;white-space:nowrap}
+  /* stated after the base .cell rules above so these win without an id or !important */
+  table.b .cell{display:flex;flex-direction:column;min-height:62px}
+  table.b .cell .mb{margin-top:auto;padding-top:6px}
+  table.b .cell.done{background:var(--donesoft)}
+  table.b .cell.done .cn{color:var(--done);opacity:1}
+  table.b .cell.now{box-shadow:0 3px 14px var(--glow)}
+  table.b td{vertical-align:stretch}
   /* rail */
   .rail .st{display:grid;grid-template-columns:28px 1fr;gap:13px}
   .gut{display:flex;flex-direction:column;align-items:center}
   .bub{width:24px;height:24px;border-radius:50%;border:2px solid var(--line);background:var(--bg);display:flex;
     align-items:center;justify-content:center;font-size:10.5px;font-weight:700;color:var(--faint);flex:none}
-  .st.done .bub{background:var(--accent);border-color:var(--accent);color:#fff}
+  .st.done .bub{background:var(--accent);border-color:var(--accent);color:var(--onacc)}
   .st.now .bub{border-color:var(--accent);color:var(--accent);box-shadow:0 0 0 3px var(--soft)}
   .ln{flex:1;width:2px;background:var(--line);min-height:16px}
   .st.done .ln{background:var(--accent)}
@@ -155,7 +233,7 @@
   .gcard,.gafter{display:grid;grid-template-columns:52px 1fr;gap:18px;background:var(--panel);border:1px solid var(--line);
     border-radius:var(--r2);padding:20px 24px;margin:0}
   .gafter{margin-top:6px;border-color:var(--warn);background:var(--warnsoft)}
-  .gn{width:42px;height:42px;border-radius:12px;background:var(--accent);color:#fff;display:flex;align-items:center;
+  .gn{width:42px;height:42px;border-radius:12px;background:var(--accent);color:var(--onacc);display:flex;align-items:center;
     justify-content:center;font-weight:700;font-size:17px;flex:none}
   .gtop{display:flex;align-items:baseline;gap:11px;flex-wrap:wrap}
   .gtop h3{margin:0;font-size:19px;letter-spacing:-.015em}
@@ -226,6 +304,45 @@ const visible=()=>SCAN.apps.filter(a=>!isHidden(a.id));
 const STAGE=n=>SCAN.stages.find(s=>String(s.n)===String(n))||{name:'',why:''};
 const app=id=>SCAN.apps.find(a=>a.id===id);
 
+/* ---------- derived progress, drawn ----------
+   Every number here is counted off the same gates the rail ticks, so the ring can
+   never disagree with the list under it. */
+const gatesOf=a=>a.stages.reduce((o,s)=>({met:o.met+s.met,all:o.all+s.gates.length}),{met:0,all:0});
+const pctOf=a=>{const g=gatesOf(a); return g.all?Math.round(g.met/g.all*100):0};
+
+function ring(pct,size,stroke,big,small){
+  const r=(size-stroke)/2, c=2*Math.PI*r, off=c*(1-pct/100), mid=size/2;
+  return `<svg class="ring" viewBox="0 0 ${size} ${size}" width="${size}" height="${size}" style="--fs:${Math.round(size*.26)}px">
+    <circle class="trk" cx="${mid}" cy="${mid}" r="${r}" fill="none" stroke-width="${stroke}"/>
+    <circle class="val${pct>=100?' full':''}" cx="${mid}" cy="${mid}" r="${r}" fill="none" stroke-width="${stroke}"
+      stroke-linecap="round" stroke-dasharray="${c.toFixed(1)}" stroke-dashoffset="${off.toFixed(1)}"
+      transform="rotate(-90 ${mid} ${mid})" style="--c:${c.toFixed(1)}"/>
+    <text x="50%" y="${small?'44%':'50%'}" text-anchor="middle" dominant-baseline="central">${big!=null?big:pct+'%'}</text>
+    ${small?`<text class="u" x="50%" y="68%" text-anchor="middle" dominant-baseline="central">${esc(small)}</text>`:''}
+  </svg>`;
+}
+function microbar(met,all){
+  if(!all) return '';
+  let h='<div class="mb">';
+  for(let i=0;i<all;i++) h+=`<i class="${i<met?'on':''}"></i>`;
+  return h+'</div>';
+}
+/* Commits per day, straight from the log — the shape of how the work actually went. */
+function spark(log,days){
+  if(!log||!log.length) return '';
+  const by={}; log.forEach(c=>{ if(c.date) by[c.date]=(by[c.date]||0)+1 });
+  const all=Object.keys(by).sort(), span=all.slice(-days);
+  if(!span.length) return '';
+  const from=new Date(span[0]+'T12:00'), to=new Date(all[all.length-1]+'T12:00'), out=[];
+  for(let d=new Date(from); d<=to; d.setDate(d.getDate()+1)){
+    const k=d.toISOString().slice(0,10); out.push([k,by[k]||0]);
+  }
+  const max=Math.max(1,...out.map(x=>x[1]));
+  return `<div class="sparkw"><span class="gl">Commits per day</span><div class="spark">`+
+    out.map(([k,n],i)=>`<i title="${k}: ${n} commit${n===1?'':'s'}" style="height:${Math.max(4,n/max*100)}%;animation-delay:${i*35}ms"></i>`).join('')+
+    `</div></div>`;
+}
+
 const GUIDE=[
  {n:"1", t:"Research", skill:"/research", lead:"Why the problem exists, who already solves it, and whether it’s worth building.",
   pre:["The problem, in one sentence","Which phone or platform"],
@@ -262,11 +379,11 @@ const GUIDE=[
   out:["The locked agreement","An automatic check that it never drifts"],
   gate:"You read the list of things the app can ask for. Does it match your screens?"},
 
- {n:"5", t:"Build it — watch the build room", skill:"code-orchestrator", lead:"Three Claudes: code-orchestrator in charge (Opus, high), backend and ios building (Sonnet, high).",
+ {n:"5", t:"Build it — watch the engineering center", skill:"code-orchestrator", lead:"Three Claudes: code-orchestrator in charge (Opus, high), backend and ios building (Sonnet, high).",
   pre:["The locked wiring"],
   type:"(code-orchestrator starts both builders)",
-  body:"code-orchestrator <b>writes no code at all</b> — its only job is to check the others’ work, which it stops doing honestly the moment it writes code itself. The two builders, <b>backend</b> and <b>ios</b>, each work in their own copy of the project, down the build order, riskiest first. If one hits a problem with the locked wiring, it <b>writes the question down and carries on elsewhere</b> instead of guessing. <b>You only watch the build room</b>: a page with what needs you (with a recommended answer), what each Claude is doing, updates, and checkpoints — refreshed every 5 minutes, with a Mac notification the moment you are needed.",
-  out:["The build room page","The app, on a real server","A build on TestFlight"],
+  body:"code-orchestrator <b>writes no code at all</b> — its only job is to check the others’ work, which it stops doing honestly the moment it writes code itself. The two builders, <b>backend</b> and <b>ios</b>, each work in their own copy of the project, down the build order, riskiest first. If one hits a problem with the locked wiring, it <b>writes the question down and carries on elsewhere</b> instead of guessing. <b>You only watch the engineering center</b>: a page with what needs you (with a recommended answer), what each Claude is doing, updates, and checkpoints — refreshed every 5 minutes, with a Mac notification the moment you are needed.",
+  out:["The engineering center page","The app, on a real server","A build on TestFlight"],
   gate:"code-orchestrator runs the tests itself before accepting anything. <b>The day it’s on TestFlight is v1</b> — tag it <code>v1</code>."}
 ];
 function guide(){
@@ -303,11 +420,28 @@ function guide(){
 function board(){
   const m=E('div');
   const shown=SHOWHIDDEN?SCAN.apps:visible();
-  const tot=shown.reduce((o,a)=>({p:o.p+a.pages,d:o.d+a.decisions,r:o.r+a.rounds}),{p:0,d:0,r:0});
-  m.append(E('h2',null,'All apps'),
-    E('p','sub',`${visible().length} app${visible().length===1?'':'s'} · ${tot.p} review pages · ${tot.r} rounds · ${tot.d} decisions recorded`));
-  if(!SCAN.apps.length){ m.append(E('div','banner','No <code>app_N</code> folders found yet.')); return m }
-  if(!shown.length){ m.append(E('div','banner','Every app is hidden. Use <b>Hidden</b> in the top bar to bring one back.')); return m }
+  const tot=shown.reduce((o,a)=>({p:o.p+a.pages,d:o.d+a.decisions,r:o.r+a.rounds,c:o.c+a.commits}),{p:0,d:0,r:0,c:0});
+  if(!SCAN.apps.length){
+    m.append(E('h2',null,'All apps'));
+    m.append(E('div','banner','No <code>app_N</code> folders found yet.')); return m }
+  if(!shown.length){
+    m.append(E('h2',null,'All apps'));
+    m.append(E('div','banner','Every app is hidden. Use <b>Hidden</b> in the top bar to bring one back.'));
+    return m }
+  // One ring for the whole series: every gate met, over every gate there is.
+  const g=shown.reduce((o,a)=>{const x=gatesOf(a);return{met:o.met+x.met,all:o.all+x.all}},{met:0,all:0});
+  const pct=g.all?Math.round(g.met/g.all*100):0;
+  const lead=shown.slice().sort((x,y)=>pctOf(y)-pctOf(x))[0];
+  const hero=E('div','hero');
+  hero.innerHTML=ring(pct,86,8,pct+'%','of gates')+
+    `<div class="hmain"><h2>All apps</h2>
+      <p class="hwhy">${g.met} of ${g.all} stage gates met across ${visible().length} app${visible().length===1?'':'s'}.</p>
+      ${lead?`<span class="nowchip"><span class="dot"></span>${esc(lead.id)} is at ${esc(String(lead.stage))} · ${esc(STAGE(lead.stage).name)}</span>`:''}
+      <div class="stat">
+        <div><b>${tot.c}</b>commits</div><div><b>${tot.p}</b>review pages</div>
+        <div><b>${tot.r}</b>rounds</div><div><b>${tot.d}</b>decisions</div></div></div>`+
+    spark(shown.flatMap(a=>a.commitlog||[]),30);
+  m.append(hero);
   const w=E('div','bwrap'), t=E('table','b');
   // Spec is split into the PRD's six parts (3.1–3.6); a group row names them once, short labels keep it on screen.
   const SHORT={'2':'Positioning','3.1':'Case','3.2':'Experience (pick v1)','3.3':'Can we build it?','3.4':'Prototype v1','3.5':'Design','3.6':'Tech decisions'};
@@ -317,8 +451,9 @@ function board(){
   t.innerHTML=grp+'</tr><tr><th></th>'+SCAN.stages.map(s=>`<th title="${esc(s.name)}: ${esc(s.why||'')}">${esc(String(s.n))} ${esc(SHORT[String(s.n)]||s.name)}</th>`).join('')+'</tr>';
   shown.forEach(a=>{
     const tr=E('tr'); if(isHidden(a.id)) tr.className='hiddenrow';
+    tr.style.animationDelay=(shown.indexOf(a)*60)+'ms';
     const td=E('td','appc');
-    const nm=E('div',null,`${esc(a.id)}<small>${esc(STAGE(a.stage).name)}</small>`);
+    const nm=E('div',null,`${esc(a.id)}<small>${esc(STAGE(a.stage).name)}</small><div class="apppct">${pctOf(a)}% of gates</div>`);
     nm.onclick=()=>{APP=a.id; go('app')};
     const eye=E('button','eye',isHidden(a.id)?'show':'hide');
     eye.title=isHidden(a.id)?'Show this app again':'Hide this app from the board and the top bar';
@@ -328,13 +463,39 @@ function board(){
       const n=s.docs.length+(s.features?(a.features||[]).length:0);
       const cell=E('div','cell '+(s.state==='skip'?'todo':s.state),
         `<span class="cn">${s.state==='done'?'done':s.state==='now'?'in progress':s.state==='skip'?'not run':'—'}</span>`+
-        (n?`<div class="cd">${n} doc${n===1?'':'s'}</div>`:''));
+        (n?`<div class="cd">${n} doc${n===1?'':'s'}</div>`:'')+
+        (s.state==='skip'?'':microbar(s.met,s.gates.length)));
+      cell.title=`${STAGE(s.n).name}: ${s.met} of ${s.gates.length} gates met`;
       cell.onclick=()=>{APP=a.id; SCROLL_TO='stage-'+String(s.n).replace(/\W/g,''); go('app')};
       const cd=E('td'); cd.append(cell); tr.append(cd);
     });
     t.append(tr);
   });
   w.append(t); m.append(w);
+
+  // What each app's current stage is still waiting on. Same gate list as the rail.
+  const cards=shown.map(a=>{
+    const cur=a.stages.find(x=>x.state==='now')||a.stages.find(x=>x.met<x.gates.length);
+    return cur?{a,cur}:null }).filter(Boolean);
+  if(cards.length){
+    const nw=E('div','nextwrap');
+    nw.append(E('p','flab','Waiting on'));
+    const grid=E('div','nextgrid');
+    cards.forEach(({a,cur},i)=>{
+      const open=cur.gates.filter(g2=>!g2[1]);
+      const c=E('div','nx',
+        `<div class="t"><span class="s">${esc(String(cur.n))}</span><span>${esc(STAGE(cur.n).name)}</span>
+           <span class="c">${cur.met}/${cur.gates.length}</span></div>`+
+        (open.length?`<ul>${open.map(g2=>`<li><i>○</i><span>${esc(g2[0])}${g2[2]?` — ${esc(g2[2])}`:''}</span></li>`).join('')}</ul>`
+                    :`<div class="ok">✓ every gate met</div>`));
+      c.style.animationDelay=(i*70)+'ms';
+      c.title=`${a.id} — open ${STAGE(cur.n).name}`;
+      if(shown.length>1) c.querySelector('.t').insertAdjacentHTML('afterbegin',`<span>${esc(a.id)}</span>`);
+      c.onclick=()=>{APP=a.id; SCROLL_TO='stage-'+String(cur.n).replace(/\W/g,''); go('app')};
+      grid.append(c);
+    });
+    nw.append(grid); m.append(nw);
+  }
   m.append(E('p','foot','Click an app or any stage to open it. Everything here is read off disk each time this page loads.'));
   return m;
 }
@@ -354,19 +515,34 @@ function appView(){
   const a=app(APP)||SCAN.apps[0]; if(!a) return E('div',null,'No apps.');
   APP=a.id;
   const m=E('div');
-  m.append(E('h2',null,esc(a.id)),
-    E('p','sub',`${esc(STAGE(a.stage).name)} · ${a.commits} commits · ${a.pages} review pages · ${a.rounds} rounds · ${a.decisions} decisions`));
+  const g=gatesOf(a), pct=pctOf(a);
+  const done=a.stages.filter(x=>x.state==='done').length;
+  const hero=E('div','hero');
+  hero.innerHTML=ring(pct,86,8,pct+'%','of gates')+
+    `<div class="hmain"><h2>${esc(a.id)}</h2>
+      <p class="hwhy">${esc(STAGE(a.stage).why||'')}</p>
+      <span class="nowchip"><span class="dot"></span>Stage ${esc(String(a.stage))} · ${esc(STAGE(a.stage).name)}</span>
+      <div class="stat">
+        <div><b>${done}/${a.stages.length}</b>stages done</div>
+        <div><b>${g.met}/${g.all}</b>gates met</div>
+        <div><b>${a.commits}</b>commits</div>
+        <div><b>${a.rounds}</b>rounds</div>
+        <div><b>${a.decisions}</b>decisions</div></div></div>`+
+    spark(a.commitlog,30);
+  m.append(hero);
   const rail=E('div','rail');
   a.stages.forEach((s,i)=>{
     const st=E('div','st '+s.state); st.id='stage-'+String(s.n).replace(/\W/g,'');
+    st.style.animationDelay=(i*45)+'ms';
     const g=E('div','gut');
     g.append(E('div','bub', s.repeats?'↻' : s.state==='skip'?'–' : s.state==='done'?'✓' : String(s.n)));
     if(i<a.stages.length-1) g.append(E('div','ln'));
     const bd=E('div','bd');
     bd.append(E('div','snm',`${esc(String(s.n))} · ${esc(STAGE(s.n).name)}`+
-      (s.state==='now'?' <span style="font-size:10px;background:var(--accent);color:#fff;padding:2px 8px;border-radius:20px;font-weight:700;text-transform:uppercase;letter-spacing:.04em">here now</span>':'')+
+      (s.state==='now'?' <span style="font-size:10px;background:var(--accent);color:var(--onacc);padding:2px 8px;border-radius:20px;font-weight:700;text-transform:uppercase;letter-spacing:.04em">here now</span>':'')+
       (s.repeats?' <span style="font-size:10px;background:var(--warnsoft);color:var(--warn);padding:2px 8px;border-radius:20px;font-weight:700;text-transform:uppercase;letter-spacing:.04em">repeats</span>':'')+
-      (s.state==='skip'?' <span style="font-size:10px;background:var(--quote);color:var(--faint);padding:2px 8px;border-radius:20px;font-weight:700;text-transform:uppercase;letter-spacing:.04em">not run</span>':'')));
+      (s.state==='skip'?' <span style="font-size:10px;background:var(--quote);color:var(--faint);padding:2px 8px;border-radius:20px;font-weight:700;text-transform:uppercase;letter-spacing:.04em">not run</span>':'')+
+      (s.gates.length&&s.state!=='skip'?` <span class="stagepct">${s.met}/${s.gates.length}</span>`:'')));
     const gates=E('div','gates');
     s.gates.forEach(g2=>gates.append(E('div','gate'+(g2[1]?'':' no'),
       `<i>${g2[1]?'✓':'○'}</i><span>${esc(g2[0])}${g2[2]?` <em>— ${esc(g2[2])}</em>`:''}</span>`)));
