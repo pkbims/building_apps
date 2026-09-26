@@ -143,6 +143,10 @@ def main():
     last_inbox = os.path.getmtime(inbox) if os.path.exists(inbox) else 0
     seen_asks = set(status.get("seen_asks", []))
     last_commits = 0.0
+    try:
+        last_ask = json.load(open(os.path.join(room, "state.json"))).get("decisions", {}).get("update_request")
+    except (OSError, ValueError):
+        last_ask = None
     seen_entries = set(status.get("seen_entries", []))
     last_states = {}
     workers = [w for w in x.workers.split(",") if w]
@@ -150,6 +154,24 @@ def main():
     last_beat, last_iso = 0.0, datetime.now(timezone.utc).isoformat(timespec="seconds")
 
     while True:
+        # 0. the user pressed "Get me an update" → ask the orchestrator for one, and refresh the status now
+        try:
+            ask = json.load(open(os.path.join(room, "state.json"))).get("decisions", {}).get("update_request")
+        except (OSError, ValueError):
+            ask = last_ask
+        if ask and ask != last_ask:
+            last_ask = ask
+            last_beat = 0.0                      # the next block refreshes status.json straight away
+            if x.orchestrator in agents():
+                post = os.path.join(os.path.dirname(os.path.abspath(__file__)), "post.py")
+                sh(["herdr", "agent", "prompt", x.orchestrator,
+                    f"The user pressed 'Get me an update' in the engineering center. Post one update now with "
+                    f"python3 {post} {room} update \"...\" — plain English, at most 4 short lines: what's done since "
+                    f"your last update, what backend and ios are each on, what's next, and anything blocked or "
+                    f"waiting on the user (say 'nothing' if nothing). Check git and the workers before you write it."])
+                status["update_forwarded"] = ask
+            else:
+                status["update_forwarded"] = "no orchestrator running"
         # 1. a round was sent → wake the orchestrator
         m = os.path.getmtime(inbox) if os.path.exists(inbox) else 0
         if m != last_inbox:

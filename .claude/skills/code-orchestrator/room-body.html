@@ -6,6 +6,9 @@
   .strip .sp{flex:1}
   .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--ok);animation:pulse 2s infinite;margin-right:6px;vertical-align:1px}
   .dot.stale{background:#c0392b;animation:none}
+  #getupd{font:inherit;font-size:12.5px;font-weight:700;padding:5px 13px;border:0;border-radius:999px;background:var(--accent);color:#fff;cursor:pointer}
+  #getupd:disabled{opacity:.75;cursor:default}
+  .tl li.fresh{background:color-mix(in srgb,var(--accent) 12%,transparent);border-radius:8px;padding-left:8px;padding-right:8px}
   #notif{font:inherit;font-size:12px;padding:4px 11px;border:1px solid var(--line);border-radius:999px;background:var(--bg);color:var(--ink);cursor:pointer}
 
   /* needs you */
@@ -73,7 +76,7 @@
 </style>
 
 <div class="strip"><span class="pill">Building v1</span><span><span class="dot" id="dot"></span><span id="alive">connecting…</span></span>
-  <span class="sp"></span><button id="notif">🔔 Notify me</button></div>
+  <span class="sp"></span><button id="getupd">↻ Get me an update</button><button id="notif">🔔 Notify me</button></div>
 
 <section id="s-needs" data-anchor="needs" data-label="Needs you" data-group="Engineering center" data-title="Needs you">
   <div class="needs calm" id="needs"><span class="ok">✓ Nothing needs you right now.</span></div>
@@ -171,9 +174,20 @@ function renderLater(){
   $$('later').innerHTML=(open.map(i=>`<div class="task">${esc(i.text)}</div>`).join('')||'<p class="hint">Nothing on your list.</p>')
     +(done.length?`<details><summary class="hint" style="cursor:pointer">Done (${done.length})</summary>${done.map(i=>`<div class="task done">${esc(i.text)}</div>`).join('')}</details>`:'');
 }
+// "Get me an update": saved as a decision (no round is sent); the ticker sees it within ~10 s and
+// asks the orchestrator, which posts one update. The button waits until an update newer than the ask arrives.
+let asked=null, shownFor=null; try{asked=localStorage.getItem('upd-asked');shownFor=asked}catch(e){}
+$$('getupd').onclick=async()=>{asked=new Date().toISOString();try{localStorage.setItem('upd-asked',asked)}catch(e){}
+  await post('/api/decision',{id:'update_request',value:asked});renderAsk()};
+function renderAsk(){const b=$$('getupd');
+  const got=asked&&(F.items||[]).some(i=>i.kind==='update'&&i.t>=asked.slice(0,19));
+  if(asked&&!got){const m=Math.round((Date.now()-new Date(asked))/60000);b.disabled=true;
+    b.textContent=m>=5?'Still waiting — the orchestrator may be mid-step':'Asked the orchestrator…';}
+  else{b.disabled=false;b.textContent='↻ Get me an update';}
+  return got;}
 function renderFeed(){
   const rows=(F.items||[]).filter(i=>i.kind==='update'||i.kind==='checkpoint'||i.kind==='ask').sort((a,b)=>b.t<a.t?-1:1).slice(0,5);
-  $$('feed').innerHTML=rows.map(i=>`<li><span class="ic">${i.kind==='ask'?(i.status==='open'?'❓':'✔︎'):i.kind==='checkpoint'?'✅':'•'}</span>
+  $$('feed').innerHTML=rows.map(i=>`<li${asked&&i.kind==='update'&&i.t>=asked.slice(0,19)?' class="fresh"':''}><span class="ic">${i.kind==='ask'?(i.status==='open'?'❓':'✔︎'):i.kind==='checkpoint'?'✅':'•'}</span>
     <span class="tx">${first(i.text)}</span><span class="tm">${ago(i.t)}</span></li>`).join('')||'<li><span class="tx">Nothing yet.</span></li>';
 }
 function renderCommits(){
@@ -197,12 +211,14 @@ async function tick(){
     F=f; S2=s; const fj=JSON.stringify(f);
     if(fj!==lastFeed){lastFeed=fj;renderNeeds();renderLater()}
     renderBuilders(); renderFeed(); renderLive();
+    if(renderAsk()&&shownFor!==asked){shownFor=asked;$$('s-updates').scrollIntoView({behavior:'smooth'})}
     if(!document.querySelector('.cm.open'))renderCommits();   // don't close a commit the user opened
   }catch(e){$$('alive').textContent='page server not answering'}
 }
 const nb=$$('notif');
 if(!window.Notification||Notification.permission==='granted')nb.style.display='none';
 nb.onclick=()=>Notification.requestPermission().then(p=>{if(p==='granted')nb.style.display='none'});
-setTimeout(tick,600); setInterval(tick,20000);
+// refresh every 20 s, or every 5 s while an update is on its way
+(function loop(){tick().finally(()=>setTimeout(loop,asked&&$$('getupd').disabled?5000:20000))})();
 })();
 </script>

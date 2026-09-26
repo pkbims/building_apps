@@ -133,6 +133,10 @@ something must be fixed first — a checkpoint that waits on you leaves a worker
    at its next checkpoint (60%) or right after it commits (80%).
 5. **Stage changes** — update `PROGRESS.md` and the app's `CLAUDE.md`; post an update.
 
+**"Get me an update"** — a button on the page. The ticker sees it within ~10 s and prompts you:
+post **one** update, at most 4 short lines — done since your last update, what backend and ios are
+each on, what's next, anything waiting on the user. Check git and the workers first; don't guess.
+
 **What to post, and when** — the user reads only the engineering center:
 
 - An **update** at every real step — **one or two short sentences**; the page shows only the
