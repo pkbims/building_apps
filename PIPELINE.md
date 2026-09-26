@@ -3,6 +3,17 @@
 The stages each app goes through, in order. Deliberately not fleshed out yet — the detail
 gets written from what actually happens during practice_1, not predicted in advance.
 
+**The whole path at a glance** (settled on app_1, 2026-09-26):
+
+> Research → Positioning → **The case → The experience (pick v1) → Can we build it? →
+> Prototype v1 → Design direction → Technical decisions** → Hand-over → Contract freeze →
+> Build v1 → Features → Ship
+
+The bold steps are the parts of the one PRD page (stage 3, with 3½ inside it). v1's
+features are picked in *The experience*, so the prototype is v1's. *Technical decisions*
+is not the build — it is the choices behind it. The hand-over button starts the
+code-orchestrator, and the building begins at the contract freeze.
+
 ## 1. Research
 
 Find a real pain point (Reddit, forums, reviews, search) and scan competitors: why the
@@ -56,10 +67,12 @@ problem; this block is what carries that evidence forward. Skip it and the PRD s
 Turn the problem into a tight PRD and a UI direction. The PRD must name what is *not*
 being built. Reviewed as a clickable HTML artifact with comment threads, not as prose.
 
-Written in three parts, in order — the case, the experience, the build — and **a
-clickable prototype is built between the second and the third**, on the phone, so the
-flow is felt before the system that serves it is designed. Settled in practice_4; the
-`create-prd` skill carries the detail.
+Written as one page in parts, in order — **The case → The experience (pick v1) → Can we
+build it? → Prototype v1 → Design direction → Technical decisions** — each confirmed before
+the next opens. The risky bets are tested (*Can we build it?*) before any design, and **a
+clickable prototype of v1** is felt on the phone before the design and the technical
+decisions. The prototype was settled in practice_4, the part order on app_1 (2026-09-26);
+the `create-prd` skill carries the detail. Ends on the hand-over button.
 
 **Then the design brief, before Part 3.** `create-ui-design-direction` generates
 `<app>/design/BRIEF.md` — the prompt — and stops. The user runs Claude Design by hand

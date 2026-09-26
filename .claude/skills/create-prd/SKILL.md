@@ -21,6 +21,12 @@ viral-feature line is missing, stop and say so: the v1 feature list is drafted f
 Always **the case → the experience → the build**. The user settles why before how, and a
 reader who stops after part one should still know whether the thing is worth making.
 
+**The parts by name** (HTML mode; renamed 2026-09-26 so each name says what happens in it):
+**The case → The experience (pick v1) → Can we build it? → Prototype v1 → Design direction →
+Technical decisions → hand-over.** v1's features are chosen in *The experience*, so the
+prototype is already v1's. *Technical decisions* is not the build: it is the choices behind
+it — the building starts after the hand-over (stage 4 contract freeze, stage 5 build v1).
+
 Never fragment this into tabs or separate files. One document, one thread of argument. Use
 a contents rail for navigation and collapsible blocks for reference tables.
 
@@ -37,7 +43,7 @@ a contents rail for navigation and collapsible blocks for reference tables.
 6. **Scope** — what it does, and an explicit list of what it does not. The exclusions
    matter more than the inclusions and are the section people skip.
 
-### Part 2 — The experience
+### Part 2 — The experience (pick v1)
 
 **Part 2 reads: §7 flow → §8 screens (sketches) → the v1 feature list → §9 → §10.** The
 reader decides features far better after seeing the journey and the screens (app_1, round
@@ -113,8 +119,8 @@ What it is:
   compression is printed on screen ("1 wallet minute = 2 seconds · nothing is real").
 - State in browser storage so it survives relaunch, wrapped in try/catch, with a reset.
 
-**Embed it in the PRD page** as its own part — *Try the prototype*, between the tests and the
-build — in a phone-sized frame (an `<iframe>` of `prototype.html`), with the "what to notice"
+**Embed it in the PRD page** as its own part — *Prototype v1*, between the tests and the
+technical decisions — in a phone-sized frame (an `<iframe>` of `prototype.html`), with the "what to notice"
 list beside it, a link to open it full-screen on the phone, and a decision ("How does it
 feel?"). Confirming that part is what unlocks the build. The user reviews the prototype
 where they review everything else, and comments on it the same way.
@@ -218,7 +224,7 @@ when it fails and what the user sees · what we measure · what the bets found t
 everything we store and every call (collected from the workflows), keeping it running, the build
 order **by workflow**, riskiest first, and what's still open.
 
-### Part 3 — The build
+### Part 3 — Technical decisions
 
 11. **Technical requirements** — numbered **TR1, TR2…**, derived from R1–Rn plus any
     project baseline. Requirements before solutions, again.
@@ -322,12 +328,12 @@ parts are visible as locked headings. Each part ends with a **"Confirm Part N �
 N+1"** button, enabled only when that part's decisions are answered. Pressing it records a
 `gate` decision, sends the round (so Claude sees the answers and can revise the next part
 before the user reads it), and unlocks the next part. A "reopen" link steps back. The order
-is fixed: **the case → the experience → can we build it? → try the prototype → design
-direction → the build**. *Can we build it?* holds the technical requirements (TR1…), how it
+is fixed: **the case → the experience (pick v1) → can we build it? → prototype v1 → design
+direction → technical decisions**. *Can we build it?* holds the technical requirements (TR1…), how it
 works (the whole workflow with the bets marked in it), and every bet with its test tracker
 and results — the make-or-break check, run **before any design work**, because a failed bet
-can change the screens, the positioning or kill the app cheaply. *The build* keeps only
-construction: tools and services (chosen from what the bets found), the app, data, API,
+can change the screens, the positioning or kill the app cheaply. *Technical decisions* keeps only
+the construction choices: tools and services (chosen from what the bets found), the app, data, API,
 operations, build order. Decided on app_1 (2026-09-26) after the design was done while the
 core mechanism was still untested — each its own part of the one page. Design direction is run by the
 `create-ui-design-direction` skill *inside* this page (why, the answers in plain words, a
