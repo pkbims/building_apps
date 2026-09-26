@@ -74,6 +74,7 @@ window.mermaid = window.mermaid || {initialize:function(){}, run:function(){retu
 def free_port(start=7710):
     for p in range(start, start + 40):
         with socket.socket() as s:
+            s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)  # a just-restarted port is free, not taken
             try:
                 s.bind(("127.0.0.1", p))
                 return p

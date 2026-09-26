@@ -1,0 +1,11 @@
+{
+  "places": {
+    "known:remotion studio": "Video Editing Tools",
+    "known:app-progress-visualizer/server.py": "Daily",
+    "other:/Users/bimalsaran/Documents/building_apps/video": "Video Editing Tools"
+  },
+  "labels": {},
+  "groups": [
+    "Video Editing Tools"
+  ]
+}
