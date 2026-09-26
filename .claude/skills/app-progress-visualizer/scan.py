@@ -432,8 +432,8 @@ def build_app(name, app):
                    "docs": [doc(p["dir"], "html-worker", p["title"]) for p in leftover] + rest,
                    "gates": [
         ["features merged and verified", bool(feats), "%d so far" % len(feats) if feats else ""],
-        ["contract questions answered",
-         bool(oq and oq["answered"] >= oq["total"] and oq["total"]),
+        ["contract questions answered",   # only counts once v1 exists — during the build these are stage 5's
+         bool(v1_end and oq and oq["answered"] >= oq["total"] and oq["total"]),
          "%d of %d" % (oq["answered"], oq["total"]) if oq else ""]]})
 
     # 7 Ship
@@ -450,6 +450,12 @@ def build_app(name, app):
     # a finished stage hands "now" to the next one (app_1: PRD handed over → contract freeze)
     if 0 <= last_touched < len(stages) - 1 and stages[last_touched]["met"] == len(stages[last_touched]["gates"]):
         last_touched += 1
+    # The build stages (4 on) happen strictly in order: a half-finished one is where the app is,
+    # even if a later stage already shows a ticked check. (app_1, 26 Sep: Build v1 showed done at 1 of 4.)
+    for i, s in enumerate(stages):
+        if i < last_touched and str(s["n"]) in ("4", "5") and 0 < s["met"] < len(s["gates"]):
+            last_touched = i
+            break
     for i, s in enumerate(stages):
         if i < last_touched:
             s["state"] = "done" if s["met"] == len(s["gates"]) else ("skip" if s["met"] == 0 else "done")
