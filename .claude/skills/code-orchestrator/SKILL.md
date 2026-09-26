@@ -46,7 +46,7 @@ What the room is made of, and who writes what — nothing races:
 | File | Written by | Shows |
 |---|---|---|
 | `feed.json` | you, via `post.py` only | updates, questions (asks), checkpoints, the user's to-dos |
-| `status.json` | the ticker, every 5 min | each agent's state, each branch's last commit, commits since the last check, open ORCH-QUESTIONS, the heartbeat line |
+| `status.json` | the ticker (status every 5 min, commits every 30 s) | each agent's state, the heartbeat line, open ORCH-QUESTIONS, and recent commits in three lanes — backend, iOS, orchestrator (by the model that wrote them and the files they touch) |
 | `state.json` | the page server | the user's answers and comments (html-worker rules) |
 
 **The ticker** (`scripts/ticker.py`, no model, no tokens): every 5 minutes a status line;
@@ -85,7 +85,9 @@ python3 $POST $ROOM ask github_repo "Where should app_1's code live on GitHub?" 
 
 One brief per worker, `<half>/AGENT.md`: read order, what it owns, what it must not touch,
 **the one rule** (never edit the contract; append to `ORCH-QUESTIONS.md` and keep working),
-TDD, commit discipline, the build order it works down. Each in its own git worktree and
+TDD, commit discipline — **every commit body opens with one plain-English sentence saying
+what changed for the app** (the build room shows that sentence under the title; the technical
+detail follows) — the build order it works down. Each in its own git worktree and
 branch, outside the app folder (app_1's layout):
 `git -C <app> worktree add ~/.herdr/worktrees/series_<app>/backend -b backend` (same for `ios`).
 Start them — **workers run Sonnet at high effort**:
@@ -127,6 +129,10 @@ background checks. Each time:
 - An **ask** the moment something needs the user. Options carry the three plain lines' worth
   of detail and **exactly one `--rec`** (series rule). An ask with no options is answered by
   comment. Never ask only in the terminal.
+- **Anything that needs the terminal is an ask, never an update** — only asks notify. Some
+  answers only count typed in the terminal (Claude Code's safety check won't take an
+  irreversible action — a history rewrite, a force-push — on the strength of a page file).
+  Post an ask titled "Go to the terminal: …" saying what to type there.
 - A **checkpoint** for every merge into `main`.
 - A **to-do** for anything only the user can do, marked `done` when it is.
 

@@ -69,6 +69,35 @@ def open_questions(app):
     return sum(status.values())
 
 
+def commits(app, n=60):
+    """Recent commits in three lanes by the files they touch: backend/, ios/, everything else
+    (the orchestrator: contract, CI, docs). Each with its plain explanation — the first sentence
+    of the commit body, which the worker briefs ask to be plain English."""
+    out = sh(["git", "log", "--all", "--no-merges", "-n", str(n), "--name-only",
+              "--format=%x1e%h%x1f%cI%x1f%s%x1f%b%x1d"], cwd=app)
+    lanes = {"backend": [], "ios": [], "orchestrator": []}
+    for rec in out.split("\x1e")[1:]:
+        meta, _, names = rec.partition("\x1d")
+        parts = meta.split("\x1f", 3)
+        if len(parts) < 4:
+            continue
+        h, when, subj, body = parts
+        paths = [p.strip() for p in names.splitlines() if p.strip()]
+        by_orch = "Claude Opus" in body        # the orchestrator runs Opus, the workers Sonnet
+        body = " ".join(l for l in body.splitlines() if not l.startswith("Co-Authored-By"))
+        body = " ".join(body.split())
+        m = re.match(r"(.{20,240}?[.!?])(\s|$)", body)
+        why = m.group(1) if m else body[:240]
+        nb = sum(p.startswith("backend/") for p in paths)
+        ni = sum(p.startswith("ios/") for p in paths)
+        low = subj.lower()
+        lane = "orchestrator" if by_orch else "backend" if nb > ni else "ios" if ni > nb else \
+            ("ios" if low.startswith("ios") else "backend" if low.startswith("backend") else "orchestrator")
+        subj = re.sub(r"^(ios|backend)\s*:\s*", "", subj, flags=re.I)
+        lanes[lane].append({"hash": h, "when": when, "title": subj, "why": why, "files": len(paths)})
+    return {k: v[:15] for k, v in lanes.items()}
+
+
 def notify(title, text):
     esc = lambda s: s.replace("\\", "\\\\").replace('"', '\\"')
     sh(["osascript", "-e", f'display notification "{esc(text)}" with title "{esc(title)}" sound name "Glass"'])
@@ -94,6 +123,7 @@ def main():
     heartbeats = status.get("heartbeats", [])
     last_inbox = os.path.getmtime(inbox) if os.path.exists(inbox) else 0
     seen_asks = set(status.get("seen_asks", []))
+    last_commits = 0.0
     last_beat, last_iso = 0.0, datetime.now(timezone.utc).isoformat(timespec="seconds")
 
     while True:
@@ -134,6 +164,9 @@ def main():
             status.update({"t": now_iso, "interval": x.interval, "agents": {w: ag.get(w, "not running") for w in watch},
                            "branches": branches(app)[:8], "open_questions": oq, "heartbeats": heartbeats})
             last_beat, last_iso = time.time(), now_iso
+        if time.time() - last_commits >= 30:          # commits are cheap to read: every 30 s
+            status["commits"] = commits(app)
+            last_commits = time.time()
         status["seen_asks"] = sorted(seen_asks)
         status["alive"] = datetime.now(timezone.utc).isoformat(timespec="seconds")
         write_json(status_path, status)
