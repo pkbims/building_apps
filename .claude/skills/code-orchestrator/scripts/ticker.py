@@ -117,6 +117,22 @@ def context_use(name):
     return int(found[-1]) if found else None
 
 
+def build_started(app, room):
+    """When the build began: the PRD page's hand-over round (the first round that carries prd_ready).
+    Falls back to the engineering center's first post."""
+    try:
+        for b in json.load(open(os.path.join(app, "spec", "state.json"))).get("batches", []):
+            if (b.get("decisions") or {}).get("prd_ready"):
+                return b["ts"]
+    except (OSError, ValueError, KeyError):
+        pass
+    try:
+        items = json.load(open(os.path.join(room, "feed.json")))["items"]
+        return min(i["t"] for i in items) if items else None
+    except (OSError, ValueError, KeyError):
+        return None
+
+
 def notify(title, text):
     esc = lambda s: s.replace("\\", "\\\\").replace('"', '\\"')
     sh(["osascript", "-e", f'display notification "{esc(text)}" with title "{esc(title)}" sound name "Glass"'])
@@ -248,6 +264,8 @@ def main():
                     "Worker event: " + "; ".join(wake) + ". Read the worker's ORCH-QUESTIONS.md in its "
                     "worktree and its pane (herdr agent read <name>); a checkpoint means verify, then "
                     "merge and post it — the worker waits until you answer."])
+        if not status.get("build_started"):
+            status["build_started"] = build_started(app, room)
         status["seen_asks"] = sorted(seen_asks)
         status["seen_entries"] = sorted(seen_entries)
         status["alive"] = datetime.now(timezone.utc).isoformat(timespec="seconds")

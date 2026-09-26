@@ -6,6 +6,7 @@
   .strip .sp{flex:1}
   .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--ok);animation:pulse 2s infinite;margin-right:6px;vertical-align:1px}
   .dot.stale{background:#c0392b;animation:none}
+  .clock{font-size:13px;font-weight:700;color:var(--ink)} .clock small{font-weight:500;color:var(--muted)}
   #getupd{font:inherit;font-size:12.5px;font-weight:700;padding:5px 13px;border:0;border-radius:999px;background:var(--accent);color:#fff;cursor:pointer}
   #getupd:disabled{opacity:.75;cursor:default}
   .tl li.fresh{background:color-mix(in srgb,var(--accent) 12%,transparent);border-radius:8px;padding-left:8px;padding-right:8px}
@@ -75,7 +76,7 @@
   .morebtn{font:inherit;font-size:12px;color:var(--accent);background:none;border:0;cursor:pointer;padding:2px 0}
 </style>
 
-<div class="strip"><span class="pill">Building v1</span><span><span class="dot" id="dot"></span><span id="alive">connecting…</span></span>
+<div class="strip"><span class="pill">Building v1</span><span class="clock" id="clock" title=""></span><span><span class="dot" id="dot"></span><span id="alive">connecting…</span></span>
   <span class="sp"></span><button id="getupd">↻ Get me an update</button><button id="notif">🔔 Notify me</button></div>
 
 <section id="s-needs" data-anchor="needs" data-label="Needs you" data-group="Engineering center" data-title="Needs you">
@@ -199,7 +200,14 @@ function renderCommits(){
       +(list.length>5?`<button class="morebtn" data-lane="${k}">${showAll[k]?'Show fewer':'Show '+(list.length-5)+' more'}</button>`:''):'<p class="hint">No commits yet.</p>')});
   document.querySelectorAll('.morebtn').forEach(b=>b.onclick=()=>{showAll[b.dataset.lane]=!showAll[b.dataset.lane];renderCommits()});
 }
+// Total runtime: from the hand-over (the PRD page's "proceed to build") to now, wall-clock.
+function renderClock(){const t=S2.build_started;if(!t)return;
+  const m=Math.floor((Date.now()-new Date(t))/60000), d=Math.floor(m/1440), h=Math.floor(m%1440/60), mm=m%60;
+  $$('clock').innerHTML=`⏱ Building for ${d?d+'d ':''}${h}h ${String(mm).padStart(2,'0')}m <small>since the hand-over</small>`;
+  $$('clock').title='Started '+new Date(t).toLocaleString();}
+setInterval(renderClock,30000);
 function renderLive(){
+  renderClock();
   const a=S2.alive?(Date.now()-new Date(S2.alive))/1000:1e9;
   $$('dot').className='dot'+(a>60?' stale':'');
   let nx='';if(S2.t&&S2.interval){const m=Math.ceil((new Date(S2.t).getTime()+S2.interval*1000-Date.now())/60000);nx=m>0?` · next check in ${m} min`:''}
