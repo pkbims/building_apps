@@ -18,6 +18,9 @@
   .ask{border-left:4px solid var(--hot) !important;margin-top:10px}
   .rec{font-size:10.5px;font-weight:800;color:var(--accent);text-transform:uppercase;letter-spacing:.05em}
   #s-needs{padding:0;border:0;background:none;box-shadow:none}
+  .norush{font-size:11px;font-weight:700;color:var(--muted);background:var(--soft);border-radius:999px;padding:3px 9px;vertical-align:3px;margin-left:6px;text-transform:uppercase;letter-spacing:.05em}
+  #later .task.done{color:var(--muted);text-decoration:line-through}
+  #later .task.done:before{background:var(--ok);border-color:var(--ok)}
   .todos{margin-top:10px;border-top:1px dashed var(--line);padding-top:8px}
   .todos .lbl{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
   .task{display:flex;gap:8px;align-items:flex-start;font-size:13.5px;padding:4px 0}
@@ -95,6 +98,12 @@
   <div class="lanes"><div class="lane" id="lane-backend"></div><div class="lane" id="lane-ios"></div></div>
 </section>
 
+<section id="s-later" data-anchor="later" data-label="Your to-do list" data-group="Build room" data-title="Your to-do list">
+  <button class="cbtn">comment</button>
+  <h2>Your to-do list <span class="norush">no rush</span></h2>
+  <div id="later"></div>
+</section>
+
 <script>
 (()=>{
 const $$=id=>document.getElementById(id);
@@ -111,7 +120,7 @@ let seen=new Set(); try{seen=new Set(JSON.parse(localStorage.getItem('room-seen'
 // Needs you: a calm green line when nothing is open, an orange card with the questions when something is.
 function renderNeeds(){
   const items=F.items||[], open=items.filter(i=>i.kind==='ask'&&i.status==='open');
-  const todos=items.filter(i=>i.kind==='todo'&&i.status!=='done');
+  const todos=items.filter(i=>i.kind==='todo'&&i.status!=='done'&&i.now);   // only what the build is waiting on
   const box=$$('needs');
   box.className='needs '+(open.length?'hot':'calm');
   box.innerHTML=(open.length
@@ -123,7 +132,7 @@ function renderNeeds(){
           <span><span class="oh">${esc(l)}${v===a.rec?' <span class="rec">· recommended</span>':''}</span><span class="od">${esc(d)}</span></span></label>`).join('')}</div>`
           :`<p class="hint">Answer with <b>comment</b>.</p>`}</div>`).join('')
     :`<span class="ok">✓ Nothing needs you right now.</span>`)
-    +(todos.length?`<div class="todos"><div class="lbl">Only you can do</div>${todos.map(t=>`<div class="task">${esc(t.text)}</div>`).join('')}</div>`:'');
+    +(todos.length?`<div class="todos"><div class="lbl">The build is waiting on you for</div>${todos.map(t=>`<div class="task">${esc(t.text)}</div>`).join('')}</div>`:'');
   for(const [k,v] of Object.entries(S.decisions||{})){const i=document.querySelector(`input[name="${k}"][value="${v}"]`);if(i)i.checked=true}
   document.querySelectorAll('label.opt').forEach(l=>l.classList.toggle('sel',l.querySelector('input').checked));
   post('/api/groups',{groups:[...document.querySelectorAll('[data-radio],[data-check]')].map(g=>g.dataset.radio||g.dataset.check)});
@@ -155,6 +164,13 @@ function renderBuilders(){
   const o=ag['code-orchestrator'];
   $$('orch').innerHTML=o?`Orchestrator: <b>${esc(o)}</b>${cx['code-orchestrator']!=null?' · memory '+cx['code-orchestrator']+'%':''} · a step turns green only after it checks and merges it.`:'';
 }
+// Things only the user can do that don't block anything yet — at the bottom, out of the way.
+function renderLater(){
+  const t=(F.items||[]).filter(i=>i.kind==='todo'&&!(i.now&&i.status!=='done'));
+  const open=t.filter(i=>i.status!=='done'), done=t.filter(i=>i.status==='done');
+  $$('later').innerHTML=(open.map(i=>`<div class="task">${esc(i.text)}</div>`).join('')||'<p class="hint">Nothing on your list.</p>')
+    +(done.length?`<details><summary class="hint" style="cursor:pointer">Done (${done.length})</summary>${done.map(i=>`<div class="task done">${esc(i.text)}</div>`).join('')}</details>`:'');
+}
 function renderFeed(){
   const rows=(F.items||[]).filter(i=>i.kind==='update'||i.kind==='checkpoint'||i.kind==='ask').sort((a,b)=>b.t<a.t?-1:1).slice(0,5);
   $$('feed').innerHTML=rows.map(i=>`<li><span class="ic">${i.kind==='ask'?(i.status==='open'?'❓':'✔︎'):i.kind==='checkpoint'?'✅':'•'}</span>
@@ -179,7 +195,7 @@ async function tick(){
   try{
     const [f,s]=await Promise.all([fetch('feed.json',{cache:'no-store'}).then(r=>r.json()),fetch('status.json',{cache:'no-store'}).then(r=>r.json()).catch(()=>({}))]);
     F=f; S2=s; const fj=JSON.stringify(f);
-    if(fj!==lastFeed){lastFeed=fj;renderNeeds()}
+    if(fj!==lastFeed){lastFeed=fj;renderNeeds();renderLater()}
     renderBuilders(); renderFeed(); renderLive();
     if(!document.querySelector('.cm.open'))renderCommits();   // don't close a commit the user opened
   }catch(e){$$('alive').textContent='page server not answering'}

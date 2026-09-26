@@ -8,6 +8,7 @@
     post.py <room> resolve apple --note "Team: Bimal Saran"
     post.py <room> checkpoint "FindWhatsInTheRoom merged" --detail "12 tests, flow checked by hand" --verified
     post.py <room> todo oracle "Sign up for Oracle Cloud Always Free"      /  post.py <room> done oracle
+    post.py <room> todo repo "Create the GitHub repo" --now                 # --now: the build is waiting on it
     post.py <room> plan backend "Skeleton" "The chain" "Baseline"      # a half's build steps, in order
     post.py <room> step backend 2 doing                                 # done | doing | todo (1-based)
 
@@ -56,6 +57,7 @@ def main():
     c = sub.add_parser("checkpoint"); c.add_argument("text"); c.add_argument("--detail", default="")
     c.add_argument("--verified", action="store_true")
     t = sub.add_parser("todo"); t.add_argument("id"); t.add_argument("text")
+    t.add_argument("--now", action="store_true", help="the build is waiting on it: shown under Needs you, not in the no-rush list")
     d = sub.add_parser("done"); d.add_argument("id")
     pl = sub.add_parser("plan"); pl.add_argument("half"); pl.add_argument("steps", nargs="+")
     st = sub.add_parser("step"); st.add_argument("half"); st.add_argument("n", type=int)
@@ -97,7 +99,7 @@ def main():
         old = find(feed, x.id)
         if old:
             items.remove(old)
-        items.append({"id": x.id, "kind": "todo", "t": now(), "text": x.text, "status": "open"})
+        items.append({"id": x.id, "kind": "todo", "t": now(), "text": x.text, "status": "open", "now": x.now})
     elif x.cmd == "done":
         it = find(feed, x.id)
         if not it:

@@ -147,7 +147,9 @@ something must be fixed first — a checkpoint that waits on you leaves a worker
   irreversible action — a history rewrite, a force-push — on the strength of a page file).
   Post an ask titled "Go to the terminal: …" saying what to type there.
 - A **checkpoint** for every merge into `main`.
-- A **to-do** for anything only the user can do, marked `done` when it is.
+- A **to-do** for anything only the user can do, marked `done` when it is. Add `--now` only when
+  the build is waiting on it — those show under *Needs you*; the rest sit in *Your to-do list — no
+  rush* at the bottom of the page.
 
 Plain English, short, no codes the user must remember; state the tradeoff behind each
 engineering choice in a sentence (this is narrated on camera).
