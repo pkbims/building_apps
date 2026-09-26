@@ -24,6 +24,10 @@ defeats the point of the series.
 
 Deploying locally first is acceptable.
 
+**Tests are free; real API calls are not** (user, 2026-09-26). Test fully against fakes and
+a real Postgres, but paid services (AI, search) are called only behind an explicit opt-in,
+never in CI, and as rarely as possible — record real responses once and replay them.
+
 ## Architectural constraints
 
 - Adding a feature must stay cheap.
