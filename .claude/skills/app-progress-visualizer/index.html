@@ -1,0 +1,508 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>App Progress Visualizer</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<style>
+  :root{--bg:#f4eee2;--panel:#fdf9f1;--ink:#2a2521;--muted:#6a6157;--faint:#978d82;
+    --line:#e3d9c7;--accent:#b0523a;--soft:#f5e4dc;--warn:#7a5a1e;--warnsoft:#f3ead3;--quote:#efe7d6;--r:10px;--r2:14px}
+  :root{color-scheme:light}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;
+    --bg:#1b1916;--panel:#242019;--ink:#ede4d6;--muted:#a89e8f;--faint:#766d60;
+    --line:#38322a;--accent:#e28f72;--soft:#3b2a24;--warn:#dcb66e;--warnsoft:#302a1c;--quote:#2a2620}}
+  :root[data-theme="dark"]{color-scheme:dark;--bg:#1b1916;--panel:#242019;--ink:#ede4d6;--muted:#a89e8f;
+    --faint:#766d60;--line:#38322a;--accent:#e28f72;--soft:#3b2a24;--warn:#dcb66e;--warnsoft:#302a1c;--quote:#2a2620}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 "IBM Plex Sans",-apple-system,BlinkMacSystemFont,sans-serif}
+  a{color:inherit}
+  header{position:sticky;top:0;z-index:50;background:var(--panel);border-bottom:1px solid var(--line);
+    padding:11px 20px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  header .logo{font-weight:700;font-size:15px;letter-spacing:-.01em}
+  header .logo span{color:var(--accent)}
+  .views{display:flex;gap:4px;background:var(--bg);border:1px solid var(--line);border-radius:9px;padding:3px}
+  .views button{background:none;border:0;font:inherit;font-size:12.5px;padding:4px 12px;border-radius:6px;
+    cursor:pointer;color:var(--muted)}
+  .views button.on{background:var(--accent);color:#fff;font-weight:600}
+  .sp{flex:1}
+  .meta{font-size:11.5px;color:var(--faint)}
+  .tbtn{background:var(--bg);border:1px solid var(--line);color:var(--muted);font:inherit;font-size:11.5px;
+    padding:4px 10px;border-radius:7px;cursor:pointer}
+  main{max-width:1080px;margin:0 auto;padding:22px 20px 80px}
+  h2{font-size:20px;margin:0 0 3px;letter-spacing:-.015em}
+  .sub{color:var(--muted);font-size:13px;margin:0 0 18px}
+  .banner{background:var(--warnsoft);border-left:3px solid var(--warn);padding:9px 14px;border-radius:0 8px 8px 0;
+    font-size:12.5px;margin-bottom:18px}
+  .banner b{color:var(--warn)}
+  /* board */
+  .bwrap{overflow-x:auto;background:var(--panel);border:1px solid var(--line);border-radius:var(--r2);padding:16px}
+  table.b{border-collapse:separate;border-spacing:0;width:100%;min-width:700px}
+  table.b th{font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--faint);font-weight:700;
+    padding:0 5px 9px;text-align:left;white-space:nowrap}
+  table.b td{border-top:1px solid var(--line);padding:8px 5px;vertical-align:top}
+  .appc{font-weight:650;font-size:13.5px;white-space:nowrap;padding-right:14px;
+    display:flex;align-items:flex-start;gap:8px}
+  .appc>div{cursor:pointer}
+  .eye{opacity:0;background:var(--bg);border:1px solid var(--line);color:var(--muted);font:inherit;
+    font-size:10.5px;font-weight:600;padding:2px 7px;border-radius:6px;cursor:pointer;transition:.12s;flex:none;margin-top:1px}
+  tr:hover .eye{opacity:1}
+  .eye:hover{color:var(--accent);border-color:var(--accent)}
+  .hiddenrow{opacity:.45}
+  .hiddenrow .eye{opacity:1;color:var(--accent);border-color:var(--accent)}
+  .views button.dim{opacity:.45}
+  .tbtn.on{color:var(--accent);border-color:var(--accent);background:var(--soft)}
+  .appc:hover{color:var(--accent)}
+  .appc small{display:block;font-weight:400;color:var(--muted);font-size:11px;white-space:normal;max-width:165px}
+  .cell{border-radius:8px;padding:7px 8px;min-height:44px;cursor:pointer;border:1px solid transparent;transition:.12s}
+  .cell:hover{border-color:var(--accent)}
+  .cell.done{background:var(--soft)}
+  .cell.now{background:var(--accent);color:#fff}
+  .cell.todo{background:var(--quote);opacity:.5;cursor:default}
+  .cell.todo:hover{border-color:transparent}
+  .cell .cn{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;opacity:.8}
+  .cell .cd{font-size:11.5px;margin-top:2px}
+  /* rail */
+  .rail .st{display:grid;grid-template-columns:28px 1fr;gap:13px}
+  .gut{display:flex;flex-direction:column;align-items:center}
+  .bub{width:24px;height:24px;border-radius:50%;border:2px solid var(--line);background:var(--bg);display:flex;
+    align-items:center;justify-content:center;font-size:10.5px;font-weight:700;color:var(--faint);flex:none}
+  .st.done .bub{background:var(--accent);border-color:var(--accent);color:#fff}
+  .st.now .bub{border-color:var(--accent);color:var(--accent);box-shadow:0 0 0 3px var(--soft)}
+  .ln{flex:1;width:2px;background:var(--line);min-height:16px}
+  .st.done .ln{background:var(--accent)}
+  .st.skip .snm{color:var(--faint)}
+  .st.skip .bub{border-style:dashed}
+  .bd{padding-bottom:18px;min-width:0}
+  .snm{font-weight:650;font-size:15px;display:flex;align-items:center;gap:9px;flex-wrap:wrap;cursor:pointer}
+  .snm:hover{color:var(--accent)}
+  .sdt{font-size:11px;color:var(--faint);font-weight:400}
+  .gates{margin:7px 0 0;font-size:12px;color:var(--muted)}
+  .gate{display:flex;gap:7px;align-items:baseline;padding:1px 0}
+  .gate i{font-style:normal;color:var(--accent);font-weight:700;width:12px;flex:none}
+  .gate.no i{color:var(--faint)}
+  .gate.no{color:var(--faint)}
+  .gate em{font-style:normal;color:var(--faint);font-size:11px}
+  .docs{margin-top:8px}
+  .doc{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;border:1px solid var(--line);
+    background:var(--bg);border-radius:6px;padding:3px 9px;margin:3px 5px 0 0;cursor:pointer;transition:.12s}
+  .doc:hover{border-color:var(--accent);color:var(--accent)}
+  .doc.hw{border-color:var(--accent);color:var(--accent);background:var(--soft)}
+  .doc .r{color:var(--faint);font-size:10.5px}
+  .doc.hw .r{color:var(--accent);opacity:.75}
+  .side{margin-top:9px;padding:8px 11px;border-left:2px solid var(--warn);background:var(--warnsoft);
+    border-radius:0 7px 7px 0;font-size:11.5px}
+  .side b{color:var(--warn);font-size:10.5px;text-transform:uppercase;letter-spacing:.05em}
+  /* v1 + features */
+  .v1{border:1px solid var(--accent);border-radius:10px;padding:12px 14px;background:var(--soft);margin:10px 0 14px}
+  .v1 .h{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px}
+  .v1 .t{font-weight:700;font-size:14px;color:var(--accent)}
+  .v1 .l{font-size:11.5px;color:var(--muted);margin-top:5px}
+  .v1 .l b{color:var(--ink);font-weight:600}
+  .flab{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--faint);margin:0 0 7px}
+  .feat{border:1px solid var(--line);border-radius:9px;padding:10px 13px;background:var(--panel);margin-bottom:7px}
+  .feat .h{display:flex;justify-content:space-between;gap:9px;flex-wrap:wrap;align-items:baseline}
+  .feat .t{font-weight:650;font-size:13.5px}
+  .feat .t i{font-style:normal;color:var(--accent);margin-right:6px}
+  .feat .w{font-size:11.5px;color:var(--faint)}
+  .feat .s{font-size:12px;color:var(--muted);margin-top:2px}
+  /* journal */
+  .tl{position:relative;padding-left:20px}
+  .tl::before{content:"";position:absolute;left:4px;top:5px;bottom:5px;width:2px;background:var(--line)}
+  .ev{position:relative;padding-bottom:16px}
+  .ev::before{content:"";position:absolute;left:-20px;top:6px;width:9px;height:9px;border-radius:50%;
+    background:var(--accent);border:2px solid var(--bg)}
+  .ev.side::before{background:var(--warn)}
+  .ev.turn::before{background:var(--bg);border-color:var(--accent);width:12px;height:12px;left:-21px}
+  .ev .d{font-size:10.5px;color:var(--faint);font-weight:700;letter-spacing:.04em}
+  .ev .h{font-weight:650;font-size:14px}
+  .ev.turn .h{color:var(--accent)}
+  .ev .w{font-size:12.5px;color:var(--muted)}
+  /* doc panel */
+  #scrim{position:fixed;inset:0;background:rgba(0,0,0,.34);opacity:0;pointer-events:none;transition:.2s;z-index:80}
+  #scrim.on{opacity:1;pointer-events:auto}
+  #panel{position:fixed;top:0;right:0;bottom:0;width:min(560px,100%);background:var(--panel);z-index:90;
+    border-left:1px solid var(--line);transform:translateX(100%);transition:transform .22s;overflow-y:auto}
+  #panel.on{transform:none}
+  .ph{position:sticky;top:0;background:var(--panel);border-bottom:1px solid var(--line);padding:14px 18px;
+    display:flex;align-items:flex-start;gap:12px}
+  .ph h3{margin:0;font-size:16px;letter-spacing:-.01em}
+  .ph .w{font-size:11.5px;color:var(--faint);margin-top:2px}
+  .x{background:var(--bg);border:1px solid var(--line);color:var(--muted);font:inherit;font-size:16px;
+    width:28px;height:28px;border-radius:7px;cursor:pointer;flex:none;line-height:1}
+  .pb{padding:16px 18px 40px}
+  .ro{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
+    background:var(--warnsoft);color:var(--warn);padding:2px 8px;border-radius:20px;margin-bottom:10px}
+  .kk{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin:10px 0 14px;
+    padding:10px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .kk b{display:block;color:var(--ink);font-size:16px;font-weight:650}
+  .dl{margin-top:4px}
+  .dq{display:flex;gap:10px;padding:7px 0;border-bottom:1px solid var(--line);font-size:13px;align-items:baseline}
+  .dq .id{font-size:10.5px;font-weight:700;color:var(--faint);min-width:34px;flex:none;text-transform:uppercase}
+  .dq .qq{flex:1;color:var(--muted)}
+  .dq .vv{font-weight:600;color:var(--accent);text-align:right}
+  .note{font-size:12px;color:var(--muted);background:var(--bg);border:1px solid var(--line);
+    border-radius:8px;padding:10px 12px;margin-top:14px}
+  .parked{background:var(--warnsoft);border-color:var(--warn)}
+  .empty{color:var(--faint);font-size:12.5px;font-style:italic}
+  .foot{margin-top:26px;font-size:11.5px;color:var(--faint);text-align:center}
+  .ghero{background:var(--panel);border:1px solid var(--line);border-radius:var(--r2);padding:26px 28px;margin-bottom:6px}
+  .ghero h2{font-size:27px;margin:0 0 6px}
+  .ghero p{margin:0;color:var(--muted);font-size:14.5px;max-width:60ch}
+  .gmeta{display:flex;gap:26px;margin-top:16px;padding-top:15px;border-top:1px solid var(--line);font-size:12px;color:var(--muted)}
+  .gmeta b{color:var(--accent);font-size:19px;font-weight:700;margin-right:5px}
+  .gcard,.gafter{display:grid;grid-template-columns:52px 1fr;gap:18px;background:var(--panel);border:1px solid var(--line);
+    border-radius:var(--r2);padding:20px 24px;margin:0}
+  .gafter{margin-top:6px;border-color:var(--warn);background:var(--warnsoft)}
+  .gn{width:42px;height:42px;border-radius:12px;background:var(--accent);color:#fff;display:flex;align-items:center;
+    justify-content:center;font-weight:700;font-size:17px;flex:none}
+  .gtop{display:flex;align-items:baseline;gap:11px;flex-wrap:wrap}
+  .gtop h3{margin:0;font-size:19px;letter-spacing:-.015em}
+  .gskill{font-size:11.5px;font-weight:650;color:var(--accent);background:var(--soft);padding:3px 10px;border-radius:20px;
+    font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+  .gskill.none{color:var(--faint);background:var(--quote);font-family:inherit;font-weight:600}
+  .glead{margin:5px 0 13px;font-size:14.5px;color:var(--ink)}
+  .gl{display:block;font-size:9.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--faint);margin-bottom:5px}
+  .gpre{margin-bottom:13px}
+  .gp{display:inline-block;font-size:12px;color:var(--muted);border:1px dashed var(--line);border-radius:6px;
+    padding:2px 9px;margin:0 5px 4px 0}
+  .gterm{background:#1e1b17;color:#e8dfd0;border-radius:9px;padding:11px 15px;font-size:13px;
+    font-family:ui-monospace,SFMono-Regular,Menlo,monospace;display:flex;gap:10px;align-items:baseline;
+    overflow-x:auto;white-space:pre;margin-bottom:13px}
+  .gprompt{color:#c8703f;font-weight:700;flex:none}
+  .gtext{margin:0 0 13px;font-size:13.5px;color:var(--muted);line-height:1.62}
+  .gtext b{color:var(--ink)} .gtext code{background:var(--quote);color:var(--ink)}
+  .gout{margin-bottom:13px}
+  .gf{display:inline-block;font-size:11.5px;color:var(--accent);background:var(--soft);border-radius:6px;
+    padding:3px 9px;margin:0 5px 4px 0;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+  .ggate{border-left:3px solid var(--accent);background:var(--bg);border-radius:0 8px 8px 0;padding:9px 14px;font-size:13.5px}
+  .gafter .ggate{border-left-color:var(--warn)}
+  .garrow{text-align:center;color:var(--line);font-size:19px;line-height:1;padding:7px 0}
+
+  .openbtn{display:inline-block;margin:4px 0 12px;font-size:12.5px;font-weight:650;color:var(--accent);
+    background:var(--soft);border:1px solid var(--accent);border-radius:8px;padding:6px 13px;text-decoration:none}
+  .docframe{width:100%;height:62vh;border:1px solid var(--line);border-radius:9px;background:var(--bg)}
+  .mdbody{font-size:13.5px;line-height:1.65}
+  .mdbody h1{font-size:19px;margin:14px 0 6px}.mdbody h2{font-size:16px;margin:16px 0 5px}
+  .mdbody h3{font-size:14px;margin:13px 0 4px}.mdbody h4{font-size:13px;margin:11px 0 3px}
+  .mdbody p{margin:0 0 8px}.mdbody li{margin:0 0 3px}
+  .mdbody table{width:100%;border-collapse:collapse;font-size:12px;margin:8px 0}
+  .mdbody td{border:1px solid var(--line);padding:4px 7px;vertical-align:top}
+  .mdbody pre{background:var(--quote);padding:10px;border-radius:8px;overflow-x:auto;font-size:11.5px}
+  .mdbody blockquote{margin:8px 0;padding:7px 12px;background:var(--quote);border-left:2px solid var(--line);border-radius:0 6px 6px 0}
+  .mdbody code{background:var(--quote);padding:1px 5px;border-radius:5px;font-size:12px}
+  @media(max-width:700px){.gcard,.gafter{grid-template-columns:1fr;gap:12px}.ghero{padding:20px}.ghero h2{font-size:22px}
+    main{padding:16px 14px 60px}.rail .st{grid-template-columns:22px 1fr;gap:10px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">App <span>Progress</span> Visualizer</div>
+  <div class="views" id="views">
+    <button data-v="board" class="on">Board</button>
+    <span id="appbtns"></span>
+    <button data-v="journal" id="jbtn">Journal</button>
+    <button data-v="guide">Guide</button>
+  </div>
+  <div class="sp"></div>
+  <span class="meta" id="stamp"></span>
+  <button class="tbtn" id="hidebtn" style="display:none"></button>
+  <button class="tbtn" id="theme">Theme</button>
+</header>
+<main id="main"></main>
+<div id="scrim"></div>
+<aside id="panel" aria-hidden="true"></aside>
+<script>
+const $=s=>document.querySelector(s), E=(t,c,h)=>{const e=document.createElement(t);if(c)e.className=c;if(h!=null)e.innerHTML=h;return e};
+const esc=t=>String(t).replace(/[<>&]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
+const SHOW_DATES=false;            // flip to true to show every date
+const SHOW_JOURNAL=false;          // the journal view, hidden until it earns its place
+const D=t=>SHOW_DATES&&t?t:'';
+let SCAN=null, VIEW='board', APP=null, SCROLL_TO=null, SHOWHIDDEN=false;
+const hidden=()=>SCAN.hidden||[];
+const isHidden=id=>hidden().indexOf(id)>=0;
+const visible=()=>SCAN.apps.filter(a=>!isHidden(a.id));
+const STAGE=n=>SCAN.stages.find(s=>String(s.n)===String(n))||{name:'',why:''};
+const app=id=>SCAN.apps.find(a=>a.id===id);
+
+const GUIDE=[
+ {n:"1", t:"Research", skill:"/research", lead:"Why the problem exists, who already solves it, and whether it’s worth building.",
+  pre:["The problem, in one sentence","Which phone or platform"],
+  type:"/research people who lose focus to social media",
+  body:"There’s no app folder yet: research comes first. Claude works out <b>why the problem exists</b>, then lists every app already solving it — how each one works, <b>its features</b> (and which ones every app has), <b>what it earns a month</b> (TrustMRR or a Google search; estimates are labelled), <b>how it went viral</b>, and what real users complain about, <b>in their own words, with a link to every claim</b>. Nothing is made up.",
+  out:["A research write-up","A page you click through to review it"],
+  gate:"You pick the strongest option, the quotes that prove it — and <b>build it or not</b>. Yes only if at least one app earns <b>$10k+ a month</b>. No → it’s archived."},
+
+ {n:"2", t:"Set up + Pick your angle", skill:null, lead:"The app gets its folder, then one sentence on why anyone would choose it.",
+  pre:["The research, with a yes to “build it”"],
+  type:"Positioning for app_5, from the research.",
+  body:"First the app gets its own folder and the research moves in. Then Claude suggests two or three versions of <b>“it’s basically X, but Y”</b> — where X is a real app people already use. Under the one you keep: <b>the one thing we do that X doesn’t</b>, and <b>the viral feature</b> — you have to be able to describe the exact post someone would share. Last, the app’s rules get written down so it can’t drift.",
+  out:["The app’s folder","One paragraph, the USP, the viral feature, and the complaints it answers"],
+  gate:"You go back and forth until one sentence feels right."},
+
+ {n:"3", t:"Decide what gets built (the PRD)", skill:"/create-prd", lead:"One page, in parts — each one confirmed before the next opens.",
+  pre:["The angle, the USP and the viral feature"],
+  type:"/create-prd          ← then say “HTML mode”",
+  body:"<b>The case</b> (why it’s worth building, the rules it must follow) → <b>The experience (pick v1)</b> — v1’s features are chosen here: in v1 only if the promise breaks without it → <b>Can we build it?</b> — how it works, and the riskiest bets tested before any design → <b>Prototype v1</b> — tap through v1 on your phone, <b>including the moment someone would share</b> → <b>Design direction</b> (step 3½) → <b>Technical decisions</b> — the choices behind the build: services, each workflow, data, running it, the order. Every choice is offered in plain words with a recommended option — <b>nothing is chosen for you</b>.",
+  out:["The PRD page","v1’s feature list","Tested bets","Prototype v1","PRD.md"],
+  gate:"You press <b>“PRD is ready — proceed to build”</b> — the hand-over."},
+
+ {n:"3½", t:"Brief the designer", skill:"create-ui-design-direction", lead:"Part 5 of the PRD page — Claude writes the instructions; you run the design tool.",
+  pre:["The tested bets and Prototype v1"],
+  type:"(inside the PRD page — its Design direction part)",
+  body:"Claude writes the instructions and you paste them into the design tool yourself. It locks down what must not change — the screens, the words — and <b>deliberately leaves the look open</b>. Telling a designer the exact colours gets you a worse design than telling them the point.",
+  out:["The design brief","The design, brought back"],
+  gate:"<b>You</b> run the design tool and bring the result back — then the technical decisions open."},
+
+ {n:"4", t:"Hand over, then lock the wiring", skill:null, lead:"The hand-over starts code-orchestrator, which freezes what the app and the server say to each other.",
+  pre:["The hand-over button pressed"],
+  type:"(starts automatically — a new tab, code-orchestrator, Opus at high effort)",
+  body:"The session that wrote the PRD stops and starts <b>code-orchestrator</b> in its own tab, briefed by <code>HANDOFF.md</code>. It writes down exactly what the phone app and the server send back and forth, and locks it. <b>After this nobody can change it quietly</b> — the trick that lets two builders work at the same time without breaking each other’s work.",
+  out:["The locked agreement","An automatic check that it never drifts"],
+  gate:"You read the list of things the app can ask for. Does it match your screens?"},
+
+ {n:"5", t:"Build it", skill:null, lead:"Three Claudes: code-orchestrator in charge (Opus, high), backend and ios building (Sonnet, high).",
+  pre:["The locked wiring"],
+  type:"(code-orchestrator starts both builders)",
+  body:"code-orchestrator <b>writes no code at all</b> — its only job is to check the others’ work, which it stops doing honestly the moment it writes code itself. The two builders, <b>backend</b> and <b>ios</b>, each work in their own copy of the project, down the build order, riskiest first. If one hits a problem with the locked wiring, it <b>writes the question down and carries on elsewhere</b> instead of guessing.",
+  out:["The app, on a real server","A build on TestFlight"],
+  gate:"code-orchestrator runs the tests itself before accepting anything. <b>The day it’s on TestFlight is v1</b> — tag it <code>v1</code>."}
+];
+function guide(){
+  const m=E('div');
+  m.append(E('div','ghero',`<h2>How to build one of these</h2>
+    <p>From a problem to v1 on TestFlight. Claude does the work; every step ends with a decision that belongs to you.</p>
+    <div class="gmeta"><span><b>${GUIDE.length}</b> steps</span><span><b>3</b> of them have a skill</span><span><b>${GUIDE.length}</b> decisions that are yours</span></div></div>`));
+  GUIDE.forEach((g,i)=>{
+    const c=E('div','gcard');
+    c.innerHTML=`<div class="gn">${g.n}</div>
+      <div class="gbody">
+        <div class="gtop"><h3>${esc(STAGE(g.n).name||g.t)}</h3>${g.skill?`<span class="gskill">${esc(g.skill)}</span>`:'<span class="gskill none">just ask</span>'}</div>
+        <p class="glead">${g.lead}</p>
+        <div class="gpre"><span class="gl">Before you start</span>${g.pre.map(x=>`<span class="gp">${x}</span>`).join('')}</div>
+        <div class="gterm"><span class="gprompt">&rsaquo;</span>${esc(g.type)}</div>
+        <p class="gtext">${g.body}</p>
+        <div class="gout"><span class="gl">What you end up with</span>${g.out.map(x=>`<span class="gf">${x}</span>`).join('')}</div>
+        <div class="ggate"><span class="gl">Your decision</span>${g.gate}</div>
+      </div>`;
+    m.append(c);
+    if(i<GUIDE.length-1) m.append(E('div','garrow','↓'));
+  });
+  m.append(E('div','gafter',`<div class="gn" style="background:var(--warn)">6</div>
+    <div class="gbody"><div class="gtop"><h3>${esc(STAGE(6).name)}</h3><span class="gskill none">repeats</span></div>
+    <p class="glead">v1 is the app existing. After that you keep making it better — forever.</p>
+    <p class="gtext">Each new feature gets the same treatment: give it a name, review it on its own page <b>if it’s big enough to be worth reviewing</b>, build it, test it, add it in. Small things skip the review — growing a list from 18 items to 62 doesn’t need a meeting. <b>The locked wiring stays locked</b>: if a feature genuinely needs it changed, that change is asked for out loud and agreed, never done quietly.</p>
+    <div class="ggate"><span class="gl">When is it done?</span>It isn’t. Each feature finishes; the list keeps growing.</div></div>`));
+  m.append(E('p','foot','The longer version, with all the detail, is <code>building_apps/APP_GUIDE.md</code>.'));
+  return m;
+}
+
+
+/* ---------- board ---------- */
+function board(){
+  const m=E('div');
+  const shown=SHOWHIDDEN?SCAN.apps:visible();
+  const tot=shown.reduce((o,a)=>({p:o.p+a.pages,d:o.d+a.decisions,r:o.r+a.rounds}),{p:0,d:0,r:0});
+  m.append(E('h2',null,'All apps'),
+    E('p','sub',`${visible().length} app${visible().length===1?'':'s'} · ${tot.p} review pages · ${tot.r} rounds · ${tot.d} decisions recorded`));
+  if(!SCAN.apps.length){ m.append(E('div','banner','No <code>app_N</code> folders found yet.')); return m }
+  if(!shown.length){ m.append(E('div','banner','Every app is hidden. Use <b>Hidden</b> in the top bar to bring one back.')); return m }
+  const w=E('div','bwrap'), t=E('table','b');
+  t.innerHTML='<tr><th></th>'+SCAN.stages.map(s=>`<th>${esc(String(s.n))} ${esc(s.name)}</th>`).join('')+'</tr>';
+  shown.forEach(a=>{
+    const tr=E('tr'); if(isHidden(a.id)) tr.className='hiddenrow';
+    const td=E('td','appc');
+    const nm=E('div',null,`${esc(a.id)}<small>${esc(STAGE(a.stage).name)}</small>`);
+    nm.onclick=()=>{APP=a.id; go('app')};
+    const eye=E('button','eye',isHidden(a.id)?'show':'hide');
+    eye.title=isHidden(a.id)?'Show this app again':'Hide this app from the board and the top bar';
+    eye.onclick=ev=>{ev.stopPropagation(); setHidden(a.id,!isHidden(a.id))};
+    td.append(nm,eye); tr.append(td);
+    a.stages.forEach(s=>{
+      const n=s.docs.length+(s.features?(a.features||[]).length:0);
+      const cell=E('div','cell '+(s.state==='skip'?'todo':s.state),
+        `<span class="cn">${s.state==='done'?'done':s.state==='now'?'in progress':s.state==='skip'?'not run':'—'}</span>`+
+        (n?`<div class="cd">${n} doc${n===1?'':'s'}</div>`:''));
+      cell.onclick=()=>{APP=a.id; SCROLL_TO='stage-'+String(s.n).replace(/\W/g,''); go('app')};
+      const cd=E('td'); cd.append(cell); tr.append(cd);
+    });
+    t.append(tr);
+  });
+  w.append(t); m.append(w);
+  m.append(E('p','foot','Click an app or any stage to open it. Everything here is read off disk each time this page loads.'));
+  return m;
+}
+
+/* ---------- app detail ---------- */
+function docChip(a,d){
+  const p=a.pagemap[d.path&&d.path.replace(/\//g,'__')]||a.pagemap[d.id];
+  const hw=d.kind==='html-worker';
+  const extra=(p&&p.extras&&p.extras.length)?`<span class="r">+${p.extras.length}</span>`:'';
+  const r=hw&&p?`<span class="r">${p.rounds} rd${p.rounds===1?'':'s'}${p.decisions?' · '+p.decisions+' dec':''}</span>`:'';
+  const c=E('span','doc'+(hw?' hw':''),
+    `${hw?'🖱':d.kind==='markdown'?'📄':d.kind==='html'?'🗎':'⚙'} ${esc(hw&&p?p.title:d.title)} ${r}${extra}`);
+  c.onclick=e=>{e.stopPropagation(); openDoc(a,d,p)};
+  return c;
+}
+function appView(){
+  const a=app(APP)||SCAN.apps[0]; if(!a) return E('div',null,'No apps.');
+  APP=a.id;
+  const m=E('div');
+  m.append(E('h2',null,esc(a.id)),
+    E('p','sub',`${esc(STAGE(a.stage).name)} · ${a.commits} commits · ${a.pages} review pages · ${a.rounds} rounds · ${a.decisions} decisions`));
+  const rail=E('div','rail');
+  a.stages.forEach((s,i)=>{
+    const st=E('div','st '+s.state); st.id='stage-'+String(s.n).replace(/\W/g,'');
+    const g=E('div','gut');
+    g.append(E('div','bub', s.repeats?'↻' : s.state==='skip'?'–' : s.state==='done'?'✓' : String(s.n)));
+    if(i<a.stages.length-1) g.append(E('div','ln'));
+    const bd=E('div','bd');
+    bd.append(E('div','snm',`${esc(String(s.n))} · ${esc(STAGE(s.n).name)}`+
+      (s.state==='now'?' <span style="font-size:10px;background:var(--accent);color:#fff;padding:2px 8px;border-radius:20px;font-weight:700;text-transform:uppercase;letter-spacing:.04em">here now</span>':'')+
+      (s.repeats?' <span style="font-size:10px;background:var(--warnsoft);color:var(--warn);padding:2px 8px;border-radius:20px;font-weight:700;text-transform:uppercase;letter-spacing:.04em">repeats</span>':'')+
+      (s.state==='skip'?' <span style="font-size:10px;background:var(--quote);color:var(--faint);padding:2px 8px;border-radius:20px;font-weight:700;text-transform:uppercase;letter-spacing:.04em">not run</span>':'')));
+    const gates=E('div','gates');
+    s.gates.forEach(g2=>gates.append(E('div','gate'+(g2[1]?'':' no'),
+      `<i>${g2[1]?'✓':'○'}</i><span>${esc(g2[0])}${g2[2]?` <em>— ${esc(g2[2])}</em>`:''}</span>`)));
+    bd.append(gates);
+    const own=s.docs.filter(d=>!(s.features));
+    if(own.length){const dd=E('div','docs'); own.forEach(d=>dd.append(docChip(a,d))); bd.append(dd)}
+    if(s.v1&&a.v1){
+      bd.append(E('div','v1',`<div class="h"><div class="t">v1 — the initial build</div>
+        <div style="font-size:11px;color:var(--muted)">${D(a.v1.end+' · ')}${a.v1.commits} commits</div></div>
+        <div class="l">Everything before the first feature merge into <code>main</code>.
+        ${a.v1.source==='inferred'?'<b>Boundary inferred</b> from the busiest build day — <code>git tag v1 &lt;sha&gt;</code> in the repo to make it exact.':'Boundary from the <code>v1</code> git tag.'}</div>`));
+    }
+    if(s.features){
+      const fs=a.features||[];
+      bd.append(E('div','flab',fs.length?`${fs.length} features since v1 — this stage repeats`:'No features merged yet'));
+      fs.forEach(f=>{
+        const el=E('div','feat',`<div class="h"><div class="t"><i>${f.id}</i>${esc(f.name)}</div>
+          <div class="w">${esc(D(f.first))} ${f.halves.join(' + ')}</div></div>`);
+        const dd=E('div','docs');
+        (f.docs||[]).forEach(id=>{const p=a.pagemap[id];
+          if(p) dd.append(docChip(a,{path:p.dir,kind:'html-worker',title:p.title,id:p.id}))});
+        if(!(f.docs||[]).length) dd.innerHTML='<span class="empty">no review page</span>';
+        el.append(dd); bd.append(el);
+      });
+      if(s.docs.length){
+        const sd=E('div','side','<b>Side work during this stage</b><div class="docs"></div>');
+        s.docs.forEach(d=>sd.querySelector('.docs').append(docChip(a,d)));
+        bd.append(sd);
+      }
+    }
+    st.append(g,bd); rail.append(st);
+  });
+  m.append(rail);
+  return m;
+}
+
+/* ---------- journal ---------- */
+function journal(){
+  const a=app(APP)||SCAN.apps[0]; if(!a) return E('div',null,'No apps.');
+  const m=E('div');
+  m.append(E('h2',null,esc(a.id)+' — how it got made'),
+    E('p','sub','Every review round and every merge, in the order it happened. ● review · ● merge · ○ v1'));
+  const ev=[];
+  Object.values(a.pagemap).forEach(p=>ev.push({d:p.last||p.mtime, kind:'review',
+    h:p.title, w:`${p.rounds} round${p.rounds===1?'':'s'}${p.decisions?', '+p.decisions+' decisions':''}${p.rounds?'':' — built but never reviewed'}`, page:p}));
+  (a.commitlog||[]).forEach(c=>{ if(/^Merge \w+ into main/.test(c.subject))
+    ev.push({d:c.date, kind:'merge', h:c.subject.replace(/^Merge /,''), w:''}) });
+  if(a.v1) ev.push({d:a.v1.end, kind:'v1', h:'v1 — the initial build', w:`${a.v1.commits} commits`});
+  ev.sort((x,y)=>String(x.d||'').localeCompare(String(y.d||'')));
+  const tl=E('div','tl');
+  ev.forEach(e=>{
+    const el=E('div','ev'+(e.kind==='review'?'':e.kind==='v1'?' turn':' side'));
+    if(SHOW_DATES) el.append(E('div','d',e.d||''));
+    el.append(E('div','h',esc(e.h)));
+    if(e.w) el.append(E('div','w',esc(e.w)));
+    if(e.page){const dd=E('div','docs');
+      dd.append(docChip(a,{path:e.page.dir,kind:'html-worker',title:e.page.title,id:e.page.id})); el.append(dd)}
+    tl.append(el);
+  });
+  m.append(tl);
+  return m;
+}
+
+/* ---------- document panel ---------- */
+function openDoc(a,d,p){
+  const pn=$('#panel');
+  pn.innerHTML=`<div class="ph"><div style="flex:1"><h3>${esc(p?p.title:d.title)}</h3>
+      <div class="w">${esc(a.id)}/${esc(d.path||'')}</div></div><button class="x" id="px">×</button></div>
+    <div class="pb"><span class="ro">Read-only</span><p class="empty">Loading…</p></div>`;
+  pn.classList.add('on'); $('#scrim').classList.add('on'); $('#px').onclick=closeDoc;
+  fetch(`/api/doc?app=${encodeURIComponent(a.id)}&path=${encodeURIComponent(d.path||'')}`)
+    .then(r=>r.json()).then(res=>{
+      const b=pn.querySelector('.pb');
+      const kk=p?`<div class="kk"><div>rounds<b>${p.rounds}</b></div><div>decisions<b>${p.decisions}</b></div>
+        <div>comments<b>${p.comments}</b></div></div>`:'';
+      if(res.kind==='page'){
+        const sibs=(p&&p.extras&&p.extras.length)
+          ? `<div class="flab" style="margin:14px 0 6px">Also in this folder (${p.extras.length})</div>
+             <div class="docs">`+p.extras.map(e=>
+               `<span class="doc" data-p="${esc(e.path)}">🗎 ${esc(e.title)}</span>`).join('')+`</div>` : '';
+        b.innerHTML=`<span class="ro">${res.no_shim?'Read-only':'Read-only copy'}</span>${kk}
+          <p style="font-size:13px;color:var(--muted)">${res.no_shim
+            ? 'A standalone page — opened exactly as it was written.'
+            : 'A copy of this review page with its recorded answers baked in, written beside the original as <code>reading-copy.html</code>. Nothing on it can be changed.'}</p>
+          <a class="openbtn" href="${res.url}" target="_blank">Open the full page →</a>
+          <iframe src="${res.url}" class="docframe"></iframe>${sibs}`;
+        b.querySelectorAll('.doc[data-p]').forEach(el=>el.onclick=()=>
+          openDoc(a,{path:el.dataset.p,kind:'html',title:el.textContent.trim()},null));
+      } else {
+        b.innerHTML=`<span class="ro">Read-only</span>${kk}<div class="mdbody">${res.html||''}</div>`;
+      }
+    }).catch(()=>{pn.querySelector('.pb').innerHTML='<p class="empty">Could not read that.</p>'});
+}
+function closeDoc(){$('#panel').classList.remove('on');$('#scrim').classList.remove('on')}
+$('#scrim').onclick=closeDoc;
+addEventListener('keydown',e=>{if(e.key==='Escape')closeDoc()});
+
+/* ---------- shell ---------- */
+function go(v){
+  VIEW=v;
+  document.querySelectorAll('#views button').forEach(b=>b.classList.toggle('on',b.dataset.v===v&&(!b.dataset.app||b.dataset.app===APP)));
+  const m=$('#main'); m.innerHTML='';
+  m.append(v==='board'?board():v==='app'?appView():v==='guide'?guide():journal());
+  if(SCROLL_TO){const el=document.getElementById(SCROLL_TO);
+    if(el){el.scrollIntoView({behavior:'smooth',block:'center'});
+      el.style.transition='background .8s'; el.style.background='var(--soft)';
+      setTimeout(()=>el.style.background='',1100)} SCROLL_TO=null}
+  else scrollTo({top:0});
+}
+function setHidden(id,hide){
+  fetch('/api/hidden',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({id:id,hidden:hide})}).then(r=>r.json()).then(res=>{
+      SCAN.hidden=res.hidden||[];
+      if(isHidden(APP)) APP=(visible()[0]||{}).id||null;
+      if(!hidden().length) SHOWHIDDEN=false;
+      chrome(); go(VIEW==='app'&&!APP?'board':VIEW);
+    });
+}
+function chrome(){
+  $('#appbtns').innerHTML=(SHOWHIDDEN?SCAN.apps:visible()).map(a=>
+    `<button data-v="app" data-app="${a.id}"${isHidden(a.id)?' class="dim"':''}>${esc(a.id)}</button>`).join('');
+  document.querySelectorAll('#views button').forEach(b=>b.onclick=()=>{
+    if(b.dataset.app) APP=b.dataset.app; go(b.dataset.v)});
+  $('#jbtn').style.display=SHOW_JOURNAL?'':'none';
+  const n=hidden().length, hb=$('#hidebtn');
+  hb.style.display=n?'inline-block':'none';
+  hb.textContent=(SHOWHIDDEN?'Hide ':'Hidden ')+'('+n+')';
+  hb.classList.toggle('on',SHOWHIDDEN);
+  hb.onclick=()=>{SHOWHIDDEN=!SHOWHIDDEN; chrome(); go(VIEW)};
+  $('#stamp').textContent=SHOW_DATES?('scanned '+SCAN.scanned):'derived from disk';
+}
+(()=>{const K='theme',R=document.documentElement;
+  const set=v=>{v?R.dataset.theme=v:delete R.dataset.theme; try{v?localStorage.setItem(K,v):localStorage.removeItem(K)}catch(e){}};
+  try{set(localStorage.getItem(K)||'')}catch(e){}
+  $('#theme').onclick=()=>{const c=['','light','dark'];set(c[(c.indexOf(R.dataset.theme||'')+1)%3])}})();
+
+fetch('/api/scan').then(r=>r.json()).then(s=>{
+  SCAN=s;
+  if(s.error){$('#main').innerHTML='<div class="banner"><b>Scan failed.</b> '+esc(s.error)+'</div>'; return}
+  APP=(visible()[0]||s.apps[0]||{}).id||null;
+  chrome(); go(VIEW==='journal'&&!SHOW_JOURNAL?'board':'board');
+}).catch(e=>{$('#main').innerHTML='<div class="banner"><b>Could not reach the scanner.</b> Is server.py running?</div>'});
+</script>
+</body>
+</html>
