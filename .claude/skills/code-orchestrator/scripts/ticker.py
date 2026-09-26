@@ -52,8 +52,9 @@ def commits_since(app, since_iso):
 
 def open_questions(app):
     # Workers append in their own worktree, so a question is on `main` only after a merge:
-    # read every worktree's copy. Only entries below the marker count (the format example
-    # above it says "Status: open" too), and an entry answered in any copy is closed.
+    # read every worktree's copy. Only real entries count — "## Q<number>" (the format
+    # example is "## Q<n>", so its "Status: open" is ignored) wherever a worker put them —
+    # and an entry answered in any copy is closed.
     status = {}
     for line in sh(["git", "worktree", "list", "--porcelain"], cwd=app).splitlines():
         if not line.startswith("worktree "):
@@ -62,7 +63,6 @@ def open_questions(app):
             text = open(os.path.join(line[9:], "ORCH-QUESTIONS.md")).read()
         except OSError:
             continue
-        text = text.split("<!-- new entries below -->", 1)[-1]
         for title, body in re.findall(r"^## (Q\d+[^\n]*)\n(.*?)(?=^## |\Z)", text, re.M | re.S):
             is_open = bool(re.search(r"\*\*Status:\*\*\s*open\b", body))
             status[title.strip()] = status.get(title.strip(), True) and is_open

@@ -19,13 +19,15 @@
   .feed li.beat{font-size:12.5px;color:var(--muted);padding:5px 0}
   .feed li.cp{font-weight:600} .feed li.cp .ok{color:#3aa35b} .feed li.cp .no{color:#e0672c}
   .feed li.ask{border-left:3px solid #e0672c;padding-left:10px}
+  .feed .more{font-size:12px;color:var(--accent);cursor:pointer;margin-left:4px}
+  #beat{font-size:12.5px;color:var(--muted)}
   .brs{font-size:12.5px;width:100%} .brs td{padding:3px 8px 3px 0;vertical-align:top} .brs td:first-child{font-weight:600;white-space:nowrap}
   #flash{display:none;background:#e0672c;color:#fff;border-radius:10px;padding:10px 14px;margin:0 0 14px;font-weight:600}
 </style>
 
 <div id="flash"></div>
 <div class="rbar"><span><span class="live" id="live"></span><span id="alive">connecting…</span></span>
-  <span id="nextbeat"></span><span class="spacer" style="flex:1"></span>
+  <span id="nextbeat"></span><span id="beat"></span><span class="spacer" style="flex:1"></span>
   <button id="notif">Turn on notifications</button></div>
 
 <section id="s-needs" data-anchor="needs" data-label="Needs you" data-group="Build room" data-title="Needs you">
@@ -48,8 +50,7 @@
 <section id="s-updates" data-anchor="updates" data-label="Updates" data-group="Build room" data-title="Updates">
   <button class="cbtn">comment</button>
   <h2><span class="num">3</span>Updates</h2>
-  <p class="sub">Newest first. Bold lines are the orchestrator's own updates; grey lines are the 5-minute check.</p>
-  <label class="sub" style="display:block;margin:4px 0 8px"><input type="checkbox" id="beats" checked> show the 5-minute checks</label>
+  <p class="sub">The latest 5 from the orchestrator. The 5-minute check is the line at the top of the page.</p>
   <ul class="feed" id="feed"></ul>
 </section>
 
@@ -78,7 +79,7 @@ function renderAsks(items){
       <div class="q">${esc(a.text)}</div>${a.why?`<div class="why">${esc(a.why)}</div>`:''}
       ${a.options&&a.options.length?`<div data-radio="${esc(a.id)}">${a.options.map(([v,l,d])=>`
         <label class="opt"><input type="radio" name="${esc(a.id)}" value="${esc(v)}">
-        <span><span class="oh">${esc(l)}${v===a.rec?'<span class="rec">recommended</span>':''}</span><span class="od">${esc(d)}</span></span></label>`).join('')}</div>`
+        <span><span class="oh">${esc(l)}${v===a.rec?'<span class="rec"> · recommended</span>':''}</span><span class="od">${esc(d)}</span></span></label>`).join('')}</div>`
         :`<p class="sub">Answer with <b>comment</b> on this question.</p>`}
     </div>`).join('')+(done.length?`<details style="margin-top:10px"><summary class="sub">Answered (${done.length})</summary>${done.slice().reverse().map(a=>
       `<p class="sub">✓ ${esc(a.text)}${a.note?' — '+esc(a.note):''} <i>(${ago(a.resolved)})</i></p>`).join('')}</details>`:'');
@@ -101,15 +102,18 @@ function renderTodos(items){
   const t=items.filter(i=>i.kind==='todo');
   if(t.length)document.getElementById('todos').innerHTML=t.map(i=>`<div class="todo ${i.status==='done'?'done':''}"><span>${i.status==='done'?'✓':'☐'}</span><span>${esc(i.text)}</span></div>`).join('');
 }
+// Long updates show their first sentence; "more" opens the rest.
+const short=t=>{t=String(t||'');const m=t.match(/^.{20,180}?[.!?](\s|$)/);const head=m?m[0].trim():t.slice(0,180);
+  return head.length<t.length?`${esc(head)}<details style="display:inline"><summary class="more">more</summary>${esc(t.slice(head.length))}</details>`:esc(t)};
 function renderFeed(items,status){
   const rows=items.filter(i=>i.kind==='update'||i.kind==='checkpoint'||i.kind==='ask').map(i=>({t:i.t,k:i.kind,i}));
-  if(document.getElementById('beats').checked)(status.heartbeats||[]).forEach(h=>rows.push({t:h.t,k:'beat',i:h}));
   rows.sort((a,b)=>b.t<a.t?-1:1);
-  document.getElementById('feed').innerHTML=rows.slice(0,150).map(r=>{
-    if(r.k==='beat')return `<li class="beat">${esc(r.i.text)} <span class="tm" style="display:inline">· ${ago(r.t)}</span></li>`;
-    if(r.k==='checkpoint')return `<li class="cp"><span class="tm">${ago(r.t)}</span><span class="${r.i.verified?'ok':'no'}">${r.i.verified?'✓ verified':'• not verified yet'}</span> — ${esc(r.i.text)}${r.i.detail?`<div class="sub" style="font-weight:400">${esc(r.i.detail)}</div>`:''}</li>`;
-    if(r.k==='ask')return `<li class="ask"><span class="tm">${ago(r.t)} · question</span>${esc(r.i.text)}${r.i.status!=='open'?' <i class="sub">(answered)</i>':''}</li>`;
-    return `<li><span class="tm">${ago(r.t)}</span><b>${esc(r.i.text)}</b></li>`}).join('')||'<li class="beat">Nothing yet.</li>';
+  const hb=(status.heartbeats||[]).slice(-1)[0];
+  document.getElementById('beat').textContent=hb?'· last check: '+hb.text:'';
+  document.getElementById('feed').innerHTML=rows.slice(0,5).map(r=>{
+    if(r.k==='checkpoint')return `<li class="cp"><span class="tm">${ago(r.t)}</span><span class="${r.i.verified?'ok':'no'}">${r.i.verified?'✓ verified':'• not verified yet'}</span> — ${short(r.i.text)}</li>`;
+    if(r.k==='ask')return `<li class="ask"><span class="tm">${ago(r.t)} · question</span>${short(r.i.text)}${r.i.status!=='open'?' <i class="sub">(answered)</i>':''}</li>`;
+    return `<li><span class="tm">${ago(r.t)}</span><b>${short(r.i.text)}</b></li>`}).join('')||'<li class="beat">Nothing yet.</li>';
   const cps=items.filter(i=>i.kind==='checkpoint').reverse();
   if(cps.length)document.getElementById('cps').innerHTML=cps.map(c=>`<li class="cp"><span class="tm">${ago(c.t)}</span><span class="${c.verified?'ok':'no'}">${c.verified?'✓':'•'}</span> ${esc(c.text)}${c.detail?`<div class="sub" style="font-weight:400">${esc(c.detail)}</div>`:''}</li>`).join('');
 }
@@ -133,7 +137,6 @@ async function tick(){
     lastStatus=sj;
   }catch(e){document.getElementById('alive').textContent='page server not answering'}
 }
-document.getElementById('beats').onchange=()=>{lastStatus='';tick()};
 const nb=document.getElementById('notif');
 if(!window.Notification||Notification.permission==='granted')nb.style.display='none';
 nb.onclick=()=>Notification.requestPermission().then(p=>{if(p==='granted')nb.style.display='none'});

@@ -120,7 +120,8 @@ background checks. Each time:
 
 **What to post, and when** — the user reads only the room:
 
-- An **update** at every real step: stage started or finished, a worker started, a merge, CI
+- An **update** at every real step — **one or two short sentences**; the page shows only the
+  latest 5, and only the first sentence until the user opens it: stage started or finished, a worker started, a merge, CI
   red or green, a decision you made and its tradeoff in one sentence. Not "still working" —
   the ticker covers that every 5 minutes.
 - An **ask** the moment something needs the user. Options carry the three plain lines' worth
