@@ -39,7 +39,8 @@
   .bwrap{overflow-x:auto;background:var(--panel);border:1px solid var(--line);border-radius:var(--r2);padding:16px}
   table.b{border-collapse:separate;border-spacing:0;width:100%;min-width:700px}
   table.b th{font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--faint);font-weight:700;
-    padding:0 5px 9px;text-align:left;white-space:nowrap}
+    padding:0 5px 9px;text-align:left;vertical-align:bottom;line-height:1.35}
+  table.b tr.grp th{padding-bottom:4px} table.b th.specg{color:var(--accent);border-bottom:2px solid var(--accent);text-align:center;letter-spacing:.08em}
   table.b td{border-top:1px solid var(--line);padding:8px 5px;vertical-align:top}
   .appc{font-weight:650;font-size:13.5px;white-space:nowrap;padding-right:14px;
     display:flex;align-items:flex-start;gap:8px}
@@ -240,14 +241,14 @@ const GUIDE=[
   out:["The app’s folder","One paragraph, the USP, the viral feature, and the complaints it answers"],
   gate:"You go back and forth until one sentence feels right."},
 
- {n:"3", t:"Decide what gets built (the PRD)", skill:"/create-prd", lead:"One page, in parts — each one confirmed before the next opens.",
+ {n:"3.1–3.6", t:"Decide what gets built (the PRD)", skill:"/create-prd", lead:"One page, in parts — each one confirmed before the next opens.",
   pre:["The angle, the USP and the viral feature"],
   type:"/create-prd          ← then say “HTML mode”",
-  body:"<b>The case</b> (why it’s worth building, the rules it must follow) → <b>The experience (pick v1)</b> — v1’s features are chosen here: in v1 only if the promise breaks without it → <b>Can we build it?</b> — how it works, and the riskiest bets tested before any design → <b>Prototype v1</b> — tap through v1 on your phone, <b>including the moment someone would share</b> → <b>Design direction</b> (step 3½) → <b>Technical decisions</b> — the choices behind the build: services, each workflow, data, running it, the order. Every choice is offered in plain words with a recommended option — <b>nothing is chosen for you</b>.",
+  body:"<b>The case</b> (why it’s worth building, the rules it must follow) → <b>The experience (pick v1)</b> — v1’s features are chosen here: in v1 only if the promise breaks without it → <b>Can we build it?</b> — how it works, and the riskiest bets tested before any design → <b>Prototype v1</b> — tap through v1 on your phone, <b>including the moment someone would share</b> → <b>Design direction</b> (3.5) → <b>Technical decisions</b> — the choices behind the build: services, each workflow, data, running it, the order. Every choice is offered in plain words with a recommended option — <b>nothing is chosen for you</b>.",
   out:["The PRD page","v1’s feature list","Tested bets","Prototype v1","PRD.md"],
   gate:"You press <b>“PRD is ready — proceed to build”</b> — the hand-over."},
 
- {n:"3½", t:"Brief the designer", skill:"create-ui-design-direction", lead:"Part 5 of the PRD page — Claude writes the instructions; you run the design tool.",
+ {n:"3.5", t:"Brief the designer", skill:"create-ui-design-direction", lead:"Part 5 of the PRD page — Claude writes the instructions; you run the design tool.",
   pre:["The tested bets and Prototype v1"],
   type:"(inside the PRD page — its Design direction part)",
   body:"Claude writes the instructions and you paste them into the design tool yourself. It locks down what must not change — the screens, the words — and <b>deliberately leaves the look open</b>. Telling a designer the exact colours gets you a worse design than telling them the point.",
@@ -308,7 +309,12 @@ function board(){
   if(!SCAN.apps.length){ m.append(E('div','banner','No <code>app_N</code> folders found yet.')); return m }
   if(!shown.length){ m.append(E('div','banner','Every app is hidden. Use <b>Hidden</b> in the top bar to bring one back.')); return m }
   const w=E('div','bwrap'), t=E('table','b');
-  t.innerHTML='<tr><th></th>'+SCAN.stages.map(s=>`<th>${esc(String(s.n))} ${esc(s.name)}</th>`).join('')+'</tr>';
+  // Spec is split into the PRD's six parts (3.1–3.6); a group row names them once, short labels keep it on screen.
+  const SHORT={'2':'Positioning','3.1':'Case','3.2':'Experience (pick v1)','3.3':'Can we build it?','3.4':'Prototype v1','3.5':'Design','3.6':'Tech decisions'};
+  const isSpec=s=>String(s.n).startsWith('3.'), nSpec=SCAN.stages.filter(isSpec).length;
+  let grp='<tr class="grp"><th></th>', did=false;
+  SCAN.stages.forEach(s=>{ if(isSpec(s)){ if(!did){grp+=`<th colspan="${nSpec}" class="specg">3 · Spec — the PRD</th>`;did=true} } else grp+='<th></th>' });
+  t.innerHTML=grp+'</tr><tr><th></th>'+SCAN.stages.map(s=>`<th title="${esc(s.name)}: ${esc(s.why||'')}">${esc(String(s.n))} ${esc(SHORT[String(s.n)]||s.name)}</th>`).join('')+'</tr>';
   shown.forEach(a=>{
     const tr=E('tr'); if(isHidden(a.id)) tr.className='hiddenrow';
     const td=E('td','appc');

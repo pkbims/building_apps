@@ -152,7 +152,7 @@ the next opens, and the page ends on a hand-over button.
 | 2 · The experience (pick v1) | **v1 feature list** (table stakes + USP + viral feature; in v1 only if the promise breaks without it) · user flow · screens · one headline success metric · accepted risks |
 | 3 · Can we build it? | TR1… · how it works · the riskiest bets, **tested before any design** |
 | 4 · Prototype v1 | Tap through v1 on the phone, including the shareable moment |
-| 5 · Design direction | The brief for Claude Design, and its handoff back (stage 3½) |
+| 5 · Design direction | The brief for Claude Design, and its handoff back (3.5) |
 | 6 · Technical decisions | The choices behind the build: services, each workflow, **data (§15) and calls (§16)**, operations, build order, still open. Not the build itself |
 | Hand-over | “PRD is ready — proceed to build” → PROGRESS.md updated, **code-orchestrator** (Opus, high) starts; its builders run Sonnet, high |
 
@@ -183,7 +183,7 @@ it records what you chose *and* what you rejected.
 
 ---
 
-## Stage 3½ — Design direction  ·  skill: `create-ui-design-direction`
+## Stage 3.5 — Design direction (the PRD's Part 5)  ·  skill: `create-ui-design-direction`
 
 > Now a numbered stage in `PIPELINE.md`.
 
@@ -343,7 +343,7 @@ stage is a list that grows.
 | 1 Research | `/research` | `/research <who> who <problem>` | `research/<niche>/` (no repo yet) | strongest option picked; **build it?** no → `archived_research/` |
 | 2 Set up + Positioning | — | "Positioning for app_N, from the research." | `app_N/` repo, research moved in, `positioning.md` + Anchored-to, constraints in `CLAUDE.md` | one paragraph survives |
 | 3 Spec | `/create-prd` + `html-worker` | `/create-prd`, "HTML mode" | `spec/`, `prototype.html`, `PRD.md` | you say "done" |
-| 3½ Design | `create-ui-design-direction` | "Design brief for app_N." | `design/BRIEF.md` | you run Claude Design yourself |
+| 3.5 Design direction | `create-ui-design-direction` | "Design brief for app_N." | `design/BRIEF.md` | you run Claude Design yourself |
 | 4 Contract | — | "Freeze the contract from PRD §15-16." | `contract/openapi.json` | endpoint list matches the screens |
 | 5 Build v1 | — (candidate) | "Read AGENT.md and start." ×2 | `main`, both halves merged | orchestrator verified, v1 on TestFlight |
 | 6 Features | — | per feature | a feature per merge | repeats; never closes |

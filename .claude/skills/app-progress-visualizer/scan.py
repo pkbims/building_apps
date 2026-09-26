@@ -3,7 +3,7 @@
 files present, state.json round/decision counts, and git history are the only sources.
 
 The model it produces is the one settled on the app-maker-review page (D1-D18):
-eight stages (3½ included), v1 as a closed milestone, features as a repeating stage below it,
+thirteen stages (the spec split into its six PRD parts, 3.1–3.6), v1 as a closed milestone, features as a repeating stage below it,
 side work nested under the stage it happened during.
 """
 
@@ -18,8 +18,12 @@ ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), 
 STAGES = [
     (1,    "Research",         "Why the problem exists, who solves it, what they earn — build it or not"),
     (2,    "Set up + Positioning", "The repo, then one paragraph, a USP and a viral feature"),
-    (3,    "Spec",             "The case → The experience (pick v1) → Can we build it? → Prototype v1 → Technical decisions → Hand-over"),
-    ("3½", "Design direction", "Part 5 of the PRD page: a prompt for Claude Design, not a design"),
+    ("3.1", "The case",         "Why it's worth building, and the rules the app must follow"),
+    ("3.2", "The experience (pick v1)", "v1's features, the flow, the screens"),
+    ("3.3", "Can we build it?", "How it works — the riskiest bets tested before any design"),
+    ("3.4", "Prototype v1",     "Tap through v1 on the phone, including the shareable moment"),
+    ("3.5", "Design direction", "A prompt for Claude Design, and the design brought back"),
+    ("3.6", "Technical decisions", "The choices behind the build — ends on the hand-over"),
     (4,    "Contract freeze",  "Lock the API so two workers can build at once"),
     (5,    "Build v1",         "Three sessions; ends when v1 is on TestFlight"),
     (6,    "Features",         "The stage you re-enter"),
@@ -354,51 +358,47 @@ def build_app(name, app):
          contains(app, "positioning.md", "usp") and contains(app, "positioning.md", "viral"), ""],
         ["Anchored-to block present", contains(app, "positioning.md", "anchored"), ""]]})
 
-    # 3 Spec
+    # 3 Spec — one stage per part of the PRD page (renamed 2026-09-26): 3.1 … 3.6.
+    # Design direction is the PRD's Part 5, so it is 3.5 here, not a stage beside the spec.
     spec_pages = [p for p in pages if p["dir"] == "spec" or p["dir"].startswith("spec/")]
-    for p in spec_pages:
+    dpages = [p for p in pages if p["dir"].startswith("design")]
+    for p in spec_pages + dpages:
         used.add(p["id"])
-    d = [doc(p["dir"], "html-worker", p["title"]) for p in spec_pages]
-    if has(app, "PRD.md"):
-        d.append(doc("PRD.md", "markdown"))
-    if has(app, "spike"):
-        d.append(doc("spike", "code"))
-    d += extras_under("spec")
     rounds = max([p["rounds"] for p in spec_pages], default=0)
     dec = {}
     try:
         dec = json.load(open(os.path.join(app, "spec", "state.json"))).get("decisions", {})
     except (OSError, json.JSONDecodeError):
         pass
-    if "gate" in dec:   # staged PRD page (app_1 on): one gate per part, then the hand-over
-        g = int(dec.get("gate") or 0)
-        handed = dec.get("prd_ready") == "done"
-        gates = [["The case", g >= 1, ""],
-                 ["The experience (pick v1)", g >= 2, ""],
-                 ["Can we build it?", g >= 3, "bets tested"],
-                 ["Prototype v1", g >= 4, ""],
-                 ["Technical decisions", handed, "%d rounds" % rounds if rounds else ""],
-                 ["Hand-over to code-orchestrator", handed, ""]]
-    else:               # older pages: file-based checks
-        gates = [["review rounds held", rounds > 0, "%d rounds" % rounds if rounds else ""],
-                 ["v1 feature list decided", contains(app, "PRD.md", "v1 feature"), ""],
-                 ["PRD exported from the page", has(app, "PRD.md"), ""],
-                 ["clickable prototype built", has(app, "spec/prototype.html"), ""]]
-    stages.append({"n": 3, "docs": d, "gates": gates})
-
-    # 3.5 Design
-    dpages = [p for p in pages if p["dir"].startswith("design")]
-    for p in dpages:
-        used.add(p["id"])
-    d = [doc(p["dir"], "html-worker", p["title"]) for p in dpages]
-    if has(app, "design/BRIEF.md"):
-        d.append(doc("design/BRIEF.md", "markdown"))
-    d += extras_under("design")
+    g = int(dec.get("gate") or 0) if "gate" in dec else None   # None: an older, unstaged PRD page
+    handed = dec.get("prd_ready") == "done"
+    brief = has(app, "design/BRIEF.md")
     handoff_in = os.path.isdir(os.path.join(app, "design")) and any(
         f not in ("BRIEF.md", "brief", "references") for f in os.listdir(os.path.join(app, "design")))
-    stages.append({"n": "3½", "docs": d, "gates": [
-        ["design/BRIEF.md written", has(app, "design/BRIEF.md"), ""],
-        ["Claude Design handoff received", handoff_in, ""]]})
+    staged = g is not None
+
+    d = [doc(p["dir"], "html-worker", p["title"]) for p in spec_pages] + extras_under("spec")
+    stages.append({"n": "3.1", "docs": d, "gates": [
+        ["review rounds held", rounds > 0, "%d rounds" % rounds if rounds else ""],
+        ["The case confirmed" if staged else "PRD page exists", g >= 1 if staged else bool(spec_pages), ""]]})
+    stages.append({"n": "3.2", "docs": [], "gates": [
+        ["v1 feature list decided", (g >= 2) if staged else contains(app, "PRD.md", "v1 feature"), ""]]})
+    stages.append({"n": "3.3", "docs": [doc("spike", "code")] if has(app, "spike") else [], "gates": [
+        ["bets tested (spike)", (g >= 3) if staged else has(app, "spike"), ""]]})
+    stages.append({"n": "3.4", "docs": [doc("spec/prototype.html", "prototype")] if has(app, "spec/prototype.html") else [], "gates": [
+        ["clickable prototype built", has(app, "spec/prototype.html"), ""]]
+        + ([["Prototype v1 confirmed", g >= 4, ""]] if staged else [])})
+    d = [doc(p["dir"], "html-worker", p["title"]) for p in dpages]
+    if brief:
+        d.append(doc("design/BRIEF.md", "markdown"))
+    d += extras_under("design")
+    stages.append({"n": "3.5", "docs": d, "gates": [
+        ["design brief written", brief, ""],
+        ["Claude Design handoff received", handoff_in, ""]]
+        + ([["Design direction confirmed", g >= 5, ""]] if staged else [])})
+    stages.append({"n": "3.6", "docs": [doc("PRD.md", "markdown")] if has(app, "PRD.md") else [], "gates": [
+        ["PRD exported from the page", has(app, "PRD.md"), ""]]
+        + ([["Hand-over to code-orchestrator", handed, ""]] if staged else [])})
 
     # 4 Contract
     d = [doc("contract/openapi.json", "generated")] if has(app, "contract/openapi.json") else []

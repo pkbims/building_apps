@@ -9,7 +9,7 @@ gets written from what actually happens during practice_1, not predicted in adva
 > Prototype v1 → Design direction → Technical decisions** → Hand-over → Contract freeze →
 > Build v1 → Features → Ship
 
-The bold steps are the parts of the one PRD page (stage 3, with 3½ inside it). v1's
+The bold steps are the parts of the one PRD page — stage 3, split the same way: **3.1 The case · 3.2 The experience (pick v1) · 3.3 Can we build it? · 3.4 Prototype v1 · 3.5 Design direction · 3.6 Technical decisions**. Design direction is part of the PRD, not a stage beside it. v1's
 features are picked in *The experience*, so the prototype is v1's. *Technical decisions*
 is not the build — it is the choices behind it. The hand-over button starts the
 code-orchestrator, and the building begins at the contract freeze.
@@ -82,7 +82,7 @@ Part 3 is written with that handoff on disk. Tradeoff: a manual step every app, 
 exchange for a saved, reproducible brief — practice_1's only design run had none. Decided
 2026-09-20 in `design-brief-review/REVIEW.md`.
 
-## 3½. Design direction
+## 3.5 Design direction (the PRD's Part 5)
 
 Between Part 2 of the PRD and Part 3: the flow and screens have held through a round and a
 prototype has been felt, but the system that serves them is not yet designed. Settled

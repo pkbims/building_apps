@@ -10,7 +10,7 @@
 
 practice_1–4 were built before the series started (renamed from app_1–4 on 2026-09-24). They stay as reference and precedent; app_1 is the first series app.
 
-Stages: 1 Research · 2 Positioning · 3 Spec · 3½ Design direction · 4 Contract freeze · 5 Build v1 · 6 Features (repeats) · 7 Ship — see `PIPELINE.md`
+Stages: 1 Research · 2 Positioning · 3 Spec = the PRD's parts: 3.1 The case · 3.2 The experience (pick v1) · 3.3 Can we build it? · 3.4 Prototype v1 · 3.5 Design direction · 3.6 Technical decisions → hand-over · 4 Contract freeze · 5 Build v1 · 6 Features (repeats) · 7 Ship — see `PIPELINE.md`
 
 ## Content pipeline
 
