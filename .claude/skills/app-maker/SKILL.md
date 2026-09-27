@@ -10,7 +10,7 @@ the terminal is for first-time setup, emergencies, and improving the App Maker i
 
 | Piece | Where | What it does |
 |---|---|---|
-| **App Maker** | `localhost:7710` — the progress visualizer's server, grown (D3). `/` is the App Maker, `/progress` the old board | Your apps as cards; one "needs you" line across all apps; inside an app, a navbar of every stage, the stage's page on the right, a Talk box under it; documents |
+| **App Maker** | `localhost:7710` — the progress visualizer's server, grown (D3). `/` is the App Maker, `/progress` the old board | Your apps as cards; one "needs you" line across all apps; inside an app, a navbar of every stage, the stage's page on the right with its Chat center; documents |
 | **One server per app** | `scripts/app_server.py <app>`, port in `<app>/.appserver.port` (first free from 7801) | Serves every html-worker page of the app at its own path (`/spec/`, `/engineering-center/`, `/research/reviewer/`) with its API at `<path>api/…`. Always on (D2): the App Maker starts it if it isn't running |
 | **Monitoring center** | `localhost:7700`, separate | The machine: every server, start / restart / stop |
 
@@ -56,7 +56,7 @@ herdr workspace. Its first prompt says **App Maker mode**. Then:
 
 **Test mode** (New app → "Test mode", or `"mock": true` in `.appmaker.json`): every stage runs on Haiku at
 low effort with a few-line fake — a tiny page, one question, one-line replies. The plumbing is real
-(workspace, sessions, servers, notifications, Send, Talk, promote); the work isn't. Use it to test the
+(workspace, sessions, servers, notifications, Send, the Chat center, promote); the work isn't. Use it to test the
 App Maker; delete the test app afterwards (close its workspace, remove its folders).
 
 ## Overall progress, the Guide, and one workspace per app
