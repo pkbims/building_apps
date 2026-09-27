@@ -242,8 +242,11 @@ function shell(a,active,inner){
   a.stages.forEach(s=>{if(s.group!==last){nav+=`<div class="g">${esc(s.group)}</div>`;last=s.group}
     nav+=`<a class="${!s.page&&!s.status?'off':''}" data-go="/${a.id}/${s.key}"><span class="d ${s.status}"></span>${esc(s.label)}${s.needs?`<em>${s.needs}</em>`:''}</a>`});
   nav+=`<div class="g">Documents</div>`+a.docs.map(d=>`<a data-go="/${a.id}/doc:${encodeURIComponent(d.path)}">📄 ${esc(d.label)}</a>`).join('');
-  const v=$('#view'); v.dataset.key='overview|'+a.id;
-  v.innerHTML=`<div class="appv"><div class="nav">${nav}</div><div class="main" style="overflow:auto">${inner}</div></div>`;
+  const v=$('#view'), key='overview|'+a.id, html=`<div class="appv"><div class="nav">${nav}</div><div class="main" style="overflow:auto">${inner}</div></div>`;
+  if(v.dataset.key===key&&v._html===html)return;   // the 15-second refresh changed nothing: leave the view (and your scroll) alone
+  const top=v.dataset.key===key&&v.querySelector('.main')?v.querySelector('.main').scrollTop:0;
+  v.dataset.key=key; v._html=html; v.innerHTML=html;
+  if(top)v.querySelector('.main').scrollTop=top;
   v.querySelectorAll('[data-go]').forEach(x=>x.onclick=()=>go(x.dataset.go));
 }
 function overview(a){
@@ -272,8 +275,10 @@ const GUIDE=[
  ['7','Ship','—','App Store review and release, then the showcase site.','—'],
 ];
 function guide(){
-  $('#appsel').style.display='none'; const v=$('#view'); v.dataset.key='guide';
-  v.innerHTML=`<div class="home"><h1>How an app gets made</h1><p class="sub">Everything happens here. You answer on each stage’s page; the line at the top tells you when anything needs you — including the rare moment a Claude session needs you in its terminal. Each stage page has a <b>💬 Talk to Claude</b> box for anything else.</p>
+  $('#appsel').style.display='none'; const v=$('#view');
+  if(v.dataset.key==='guide')return;   // static: built once, never redrawn by the refresh
+  v.dataset.key='guide';
+  v.innerHTML=`<div class="home"><h1>How an app gets made</h1><p class="sub">Everything happens here. You answer on each stage’s page; the line at the top tells you when anything needs you — including the rare moment a Claude session needs you in its terminal. Each stage page has a <b>Chat center</b> on the right — questions, notes and <b>General comment</b> for anything else.</p>
     <div class="gsteps">${GUIDE.map(([n,t,skill,body,where])=>`<div class="gstep"><div class="gn">${n}</div><div><h3>${t}</h3><p>${body}</p>
       <div class="gm"><span>Skill: <code>${skill}</code></span><span>You answer on: <b>${where}</b></span></div></div></div>`).join('')}</div>
     <p class="sub" style="margin-top:18px">Where each piece runs: the App Maker (:7710) is home · each app has one server for all its pages · the monitoring center (:7700) is for the machine.</p></div>`;
@@ -285,7 +290,8 @@ function drawPstat(){const el=document.getElementById('pstat');if(!el||!PSTAT)re
   el.innerHTML=`<span class="rtag">Round ${PSTAT.round}</span>${PSTAT.total?`<span>${PSTAT.decided}/${PSTAT.total} decided</span>`:''}`+
     `<span>${PSTAT.queued} queued</span>${PSTAT.waiting?`<span class="wt">${PSTAT.waiting} waiting</span>`:''}`}
 function render(){needsLine(); route.view==='home'?home():route.view==='guide'?guide():appView()}
-async function load(){try{M=await fetch('/api/maker').then(r=>r.json());}catch(e){M={apps:[]}} render()}
+// a failed fetch keeps the last data and leaves the view alone (an empty list would bounce you home and reload the stage page)
+async function load(){try{M=await fetch('/api/maker').then(r=>{if(!r.ok)throw 0;return r.json()});}catch(e){if(M.apps.length)return} render()}
 $('#logo').onclick=()=>go('/');
 // Mute / unmute: every Mac notification (app servers, ticker) checks this switch
 let MUTED=false;
