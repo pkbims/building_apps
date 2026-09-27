@@ -84,7 +84,7 @@ KNOWN = [
      "match": "daily-content-system/server.py", "cwd": ".", "where": ".claude/skills/daily-content-system", "cmd": "python3 .claude/skills/daily-content-system/server.py"},
     {"name": "Daily Tasks", "what": "Today's task cards", "group": "Daily",
      "match": "daily-tasks/server.py", "cwd": ".", "where": ".claude/skills/daily-tasks", "cmd": "python3 .claude/skills/daily-tasks/server.py"},
-    {"name": "App Progress Visualizer", "what": "Where every app stands: stages, v1, features, documents", "group": "Series",
+    {"name": "App Maker", "what": "Home: your apps, what needs you, every stage's page (grown from the progress visualizer)", "group": "Series",
      "match": "app-progress-visualizer/server.py", "cwd": ".", "where": ".claude/skills/app-progress-visualizer",
      "cmd": "python3 .claude/skills/app-progress-visualizer/server.py"},
     {"name": "Remotion Studio", "what": "Preview the day's edit (composition “day”)", "group": "Video",
@@ -148,12 +148,39 @@ def title_of(port: int) -> str | None:
         return None  # not HTTP, or not answering
 
 
+def app_roots() -> list:
+    """Folders the App Maker runs one server for: app_N/ and research/<niche>/ with a .appmaker.json."""
+    roots = [p for p in ROOT.iterdir() if p.is_dir() and (p / ".appmaker.json").exists()]
+    if (ROOT / "research").is_dir():
+        roots += [p for p in (ROOT / "research").iterdir() if p.is_dir() and (p / ".appmaker.json").exists()]
+    return roots
+
+
+APP_SERVER = ROOT / ".claude" / "skills" / "app-maker" / "scripts" / "app_server.py"
+
+
+def app_servers() -> list[dict]:
+    """One row per app server (App Maker, 2026-09-26): it serves every page of that app."""
+    out = []
+    for r in app_roots():
+        rel = str(r.relative_to(ROOT))
+        out.append({"name": f"{rel} — app server", "what": f"Serves every page of {rel} (the App Maker opens them)",
+                    "group": rel.split("/")[-1] if rel.startswith("research/") else rel,
+                    "match": f"app_server.py {r}", "cwd": rel, "where": rel,
+                    "cmd": f"python3 {APP_SERVER} {r}", **PLACE.get(rel, {})})
+    return out
+
+
 def worker_pages() -> list[dict]:
-    """html-worker page folders: server.py + index.html side by side."""
+    """html-worker page folders: server.py + index.html side by side — except pages inside an app,
+    which that app's one server serves (they must not get a second server writing their answers)."""
     pages = []
+    inside = app_roots()
     for sp in ROOT.rglob("server.py"):
         rel = sp.parent.relative_to(ROOT)
         if set(rel.parts) & SKIP_DIRS or rel.parts[:1] == (".claude",) or not (sp.parent / "index.html").exists():
+            continue
+        if any(r == sp.parent or r in sp.parent.parents for r in inside):
             continue
         m = re.search(r"<title>([^<]*)</title>", (sp.parent / "index.html").read_text(errors="replace"), re.I)
         app = next((p for p in rel.parts if re.fullmatch(r"(app|practice)_\d+", p)), None)
@@ -202,6 +229,10 @@ def state() -> dict:
     for k in KNOWN:
         s = claim(lambda s: k["match"] in s["cmd"])
         rows.append({**k, "key": "known:" + k["match"], "up": bool(s), "port": s and s["port"], "title": s and s["title"],
+                     "pid": s and s["pid"], "pane": s and s["pane"], "pane_tab": s and s["pane_tab"]})
+    for k in app_servers():
+        s = claim(lambda s: k["match"] in s["cmd"])
+        rows.append({**k, "key": "appserver:" + k["cwd"], "up": bool(s), "port": s and s["port"], "title": s and s["title"],
                      "pid": s and s["pid"], "pane": s and s["pane"], "pane_tab": s and s["pane_tab"]})
     for p in worker_pages():
         s = claim(lambda s: s["cwd"] == p["dir"] and "server.py" in s["cmd"])
@@ -361,13 +392,13 @@ class Handler(http.server.BaseHTTPRequestHandler):
         try:
             p = json.loads(self.rfile.read(int(self.headers.get("Content-Length", 0))) or b"{}")
             if self.path == "/api/start":
-                known = {(r["cwd"], r["cmd"]) for r in KNOWN + worker_pages()}
+                known = {(r["cwd"], r["cmd"]) for r in KNOWN + app_servers() + worker_pages()}
                 if (p.get("cwd"), p.get("cmd")) not in known:  # only start what's on the list
                     raise ValueError("unknown server")
                 return self._json({"ok": True, "msg": start(p["cwd"], p["cmd"])})
             if self.path == "/api/restart":
                 # stop, then start the same listed command in the same folder (only listed servers)
-                known = {(r["cwd"], r["cmd"]) for r in KNOWN + worker_pages()}
+                known = {(r["cwd"], r["cmd"]) for r in KNOWN + app_servers() + worker_pages()}
                 if (p.get("cwd"), p.get("cmd")) not in known:
                     raise ValueError("only listed servers can be restarted")
                 stop(int(p["pid"]), int(p["port"]))

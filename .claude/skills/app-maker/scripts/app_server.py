@@ -103,7 +103,11 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         if pg and fs.endswith(".html") and os.path.isfile(fs):
             html = open(fs, encoding="utf-8").read()
             shim = ("<script>(()=>{const P=%s;const f=window.fetch.bind(window);"
-                    "window.fetch=(u,o)=>f(typeof u==='string'&&u.startsWith('/api/')?P+u.slice(1):u,o)})()</script>"
+                    "window.fetch=(u,o)=>f(typeof u==='string'&&u.startsWith('/api/')?P+u.slice(1):u,o);"
+                    # the App Maker's theme, sent to the page inside its frame (colour tokens + light/dark)
+                    "addEventListener('message',e=>{const d=e.data;if(!d||d.type!=='am-theme')return;"
+                    "const R=document.documentElement;for(const[k,v]of Object.entries(d.vars))R.style.setProperty(k,v);"
+                    "R.dataset.theme=d.dark?'dark':'light';R.style.colorScheme=d.dark?'dark':'light'})})()</script>"
                     % json.dumps(pg[0]))
             i = html.find("<head>")
             html = html[:i + 6] + shim + html[i + 6:] if i >= 0 else shim + html

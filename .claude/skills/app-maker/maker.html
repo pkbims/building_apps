@@ -76,6 +76,19 @@ a{color:inherit}
 .msg .t{display:block;font-size:10.5px;opacity:.7;margin-top:2px}
 .ask{display:flex;gap:8px;padding:8px 16px 12px}
 .ask input{flex:1;font:inherit;font-size:13px;padding:8px 11px;border:1px solid var(--line);border-radius:9px;background:var(--bg);color:var(--ink)}
+.thpop{display:none;position:absolute;right:0;top:34px;z-index:20;width:260px;background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:14px;padding:12px;box-shadow:0 12px 30px rgba(0,0,0,.25)}
+.thpop.on{display:block}
+.thl{font-size:10.5px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin:4px 0 6px}
+.seg{display:flex;background:var(--soft);border-radius:9px;padding:3px;margin-bottom:10px}
+.seg button{flex:1;border:0;background:none;color:var(--ink);padding:5px 0;border-radius:7px;font-size:12.5px;font-weight:600}
+.seg button.on{background:var(--panel);box-shadow:0 1px 3px rgba(0,0,0,.15)}
+.sw{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.sw button{border:2px solid transparent;border-radius:10px;padding:0;height:44px;display:flex;flex-direction:column;overflow:hidden;background:none}
+.sw button.on{border-color:var(--ink)}
+.sw button i{flex:1} .sw button span{font-size:10px;padding:2px 0;background:var(--soft);color:var(--ink)}
+.thn{font-size:11.5px;color:var(--muted);margin-top:10px}
+button.lnk{font:inherit;color:#cfcfcf}
+button.lnk:hover{color:#fff}
 .toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#141414;color:#fff;padding:9px 16px;border-radius:10px;font-size:13px;display:none;z-index:9}
 @media (max-width:760px){.nav{width:170px}.home{padding:16px}}
 </style>
@@ -85,6 +98,9 @@ a{color:inherit}
   <span class="logo" id="logo">App Maker<i></i></span>
   <select id="appsel" style="display:none"></select>
   <span class="sp"></span>
+  <span style="position:relative"><button class="lnk" id="thbtn" style="background:none;cursor:pointer">🎨 Theme</button>
+    <div class="thpop" id="thpop"><div class="thl">Mode</div><div class="seg" id="thmode"></div><div class="thl">Colours</div><div class="sw" id="thpal"></div>
+    <div class="thn">Applies to the App Maker and every page inside it.</div></div></span>
   <a class="lnk" href="/progress" target="_blank">Progress board</a>
   <a class="lnk" href="http://localhost:7700/" target="_blank">Monitoring center ↗</a>
 </div>
@@ -94,6 +110,33 @@ a{color:inherit}
 
 <script>
 const $=s=>document.querySelector(s);
+// ---- themes: a palette (colour tokens for light and dark) × a mode (auto / light / dark) ----
+const T=(bg,panel,ink,muted,faint,line,accent,soft)=>({'--bg':bg,'--panel':panel,'--ink':ink,'--muted':muted,'--faint':faint,'--line':line,'--accent':accent,'--soft':soft});
+const THEMES={
+  clay:  {name:'Clay',  light:T('#f4eee2','#fdf9f1','#2a2521','#6a6157','#978d82','#e3d9c7','#b0523a','#f5e4dc'), dark:T('#1b1916','#242019','#ede4d6','#a89e8f','#766d60','#38322a','#e28f72','#3b2a24')},
+  homi:  {name:'Homi',  light:T('#f4f2f7','#ffffff','#141414','#5e5a66','#8c8896','#d8d4de','#6b3bff','#ece6ff'), dark:T('#121016','#1c1922','#efeaf7','#a9a3b6','#6f6980','#302b3a','#a48bff','#2a2240')},
+  ocean: {name:'Ocean', light:T('#eef3f7','#fbfdff','#13212c','#4f6474','#8497a5','#d5e0e8','#1f6fb2','#dcebf7'), dark:T('#0f171e','#16212b','#e2edf5','#93a8b8','#5d7182','#26333f','#5aa9e6','#1b3144')},
+  forest:{name:'Forest',light:T('#f1f4ee','#fcfdfa','#1c2419','#5b6856','#8d9988','#dce3d5','#3f7a3a','#e2eedd'), dark:T('#121611','#1a2018','#e5ecdf','#9fae98','#66735f','#2c3528','#7cc073','#213320')},
+  mono:  {name:'Mono',  light:T('#f3f3f3','#ffffff','#111111','#5f5f5f','#9a9a9a','#dddddd','#222222','#ebebeb'), dark:T('#0d0d0d','#171717','#f0f0f0','#a3a3a3','#666666','#2a2a2a','#8a8a8a','#242424')},
+};
+let TH={mode:'auto',pal:'clay'}; try{TH={...TH,...JSON.parse(localStorage.getItem('am-theme')||'{}')}}catch(e){}
+{const q=new URLSearchParams(location.search);if(q.get('pal')&&THEMES[q.get('pal')])TH.pal=q.get('pal');if(['auto','light','dark'].includes(q.get('mode')))TH.mode=q.get('mode');
+ try{if(q.get('pal')||q.get('mode'))localStorage.setItem('am-theme',JSON.stringify(TH))}catch(e){}}
+const MQ=matchMedia('(prefers-color-scheme: dark)');
+function themeNow(){const dark=TH.mode==='dark'||(TH.mode==='auto'&&MQ.matches);return{dark,vars:(THEMES[TH.pal]||THEMES.clay)[dark?'dark':'light']}}
+function applyTheme(){const t=themeNow(),R=document.documentElement;
+  for(const[k,v]of Object.entries(t.vars))R.style.setProperty(k,v);R.dataset.theme=t.dark?'dark':'light';R.style.colorScheme=t.dark?'dark':'light';
+  const f=document.getElementById('frame');if(f&&f.contentWindow)f.contentWindow.postMessage({type:'am-theme',...t},'*');
+  if(document.getElementById('thmode'))drawThemeMenu()}
+function drawThemeMenu(){
+  $('#thmode').innerHTML=[['auto','Auto'],['light','Light'],['dark','Dark']].map(([k,l])=>`<button data-m="${k}" class="${TH.mode===k?'on':''}">${l}</button>`).join('');
+  $('#thpal').innerHTML=Object.entries(THEMES).map(([k,p])=>{const v=p[themeNow().dark?'dark':'light'];
+    return `<button data-p="${k}" class="${TH.pal===k?'on':''}" title="${p.name}"><i style="background:linear-gradient(135deg,${v['--bg']} 0 50%,${v['--accent']} 50%)"></i><span>${p.name}</span></button>`}).join('');
+  $('#thmode').querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{TH.mode=b.dataset.m;saveTheme()});
+  $('#thpal').querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{TH.pal=b.dataset.p;saveTheme()});
+}
+function saveTheme(){try{localStorage.setItem('am-theme',JSON.stringify(TH))}catch(e){}applyTheme()}
+MQ.addEventListener('change',applyTheme);
 const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const ago=t=>{if(!t)return'';const s=(Date.now()-new Date(t))/1000;return s<60?'now':s<3600?Math.round(s/60)+'m ago':s<86400?Math.round(s/3600)+'h ago':new Date(t).toLocaleDateString()};
 const toast=m=>{const t=$('#toast');t.textContent=m;t.style.display='block';clearTimeout(t._h);t._h=setTimeout(()=>t.style.display='none',3500)};
@@ -163,7 +206,7 @@ function appView(){
     v.dataset.key=a.id+'|'+(doc?doc.path:st.key);
     v.innerHTML=`<div class="appv"><div class="nav" id="nav"></div><div class="main">
       <div class="head" id="head"></div>
-      ${url?`<iframe class="frame" id="frame" src="${url}"></iframe>`:`<div class="empty"><div><h2 style="margin:0 0 6px">${esc(title)}</h2>${st&&st.can_start?'Not started yet — press Start above.':'Nothing here yet for this app.'}</div></div>`}
+      ${url?`<iframe class="frame" id="frame" src="${url}" onload="applyTheme()"></iframe>`:`<div class="empty"><div><h2 style="margin:0 0 6px">${esc(title)}</h2>${st&&st.can_start?'Not started yet — press Start above.':'Nothing here yet for this app.'}</div></div>`}
       ${!doc&&st&&st.page?`<details class="talk" id="talk"><summary>💬 Talk to Claude about this stage <small id="talkwho"></small></summary><div class="thread" id="thread"></div>
         <div class="ask"><input id="talkin" placeholder="Ask, suggest, or think out loud — it goes to this stage's Claude session"><button class="btn" id="talksend">Send</button></div></details>`:''}
     </div></div>`;
@@ -192,6 +235,9 @@ async function loadTalk(){
 function render(){needsLine(); route.view==='home'?home():appView()}
 async function load(){try{M=await fetch('/api/maker').then(r=>r.json());}catch(e){M={apps:[]}} render()}
 $('#logo').onclick=()=>go('/');
+$('#thbtn').onclick=e=>{e.stopPropagation();$('#thpop').classList.toggle('on');drawThemeMenu()};
+document.addEventListener('click',e=>{if(!e.target.closest('#thpop')&&e.target.id!=='thbtn')$('#thpop').classList.remove('on')});
+applyTheme();
 route=parse(); load(); setInterval(load,15000); setInterval(loadTalk,5000);
 </script>
 </body>

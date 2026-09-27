@@ -238,9 +238,13 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             target = os.path.normpath(os.path.join(ROOT, app, rel))
             if not target.startswith(ROOT) or not os.path.isfile(target):
                 return self._html("<p>Not found.</p>", 404)
-            return self._html("<!doctype html><meta charset=utf-8><style>body{font:15px/1.6 system-ui;max-width:860px;margin:24px auto;padding:0 20px;color:#1c1912}"
-                              "table{border-collapse:collapse}td,th{border:1px solid #ddd;padding:4px 8px}pre{background:#f4f2ee;padding:10px;overflow:auto}"
-                              "@media(prefers-color-scheme:dark){body{background:#1b1917;color:#ece7df}pre{background:#26231f}td,th{border-color:#3a352f}}</style>"
+            # themed by the App Maker (it posts its colours in); plain light/dark otherwise
+            return self._html("<!doctype html><meta charset=utf-8><style>:root{--bg:#f4eee2;--panel:#fdf9f1;--ink:#2a2521;--line:#e3d9c7;--soft:#f5e4dc;--accent:#b0523a}"
+                              "@media(prefers-color-scheme:dark){:root{--bg:#1b1916;--panel:#242019;--ink:#ede4d6;--line:#38322a;--soft:#3b2a24;--accent:#e28f72}}"
+                              "body{font:15px/1.6 system-ui;max-width:860px;margin:0 auto;padding:24px 20px;background:var(--bg);color:var(--ink)}a{color:var(--accent)}"
+                              "table{border-collapse:collapse}td,th{border:1px solid var(--line);padding:4px 8px}pre,code{background:var(--soft)}pre{padding:10px;overflow:auto}</style>"
+                              "<script>addEventListener('message',e=>{const d=e.data;if(!d||d.type!=='am-theme')return;const R=document.documentElement;"
+                              "for(const[k,v]of Object.entries(d.vars))R.style.setProperty(k,v);R.style.colorScheme=d.dark?'dark':'light'})</script>"
                               + render_markdown(target))
         if u.path == "/":
             return self._html(open(MAKER_HTML, encoding="utf-8").read())

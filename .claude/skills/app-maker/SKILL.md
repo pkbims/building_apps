@@ -33,6 +33,15 @@ the terminal is for first-time setup, emergencies, and improving the App Maker i
   `research/<slug>/` with its `.appmaker.json` and starts `/research` — research runs before
   any `app_N` exists (PIPELINE stage 1); the niche shows as a card from then on.
 
+## Themes
+
+The **🎨 Theme** menu: a mode (Auto · Light · Dark) × a palette (Clay · Homi · Ocean · Forest ·
+Mono), remembered in the browser. The App Maker applies it to itself and posts it into the page
+in its frame (the app server injects a small listener into every page; `/md` documents have
+one too), so every stage and document follows the same look. `?pal=homi&mode=dark` in the URL
+sets it too. A palette is only colour tokens (`--bg --panel --ink --muted --faint --line
+--accent --soft`) — the same names the html-worker template uses; add one in `maker.html`.
+
 ## The stages in the navbar
 
 `maker.STAGES` — Research · Positioning · The case · The experience (pick v1) · Can we build
