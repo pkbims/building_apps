@@ -77,13 +77,15 @@ Decisions save the instant they are clicked. Comments do not send until the user
 That split is deliberate: decisions are state and must survive a refresh, comments are
 messages the user should be able to draft, edit and delete first.
 
-## The round loop, and the page's conversation
+## The round loop, and the Chat center
 
-The right-hand column is the page's **conversation** (rebuilt 2026-09-27): decisions in brief ("✓ 51 of
-51 decided", what changed since the last round, the full list behind "show all"), **Send** with the
-name of who receives it (`→ code-orchestrator · working`), **Comment on the whole page**, then a thread
-of everything the user said — *Waiting* expanded, *Answered* folded to one line. It scrolls with the
-page; only the Send block stays pinned.
+The right-hand column is the **Chat center** (rebuilt 2026-09-27): decisions in brief ("✓ 51 of 51
+decided", what changed since the last round, the full list behind "show all"), **Send** with the name
+of who receives it (`→ code-orchestrator · working`), then a thread of everything the user said —
+*Waiting* expanded (long conversations show only the latest message, "▸ N earlier messages"),
+*Answered* folded to one line. It is pinned at full window height with its own scroll, so the page and
+the chat scroll separately; Send stays pinned at its top. Narrow windows: a **💬 Chat center** button
+slides it in. A general question goes on the nearest block's comment button (no whole-page button).
 
 Three kinds of comment, picked on the popup, handled differently:
 

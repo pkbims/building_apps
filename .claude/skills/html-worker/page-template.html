@@ -37,9 +37,10 @@
     max-width:1400px;margin:0 auto;padding:var(--s6) var(--s6) 140px}
   @media(max-width:1200px){.layout{grid-template-columns:186px minmax(0,1fr)}
     /* narrow: the conversation slides in from the right instead of disappearing */
-    aside.right{position:fixed;top:0;right:0;bottom:0;width:min(380px,92vw);z-index:110;overflow-y:auto;
+    aside.right{position:fixed;top:0;right:0;bottom:0;max-height:none;width:min(380px,92vw);z-index:110;overflow-y:auto;
       border-radius:0;transform:translateX(105%);transition:transform .2s;box-shadow:-12px 0 40px rgba(0,0,0,.25)}
-    aside.right.open{transform:none} #cpfab{display:flex!important} .topact{top:0}}
+    aside.right.open{transform:none} #cpfab{display:flex!important}
+    html.embedded aside.right{top:0;max-height:none}}
   #cpfab{display:none;position:fixed;right:16px;bottom:16px;z-index:111;align-items:center;gap:6px;border:0;
     border-radius:999px;padding:10px 16px;background:var(--accent);color:#fff;font:inherit;font-size:13px;font-weight:700;
     cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.25)}
@@ -96,10 +97,10 @@
   details.ref{border:1px solid var(--line);border-radius:var(--r);padding:var(--s4) 18px;
     margin:var(--s4) 0;background:var(--bg)}
   details.ref summary{cursor:pointer;font-weight:650;font-size:14px;color:var(--accent)}
-  /* The right column: decisions in brief, Send, then the page's conversation. It scrolls with the
-     page (no box inside a box); only the Send block stays pinned. */
-  aside.right{align-self:start;background:var(--panel);border:1px solid var(--line);
-    border-radius:var(--r2);padding:var(--s5) 18px}
+  /* The Chat center (the right column): decisions in brief, Send, then the page's conversation.
+     Pinned at full window height with its own scroll, so the page and the chat scroll separately. */
+  aside.right{position:sticky;top:78px;align-self:start;background:var(--panel);border:1px solid var(--line);
+    border-radius:var(--r2);padding:var(--s5) 18px;max-height:calc(100vh - 92px);overflow-y:auto;overscroll-behavior:contain}
   aside.right h2{font-size:15px;margin:0}
   .bar{height:4px;background:var(--line);border-radius:2px;overflow:hidden;margin-top:9px}
   .bar i{display:block;height:100%;background:var(--accent);transition:width .3s}
@@ -115,12 +116,10 @@
   .dr.done .dot{background:var(--accent)}
   .dn{color:var(--muted);font-weight:700;flex:none}
   .dr.todo .dv{color:var(--muted);font-style:italic}
-  .topact{position:sticky;top:70px;z-index:5;background:var(--panel);padding:12px 0 8px;margin-top:6px;
-    display:flex;flex-direction:column;gap:6px}
+  .topact{position:sticky;top:calc(-1 * var(--s5));z-index:5;background:var(--panel);padding:12px 0 8px;margin-top:6px;
+    display:flex;flex-direction:column;gap:6px;border-bottom:1px solid var(--line)}
   .sendto{font-size:11.5px;color:var(--muted);text-align:center} .sendto b{color:var(--ink)}
   .sendto.busy b{color:var(--accent)}
-  .pagec{font:inherit;font-size:12.5px;border:1px dashed var(--line);background:none;color:var(--muted);
-    border-radius:10px;padding:7px;cursor:pointer} .pagec:hover{color:var(--accent);border-color:var(--accent)}
   #queue{display:flex;flex-direction:column;gap:6px;margin-top:6px}
   .sect{font-size:10.5px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin:8px 2px 0}
   .th{border:1px solid var(--line);border-radius:12px;background:var(--bg);padding:9px 10px;font-size:13px}
@@ -146,6 +145,8 @@
   .th .rb{display:flex;gap:6px;margin-top:8px}
   .th .rb input{flex:1;min-width:0;font:inherit;font-size:12.5px;border:1px solid var(--line);border-radius:8px;
     background:var(--panel);color:var(--ink);padding:5px 8px}
+  .th .earlier{font-size:11.5px;color:var(--accent);cursor:pointer;margin-top:6px}
+  .th .older{display:none} .th .older.on{display:block}
   .th .typing{font-size:12px;color:var(--muted);font-style:italic;margin-top:6px}
   .th.fold{padding:6px 10px;cursor:pointer} .th.fold:hover{border-color:var(--accent)}
   .th.fold .body{display:none}
@@ -160,7 +161,7 @@
   .empty{color:var(--muted);font-size:13px;text-align:center;padding:var(--s5) var(--s3)}
   /* Inside the App Maker the page's own header is hidden — the App Maker shows the round and the counts. */
   html.embedded header{display:none}
-  html.embedded nav.toc{top:12px} html.embedded .topact{top:6px}
+  html.embedded nav.toc{top:12px} html.embedded aside.right{top:12px;max-height:calc(100vh - 24px)}
   html.embedded section{scroll-margin-top:16px}
   button.primary{width:100%;background:var(--accent);color:#fff;border:0;padding:11px;
     border-radius:var(--r);font:inherit;font-size:13.5px;font-weight:650;cursor:pointer}
@@ -253,7 +254,7 @@ addEventListener('DOMContentLoaded',()=>{const h=document.querySelector('header'
 </main>
 
 <aside class="right">
-  <h2>Decisions</h2>
+  <h2>Chat center</h2>
   <div class="dsum"><span id="dprog">—</span><a id="dtoggle">show all</a></div>
   <div class="bar"><i id="dbar" style="width:0"></i></div>
   <div id="dchg"></div>
@@ -261,12 +262,11 @@ addEventListener('DOMContentLoaded',()=>{const h=document.querySelector('header'
   <div class="topact">
     <button class="primary" id="send">Send</button>
     <div class="sendto" id="sendto"></div>
-    <button class="pagec" id="pagec">💬 Comment on the whole page</button>
   </div>
   <div id="queue"></div>
 </aside>
 <div id="wideview"></div>
-<button id="cpfab">💬 Conversation</button>
+<button id="cpfab">💬 Chat center</button>
 </div>
 
 <div id="pop">
@@ -362,7 +362,9 @@ function item(c,wide){
   const [cls,txt]=stateOf(c), m=c.messages||[], where=c.anchor==='page'?'whole page':`on <a data-goto="${esc(c.anchor)}">${esc(c.anchorLabel||c.anchor)}</a>`;
   const fold=!wide&&!waiting(c)&&!openIds.has(c.id);
   const kind=c.kind||'change';
-  const body=`<div class="body">`+m.map(x=>`<div class="msg ${x.from==='claude'?'claude':'you'}"><span class="who">${x.from==='claude'?'Claude':'You'} · ${ago(x.t)}</span>${md(x.text||'')}</div>`).join('')+
+  const mm=x=>`<div class="msg ${x.from==='claude'?'claude':'you'}"><span class="who">${x.from==='claude'?'Claude':'You'} · ${ago(x.t)}</span>${md(x.text||'')}</div>`;
+  const older=(!wide&&m.length>1)?m.slice(0,-1):[], shown=(!wide&&m.length>1)?m.slice(-1):m;
+  const body=`<div class="body">`+(older.length?`<div class="earlier" data-earlier="${c.id}">▸ ${older.length} earlier message${older.length>1?'s':''}</div><div class="older">${older.map(mm).join('')}</div>`:'')+shown.map(mm).join('')+
     (c.status==='queued'?`<div class="act"><button data-del="${c.id}">Delete</button></div>`:
      (c.suggest?`<div class="act"><button class="pri" data-mkchange="${c.id}">Make it a change request</button><button data-nothanks="${c.id}">No thanks</button></div>`:'')+
      (!m.length||m[m.length-1].from!=='you'?'':'<div class="typing">'+(AGENT.status==='working'?'Claude is busy — your message is next.':'Claude is answering…')+'</div>')+
@@ -378,11 +380,11 @@ function renderQueue(){
   $('#sendto').className='sendto'+(AGENT.status==='working'?' busy':'');
   const all=[...S.comments].reverse(), wait=all.filter(waiting), done=all.filter(c=>!waiting(c));
   if(document.activeElement&&document.activeElement.dataset&&document.activeElement.dataset.rin)return;   // don't redraw under a reply being typed
-  $('#queue').innerHTML=(all.length?'':'<div class="empty">No comments yet.<br>Hover any block and press <em>comment</em>, or comment on the whole page.</div>')+
+  $('#queue').innerHTML=(all.length?'':'<div class="empty">No messages yet.<br>Hover any block and press <em>comment</em> to ask, suggest a change or leave a note.</div>')+
     (wait.length?'<div class="sect">Waiting</div>'+wait.map(c=>item(c)).join(''):'')+
     (done.length?'<div class="sect">Answered — click to open</div>'+done.map(c=>item(c)).join(''):'');
   wireThread($('#queue'));
-  const nw=wait.length; $('#cpfab').innerHTML='💬 Conversation'+(nw?` <em>${nw}</em>`:'');
+  const nw=wait.length; $('#cpfab').innerHTML='💬 Chat center'+(nw?` <em>${nw}</em>`:'');
   report();
 }
 function wireThread(root){
@@ -390,6 +392,8 @@ function wireThread(root){
     const id=el.dataset.th; if(el.classList.contains('fold')){openIds.add(id)}else if(!waiting(S.comments.find(c=>c.id===id)||{})){openIds.delete(id)} renderQueue()});
   root.querySelectorAll('[data-goto]').forEach(a=>a.onclick=()=>{const el=document.querySelector(`[data-anchor="${a.dataset.goto}"]`);
     if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.classList.remove('flash');void el.offsetWidth;el.classList.add('flash')}});
+  root.querySelectorAll('[data-earlier]').forEach(e=>e.onclick=()=>{const o=e.nextElementSibling;o.classList.toggle('on');
+    e.textContent=o.classList.contains('on')?'▾ hide earlier messages':`▸ ${o.children.length} earlier message${o.children.length>1?'s':''}`});
   root.querySelectorAll('[data-del]').forEach(b=>b.onclick=async()=>{const r=await post('/api/comment/delete',{id:b.dataset.del});
     S.comments=r.comments;renderQueue();markAnchors();renderDecisions()});
   root.querySelectorAll('[data-rsend]').forEach(b=>{const id=b.dataset.rsend, inp=root.querySelector(`[data-rin="${id}"]`);
@@ -430,7 +434,7 @@ function setKind(k){$(`#pop input[name=kind][value="${k}"]`).checked=true;
 let target=null;
 document.addEventListener('click',e=>{
   const btn=e.target.closest('.cbtn');
-  if(!btn){ if(!e.target.closest('#pop')&&!e.target.closest('#pagec')) $('#pop').style.display='none'; return }
+  if(!btn){ if(!e.target.closest('#pop')) $('#pop').style.display='none'; return }
   const el=btn.closest('[data-anchor]');
   target={anchor:el.dataset.anchor,label:el.dataset.label,
           text:(el.querySelector('h2,.q')||{}).textContent||''};
@@ -448,10 +452,7 @@ $('#popadd').onclick=async()=>{
     anchorLabel:target.label,anchorText:target.text,text:t,kind:k,now});
   S.comments=r.comments; $('#pop').style.display='none';
   renderQueue(); markAnchors(); renderDecisions(); toast(now?(AGENT.agent?'Sent to '+AGENT.agent:'Sent'):'Queued — goes with Send')};
-// "Comment on the whole page": the same popup, pinned to the page instead of a block
-$('#pagec').onclick=e=>{e.stopPropagation();target={anchor:'page',label:'Whole page',text:''};
-  const p=$('#pop'),r=$('#pagec').getBoundingClientRect();$('#popanchor').textContent='The whole page';$('#poptext').value='';setKind('question');
-  p.style.display='block';p.style.top=(window.scrollY+r.bottom+8)+'px';p.style.left=Math.max(12,r.right-328+window.scrollX)+'px';$('#poptext').focus()};
+
 // ---- "Claude is working" indicator ----
 // After a send, poll until the page file changes (Claude rebuilt it) or every comment in that
 // round is marked addressed. Survives a reload (localStorage), so a page that reloads itself

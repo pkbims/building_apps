@@ -24,8 +24,8 @@ the terminal is for first-time setup, emergencies, and improving the App Maker i
   `code-orchestrator/scripts/post.py` (open asks, and to-dos marked `--now`). A stage that
   wants to ask the user uses the same `post.py` against its own page folder. Herdr's
   `blocked` state (an approval or question in a terminal) shows as a black "Terminal" chip.
-- **The conversation** (D5, rebuilt 2026-09-27): every html-worker page's right column is a thread —
-  comment on a block or on the whole page; Questions and Notes go straight to the stage's Claude session
+- **The Chat center** (D5, rebuilt 2026-09-27): every html-worker page's right column is a thread —
+  comment on a block; Questions and Notes go straight to the stage's Claude session
   (the app server bundles a burst into one wake-up), Changes wait for Send. Claude answers **on the page**:
   `python3 .claude/skills/html-worker/reply.py <page_dir> <id> "answer"` (`--suggest` if the answer implies a
   change — the user then presses "Make it a change request"). Replies continue the thread. Under Send the
