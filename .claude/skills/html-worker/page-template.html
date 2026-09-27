@@ -35,7 +35,15 @@
   button.theme:hover{color:var(--accent);border-color:var(--accent)}
   .layout{display:grid;grid-template-columns:206px minmax(0,1fr) 350px;gap:var(--s7);
     max-width:1400px;margin:0 auto;padding:var(--s6) var(--s6) 140px}
-  @media(max-width:1200px){.layout{grid-template-columns:186px minmax(0,1fr)}aside.right{display:none}}
+  @media(max-width:1200px){.layout{grid-template-columns:186px minmax(0,1fr)}
+    /* narrow: the conversation slides in from the right instead of disappearing */
+    aside.right{position:fixed;top:0;right:0;bottom:0;width:min(380px,92vw);z-index:110;overflow-y:auto;
+      border-radius:0;transform:translateX(105%);transition:transform .2s;box-shadow:-12px 0 40px rgba(0,0,0,.25)}
+    aside.right.open{transform:none} #cpfab{display:flex!important} .topact{top:0}}
+  #cpfab{display:none;position:fixed;right:16px;bottom:16px;z-index:111;align-items:center;gap:6px;border:0;
+    border-radius:999px;padding:10px 16px;background:var(--accent);color:#fff;font:inherit;font-size:13px;font-weight:700;
+    cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+  #cpfab em{font-style:normal;background:#fff;color:var(--accent);border-radius:999px;padding:0 7px;font-size:11.5px}
   @media(max-width:820px){.layout{grid-template-columns:1fr}nav.toc{display:none}}
   nav.toc{position:sticky;top:78px;align-self:start;max-height:calc(100vh - 110px);
     overflow-y:auto;font-size:13px}
@@ -258,6 +266,7 @@ addEventListener('DOMContentLoaded',()=>{const h=document.querySelector('header'
   <div id="queue"></div>
 </aside>
 <div id="wideview"></div>
+<button id="cpfab">💬 Conversation</button>
 </div>
 
 <div id="pop">
@@ -334,6 +343,7 @@ function renderDecisions(){
     el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash')});
   report();
 }
+$('#cpfab').onclick=()=>$('aside.right').classList.toggle('open');
 $('#dtoggle').onclick=()=>{const l=$('#dlist');l.hidden=!l.hidden;$('#dtoggle').textContent=l.hidden?'show all':'hide'};
 // ---- The page's conversation: every comment is a small thread; answers come back here, not to the terminal ----
 let AGENT={agent:null,status:null}, openIds=new Set();
@@ -372,6 +382,7 @@ function renderQueue(){
     (wait.length?'<div class="sect">Waiting</div>'+wait.map(c=>item(c)).join(''):'')+
     (done.length?'<div class="sect">Answered — click to open</div>'+done.map(c=>item(c)).join(''):'');
   wireThread($('#queue'));
+  const nw=wait.length; $('#cpfab').innerHTML='💬 Conversation'+(nw?` <em>${nw}</em>`:'');
   report();
 }
 function wireThread(root){

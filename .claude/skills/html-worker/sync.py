@@ -26,7 +26,7 @@ PARTS = {  # name: regex over the page; each must match exactly once in the temp
     "style":  r"<style>.*?</style>\n",
     "theme":  r'<script id="theme">.*?</script>\n',
     "pop":    r'<div id="pop">.*?</div>\n</div>\n',
-    "aside":  r'<aside class="right">.*?</aside>\n(?:<div id="wideview"></div>\n)?',   # the right column (conversation panel)
+    "aside":  r'<aside class="right">.*?</aside>\n(?:<div id="wideview"></div>\n)?(?:<button id="cpfab">.*?</button>\n)?',   # the right column (conversation panel)
     "script": r"<script>\n(?!\(\(\)=>).*?</script>\n",     # the page script, not the theme one
 }
 FRESH = {}
