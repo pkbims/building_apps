@@ -3,12 +3,8 @@
 
     ticker.py <room> --app <app_dir> [--orchestrator code-orchestrator] [--workers backend,ios] [--interval 300]
 
-Every 10 s:
-  - the user sent a round on the page (INBOX.md changed) → type a prompt into the orchestrator's
-    herdr pane, so it wakes up and reads it. More reliable than a watcher inside a Claude session,
-    which the harness can reap.
-  - a new question appeared in feed.json → a macOS notification, so the user hears about it even
-    with the page closed.
+Every 10 s: "Get me an update" pressed → prompt the orchestrator. (A sent round and a new question
+are handled by the app's server — app-maker/scripts/app_server.py — for every page of the app.)
 Every 30 s:
   - a worker posted a new open checkpoint or question in any worktree's ORCH-QUESTIONS.md, or a
     worker went from working to idle/done → type a prompt into the orchestrator's pane. Workers
@@ -108,6 +104,25 @@ def commits(app, n=60):
     return {k: v[:15] for k, v in lanes.items()}
 
 
+def activity(name):
+    """What an agent is doing right now, read off its pane (no model): its latest '⏺' line —
+    the sentence it last said about its own work — and whether it has ended its turn only to
+    wait on its own background job (a test run or build: "1 shell still running")."""
+    raw = sh(["herdr", "agent", "read", name])
+    try:
+        raw = json.loads(raw)["result"].get("text", raw)
+    except (ValueError, KeyError, TypeError, AttributeError):
+        pass
+    said = [l.strip()[1:].strip() for l in raw.splitlines() if l.strip().startswith("⏺")]
+    # keep sentences, drop raw tool calls ("Update(app/main.py)", "Bash(...)") and timings
+    said = [re.sub(r"\s·\s\d+[smh]$", "", t) for t in said if not re.match(r"^[A-Z][A-Za-z]*\(", t)]
+    text = re.sub(r"\s+", " ", said[-1]) if said else ""
+    if len(text) > 170:
+        text = text[:167].rsplit(" ", 1)[0] + "…"
+    waiting = bool(re.search(r"(shell|monitor)s? still running", raw[-2000:]))
+    return {"text": text, "waiting": waiting}
+
+
 def context_use(name):
     """A worker's context use in percent, read off its Claude status line ("ctx 53%/530k")."""
     raw = sh(["herdr", "agent", "read", name])
@@ -190,27 +205,8 @@ def main():
                 status["update_forwarded"] = ask
             else:
                 status["update_forwarded"] = "no orchestrator running"
-        # 1. a round was sent → wake the orchestrator
-        m = os.path.getmtime(inbox) if os.path.exists(inbox) else 0
-        if m != last_inbox:
-            last_inbox = m
-            if x.orchestrator in agents():
-                sh(["herdr", "agent", "prompt", x.orchestrator,
-                    f"The user sent a round on the engineering center. Read {room}/INBOX.md and act on it: answer "
-                    f"questions with post.py update, resolve answered asks with post.py resolve, then mark the "
-                    f"comments addressed (curl -s -X POST localhost:$(cat {app}/.appserver.port)/engineering-center/api/comment/addressed -d '{{}}')."])
-                status["last_forwarded"] = datetime.now(timezone.utc).isoformat(timespec="seconds")
-
-        # 2. a new question for the user → notify
-        try:
-            feed = json.load(open(os.path.join(room, "feed.json")))["items"]
-        except (OSError, ValueError, KeyError):
-            feed = []
-        for it in feed:
-            if it.get("kind") == "ask" and it.get("status") == "open" and it["id"] not in seen_asks:
-                seen_asks.add(it["id"])
-                notify(f"{name} engineering center — needs you", it.get("text", "")[:180])
-
+        # (Sends and new-question notifications are handled by the app's server for every page —
+        #  App Maker, 2026-09-26. The ticker keeps the heartbeat, commits, runtime and update requests.)
         # 3. the heartbeat
         if time.time() - last_beat >= x.interval:
             ag = agents()
@@ -249,6 +245,8 @@ def main():
         if time.time() - last_commits >= 30:          # commits are cheap to read: every 30 s
             status["commits"] = commits(app)
             last_commits = time.time()
+            # what each agent is doing right now, for the page (no model, no tokens)
+            status["activity"] = {w: activity(w) for w in [x.orchestrator] + workers if w in agents()}
             # 4. worker events → wake the orchestrator
             wake = []
             for title in sorted(open_entries(app) - seen_entries):
