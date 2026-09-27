@@ -33,6 +33,29 @@ the terminal is for first-time setup, emergencies, and improving the App Maker i
   `research/<slug>/` with its `.appmaker.json` and starts `/research` — research runs before
   any `app_N` exists (PIPELINE stage 1); the niche shows as a card from then on.
 
+## Stage sessions — how research, positioning, the PRD and design work inside the App Maker
+
+A stage's Claude session is started by the App Maker (New app, or a Start button) in the app's own
+herdr workspace. Its first prompt says **App Maker mode**. Then:
+
+- **The page lives in the app folder** (`research/<slug>/reviewer/`, `app_N/positioning/reviewer/`,
+  `app_N/spec/`, …) with `index.html` + `state.json`. The app's server serves it at its path — never
+  start a page server, never run an INBOX watcher.
+- **Ask the user on the page**: `python3 .claude/skills/code-orchestrator/scripts/post.py <page_dir> ask <id> "…"
+  --option … --rec …` (a question shows in the "needs you" line and as a Mac notification), `update "…"` for
+  news, `resolve <id>` when answered. Questions they ask in comments are answered with `update`, not only in
+  the terminal.
+- **Woken on Send**: the app server types a prompt into your pane when the user presses Send; read
+  `<page_dir>/INBOX.md`, act, then mark comments addressed with the curl the prompt gives.
+- **Talk box**: reply with `python3 .claude/skills/app-maker/scripts/talk.py <page_dir> "…"`.
+- **Research becomes the app** at positioning: `maker_cli.py promote research/<slug> app_N` moves the
+  folder into `app_N/research/` and carries `.appmaker.json` (workspace, sessions) with it.
+
+**Test mode** (New app → "Test mode", or `"mock": true` in `.appmaker.json`): every stage runs on Haiku at
+low effort with a few-line fake — a tiny page, one question, one-line replies. The plumbing is real
+(workspace, sessions, servers, notifications, Send, Talk, promote); the work isn't. Use it to test the
+App Maker; delete the test app afterwards (close its workspace, remove its folders).
+
 ## Overall progress, the Guide, and one workspace per app
 
 - `#/<app>` opens **Overall progress**: every pipeline stage with its status, its checks and its

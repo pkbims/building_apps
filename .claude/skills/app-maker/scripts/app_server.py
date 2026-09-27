@@ -16,7 +16,7 @@ talk.json and typed into that stage's Claude session through herdr (the session 
 Localhost only. Hidden files (.env, .git, …) are never served. Port: first free from 7801,
 written to <app>/.appserver.port. Only this server writes a page's state.json while it runs.
 """
-import http.server, json, os, socket, socketserver, subprocess, sys, threading
+import http.server, json, os, socket, socketserver, subprocess, sys, threading, time
 from datetime import datetime, timezone
 from urllib.parse import unquote, urlparse
 
@@ -167,7 +167,8 @@ class Handler(http.server.SimpleHTTPRequestHandler):
                 st["batches"].append({"round": len(st["batches"]) + 1, "ts": now(), "commentIds": ids,
                                       "decisions": dict(st["decisions"])})
                 hw.save(st); hw.write_inbox(st)
-                return self._json({"ok": True, "sent": len(ids)})
+                woke = wake(pg, len(st["batches"]))
+                return self._json({"ok": True, "sent": len(ids), "woke": woke})
         return self._json({"error": "unknown endpoint"}, 404)
 
     def _talk(self, pg, payload):
@@ -195,6 +196,61 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         return {"ok": True, "delivered": r.returncode == 0, "agent": agent}
 
 
+def wake(pg, rnd):
+    """The user pressed Send on a page → type a prompt into that stage's Claude session (herdr).
+    Replaces the watcher each session used to run on INBOX.md, which the harness could reap."""
+    agent = agents().get(pg[0].strip("/") or ".")
+    if not agent:
+        return None
+    port = open(os.path.join(APP, ".appserver.port")).read().strip()
+    post = os.path.join(ROOT, ".claude", "skills", "code-orchestrator", "scripts", "post.py")
+    r = subprocess.run(["herdr", "agent", "prompt", agent,
+                        f"The user sent round {rnd} on the {pg[0]} page of {os.path.basename(APP)}. Read {pg[1]}/INBOX.md and act on it: "
+                        f"change requests → revise the page; questions and notes → answer on the page with "
+                        f"python3 {post} {pg[1]} update \"...\" (never only in this terminal). Then mark the comments addressed: "
+                        f"curl -s -X POST localhost:{port}{pg[0]}api/comment/addressed -d '{{}}'"],
+                       capture_output=True, text=True, timeout=20)
+    return agent if r.returncode == 0 else None
+
+
+def notify(title, text):
+    esc = lambda s: s.replace("\\", "\\\\").replace('"', '\\"')
+    subprocess.run(["osascript", "-e", f'display notification "{esc(text)}" with title "{esc(title)}" sound name "Glass"'],
+                   capture_output=True, timeout=10)
+
+
+def watch_questions():
+    """Every page's feed.json (post.py's format): a new open question → one macOS notification.
+    Seen ids are kept in <page>/.seen_asks so a restart doesn't repeat them. Pages that already had
+    questions when the server started are marked seen once; a page made later notifies from its first."""
+    for p, d in pages().items():
+        sp = os.path.join(d, ".seen_asks")
+        if not os.path.exists(sp):
+            try:
+                items = json.load(open(os.path.join(d, "feed.json"))).get("items", [])
+            except (OSError, ValueError):
+                items = []
+            json.dump(sorted(i["id"] for i in items if i.get("kind") == "ask"), open(sp, "w"))
+    while True:
+        for p, d in pages().items():
+            try:
+                items = json.load(open(os.path.join(d, "feed.json"))).get("items", [])
+            except (OSError, ValueError):
+                continue
+            sp = os.path.join(d, ".seen_asks")
+            try:
+                seen = set(json.load(open(sp)))
+            except (OSError, ValueError):
+                seen = set()                     # a page made after the server started: all its questions are new
+            fresh = [i for i in items if i.get("kind") == "ask" and i.get("status") == "open" and i["id"] not in seen]
+            for i in fresh:
+                notify(f"{os.path.basename(APP)} · {p.strip('/') or 'app'} — needs you", i.get("text", "")[:180])
+                seen.add(i["id"])
+            if fresh:
+                json.dump(sorted(seen), open(sp, "w"))
+        time.sleep(10)
+
+
 def free_port(start=7801):
     for p in range(start, start + 100):
         with socket.socket() as s:
@@ -209,5 +265,6 @@ if __name__ == "__main__":
     port = int(os.environ.get("PORT") or free_port())
     httpd = socketserver.ThreadingTCPServer(("127.0.0.1", port), Handler)
     open(os.path.join(APP, ".appserver.port"), "w").write(str(port))
+    threading.Thread(target=watch_questions, daemon=True).start()
     print(f"{os.path.basename(APP)} app server on http://localhost:{port}/  ({len(pages())} pages)")
     httpd.serve_forever()

@@ -188,9 +188,10 @@ function home(){
     v.innerHTML=`<div class="home"><h1>Your apps</h1><p class="sub">Open an app to see its stages and pages. Everything that needs you is in the line above.</p>
       <div class="cards"><div id="cardlist" style="display:contents"></div>
       <div class="card new"><h3>+ New app</h3><input id="nname" placeholder="A short name, e.g. Pantry"><textarea id="nprob" placeholder="The problem, in one line — e.g. people with food in the fridge can't decide what to cook"></textarea>
+        <label style="font-size:12.5px;color:var(--muted);display:flex;gap:6px;align-items:center"><input type="checkbox" id="nmock"> Test mode — fake stages on the cheapest model</label>
         <button class="btn" id="nstart">Start research</button><span style="font-size:12px;color:var(--muted)">Opens a Claude session in a new herdr tab running /research. Its review page appears here.</span></div>
       </div></div>`;
-    $('#nstart').onclick=async()=>{$('#nstart').disabled=true;const r=await post('/api/maker/new',{name:$('#nname').value,problem:$('#nprob').value});
+    $('#nstart').onclick=async()=>{$('#nstart').disabled=true;const r=await post('/api/maker/new',{name:$('#nname').value,problem:$('#nprob').value,mock:$('#nmock').checked});
       toast(r.error||r.msg);$('#nstart').disabled=false;if(!r.error){$('#nname').value='';$('#nprob').value='';load()}};
   }
   $('#cardlist').innerHTML=M.apps.map(a=>{const now=a.stages.find(s=>s.status==='now');

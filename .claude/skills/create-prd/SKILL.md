@@ -16,6 +16,14 @@ feature**, and for a new idea a **what it does** list, then the Anchored-to bloc
 research file (its **table stakes** — the features every competitor has). If the USP or
 viral-feature line is missing, stop and say so: the v1 feature list is drafted from them.
 
+## App Maker mode
+
+When the session was started from the App Maker (its first prompt says "App Maker mode", or the
+folder has a `.appmaker.json`), follow the `app-maker` skill's **Stage sessions** rules instead of
+the page-server and terminal steps below: the page lives in the app folder and the app's one server
+serves it — no page server of your own, no watcher; ask the user on the page with `post.py`; answer
+Talk messages with `talk.py`; you are woken when the user presses Send.
+
 ## Order, and why it is fixed
 
 Always **the case → the experience → the build**. The user settles why before how, and a

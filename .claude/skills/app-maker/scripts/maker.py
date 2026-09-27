@@ -28,12 +28,39 @@ STAGES = [
     ("features",    "Features",                  "",                     "",               ["6"],  "After v1"),
     ("ship",        "Ship",                      "",                     "",               ["7"],  "After v1"),
 ]
-# What pressing Start on a stage runs, in a new herdr tab (model, effort, first prompt).
+# What pressing Start on a stage runs, in a new herdr tab in the app's workspace (model, effort, first prompt).
+MODE = (" — App Maker mode (see the app-maker skill, 'Stage sessions'): your page lives in the app folder and the "
+        "app's server serves it (don't start a page server); ask the user on the page with post.py, answer Talk "
+        "messages with talk.py, and wait to be woken when they press Send (no watcher).")
 START = {
-    "positioning": ("opus", "high", "/positioning {app}"),
-    "case":        ("opus", "high", "/create-prd {app} — HTML mode"),
-    "design":      ("opus", "high", "/create-ui-design-direction {app}"),
+    "positioning": ("opus", "high", "/positioning {app}" + MODE),
+    "case":        ("opus", "high", "/create-prd {app} — HTML mode" + MODE),
+    "design":      ("opus", "high", "/create-ui-design-direction {app}" + MODE),
     "engineering": ("opus", "high", "/code-orchestrator {app}"),
+}
+# Test mode: the plumbing is real (workspace, sessions, servers, questions, Send, Talk); the work is a
+# few-line fake on the cheapest model, so a full run costs almost nothing.
+POST = os.path.join(ROOT, ".claude", "skills", "code-orchestrator", "scripts", "post.py")
+TALK = os.path.join(HERE, "talk.py")
+CLI = os.path.join(HERE, "maker_cli.py")
+TEMPLATE = os.path.join(ROOT, ".claude", "skills", "html-worker", "page-template.html")
+MOCK_RULES = ("TEST MODE — a plumbing test of the App Maker. Do NOT run any skill, search the web, or write real "
+              "content; keep every step to a few lines and every reply to one line. Make a tiny page: copy "
+              f"{TEMPLATE} to <page>/index.html, set its <title> and <h1>, and put in ONE decision block (data-radio, two "
+              "options) inside a data-anchor section; create <page>/state.json containing {{}}. Then post one question: "
+              f"python3 {POST} <page> ask <id> \"<question>\" --option yes Yes \"mock\" --option no No \"mock\" --rec yes. "
+              "Then stop. When you are woken with a round or a Talk message: post one update line with "
+              f"python3 {POST} <page> update \"...\", resolve the ask (python3 {POST} <page> resolve <id>), mark comments "
+              f"addressed as the prompt says, and answer any Talk message with python3 {TALK} <page> \"...\".")
+MOCK = {
+    "research":    "{rules} Stage: RESEARCH for '{name}'. <page> = {dir}/reviewer. Question id: build_it — 'Build {name}? (mock)'.",
+    "positioning": "{rules} Stage: POSITIONING. First turn the research into an app: python3 " + CLI + " promote {app} {test_app} "
+                   "— from then on the app folder is {root}/{test_app}. <page> = {root}/{test_app}/positioning/reviewer. "
+                   "Question id: angle — 'Which angle? (mock)'.",
+    "case":        "{rules} Stage: PRD. <page> = {dir}/spec. Question id: prd_ok — 'Is the case right? (mock)'.",
+    "design":      "{rules} Stage: DESIGN DIRECTION. <page> = {dir}/design/brief. Question id: vibe — 'Pick a vibe (mock)'.",
+    "engineering": "{rules} Stage: ENGINEERING CENTER — do not start workers or write code. <page> = {dir}/engineering-center. "
+                   "Question id: go — 'Start the build? (mock)'.",
 }
 DOCS = [("PRD", "PRD.md"), ("Positioning", "positioning.md"), ("Design brief", "design/BRIEF.md"),
         ("Design handoff", "design/HANDOFF.md"), ("Clickable app", "design/clickable/app.dc.html"),
@@ -118,7 +145,8 @@ def app_dirs(scan):
     rdir = os.path.join(ROOT, "research")
     for n in sorted(os.listdir(rdir)) if os.path.isdir(rdir) else []:
         d = os.path.join(rdir, n)
-        if os.path.exists(os.path.join(d, ".appmaker.json")):
+        c = cfg(d)
+        if c and not c.get("moved_to"):
             out.append(("research/" + n, d, None))
     return out
 
@@ -183,24 +211,66 @@ def talk(app_id, page, text):
     return json.loads(urllib.request.urlopen(req, timeout=30).read())
 
 
-def start_stage(app_id, stage):
-    """D6: a Start button — opens that stage's Claude session in a new herdr tab and records it."""
-    if stage not in START:
-        raise ValueError("this stage has no Start button")
+def start_stage(app_id, stage, mock=None):
+    """D6: a Start button — opens that stage's Claude session in a new tab in the app's workspace, and records it.
+    Test mode (the app's .appmaker.json has "mock": true, or mock=True) runs a few-line fake on Haiku."""
     d = os.path.join(ROOT, app_id)
-    model, effort, prompt = START[stage]
+    c = cfg(d)
+    mock = c.get("mock") if mock is None else mock
+    if stage not in (MOCK if mock else START):
+        raise ValueError("this stage has no Start button")
     name = f"{os.path.basename(app_id)}-{stage}"
-    env = dict(os.environ, **({"WS": cfg(d)["workspace"]} if cfg(d).get("workspace") else {}))
-    r = subprocess.run([START_AGENT, name, d, model, effort, prompt.format(app=app_id)],
-                       capture_output=True, text=True, timeout=90, env=env)
+    if mock:
+        model, effort = "haiku", "low"
+        prompt = MOCK[stage].format(rules=MOCK_RULES, name=c.get("name", app_id), dir=d, app=app_id, root=ROOT,
+                                    test_app=c.get("test_app", "app_99"))
+    else:
+        model, effort, prompt = START[stage]
+        prompt = prompt.format(app=app_id)
+    env = dict(os.environ, **({"WS": c["workspace"]} if c.get("workspace") else {}))
+    r = subprocess.run([START_AGENT, name, d, model, effort, prompt], capture_output=True, text=True, timeout=90, env=env)
     if r.returncode != 0:
         raise RuntimeError(r.stderr.strip() or "could not start the session")
     page = next(p for k, _, p, *_ in STAGES if k == stage)
     c = cfg(d); c.setdefault("agents", {})[page] = name; save_cfg(d, c)
-    return f"started {name} in its own tab ({model}, {effort} effort)"
+    return f"started {name} in the app's workspace ({model}, {effort} effort{', test mode' if mock else ''})"
 
 
-def new_app(name, problem):
+def promote(src_id, app_id):
+    """Research becomes an app: research/<slug>/ moves into <app_id>/research/, and its App Maker settings
+    (workspace, sessions) come with it, so the card switches over instead of showing twice."""
+    import shutil, signal
+    src, dst = os.path.join(ROOT, src_id), os.path.join(ROOT, app_id)
+    c = cfg(src)
+    old = None
+    try:
+        old = int(open(os.path.join(src, ".appserver.port")).read().strip())
+    except (OSError, ValueError):
+        pass
+    os.makedirs(dst, exist_ok=True)
+    if os.path.exists(os.path.join(dst, "research")):
+        raise ValueError(f"{app_id}/research already exists")
+    shutil.move(src, os.path.join(dst, "research"))
+    moved = os.path.join(dst, "research")
+    for f in (".appmaker.json", ".appserver.port"):
+        if os.path.exists(os.path.join(moved, f)):
+            os.remove(os.path.join(moved, f))
+    agents = {("research/" + k if not k.startswith(("research/", "positioning/", "spec", "design/", "engineering")) else k): v
+              for k, v in c.get("agents", {}).items()}
+    c.update(agents=agents, promoted_from=src_id)
+    save_cfg(dst, c)
+    if old:   # the research folder's server is serving a folder that moved — replace it with the app's
+        out = subprocess.run(["lsof", "-ti", f"tcp:{old}", "-sTCP:LISTEN"], capture_output=True, text=True).stdout.split()
+        for pid in out:
+            try:
+                os.kill(int(pid), signal.SIGTERM)
+            except (OSError, ValueError):
+                pass
+    port = app_server(dst)
+    return f"{src_id} is now {app_id} (server on {port})"
+
+
+def new_app(name, problem, mock=False):
     """New app: its own herdr workspace (like "decorate interior app"), then research in its first tab.
     Research runs before any app_N folder exists (PIPELINE stage 1)."""
     slug = re.sub(r"[^a-z0-9]+", "-", name.lower()).strip("-")
@@ -218,10 +288,15 @@ def new_app(name, problem):
     except (ValueError, KeyError):
         raise RuntimeError(out.stderr.strip() or "could not create the herdr workspace")
     agent = f"{slug}-research"
-    save_cfg(d, {"name": name, "problem": problem, "workspace": ws, "agents": {"reviewer": agent}})
-    r = subprocess.run([START_AGENT, agent, ROOT, "opus", "high",
-                        f"/research {problem} — niche folder: research/{slug}/, review page in research/{slug}/reviewer/ "
-                        f"(the App Maker serves it; don't start a separate page server). Ask the user on the page, not here."],
+    save_cfg(d, {"name": name, "problem": problem, "workspace": ws, "agents": {"reviewer": agent},
+                 **({"mock": True, "test_app": "app_99"} if mock else {})})
+    if mock:
+        model, effort = "haiku", "low"
+        prompt = MOCK["research"].format(rules=MOCK_RULES, name=name, dir=d, app=f"research/{slug}", root=ROOT, test_app="app_99")
+    else:
+        model, effort = "opus", "high"
+        prompt = (f"/research {problem} — niche folder: research/{slug}/, review page in research/{slug}/reviewer/" + MODE)
+    r = subprocess.run([START_AGENT, agent, ROOT, model, effort, prompt],
                        capture_output=True, text=True, timeout=90, env=dict(os.environ, WS=ws, PANE=pane))
     if r.returncode != 0:
         raise RuntimeError(r.stderr.strip() or "could not start the research session")

@@ -25,6 +25,6 @@ else
   pane=$(herdr tab create --workspace "$ws" --label "$name" --cwd "$cwd" --no-focus |
     python3 -c "import json,sys;print(json.load(sys.stdin)['result']['root_pane']['pane_id'])")
 fi
-herdr agent start "$name" --kind claude --pane "$pane" -- --model "$model" --effort "$effort" --name "$name" >/dev/null
+herdr agent start "$name" --kind claude --pane "$pane" -- --model "$model" --effort "$effort" --permission-mode auto --name "$name" >/dev/null
 herdr agent prompt "$name" "$prompt" >/dev/null
 echo "$pane"

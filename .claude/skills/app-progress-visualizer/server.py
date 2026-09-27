@@ -204,7 +204,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
                 if p == "/api/maker/start":
                     return self._json({"ok": True, "msg": maker.start_stage(body["app"], body["stage"])})
                 if p == "/api/maker/new":
-                    return self._json({"ok": True, "msg": maker.new_app(body.get("name", ""), body.get("problem", ""))})
+                    return self._json({"ok": True, "msg": maker.new_app(body.get("name", ""), body.get("problem", ""), bool(body.get("mock")))})
             except Exception as e:
                 return self._json({"error": str(e)[:300]}, 400)
             return self._json({"error": "unknown"}, 404)
