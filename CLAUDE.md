@@ -58,7 +58,11 @@ changes. Deviate only with a stated reason in that app's CLAUDE.md.
   - *iOS:* Swift, XcodeGen-generated project, unit + UI tests. Ship stage includes
     signing and store review.
   - *Web:* not yet settled — decide explicitly in the first web app, then record here.
-- **Hosting:** local via Compose so far. The first deploy to a real host settles this.
+- **Hosting:** settled by app_1's first deploy (2026-09-26): one small DigitalOcean droplet
+  running the same Compose file, plus a `deploy/` layer — Caddy for automatic HTTPS (the only
+  thing published), secrets made on the server, `deploy.sh` that ships a `git archive` and rolls
+  back if `/health` isn't ok, nightly backups. Tradeoff: a monthly bill and our own upkeep, in
+  exchange for one machine that runs exactly what runs locally.
 
 ## Layout
 
