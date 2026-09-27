@@ -171,6 +171,9 @@ each on, what's next, anything waiting on the user. Check git and the workers fi
 - An **ask** the moment something needs the user. Options carry the three plain lines' worth
   of detail and **exactly one `--rec`** (series rule). An ask with no options is answered by
   comment. Never ask only in the terminal.
+- **Whenever you need the user, or have just unblocked them, it goes in Needs you** (user, 2026-09-27):
+  an ask (it notifies) or a `--now` to-do — "the fix is merged, press ⌘R now", a to-do that just became
+  actionable, a decision. An update alone never counts: updates don't notify.
 - **Anything that needs the terminal is an ask, never an update** — only asks notify. Some
   answers only count typed in the terminal (Claude Code's safety check won't take an
   irreversible action — a history rewrite, a force-push — on the strength of a page file).
