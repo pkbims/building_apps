@@ -15,7 +15,11 @@ name=$1 model=$2 effort=$3 prompt=$4
 info=$(herdr agent get "$name") || { echo "no agent named $name" >&2; exit 1; }
 pane=$(printf '%s' "$info" | python3 -c "import json,sys;r=json.load(sys.stdin)['result'];print(r.get('agent',r)['pane_id'])")
 cwd=$(printf '%s' "$info" | python3 -c "import json,sys;r=json.load(sys.stdin)['result'];print(r.get('agent',r).get('cwd',''))")
-[ -z "$(git -C "$cwd" status --porcelain 2>/dev/null)" ] || { echo "$name has uncommitted work in $cwd — commit first" >&2; exit 1; }
+# Workers must be clean. The orchestrator's checkout also holds other sessions' uncommitted
+# files (e.g. the PRD page's spec/), so its restart passes SKIP_GIT_CHECK=1.
+if [ "${SKIP_GIT_CHECK:-}" != 1 ]; then
+  [ -z "$(git -C "$cwd" status --porcelain 2>/dev/null)" ] || { echo "$name has uncommitted work in $cwd — commit first" >&2; exit 1; }
+fi
 
 herdr agent prompt "$name" "/exit" >/dev/null
 for _ in $(seq 1 30); do                       # wait until Claude has left the pane

@@ -127,10 +127,14 @@ something must be fixed first — a checkpoint that waits on you leaves a worker
    Then move the Progress meter: `post.py $ROOM step <half> <k> done --note "checked and merged <date>"`
    and `post.py $ROOM step <half> <k+1> doing`. Set each half's steps once, from the build
    order, with `post.py $ROOM plan <half> "<step>" …` (plain words — the user reads them).
-4. **A worker's context fills** — the ticker reports it at 60% and 80%. Workers keep
-   `<half>/WORKER-NOTES.md` current at every checkpoint; restart one with
-   `.claude/scripts/restart-agent.sh <name> sonnet high "<read AGENT.md, WORKER-NOTES.md, …>"`
-   at its next checkpoint (60%) or right after it commits (80%).
+4. **Context fills — the ticker handles it (context manager, 2026-09-27).** Sessions are treated
+   like servers. At 70% the ticker asks the agent (worker or orchestrator) to drain: finish,
+   commit, update its notes (`WORKER-NOTES.md` / `HANDOFF.md`), `touch <room>/.handover/<name>.ready`,
+   stop. When it's ready, idle and (for a worker) clean, the ticker restarts it under the same
+   herdr name with a resume prompt, confirms it's up, and posts one line. Nudge at 85%. One
+   restart at a time; wake-ups for the orchestrator are held while it restarts; a snapshot of
+   the build is left in `.handover/snapshot.json`. Force one with `touch .handover/<name>.request`.
+   When the ticker asks you to hand over, do it at your next clean point.
 5. **Stage changes** — update `PROGRESS.md` and the app's `CLAUDE.md`; post an update.
 
 **"Get me an update"** — a button on the page. The ticker sees it within ~10 s and prompts you:
