@@ -77,31 +77,48 @@ Decisions save the instant they are clicked. Comments do not send until the user
 That split is deliberate: decisions are state and must survive a refresh, comments are
 messages the user should be able to draft, edit and delete first.
 
-## The round loop
+## The round loop, and the page's conversation
 
-1. User clicks and comments. Nothing reaches you.
-2. User presses **Confirm & send**. The server snapshots decisions into a round, marks
-   comments sent, and writes `INBOX.md`.
-3. You read `INBOX.md` — it holds the comments, what changed since the last round, what is
-   still unanswered, and every decision as of now.
-4. `INBOX.md` sorts comments into three kinds — the user picks the kind on the comment
-   popup — and they are handled differently:
-   - **Change request** — revise the page. The page is the spec; the revision is the
-     answer.
-   - **Question** — answer it **in the terminal, not on the page.** Answering on the page
-     bloats the spec with explanation and drifts it toward whatever the question hinted
-     at, costing a round either way. If the answer changes a decision, the user turns
-     that into a change request next round, deliberately.
-   - **Comment** — context, a reaction, a preference, something the user wants you to
-     know. Take it on board and **acknowledge it in the terminal** in a line, saying
-     what you took from it. Don't revise the page for it; if it clearly implies a change,
-     say so and let the user confirm. Keeps the user free to think out loud without
-     every remark becoming an edit.
-   No server restart is needed for HTML changes.
-5. Mark comments addressed so the next round does not repeat them:
-   `curl -s -X POST localhost:$(cat <dir>/.port)/api/comment/addressed -d '{}'` — or if that endpoint is
-   absent, set `addressed: true` **through the server**, never by editing the file.
-6. Tell the user what changed and what is now open.
+The right-hand column is the page's **conversation** (rebuilt 2026-09-27): decisions in brief ("✓ 51 of
+51 decided", what changed since the last round, the full list behind "show all"), **Send** with the
+name of who receives it (`→ code-orchestrator · working`), **Comment on the whole page**, then a thread
+of everything the user said — *Waiting* expanded, *Answered* folded to one line. It scrolls with the
+page; only the Send block stays pinned.
+
+Three kinds of comment, picked on the popup, handled differently:
+
+- **Change request** — waits in the thread until **Send**; revise the page. The page is the spec;
+  the revision is the answer.
+- **Question** — goes **straight away**. Answer it **on the page, in its thread** — never only in the
+  terminal: `python3 .claude/skills/html-worker/reply.py <page_dir> <id> "answer"`. Short, plain;
+  `**bold**`, `` `code` ``, line breaks and `- ` bullets render. Don't revise the page for a question:
+  if the answer implies a change, add `--suggest` — the page shows **Make it a change request** and
+  the user decides.
+- **Note** — goes straight away; acknowledge it in one line with `reply.py` (what you took from it).
+
+The user can **reply** under any answer; the follow-up comes with the whole conversation, so answer
+the follow-up, not the first question again.
+
+**How you hear about it.** Inside an app, the App Maker's app server types a prompt into your pane:
+immediately for **Send** (a round — read `INBOX.md`), and for questions/notes/replies a few seconds
+after the last one, bundled, with each id and its conversation. Without the App Maker, the page's own
+server writes `INBOX.md` on every message and send, and the watcher below is the fallback.
+
+The round itself:
+
+1. The user presses **Send**. The server snapshots decisions into a round, marks queued changes
+   sent, and writes `INBOX.md` — what changed, what is still unanswered, every decision, and every
+   open comment with its id and conversation.
+2. Revise the page for change requests; answer anything still open with `reply.py`. No server
+   restart is needed for HTML changes.
+3. Mark comments addressed so the next round does not repeat them:
+   `curl -s -X POST localhost:$(cat <dir>/.port)/api/comment/addressed -d '{}'` (inside an app:
+   `localhost:$(cat <app>/.appserver.port)/<page path>/api/comment/addressed`) — always **through the
+   server**, never by editing `state.json`.
+4. Say in the thread (or the terminal, if no one is watching the page) what changed and what is open.
+
+Inside the App Maker the page hides its own header (it runs in a frame); the App Maker shows the
+round and the counts in its header, from the page's `report()` message.
 
 ## The "Claude is working" bar
 

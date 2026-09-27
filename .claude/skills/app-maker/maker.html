@@ -64,11 +64,6 @@ a{color:inherit}
 .head .sp{flex:1}
 .frame{flex:1;border:0;width:100%;background:var(--bg);min-height:0}
 .empty{flex:1;display:grid;place-items:center;color:var(--muted);text-align:center;padding:30px}
-/* talk */
-.talk{flex:none;border-top:1px solid var(--line);background:var(--panel)}
-.talk summary{padding:8px 16px;cursor:pointer;font-size:13px;font-weight:700;list-style:none;display:flex;gap:8px;align-items:center}
-.talk summary::-webkit-details-marker{display:none}
-.talk summary small{font-weight:500;color:var(--muted)}
 .thread{max-height:220px;overflow:auto;padding:0 16px 6px;display:flex;flex-direction:column;gap:6px}
 .msg{max-width:78%;padding:7px 11px;border-radius:12px;font-size:13px;white-space:pre-wrap}
 .msg.you{align-self:flex-end;background:var(--accent);color:#fff;border-bottom-right-radius:4px}
@@ -103,6 +98,9 @@ table.ov .st .why{font-size:12px;color:var(--muted);margin-top:2px} table.ov .nu
 .gstep .gn{flex:none;min-width:54px;height:30px;border-radius:9px;background:var(--accent);color:#fff;font-weight:800;display:grid;place-items:center;font-size:13px;padding:0 8px}
 .gstep h3{margin:2px 0 4px;font-size:15.5px} .gstep p{margin:0;color:var(--ink);font-size:13.5px;line-height:1.55}
 .gm{display:flex;gap:16px;flex-wrap:wrap;margin-top:8px;font-size:12px;color:var(--muted)} .gm code{font-size:11.5px;background:var(--soft);padding:1px 5px;border-radius:5px}
+.pstat{display:flex;gap:10px;align-items:center;font-size:12px;color:var(--muted);margin-left:14px}
+.pstat .rtag{font-size:10.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;background:var(--soft);color:var(--accent);border-radius:6px;padding:2px 7px}
+.pstat .wt{color:var(--hot);font-weight:700}
 .toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#141414;color:#fff;padding:9px 16px;border-radius:10px;font-size:13px;display:none;z-index:9}
 @media (max-width:760px){.nav{width:170px}.home{padding:16px}}
 </style>
@@ -222,25 +220,18 @@ function appView(){
   const v=$('#view');
   const same=v.dataset.key===a.id+'|'+(doc?doc.path:st.key);
   if(!same){
-    v.dataset.key=a.id+'|'+(doc?doc.path:st.key);
+    v.dataset.key=a.id+'|'+(doc?doc.path:st.key); PSTAT=null;
     v.innerHTML=`<div class="appv"><div class="nav" id="nav"></div><div class="main">
       <div class="head" id="head"></div>
       ${url?`<iframe class="frame" id="frame" src="${url}" onload="applyTheme()"></iframe>`:`<div class="empty"><div><h2 style="margin:0 0 6px">${esc(title)}</h2>${st&&st.can_start?'Not started yet — press Start above.':'Nothing here yet for this app.'}</div></div>`}
-      ${!doc&&st&&st.page?`<details class="talk" id="talk"><summary>💬 Talk to Claude about this stage <small id="talkwho"></small></summary><div class="thread" id="thread"></div>
-        <div class="ask"><input id="talkin" placeholder="Ask, suggest, or think out loud — it goes to this stage's Claude session"><button class="btn" id="talksend">Send</button></div></details>`:''}
+
     </div></div>`;
-    try{if(localStorage.getItem('talk-open')==='1'&&$('#talk'))$('#talk').open=true}catch(e){}
-    if($('#talk'))$('#talk').ontoggle=()=>{try{localStorage.setItem('talk-open',$('#talk').open?'1':'0')}catch(e){}};
-    if($('#talksend')){const send=async()=>{const t=$('#talkin').value.trim();if(!t)return;$('#talkin').value='';
-        const r=await post('/api/maker/talk',{app:a.id,page:st.page,text:t});toast(r.error||(r.delivered?'Sent to '+r.agent:(r.why||'Saved — no Claude session for this stage')));loadTalk()};
-      $('#talksend').onclick=send;$('#talkin').onkeydown=e=>{if(e.key==='Enter')send()}}
   }
   $('#nav').innerHTML=groups;
   $('#nav').querySelectorAll('[data-go]').forEach(x=>x.onclick=()=>go(x.dataset.go));
-  $('#head').innerHTML=`<div><div class="crumb">${esc(a.name)} › ${esc(doc?'Documents':st.group)}</div><h2>${esc(title)}</h2></div><span class="sp"></span>${head}${url?`<a class="lnk" style="font-size:12px;color:var(--muted)" href="${url}" target="_blank">open on its own ↗</a>`:''}`;
+  $('#head').innerHTML=`<div><div class="crumb">${esc(a.name)} › ${esc(doc?'Documents':st.group)}</div><h2>${esc(title)}</h2></div><span class="pstat" id="pstat"></span><span class="sp"></span>${head}${url?`<a class="lnk" style="font-size:12px;color:var(--muted)" href="${url}" target="_blank">open on its own ↗</a>`:''}`;
+  drawPstat();
   if($('#startbtn'))$('#startbtn').onclick=async()=>{$('#startbtn').disabled=true;const r=await post('/api/maker/start',{app:a.id,stage:st.key});toast(r.error||r.msg);load()};
-  if($('#talkwho'))$('#talkwho').textContent=st.agent?'→ '+st.agent:'— no Claude session for this stage yet';
-  loadTalk();
 }
 // ---- Overall progress: every pipeline stage, its checks and documents (from scan.py, one source) ----
 const NAVKEY={'1':'research','2':'positioning','3.1':'case','3.2':'experience','3.3':'canbuild','3.4':'prototype','3.5':'design','3.6':'technical','4':'engineering','5':'engineering','6':'features','7':'ship'};
@@ -287,22 +278,19 @@ function guide(){
       <div class="gm"><span>Skill: <code>${skill}</code></span><span>You answer on: <b>${where}</b></span></div></div></div>`).join('')}</div>
     <p class="sub" style="margin-top:18px">Where each piece runs: the App Maker (:7710) is home · each app has one server for all its pages · the monitoring center (:7700) is for the machine.</p></div>`;
 }
-let talkKey='';
-async function loadTalk(){
-  const a=M.apps.find(x=>x.id===route.app); const st=a&&a.stages.find(s=>s.key===route.stage)||(a&&a.stages.find(s=>s.status==='now'));
-  if(!$('#thread')||!st||!st.page)return;
-  const t=await fetch(`/api/maker/talk?app=${encodeURIComponent(a.id)}&page=${encodeURIComponent(st.page)}`).then(r=>r.json()).catch(()=>({messages:[]}));
-  const k=JSON.stringify(t.messages);if(k===talkKey)return;talkKey=k;
-  $('#thread').innerHTML=(t.messages||[]).slice(-30).map(m=>`<div class="msg ${m.from==='you'?'you':'claude'}">${esc(m.text)}<span class="t">${m.from==='you'?'you':'Claude'} · ${ago(m.t)}</span></div>`).join('')||'<p style="color:var(--muted);font-size:12.5px;margin:4px 0">No messages yet.</p>';
-  $('#thread').scrollTop=1e9;
-}
+// A page inside the frame reports its round and counts (html-worker template, report()); shown in our header.
+let PSTAT=null;
+addEventListener('message',e=>{const d=e.data;if(!d||d.type!=='am-page')return;PSTAT=d;drawPstat()});
+function drawPstat(){const el=document.getElementById('pstat');if(!el||!PSTAT)return;
+  el.innerHTML=`<span class="rtag">Round ${PSTAT.round}</span>${PSTAT.total?`<span>${PSTAT.decided}/${PSTAT.total} decided</span>`:''}`+
+    `<span>${PSTAT.queued} queued</span>${PSTAT.waiting?`<span class="wt">${PSTAT.waiting} waiting</span>`:''}`}
 function render(){needsLine(); route.view==='home'?home():route.view==='guide'?guide():appView()}
 async function load(){try{M=await fetch('/api/maker').then(r=>r.json());}catch(e){M={apps:[]}} render()}
 $('#logo').onclick=()=>go('/');
 $('#thbtn').onclick=e=>{e.stopPropagation();$('#thpop').classList.toggle('on');drawThemeMenu()};
 document.addEventListener('click',e=>{if(!e.target.closest('#thpop')&&e.target.id!=='thbtn')$('#thpop').classList.remove('on')});
 applyTheme();
-route=parse(); load(); setInterval(load,15000); setInterval(loadTalk,5000);
+route=parse(); load(); setInterval(load,15000);
 </script>
 </body>
 </html>

@@ -9,9 +9,10 @@ at its own path — /spec/, /engineering-center/, /research/reviewer/ — and ge
 <path>api/... The pages are unchanged: they call /api/..., so this server injects one line
 into each page that points those calls at the page's own path.
 
-Also: POST <page>/api/talk — the "Talk to Claude" box. The message is saved in the page's
-talk.json and typed into that stage's Claude session through herdr (the session is named in
-<app>/.appmaker.json → "agents"); it replies with scripts/talk.py.
+Also: the page's conversation. A question, note or reply goes straight to that stage's Claude
+session (named in <app>/.appmaker.json → "agents"), bundled if several arrive together; Send wakes it
+for the round. Claude answers on the page with html-worker/reply.py. GET <page>api/agent says who
+answers and whether they're busy.
 
 Localhost only. Hidden files (.env, .git, …) are never served. Port: first free from 7801,
 written to <app>/.appserver.port. Only this server writes a page's state.json while it runs.
@@ -90,6 +91,8 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         if u.path == "/api/pages":
             return self._json({"app": os.path.basename(APP), "pages": sorted(pages())})
         pg = page_for(u.path)
+        if pg and u.path == pg[0] + "api/agent":
+            return self._json(agent_status(pg))
         if pg and u.path == pg[0] + "api/state":
             with LOCK:
                 self._point(pg[1])
@@ -134,66 +137,15 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             payload = json.loads(self.rfile.read(int(self.headers.get("Content-Length", 0))) or b"{}")
         except json.JSONDecodeError:
             return self._json({"error": "bad json"}, 400)
-        if ep == "/api/talk":
-            return self._json(self._talk(pg, payload))
         with LOCK:
             self._point(pg[1])
-            st = hw.load()
-            if ep == "/api/groups":
-                st["groups"] = payload.get("groups", []); hw.save(st); return self._json({"ok": True})
-            if ep == "/api/decision":
-                if payload.get("value") is None:
-                    st["decisions"].pop(payload["id"], None)
-                else:
-                    st["decisions"][payload["id"]] = payload["value"]
-                hw.save(st); return self._json({"ok": True})
-            if ep == "/api/comment":
-                payload.update(status="queued", ts=now()); st["comments"].append(payload)
-                hw.save(st); return self._json({"ok": True, "comments": st["comments"]})
-            if ep == "/api/comment/delete":
-                st["comments"] = [c for c in st["comments"] if c.get("id") != payload.get("id")]
-                hw.save(st); return self._json({"ok": True, "comments": st["comments"]})
-            if ep == "/api/comment/addressed":
-                n = 0
-                for c in st["comments"]:
-                    if c.get("status") == "sent" and not c.get("addressed"):
-                        c["addressed"] = True; n += 1
-                hw.save(st); return self._json({"ok": True, "addressed": n})
-            if ep == "/api/send":
-                ids = []
-                for c in st["comments"]:
-                    if c.get("status") == "queued":
-                        c["status"] = "sent"; ids.append(c.get("id"))
-                st["batches"].append({"round": len(st["batches"]) + 1, "ts": now(), "commentIds": ids,
-                                      "decisions": dict(st["decisions"])})
-                hw.save(st); hw.write_inbox(st)
-                woke = wake(pg, len(st["batches"]))
-                return self._json({"ok": True, "sent": len(ids), "woke": woke})
-        return self._json({"error": "unknown endpoint"}, 404)
-
-    def _talk(self, pg, payload):
-        """A message from the page's "Talk to Claude" box → talk.json + the stage's Claude session."""
-        text = (payload.get("text") or "").strip()
-        if not text:
-            return {"error": "empty"}
-        path = os.path.join(pg[1], "talk.json")
-        with LOCK:
-            try:
-                talk = json.load(open(path))
-            except (OSError, ValueError):
-                talk = {"messages": []}
-            talk["messages"].append({"from": "you", "t": now(), "text": text})
-            json.dump(talk, open(path, "w"), indent=1)
-        agent = agents().get(pg[0].strip("/") or ".")
-        if not agent:
-            return {"ok": True, "delivered": False, "why": "no Claude session for this stage — start one from the App Maker"}
-        reply = os.path.join(ROOT, ".claude", "skills", "app-maker", "scripts", "talk.py")
-        r = subprocess.run(["herdr", "agent", "prompt", agent,
-                            f"The user wrote in the Talk box on the {pg[0]} page of {os.path.basename(APP)}: \"{text}\" — "
-                            f"answer them there (not only in this terminal): python3 {reply} {pg[1]} \"<your reply>\". "
-                            f"Plain English, short. If it asks for a change, do it, then reply what you did."],
-                           capture_output=True, text=True, timeout=20)
-        return {"ok": True, "delivered": r.returncode == 0, "agent": agent}
+            obj, event = hw.api(ep, payload)       # html-worker's own page actions — one implementation
+            rnd = len(hw.load()["batches"])
+        if event == "send":
+            obj["woke"] = wake(pg, rnd)
+        elif event == "message":
+            PENDING[pg[0]] = (pg, time.time())      # bundled: see bundle_messages()
+        return self._json(obj, 404 if obj.get("error") == "unknown endpoint" else 200)
 
 
 def wake(pg, rnd):
@@ -211,6 +163,51 @@ def wake(pg, rnd):
                         f"curl -s -X POST localhost:{port}{pg[0]}api/comment/addressed -d '{{}}'"],
                        capture_output=True, text=True, timeout=20)
     return agent if r.returncode == 0 else None
+
+
+PENDING = {}                      # page path → (page, time of the last message)
+BUNDLE_S = 8                      # messages sent within this many seconds go to Claude as one wake-up
+
+
+def agent_status(pg):
+    name = agents().get(pg[0].strip("/") or ".")
+    if not name:
+        return {"agent": None, "status": None}
+    try:
+        a = json.loads(subprocess.run(["herdr", "agent", "get", name], capture_output=True, text=True, timeout=5).stdout)
+        return {"agent": name, "status": a["result"]["agent"].get("agent_status")}
+    except (ValueError, KeyError, OSError, subprocess.TimeoutExpired):
+        return {"agent": name, "status": "not running"}
+
+
+def bundle_messages():
+    """Questions, notes and replies go straight to Claude — but a burst becomes one wake-up (fewer turns)."""
+    while True:
+        time.sleep(2)
+        for key, (pg, t) in list(PENDING.items()):
+            if time.time() - t < BUNDLE_S:
+                continue
+            PENDING.pop(key, None)
+            agent = agents().get(pg[0].strip("/") or ".")
+            if not agent:
+                continue            # no session for this page: INBOX.md (written by html-worker) is the fallback
+            with LOCK:
+                hw.HERE, hw.STATE, hw.INBOX = pg[1], os.path.join(pg[1], "state.json"), os.path.join(pg[1], "INBOX.md")
+                st = hw.load()
+            open_ = [c for c in st["comments"] if c.get("status") == "sent" and not c.get("addressed")]
+            if not open_:
+                continue
+            lines = []
+            for c in open_:
+                convo = " | ".join(f"{'Claude' if m.get('from') == 'claude' else 'You'}: {m.get('text', '')}" for m in c.get("messages", []))
+                lines.append(f"[id {c['id']} · {c.get('kind', 'change')} · on {c.get('anchorLabel') or c.get('anchor')}] {c.get('text', '')}"
+                             + (f" — conversation so far: {convo}" if convo else ""))
+            reply = os.path.join(ROOT, ".claude", "skills", "html-worker", "reply.py")
+            subprocess.run(["herdr", "agent", "prompt", agent,
+                            f"The user wrote on the {pg[0]} page of {os.path.basename(APP)} (answer each ON THE PAGE, short and plain: "
+                            f"python3 {reply} {pg[1]} <id> \"answer\" — add --suggest if the answer implies changing the page; "
+                            f"never edit the page for a question): " + "  ||  ".join(lines)],
+                           capture_output=True, text=True, timeout=20)
 
 
 def notify(title, text):
@@ -266,5 +263,6 @@ if __name__ == "__main__":
     httpd = socketserver.ThreadingTCPServer(("127.0.0.1", port), Handler)
     open(os.path.join(APP, ".appserver.port"), "w").write(str(port))
     threading.Thread(target=watch_questions, daemon=True).start()
+    threading.Thread(target=bundle_messages, daemon=True).start()
     print(f"{os.path.basename(APP)} app server on http://localhost:{port}/  ({len(pages())} pages)")
     httpd.serve_forever()

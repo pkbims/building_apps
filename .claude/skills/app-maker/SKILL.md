@@ -1,6 +1,6 @@
 ---
 name: app-maker
-description: The App Maker — the home page for making apps (localhost:7710, grown from the progress visualizer). Lists every app, shows what needs the user across all apps, opens any stage's page inside it with a left navbar of stages, a Talk-to-Claude box per stage, Start buttons for stages and "New app" to start research. Each app has ONE server (app_server.py) for all its pages. Use when the user asks for the App Maker, wants to start a new app, open a stage, or asks why a page or app server isn't running.
+description: The App Maker — the home page for making apps (localhost:7710, grown from the progress visualizer). Lists every app, shows what needs the user across all apps, opens any stage's page inside it with a left navbar of stages, Start buttons for stages and "New app" to start research. Each app has ONE server (app_server.py) for all its pages. Use when the user asks for the App Maker, wants to start a new app, open a stage, or asks why a page or app server isn't running.
 ---
 
 # App Maker
@@ -24,10 +24,13 @@ the terminal is for first-time setup, emergencies, and improving the App Maker i
   `code-orchestrator/scripts/post.py` (open asks, and to-dos marked `--now`). A stage that
   wants to ask the user uses the same `post.py` against its own page folder. Herdr's
   `blocked` state (an approval or question in a terminal) shows as a black "Terminal" chip.
-- **Talk box** (D5): the App Maker → the app server's `<page>api/talk` → the message is saved
-  in the page's `talk.json` and typed into the stage's Claude session through herdr. The
-  session replies with `python3 .claude/skills/app-maker/scripts/talk.py <page_dir> "reply"`.
-  Which session answers which page: `<app>/.appmaker.json → "agents": {"<page path>": "<herdr name>"}`.
+- **The conversation** (D5, rebuilt 2026-09-27): every html-worker page's right column is a thread —
+  comment on a block or on the whole page; Questions and Notes go straight to the stage's Claude session
+  (the app server bundles a burst into one wake-up), Changes wait for Send. Claude answers **on the page**:
+  `python3 .claude/skills/html-worker/reply.py <page_dir> <id> "answer"` (`--suggest` if the answer implies a
+  change — the user then presses "Make it a change request"). Replies continue the thread. Under Send the
+  page says who receives it ("→ code-orchestrator · working"). Which session answers which page:
+  `<app>/.appmaker.json → "agents": {"<page path>": "<herdr name>"}`.
 - **Start buttons** (D6): `maker.START` maps a stage to its skill; pressing Start opens a herdr
   tab (`start-agent.sh`) and records the session in `.appmaker.json`. **New app** creates
   `research/<slug>/` with its `.appmaker.json` and starts `/research` — research runs before
@@ -47,7 +50,7 @@ herdr workspace. Its first prompt says **App Maker mode**. Then:
   the terminal.
 - **Woken on Send**: the app server types a prompt into your pane when the user presses Send; read
   `<page_dir>/INBOX.md`, act, then mark comments addressed with the curl the prompt gives.
-- **Talk box**: reply with `python3 .claude/skills/app-maker/scripts/talk.py <page_dir> "…"`.
+- **Answers**: `python3 .claude/skills/html-worker/reply.py <page_dir> <id> "…"` — on the page, never only in the terminal.
 - **Research becomes the app** at positioning: `maker_cli.py promote research/<slug> app_N` moves the
   folder into `app_N/research/` and carries `.appmaker.json` (workspace, sessions) with it.
 

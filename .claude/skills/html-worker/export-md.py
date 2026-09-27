@@ -45,6 +45,7 @@ def raw(n, br="\n"):
     """Plain text of a subtree. `br` is what a <br> becomes."""
     if isinstance(n, str): return n
     if n.tag == "br": return br
+    if n.tag == "button": return ""
     return "".join(raw(k, br) for k in n.kids)
 
 
@@ -52,6 +53,11 @@ def inline(n):
     """Inline markdown of a subtree."""
     if isinstance(n, str): return re.sub(r"\s+", " ", n)
     if n.tag == "br": return " "
+    if n.tag == "button": return ""                      # comment buttons are UI, not content
+    if "num" in n.cls(): return ""                       # section numbers come from the heading order
+    if n.tag == "a" and n.attrs.get("href"):             # keep links — quotes must stay traceable
+        return f"[{''.join(inline(k) for k in n.kids).strip()}]({n.attrs['href']})"
+    if n.tag == "s": return "~~" + "".join(inline(k) for k in n.kids).strip() + "~~"
     inner = "".join(inline(k) for k in n.kids)
     if n.tag in ("strong", "b"): return f"**{inner.strip()}**"
     if n.tag in ("em", "i"): return f"*{inner.strip()}*"
@@ -189,13 +195,15 @@ for sec in sections:
 
 decided = len(DEC)
 groups = len(list(find(t.root, lambda n: "data-radio" in n.attrs or "data-check" in n.attrs)))
+TITLE = os.environ.get("TITLE", "Document")
+DIR = os.path.basename(HERE)
 header = f"""# {TITLE}
 
-Generated {datetime.now().strftime('%Y-%m-%d')} from `spec/index.html` and `spec/state.json`.
+Generated {datetime.now().strftime('%Y-%m-%d')} from `{DIR}/index.html` and `{DIR}/state.json`.
 {len(state['batches'])} review rounds · {decided} decisions recorded · {groups} decision points in the document.
 
 > Generated file — do not edit by hand. Change the page or the decisions and re-run
-> `python3 spec/build_prd.py`. Evidence: `research/home-decorating.md`.
+> `OUT=<file> TITLE="<title>" python3 {DIR}/export-md.py`.
 """
 
 out = header + "".join(parts)

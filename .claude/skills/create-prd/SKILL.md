@@ -22,7 +22,7 @@ When the session was started from the App Maker (its first prompt says "App Make
 folder has a `.appmaker.json`), follow the `app-maker` skill's **Stage sessions** rules instead of
 the page-server and terminal steps below: the page lives in the app folder and the app's one server
 serves it — no page server of your own, no watcher; ask the user on the page with `post.py`; answer
-Talk messages with `talk.py`; you are woken when the user presses Send.
+questions in the page's conversation with `html-worker/reply.py <page_dir> <id> "…"` (they arrive by prompt, bundled); you are woken when the user presses Send.
 
 ## Order, and why it is fixed
 

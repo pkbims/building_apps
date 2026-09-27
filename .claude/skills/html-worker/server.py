@@ -5,13 +5,18 @@ and queued comments to disk so Claude can read them back."""
 import json
 import os
 import http.server
+import socket
 import socketserver
 from datetime import datetime, timezone
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 STATE = os.path.join(HERE, "state.json")
 INBOX = os.path.join(HERE, "INBOX.md")
-PORT = int(os.environ.get("PORT", "7777"))
+PORT_FILE = os.path.join(HERE, ".port")
+# PORT pins the port; otherwise the first free one from 7777 up is taken, so two
+# pages can run side by side. The chosen port is written to .port.
+START_PORT = int(os.environ.get("PORT", "7777"))
+PINNED = "PORT" in os.environ
 
 def _empty():
     return {"decisions": {}, "comments": [], "batches": []}
@@ -65,18 +70,36 @@ def write_inbox(state):
 
     pending = [c for c in state["comments"] if c.get("status") == "sent"
                and not c.get("addressed")]
-    lines.append(f"## Comments to address ({len(pending)})")
-    lines.append("")
-    if not pending:
-        lines.append("_None._")
-    for c in pending:
-        lines.append(f"### {c.get('anchorLabel') or c.get('anchor')}")
-        quoted = (c.get("anchorText") or "").strip()
-        if quoted:
-            lines.append(f"> {quoted[:300]}")
+    # Three kinds, handled differently: change requests revise the page; questions are
+    # answered in the terminal so the page does not churn; notes are context to take
+    # on board, acknowledged in the terminal. Comments from before the split have no
+    # kind and count as change requests.
+    changes = [c for c in pending if c.get("kind") not in ("question", "note")]
+    questions = [c for c in pending if c.get("kind") == "question"]
+    notes = [c for c in pending if c.get("kind") == "note"]
+
+    def emit(title, items):
+        lines.append(title)
         lines.append("")
-        lines.append(c.get("text", ""))
-        lines.append("")
+        if not items:
+            lines.append("_None._")
+        for c in items:
+            lines.append(f"### {c.get('anchorLabel') or c.get('anchor')}  ·  id `{c.get('id')}`")
+            quoted = (c.get("anchorText") or "").strip()
+            if quoted:
+                lines.append(f"> {quoted[:300]}")
+            lines.append("")
+            lines.append(c.get("text", ""))
+            for m in c.get("messages", []):   # the conversation so far, oldest first
+                lines.append(f"- **{'Claude' if m.get('from') == 'claude' else 'You'}:** {m.get('text', '')}")
+            lines.append("")
+
+    emit(f"## Change requests ({len(changes)}) — revise the page", changes)
+    emit(f"## Questions ({len(questions)}) — answer on the page: "
+         f"python3 .claude/skills/html-worker/reply.py <page_dir> <id> \"answer\" (add --suggest if it implies a change); do not revise the page",
+         questions)
+    emit(f"## Comments ({len(notes)}) — context to take on board; acknowledge on the page with reply.py",
+         notes)
 
     lines.append(f"## Decisions as of round {rnd}")
     lines.append("")
@@ -89,6 +112,83 @@ def write_inbox(state):
 
     with open(INBOX, "w") as f:
         f.write("\n".join(lines))
+
+
+def now_iso():
+    return datetime.now(timezone.utc).isoformat()
+
+
+def api(ep, payload):
+    """Every page action, on the page whose STATE/INBOX this module points at.
+    Returns (response, event): event is "send" (a round), "message" (a question, note or reply that
+    goes straight to Claude) or None. This server writes INBOX.md for both, so a session without the
+    App Maker still finds them; the App Maker's app server also wakes the session."""
+    state = load()
+    event = None
+    if ep == "/api/groups":
+        state["groups"] = payload.get("groups", [])
+    elif ep == "/api/decision":
+        if payload["value"] is None:  # null clears a decision, e.g. a retired id
+            state["decisions"].pop(payload["id"], None)
+        else:
+            state["decisions"][payload["id"]] = payload["value"]
+    elif ep == "/api/comment":
+        # Changes queue until Send; questions and notes go straight away ("now") and get answered in the page.
+        payload["status"] = "sent" if payload.pop("now", False) else "queued"
+        payload["ts"] = now_iso()
+        payload.setdefault("messages", [])
+        state["comments"].append(payload)
+        event = "message" if payload["status"] == "sent" else None
+    elif ep == "/api/comment/delete":
+        state["comments"] = [c for c in state["comments"] if c.get("id") != payload.get("id")]
+    elif ep == "/api/comment/update":
+        for c in state["comments"]:
+            if c.get("id") == payload.get("id"):
+                c.update({k: v for k, v in payload.get("fields", {}).items() if k in ("suggest", "text", "kind")})
+    elif ep == "/api/reply":
+        # the user continues a conversation → it goes to Claude again
+        for c in state["comments"]:
+            if c.get("id") == payload.get("id"):
+                c.setdefault("messages", []).append({"from": "you", "t": now_iso(), "text": payload.get("text", "")})
+                c["status"], c["addressed"] = "sent", False
+                event = "message"
+    elif ep == "/api/answer":
+        # Claude's answer, written by reply.py — shown under the question in the page's thread
+        for c in state["comments"]:
+            if c.get("id") == payload.get("id"):
+                c.setdefault("messages", []).append({"from": "claude", "t": now_iso(), "text": payload.get("text", "")})
+                c["addressed"] = True
+                if payload.get("suggest"):
+                    c["suggest"] = True
+    elif ep == "/api/comment/addressed":
+        n = 0
+        for c in state["comments"]:
+            if c.get("status") == "sent" and not c.get("addressed"):
+                c["addressed"] = True
+                n += 1
+        save(state)
+        return {"ok": True, "addressed": n}, None
+    elif ep == "/api/send":
+        ids = []
+        for c in state["comments"]:
+            if c.get("status") == "queued":
+                c["status"] = "sent"
+                ids.append(c.get("id"))
+        state["batches"].append({
+            "round": len(state["batches"]) + 1,
+            "ts": now_iso(),
+            "commentIds": ids,
+            "decisions": dict(state["decisions"]),
+        })
+        save(state)
+        write_inbox(state)
+        return {"ok": True, "sent": len(ids)}, "send"
+    else:
+        return {"error": "unknown endpoint"}, None
+    save(state)
+    if event == "message":
+        write_inbox(state)
+    return {"ok": True, "comments": state["comments"]}, event
 
 
 class Handler(http.server.SimpleHTTPRequestHandler):
@@ -109,6 +209,8 @@ class Handler(http.server.SimpleHTTPRequestHandler):
     def do_GET(self):
         if self.path == "/api/state":
             return self._json(load())
+        if self.path == "/api/agent":      # no App Maker here: answers come from the terminal session
+            return self._json({"agent": None, "status": None})
         if self.path == "/":
             self.path = "/index.html"
         return super().do_GET()
@@ -119,62 +221,35 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             payload = json.loads(self.rfile.read(length) or b"{}")
         except json.JSONDecodeError:
             return self._json({"error": "bad json"}, 400)
+        obj, _event = api(self.path, payload)
+        return self._json(obj, 404 if obj.get("error") == "unknown endpoint" else 200)
 
-        state = load()
 
-        if self.path == "/api/groups":
-            state["groups"] = payload.get("groups", [])
-            save(state)
-            return self._json({"ok": True})
+def in_use(port):
+    # A connect probe catches listeners that SO_REUSEADDR would let us bind over on macOS.
+    with socket.socket() as s:
+        s.settimeout(0.2)
+        return s.connect_ex(("127.0.0.1", port)) == 0
 
-        if self.path == "/api/decision":
-            state["decisions"][payload["id"]] = payload["value"]
-            save(state)
-            return self._json({"ok": True})
 
-        if self.path == "/api/comment":
-            payload["status"] = "queued"
-            payload["ts"] = datetime.now(timezone.utc).isoformat()
-            state["comments"].append(payload)
-            save(state)
-            return self._json({"ok": True, "comments": state["comments"]})
-
-        if self.path == "/api/comment/delete":
-            state["comments"] = [c for c in state["comments"]
-                                 if c.get("id") != payload.get("id")]
-            save(state)
-            return self._json({"ok": True, "comments": state["comments"]})
-
-        if self.path == "/api/comment/addressed":
-            n = 0
-            for c in state["comments"]:
-                if c.get("status") == "sent" and not c.get("addressed"):
-                    c["addressed"] = True
-                    n += 1
-            save(state)
-            return self._json({"ok": True, "addressed": n})
-
-        if self.path == "/api/send":
-            ids = []
-            for c in state["comments"]:
-                if c.get("status") == "queued":
-                    c["status"] = "sent"
-                    ids.append(c.get("id"))
-            state["batches"].append({
-                "round": len(state["batches"]) + 1,
-                "ts": datetime.now(timezone.utc).isoformat(),
-                "commentIds": ids,
-                "decisions": dict(state["decisions"]),
-            })
-            save(state)
-            write_inbox(state)
-            return self._json({"ok": True, "sent": len(ids)})
-
-        return self._json({"error": "unknown endpoint"}, 404)
+def bind():
+    host = os.environ.get("HOST", "127.0.0.1")
+    for port in [START_PORT] if PINNED else range(START_PORT, START_PORT + 100):
+        if in_use(port):
+            continue
+        try:
+            return socketserver.TCPServer((host, port), Handler), port
+        except OSError:
+            continue
+    raise SystemExit(f"port {START_PORT} is in use" if PINNED
+                     else f"no free port in {START_PORT}-{START_PORT + 99}")
 
 
 if __name__ == "__main__":
     socketserver.TCPServer.allow_reuse_address = True
-    with socketserver.TCPServer(("127.0.0.1", PORT), Handler) as httpd:
-        print(f"spec review running at http://localhost:{PORT}")
+    httpd, port = bind()
+    with open(PORT_FILE, "w") as f:
+        f.write(str(port))
+    with httpd:
+        print(f"spec review running at http://localhost:{port}")
         httpd.serve_forever()

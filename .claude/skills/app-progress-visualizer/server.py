@@ -199,8 +199,6 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             importlib.reload(maker)
             try:
                 body = json.loads(self.rfile.read(int(self.headers.get("Content-Length", 0))) or b"{}")
-                if p == "/api/maker/talk":
-                    return self._json(maker.talk(body["app"], body["page"], body["text"]))
                 if p == "/api/maker/start":
                     return self._json({"ok": True, "msg": maker.start_stage(body["app"], body["stage"])})
                 if p == "/api/maker/new":
@@ -229,9 +227,6 @@ class Handler(http.server.SimpleHTTPRequestHandler):
                 return self._json(maker.state(scanner.scan(), hidden_apps()))
             except Exception as e:
                 return self._json({"error": str(e), "apps": []}, 500)
-        if u.path == "/api/maker/talk":
-            importlib.reload(maker)
-            return self._json(maker.talk_thread((q.get("app") or [""])[0], (q.get("page") or [""])[0]))
         if u.path == "/md":
             # a document as a readable page, for the App Maker's frame
             app = (q.get("app") or [""])[0]; rel = (q.get("path") or [""])[0]

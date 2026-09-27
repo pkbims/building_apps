@@ -2,7 +2,7 @@
 
 Decisions (app-maker-vision/, round 1, 2026-09-26): D1 one server per app (app_server.py),
 D2 always on, D3 the visualizer grows into the App Maker, D4 stage pages show inside it,
-D5 a Talk box per stage, D6 Start buttons for each stage.
+D5 a conversation on every page (html-worker panel), D6 Start buttons for each stage.
 
 Everything is read from disk and herdr each time; nothing here is a second source of truth.
 """
@@ -30,18 +30,18 @@ STAGES = [
 ]
 # What pressing Start on a stage runs, in a new herdr tab in the app's workspace (model, effort, first prompt).
 MODE = (" — App Maker mode (see the app-maker skill, 'Stage sessions'): your page lives in the app folder and the "
-        "app's server serves it (don't start a page server); ask the user on the page with post.py, answer Talk "
-        "messages with talk.py, and wait to be woken when they press Send (no watcher).")
+        "app's server serves it (don't start a page server); ask the user on the page with post.py, answer "
+        "questions in the page's thread with reply.py, and wait to be woken (no watcher).")
 START = {
     "positioning": ("opus", "high", "/positioning {app}" + MODE),
     "case":        ("opus", "high", "/create-prd {app} — HTML mode" + MODE),
     "design":      ("opus", "high", "/create-ui-design-direction {app}" + MODE),
     "engineering": ("opus", "high", "/code-orchestrator {app}"),
 }
-# Test mode: the plumbing is real (workspace, sessions, servers, questions, Send, Talk); the work is a
+# Test mode: the plumbing is real (workspace, sessions, servers, questions, Send, replies); the work is a
 # few-line fake on the cheapest model, so a full run costs almost nothing.
 POST = os.path.join(ROOT, ".claude", "skills", "code-orchestrator", "scripts", "post.py")
-TALK = os.path.join(HERE, "talk.py")
+REPLY = os.path.join(ROOT, ".claude", "skills", "html-worker", "reply.py")
 CLI = os.path.join(HERE, "maker_cli.py")
 TEMPLATE = os.path.join(ROOT, ".claude", "skills", "html-worker", "page-template.html")
 MOCK_RULES = ("TEST MODE — a plumbing test of the App Maker. Do NOT run any skill, search the web, or write real "
@@ -49,9 +49,9 @@ MOCK_RULES = ("TEST MODE — a plumbing test of the App Maker. Do NOT run any sk
               f"{TEMPLATE} to <page>/index.html, set its <title> and <h1>, and put in ONE decision block (data-radio, two "
               "options) inside a data-anchor section; create <page>/state.json containing {{}}. Then post one question: "
               f"python3 {POST} <page> ask <id> \"<question>\" --option yes Yes \"mock\" --option no No \"mock\" --rec yes. "
-              "Then stop. When you are woken with a round or a Talk message: post one update line with "
+              "Then stop. When you are woken with a round or a message: post one update line with "
               f"python3 {POST} <page> update \"...\", resolve the ask (python3 {POST} <page> resolve <id>), mark comments "
-              f"addressed as the prompt says, and answer any Talk message with python3 {TALK} <page> \"...\".")
+              f"addressed as the prompt says, and answer any question or reply with python3 {REPLY} <page> <id> \"...\".")
 MOCK = {
     "research":    "{rules} Stage: RESEARCH for '{name}'. <page> = {dir}/reviewer. Question id: build_it — 'Build {name}? (mock)'.",
     "positioning": "{rules} Stage: POSITIONING. First turn the research into an app: python3 " + CLI + " promote {app} {test_app} "
@@ -196,19 +196,6 @@ def state(scan, hidden=()):
                      "needs": total + len(terminal), "terminal": terminal, "docs": docs,
                      "port": app_server(d, start=True), "build_started": started})
     return {"apps": apps, "agents": {k: v.get("agent_status") for k, v in ag.items()}}
-
-
-def talk_thread(app_id, page):
-    d = os.path.join(ROOT, app_id)
-    return _json(os.path.join(d, page, "talk.json"), {"messages": []})
-
-
-def talk(app_id, page, text):
-    d = os.path.join(ROOT, app_id)
-    port = app_server(d)
-    req = urllib.request.Request(f"http://127.0.0.1:{port}/{page}/api/talk", data=json.dumps({"text": text}).encode(),
-                                 headers={"Content-Type": "application/json"}, method="POST")
-    return json.loads(urllib.request.urlopen(req, timeout=30).read())
 
 
 def start_stage(app_id, stage, mock=None):
