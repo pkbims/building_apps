@@ -33,6 +33,18 @@ the terminal is for first-time setup, emergencies, and improving the App Maker i
   `research/<slug>/` with its `.appmaker.json` and starts `/research` — research runs before
   any `app_N` exists (PIPELINE stage 1); the niche shows as a card from then on.
 
+## Overall progress, the Guide, and one workspace per app
+
+- `#/<app>` opens **Overall progress**: every pipeline stage with its status, its checks and its
+  documents — read from `scan.py`, so it replaces the separate progress board (still at `/progress`,
+  no longer linked). Each row's **Open** jumps to that stage in the navbar.
+- **Guide** in the top bar: how an app gets made with the App Maker, stage by stage — the skill
+  behind each, and the page where the user answers. Written in `maker.html` (`GUIDE`).
+- **New app creates a herdr workspace first** (“<Name> app”, like “decorate interior app”) and starts
+  research in its first tab. The workspace id is saved in `.appmaker.json → "workspace"`; every later
+  Start button opens its tab there, and the app's server goes in that workspace's `servers-tab`
+  (`WS=` for `start-agent.sh` / `server-pane.sh`).
+
 ## Themes
 
 The **🎨 Theme** menu: a mode (Auto · Light · Dark) × a palette (Clay · Homi · Ocean · Forest ·

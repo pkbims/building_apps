@@ -87,8 +87,22 @@ a{color:inherit}
 .sw button.on{border-color:var(--ink)}
 .sw button i{flex:1} .sw button span{font-size:10px;padding:2px 0;background:var(--soft);color:var(--ink)}
 .thn{font-size:11.5px;color:var(--muted);margin-top:10px}
-button.lnk{font:inherit;color:#cfcfcf}
+button.lnk{font:inherit;font-size:12.5px;color:#cfcfcf;background:none;border:1px solid #444;border-radius:999px;padding:4px 10px}
 button.lnk:hover{color:#fff}
+table.ov{width:100%;border-collapse:collapse;font-size:13px;background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+table.ov th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);padding:9px 12px;border-bottom:1px solid var(--line);background:var(--soft)}
+table.ov td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+table.ov tr:last-child td{border-bottom:0} table.ov tr.now td{background:color-mix(in srgb,var(--now) 8%,transparent)}
+table.ov .st .why{font-size:12px;color:var(--muted);margin-top:2px} table.ov .num{color:var(--muted);text-align:center}
+.pill{font-size:11.5px;font-weight:700;border-radius:999px;padding:3px 9px;white-space:nowrap;background:var(--soft);color:var(--muted)}
+.pill.done{background:color-mix(in srgb,var(--ok) 15%,transparent);color:var(--ok)} .pill.now{background:color-mix(in srgb,var(--now) 15%,transparent);color:var(--now)}
+.gate{font-size:12.5px;color:var(--muted);padding:1px 0} .gate.ok{color:var(--ink)} .gate span{color:var(--faint)}
+.btn.sm{padding:4px 10px;font-size:12px}
+.gsteps{display:flex;flex-direction:column;gap:10px;max-width:860px}
+.gstep{display:flex;gap:14px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.gstep .gn{flex:none;min-width:54px;height:30px;border-radius:9px;background:var(--accent);color:#fff;font-weight:800;display:grid;place-items:center;font-size:13px;padding:0 8px}
+.gstep h3{margin:2px 0 4px;font-size:15.5px} .gstep p{margin:0;color:var(--ink);font-size:13.5px;line-height:1.55}
+.gm{display:flex;gap:16px;flex-wrap:wrap;margin-top:8px;font-size:12px;color:var(--muted)} .gm code{font-size:11.5px;background:var(--soft);padding:1px 5px;border-radius:5px}
 .toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#141414;color:#fff;padding:9px 16px;border-radius:10px;font-size:13px;display:none;z-index:9}
 @media (max-width:760px){.nav{width:170px}.home{padding:16px}}
 </style>
@@ -101,7 +115,7 @@ button.lnk:hover{color:#fff}
   <span style="position:relative"><button class="lnk" id="thbtn" style="background:none;cursor:pointer">🎨 Theme</button>
     <div class="thpop" id="thpop"><div class="thl">Mode</div><div class="seg" id="thmode"></div><div class="thl">Colours</div><div class="sw" id="thpal"></div>
     <div class="thn">Applies to the App Maker and every page inside it.</div></div></span>
-  <a class="lnk" href="/progress" target="_blank">Progress board</a>
+  <a class="lnk" href="#/guide">Guide</a>
   <a class="lnk" href="http://localhost:7700/" target="_blank">Monitoring center ↗</a>
 </div>
 <div class="needs" id="needs"></div>
@@ -145,10 +159,12 @@ let M={apps:[]}, route={view:'home'}, framed='';
 
 // routes: #/  ·  #/<app>/<stage>
 function parse(){const h=decodeURIComponent(location.hash.slice(1)).split('/').filter(Boolean);
-  // an app id can hold a slash (research/<niche>): the last part is the stage
   if(!h.length)return{view:'home'};
-  const stage=h.length>1?h[h.length-1]:null, app=h.length>1?h.slice(0,-1).join('/'):h[0];
-  return{view:'app',app,stage}}
+  if(h[0]==='guide')return{view:'guide'};
+  return{view:'app',parts:h}}
+// an app id can hold a slash (research/<niche>): the longest known id wins, what's left is the stage
+function resolve(parts){for(let i=parts.length;i>0;i--){const id=parts.slice(0,i).join('/');
+  if(M.apps.some(a=>a.id===id))return{app:id,stage:parts.slice(i).join('/')||null}}return{app:parts[0],stage:parts[1]||null}}
 function go(h){location.hash=h}
 window.onhashchange=()=>{route=parse();render()};
 
@@ -178,20 +194,22 @@ function home(){
       toast(r.error||r.msg);$('#nstart').disabled=false;if(!r.error){$('#nname').value='';$('#nprob').value='';load()}};
   }
   $('#cardlist').innerHTML=M.apps.map(a=>{const now=a.stages.find(s=>s.status==='now');
-    return `<div class="card" data-go="/${esc(a.id)}/${now?now.key:'research'}"><h3>${esc(a.name)}</h3><div class="id">${esc(a.id)}</div>
+    return `<div class="card" data-go="/${esc(a.id)}"><h3>${esc(a.name)}</h3><div class="id">${esc(a.id)}</div>
       <div class="stage">Now: <b>${esc(now?now.label:a.stage_name)}</b></div>
       <div class="segs">${a.stages.map(s=>`<i class="${s.status}" title="${esc(s.label)}"></i>`).join('')}</div>
       <div class="foot"><span>${a.needs?`<span class="n">${a.needs} need${a.needs>1?'':'s'} you</span>`:'nothing needs you'}</span><span>${clock(a.build_started)}</span></div></div>`}).join('');
   $('#cardlist').querySelectorAll('[data-go]').forEach(c=>c.onclick=()=>go(c.dataset.go));
 }
 function appView(){
+  if(route.parts){const r=resolve(route.parts);route.app=r.app;route.stage=r.stage}
   const a=M.apps.find(x=>x.id===route.app); if(!a)return home();
+  if(!route.stage)return overview(a);
   const sel=$('#appsel'); sel.style.display=''; sel.innerHTML=M.apps.map(x=>`<option value="${esc(x.id)}"${x.id===a.id?' selected':''}>${esc(x.name)} · ${esc(x.id)}</option>`).join('');
   sel.onchange=()=>{const b=M.apps.find(x=>x.id===sel.value);const n=b.stages.find(s=>s.status==='now');go(`/${b.id}/${n?n.key:'research'}`)};
   let st=a.stages.find(s=>s.key===route.stage); let doc=null;
   if(!st&&route.stage&&route.stage.startsWith('doc:')){doc=a.docs.find(d=>'doc:'+d.path===route.stage)}
   if(!st&&!doc)st=a.stages.find(s=>s.status==='now')||a.stages[0];
-  let groups='', last='';
+  let groups=`<a data-go="/${a.id}">📊 Overall progress</a>`, last='';
   a.stages.forEach(s=>{if(s.group!==last){groups+=`<div class="g">${esc(s.group)}</div>`;last=s.group}
     groups+=`<a class="${st&&s.key===st.key?'on':''} ${!s.page&&!s.status?'off':''}" data-go="/${a.id}/${s.key}"><span class="d ${s.status}"></span>${esc(s.label)}${s.needs?`<em>${s.needs}</em>`:''}</a>`});
   groups+=`<div class="g">Documents</div>`+a.docs.map(d=>`<a class="${doc&&doc.path===d.path?'on':''}" data-go="/${a.id}/doc:${encodeURIComponent(d.path)}">📄 ${esc(d.label)}</a>`).join('');
@@ -223,6 +241,51 @@ function appView(){
   if($('#talkwho'))$('#talkwho').textContent=st.agent?'→ '+st.agent:'— no Claude session for this stage yet';
   loadTalk();
 }
+// ---- Overall progress: every pipeline stage, its checks and documents (from scan.py, one source) ----
+const NAVKEY={'1':'research','2':'positioning','3.1':'case','3.2':'experience','3.3':'canbuild','3.4':'prototype','3.5':'design','3.6':'technical','4':'engineering','5':'engineering','6':'features','7':'ship'};
+function shell(a,active,inner){
+  const sel=$('#appsel'); sel.style.display=''; sel.innerHTML=M.apps.map(x=>`<option value="${esc(x.id)}"${x.id===a.id?' selected':''}>${esc(x.name)} · ${esc(x.id)}</option>`).join('');
+  sel.onchange=()=>go('/'+sel.value);
+  let nav=`<a class="${active==='overview'?'on':''}" data-go="/${a.id}">📊 Overall progress</a>`, last='';
+  a.stages.forEach(s=>{if(s.group!==last){nav+=`<div class="g">${esc(s.group)}</div>`;last=s.group}
+    nav+=`<a class="${!s.page&&!s.status?'off':''}" data-go="/${a.id}/${s.key}"><span class="d ${s.status}"></span>${esc(s.label)}${s.needs?`<em>${s.needs}</em>`:''}</a>`});
+  nav+=`<div class="g">Documents</div>`+a.docs.map(d=>`<a data-go="/${a.id}/doc:${encodeURIComponent(d.path)}">📄 ${esc(d.label)}</a>`).join('');
+  const v=$('#view'); v.dataset.key='overview|'+a.id;
+  v.innerHTML=`<div class="appv"><div class="nav">${nav}</div><div class="main" style="overflow:auto">${inner}</div></div>`;
+  v.querySelectorAll('[data-go]').forEach(x=>x.onclick=()=>go(x.dataset.go));
+}
+function overview(a){
+  const P=a.pipeline||[], done=P.filter(p=>p.state==='done').length, now=P.find(p=>p.state==='now');
+  const pill=s=>`<span class="pill ${s||'todo'}">${s==='done'?'✓ done':s==='now'?'● now':s==='skip'?'skipped':'not yet'}</span>`;
+  const rows=P.map(p=>`<tr class="${p.state||''}"><td class="st"><b>${esc(p.n)}</b> ${esc(p.name)}<div class="why">${esc(p.why||'')}</div></td><td>${pill(p.state)}</td>
+    <td>${(p.gates||[]).map(g=>`<div class="gate ${g[1]?'ok':''}">${g[1]?'✓':'○'} ${esc(g[0])}${g[2]?` <span>— ${esc(g[2])}</span>`:''}</div>`).join('')}</td>
+    <td class="num">${p.docs.length||''}</td><td>${NAVKEY[String(p.n)]?`<button class="btn ghost sm" data-go="/${a.id}/${NAVKEY[String(p.n)]}">Open</button>`:''}</td></tr>`).join('');
+  shell(a,'overview',`<div style="padding:18px 22px">
+    <div class="crumb" style="font-size:12px;color:var(--muted)">${esc(a.name)} · ${esc(a.id)}${a.workspace?' · herdr workspace '+esc(a.workspace):''}</div>
+    <h2 style="margin:2px 0 4px;font-size:20px">Overall progress</h2>
+    <p style="color:var(--muted);margin:0 0 14px">${done} of ${P.length} stages done${now?` · now: <b style="color:var(--ink)">${esc(now.n)} ${esc(now.name)}</b>`:''}${a.build_started?' · '+clock(a.build_started)+' since the hand-over':''}${a.needs?` · <b style="color:var(--hot)">${a.needs} need${a.needs>1?'':'s'} you</b>`:''}</p>
+    <div class="segs" style="margin-bottom:16px">${P.map(p=>`<i class="${p.state}" title="${esc(p.n+' '+p.name)}"></i>`).join('')}</div>
+    <table class="ov"><tr><th>Stage</th><th>Status</th><th>Checks</th><th>Docs</th><th></th></tr>${rows}</table></div>`);
+}
+// ---- Guide: how to make an app with the App Maker ----
+const GUIDE=[
+ ['0','Once, before your first app','You','Install herdr and log in to Claude Code. Keep the App Maker running (the monitoring center can restart it). API keys go in the app’s env file — never in chat.','—'],
+ ['1','New app → Research','/research','Press <b>+ New app</b> on the home page: a name and the problem in one line. The App Maker creates a herdr workspace for the app (“<i>Name</i> app”) and starts research in its first tab. You answer on the Research page: the strongest option, the quotes, and <b>build it or not</b> ($10k+/month rule).','Research page'],
+ ['2','Positioning','/positioning','Press <b>Start</b> on Positioning. The app folder is set up, then “it’s basically X, but Y”, the USP and the viral feature. You pick on the page.','Positioning page'],
+ ['3.1–3.4','The PRD: case → experience → can we build it? → prototype v1','/create-prd','Press <b>Start</b> on The case. One page in parts; each part is confirmed before the next opens. v1’s features are picked in <i>The experience</i>; the riskiest bets are tested in <i>Can we build it?</i>; you tap through <i>Prototype v1</i> on your phone.','PRD page'],
+ ['3.5','Design direction','create-ui-design-direction','Inside the PRD page: Claude writes the brief, <b>you</b> run Claude Design and bring the handoff back (“Handoff is back” button).','PRD page, Part 5'],
+ ['3.6','Technical decisions → hand-over','/create-prd','Every build choice with a recommended option. When all are answered, press <b>PRD is ready — proceed to build</b>.','PRD page, Part 6'],
+ ['4–5','Engineering center: contract freeze, then build v1','/code-orchestrator','The hand-over starts code-orchestrator (Opus) in the app’s workspace; it starts the backend and iOS builders (Sonnet). You only watch the Engineering center: questions with a recommended answer, your to-do list, progress, updates, commits, <b>Get me an update</b>. v1 is done when it’s on TestFlight.','Engineering center'],
+ ['6','Features','the pipeline in miniature','After v1: one named feature at a time, same pages, same engineering center.','—'],
+ ['7','Ship','—','App Store review and release, then the showcase site.','—'],
+];
+function guide(){
+  $('#appsel').style.display='none'; const v=$('#view'); v.dataset.key='guide';
+  v.innerHTML=`<div class="home"><h1>How an app gets made</h1><p class="sub">Everything happens here. You answer on each stage’s page; the line at the top tells you when anything needs you — including the rare moment a Claude session needs you in its terminal. Each stage page has a <b>💬 Talk to Claude</b> box for anything else.</p>
+    <div class="gsteps">${GUIDE.map(([n,t,skill,body,where])=>`<div class="gstep"><div class="gn">${n}</div><div><h3>${t}</h3><p>${body}</p>
+      <div class="gm"><span>Skill: <code>${skill}</code></span><span>You answer on: <b>${where}</b></span></div></div></div>`).join('')}</div>
+    <p class="sub" style="margin-top:18px">Where each piece runs: the App Maker (:7710) is home · each app has one server for all its pages · the monitoring center (:7700) is for the machine.</p></div>`;
+}
 let talkKey='';
 async function loadTalk(){
   const a=M.apps.find(x=>x.id===route.app); const st=a&&a.stages.find(s=>s.key===route.stage)||(a&&a.stages.find(s=>s.status==='now'));
@@ -232,7 +295,7 @@ async function loadTalk(){
   $('#thread').innerHTML=(t.messages||[]).slice(-30).map(m=>`<div class="msg ${m.from==='you'?'you':'claude'}">${esc(m.text)}<span class="t">${m.from==='you'?'you':'Claude'} · ${ago(m.t)}</span></div>`).join('')||'<p style="color:var(--muted);font-size:12.5px;margin:4px 0">No messages yet.</p>';
   $('#thread').scrollTop=1e9;
 }
-function render(){needsLine(); route.view==='home'?home():appView()}
+function render(){needsLine(); route.view==='home'?home():route.view==='guide'?guide():appView()}
 async function load(){try{M=await fetch('/api/maker').then(r=>r.json());}catch(e){M={apps:[]}} render()}
 $('#logo').onclick=()=>go('/');
 $('#thbtn').onclick=e=>{e.stopPropagation();$('#thpop').classList.toggle('on');drawThemeMenu()};

@@ -72,7 +72,8 @@ def app_server(app_dir, start=True):
         os.remove(pf)
     cmd = f"python3 {APP_SERVER} {app_dir}"
     if os.environ.get("HERDR_ENV") == "1" and os.path.exists(PANE):
-        subprocess.run([PANE, app_dir, cmd], capture_output=True, text=True, timeout=20)
+        env = dict(os.environ, **({"WS": cfg(app_dir)["workspace"]} if cfg(app_dir).get("workspace") else {}))
+        subprocess.run([PANE, app_dir, cmd], capture_output=True, text=True, timeout=20, env=env)
     else:
         subprocess.Popen(cmd, shell=True, cwd=app_dir, start_new_session=True,
                          stdout=open(os.path.join(app_dir, ".appserver.log"), "a"), stderr=subprocess.STDOUT)
@@ -156,7 +157,13 @@ def state(scan, hidden=()):
         started = None
         es = _json(os.path.join(d, "engineering-center", "status.json"), {})
         started = es.get("build_started")
+        names = {str(x["n"]): (x.get("name", ""), x.get("why", "")) for x in scan.get("stages", [])}
+        pipeline = [{"n": s["n"], "name": names.get(str(s["n"]), ("", ""))[0], "why": names.get(str(s["n"]), ("", ""))[1],
+                     "state": s.get("state"),
+                     "gates": s.get("gates", []), "docs": [x.get("path") for x in s.get("docs", [])]}
+                    for s in (a or {}).get("stages", [])]
         apps.append({"id": id_, "name": c.get("name") or id_, "problem": c.get("problem", ""),
+                     "workspace": c.get("workspace"), "pipeline": pipeline,
                      "stage_name": (a or {}).get("stage_name") or "Research", "stages": stages,
                      "needs": total + len(terminal), "terminal": terminal, "docs": docs,
                      "port": app_server(d, start=True), "build_started": started})
@@ -183,8 +190,9 @@ def start_stage(app_id, stage):
     d = os.path.join(ROOT, app_id)
     model, effort, prompt = START[stage]
     name = f"{os.path.basename(app_id)}-{stage}"
+    env = dict(os.environ, **({"WS": cfg(d)["workspace"]} if cfg(d).get("workspace") else {}))
     r = subprocess.run([START_AGENT, name, d, model, effort, prompt.format(app=app_id)],
-                       capture_output=True, text=True, timeout=90)
+                       capture_output=True, text=True, timeout=90, env=env)
     if r.returncode != 0:
         raise RuntimeError(r.stderr.strip() or "could not start the session")
     page = next(p for k, _, p, *_ in STAGES if k == stage)
@@ -193,7 +201,8 @@ def start_stage(app_id, stage):
 
 
 def new_app(name, problem):
-    """New app: research comes first, before any app_N folder (PIPELINE stage 1)."""
+    """New app: its own herdr workspace (like "decorate interior app"), then research in its first tab.
+    Research runs before any app_N folder exists (PIPELINE stage 1)."""
     slug = re.sub(r"[^a-z0-9]+", "-", name.lower()).strip("-")
     if not slug or not problem.strip():
         raise ValueError("give it a name and the problem in one line")
@@ -201,13 +210,20 @@ def new_app(name, problem):
     if os.path.exists(os.path.join(d, ".appmaker.json")):
         raise ValueError(f"research/{slug} already exists")
     os.makedirs(d, exist_ok=True)
+    out = subprocess.run(["herdr", "workspace", "create", "--label", f"{name} app", "--cwd", ROOT, "--no-focus"],
+                         capture_output=True, text=True, timeout=20)
+    try:
+        res = json.loads(out.stdout)["result"]
+        ws, pane = res["workspace"]["workspace_id"], res["root_pane"]["pane_id"]
+    except (ValueError, KeyError):
+        raise RuntimeError(out.stderr.strip() or "could not create the herdr workspace")
     agent = f"{slug}-research"
-    save_cfg(d, {"name": name, "problem": problem, "agents": {"reviewer": agent}})
+    save_cfg(d, {"name": name, "problem": problem, "workspace": ws, "agents": {"reviewer": agent}})
     r = subprocess.run([START_AGENT, agent, ROOT, "opus", "high",
                         f"/research {problem} — niche folder: research/{slug}/, review page in research/{slug}/reviewer/ "
-                        f"(the App Maker serves it; don't start a separate page server)."],
-                       capture_output=True, text=True, timeout=90)
+                        f"(the App Maker serves it; don't start a separate page server). Ask the user on the page, not here."],
+                       capture_output=True, text=True, timeout=90, env=dict(os.environ, WS=ws, PANE=pane))
     if r.returncode != 0:
         raise RuntimeError(r.stderr.strip() or "could not start the research session")
     app_server(d)
-    return f"research for {name} started in a new tab"
+    return f"{name}: workspace “{name} app” created in herdr, research started in its first tab"
