@@ -151,8 +151,9 @@
     color:var(--ink);border-radius:8px;padding:3px 9px;cursor:pointer}
   .th .act button.pri,.th .rb button{background:var(--accent);border-color:var(--accent);color:#fff}
   .th .rb{display:flex;gap:6px;margin-top:8px}
-  .th .rb input{flex:1;min-width:0;font:inherit;font-size:12.5px;border:1px solid var(--line);border-radius:8px;
-    background:var(--panel);color:var(--ink);padding:5px 8px}
+  .th .rb{align-items:flex-end}
+  .th .rb textarea{flex:1;min-width:0;font:inherit;font-size:12.5px;line-height:1.4;border:1px solid var(--line);border-radius:8px;
+    background:var(--panel);color:var(--ink);padding:5px 8px;resize:none;max-height:160px;overflow-y:auto}
   .th .earlier{font-size:11.5px;color:var(--accent);cursor:pointer;margin-top:6px}
   .th .older{display:none} .th .older.on{display:block}
   .th .typing{font-size:12px;color:var(--muted);font-style:italic;margin-top:6px}
@@ -179,6 +180,7 @@
   #pop .pa{font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;
     color:var(--accent);font-weight:700;margin-bottom:var(--s2)}
   #pop .kind{display:flex;gap:var(--s2);margin-bottom:var(--s2)}
+  #pop .pophint{font-size:11px;color:var(--faint);margin:3px 0 0}
   #pop .kind label{flex:1;display:flex;gap:6px;align-items:center;font-size:12.5px;
     padding:5px var(--s2);border:1px solid var(--line);border-radius:var(--s2);cursor:pointer;color:var(--muted)}
   #pop .kind label.sel{border-color:var(--accent);background:var(--soft);color:var(--accent)}
@@ -287,6 +289,7 @@ addEventListener('DOMContentLoaded',()=>{const h=document.querySelector('header'
     <label><input type="radio" name="kind" value="note"> Comment</label>
   </div>
   <textarea id="poptext" placeholder="What do you want to know? Answered right here, in the panel."></textarea>
+  <div class="pophint">Enter to send · Shift+Enter for a new line</div>
   <div class="row"><button id="popcancel">Cancel</button><button id="popadd" class="add">Send now</button></div>
 </div>
 <div id="toast"></div>
@@ -382,7 +385,7 @@ function item(c,wide){
     (c.status==='queued'?`<div class="act"><button data-del="${c.id}">Delete</button></div>`:
      (c.suggest?`<div class="act"><button class="pri" data-mkchange="${c.id}">Make it a change request</button><button data-nothanks="${c.id}">No thanks</button></div>`:'')+
      (!m.length||m[m.length-1].from!=='you'?'':'<div class="typing">'+(AGENT.status==='working'?'Claude is busy — your message is next.':'Claude is answering…')+'</div>')+
-     `<div class="rb"><input data-rin="${c.id}" placeholder="Reply…"><button data-rsend="${c.id}">Reply</button></div>`)+`</div>`;
+     `<div class="rb"><textarea data-rin="${c.id}" rows="1" placeholder="Reply…  (Enter to send · Shift+Enter for a new line)"></textarea><button data-rsend="${c.id}">Reply</button></div>`)+`</div>`;
   return `<div class="th ${fold?'fold':''}" data-th="${c.id}"><div class="hd"><span class="ktag ${kind}">${KL[kind]||'Change'}</span><span class="where" title="${esc(c.anchorLabel||'')}">${where}</span>
       <span class="st ${cls}">${txt}${m.length>1?` · ${m.length+1} msgs`:''}</span>${wide?'':`<button class="wide" data-wide="${c.id}" title="Open wide">⤢</button>`}</div>
     <div class="row1"><span class="q1">${fold?esc(c.text):md(c.text||'')}</span></div>${body}</div>`}
@@ -417,8 +420,9 @@ function wireThread(root){
       try{const r=await post('/api/reply',{id,text:t});if(r.comments)S.comments=r.comments;
         if(DRAFT[id]!=null)delete DRAFT[id];inp.value='';openIds.add(id);toast(AGENT.agent?'Sent to '+AGENT.agent:'Sent')}
       finally{b.disabled=false;inp.disabled=false;inp.blur();renderQueue();refreshSoon()}};
-    inp.oninput=()=>{DRAFT[id]=inp.value};
-    b.onclick=go;inp.onkeydown=e=>{if(e.key==='Enter')go()}});
+    const grow=()=>{inp.style.height='auto';inp.style.height=Math.min(inp.scrollHeight,160)+'px'};
+    inp.oninput=()=>{DRAFT[id]=inp.value;grow()}; if(inp.value)grow();
+    b.onclick=go;inp.onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing){e.preventDefault();go()}}});
   root.querySelectorAll('[data-mkchange]').forEach(b=>b.onclick=async()=>{const c=S.comments.find(x=>x.id===b.dataset.mkchange);
     const m=c.messages||[], ans=[...m].reverse().find(x=>x.from==='claude');
     await post('/api/comment',{id:'c'+Date.now(),anchor:c.anchor,anchorLabel:c.anchorLabel,anchorText:c.anchorText||'',kind:'change',
@@ -476,6 +480,7 @@ document.addEventListener('click',e=>{
   p.style.left=Math.max(12,Math.min(r.right-328+window.scrollX,document.body.clientWidth-340))+'px';
   $('#poptext').focus();
 });
+$('#poptext').onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing){e.preventDefault();$('#popadd').click()}};
 $('#popcancel').onclick=()=>$('#pop').style.display='none';
 $('#popadd').onclick=async()=>{
   const t=$('#poptext').value.trim(); if(!t||!target)return;
