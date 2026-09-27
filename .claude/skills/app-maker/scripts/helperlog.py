@@ -26,3 +26,14 @@ def log(app, by, kind, text, ok=True, detail=""):
             open(path, "w").write("\n".join(lines) + "\n")
     except OSError:
         pass
+
+
+PREFS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "prefs.json")
+
+
+def muted():
+    """The App Maker's mute switch (top bar): no Mac notifications while it's on."""
+    try:
+        return bool(json.load(open(PREFS)).get("muted"))
+    except (OSError, ValueError):
+        return False

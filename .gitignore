@@ -1,4 +1,6 @@
 # Each app is its own git repo
 app_*/
+practice_*/
 
 .DS_Store
+.claude/skills/app-maker/prefs.json

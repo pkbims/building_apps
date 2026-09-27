@@ -138,7 +138,7 @@
 </style>
 
 <div class="strip"><span class="pill">Building v1</span><span class="clock" id="clock" title=""></span><span><span class="dot" id="dot"></span><span id="alive">connecting…</span></span>
-  <span class="sp"></span><button id="getupd">↻ Get me an update</button><button id="notif">🔔 Notify me</button></div>
+  <span class="sp"></span></div>
 
 <section id="s-needs" data-anchor="needs" data-label="Needs you" data-group="Engineering center" data-title="Needs you">
   <div class="needs calm" id="needs"><span class="ok">✓ Nothing needs you right now.</span></div>
@@ -174,7 +174,7 @@
 
 <section id="s-updates" data-anchor="updates" data-label="Updates" data-group="Engineering center" data-title="Updates">
   <button class="cbtn">comment</button>
-  <h2>Updates</h2>
+  <h2 style="display:flex;align-items:center;gap:10px">Updates <button id="getupd">↻ Get me an update</button></h2>
   <ul class="tl" id="feed"></ul>
 </section>
 
@@ -241,7 +241,7 @@ function renderNeeds(){
   try{renderDecisions();markAnchors()}catch(e){}
   const fresh=open.filter(a=>!seen.has(a.id));
   if(fresh.length){
-    if(window.Notification&&Notification.permission==='granted')fresh.forEach(a=>new Notification('Engineering center — needs you',{body:a.text}));
+    
     fresh.forEach(a=>seen.add(a.id));try{localStorage.setItem('room-seen',JSON.stringify([...seen]))}catch(e){}
   }
   document.title=(n?`(${n}) `:'')+document.title.replace(/^\(\d+\) /,'');
@@ -420,9 +420,7 @@ async function tick(){
     if(!document.querySelector('.cm.open'))renderCommits();   // don't close a commit the user opened
   }catch(e){$$('alive').textContent='page server not answering'}
 }
-const nb=$$('notif');
-if(!window.Notification||Notification.permission==='granted')nb.style.display='none';
-nb.onclick=()=>Notification.requestPermission().then(p=>{if(p==='granted')nb.style.display='none'});
+// (Notifications are Mac notifications from the app's server; mute/unmute is in the App Maker's top bar.)
 // refresh every 20 s, or every 5 s while an update is on its way
 (function loop(){tick().finally(()=>setTimeout(loop,asked&&$$('getupd').disabled?5000:20000))})();
 })();

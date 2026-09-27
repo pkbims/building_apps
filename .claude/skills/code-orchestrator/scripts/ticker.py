@@ -196,6 +196,12 @@ def build_started(app, room):
 
 
 def notify(title, text):
+    try:
+        from helperlog import muted
+        if muted():
+            return
+    except ImportError:
+        pass
     esc = lambda s: s.replace("\\", "\\\\").replace('"', '\\"')
     sh(["osascript", "-e", f'display notification "{esc(text)}" with title "{esc(title)}" sound name "Glass"'])
 

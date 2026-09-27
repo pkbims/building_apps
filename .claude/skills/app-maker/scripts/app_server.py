@@ -25,7 +25,7 @@ APP = os.path.abspath(sys.argv[1])
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..", ".."))
 sys.path.insert(0, os.path.join(ROOT, ".claude", "skills", "html-worker"))
 import server as hw          # html-worker's own load/save/write_inbox, pointed at one page at a time
-from helperlog import log as hlog   # the helpers' log (the engineering center's Ticker section)
+from helperlog import log as hlog, muted   # the helpers' log (Ticker section); the App Maker's mute switch
 
 LOCK = threading.Lock()
 SKIP = {".git", "node_modules", ".venv", "venv", "__pycache__", "DerivedData", ".build", "output-from-claude-design"}
@@ -218,6 +218,8 @@ def bundle_messages():
 
 
 def notify(title, text):
+    if muted():                                   # muted in the App Maker's top bar
+        return
     esc = lambda s: s.replace("\\", "\\\\").replace('"', '\\"')
     subprocess.run(["osascript", "-e", f'display notification "{esc(text)}" with title "{esc(title)}" sound name "Glass"'],
                    capture_output=True, timeout=10)
@@ -249,7 +251,8 @@ def watch_questions():
             fresh = [i for i in items if i.get("kind") == "ask" and i.get("status") == "open" and i["id"] not in seen]
             for i in fresh:
                 notify(f"{os.path.basename(APP)} · {p.strip('/') or 'app'} — needs you", i.get("text", "")[:180])
-                hlog(APP, "app server", "notify", f"A question for you on {p.strip('/') or 'the app'} → sent a Mac notification.",
+                hlog(APP, "app server", "notify", f"A question for you on {p.strip('/') or 'the app'} → "
+                     + ("muted, so no Mac notification." if muted() else "sent a Mac notification."),
                      detail=i.get("text", "")[:300])
                 seen.add(i["id"])
             if fresh:

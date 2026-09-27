@@ -110,6 +110,7 @@ table.ov .st .why{font-size:12px;color:var(--muted);margin-top:2px} table.ov .nu
   <span class="logo" id="logo">App Maker<i></i></span>
   <select id="appsel" style="display:none"></select>
   <span class="sp"></span>
+  <button class="lnk" id="mute" title="Mac notifications when something needs you">🔔 Notifications on</button>
   <span style="position:relative"><button class="lnk" id="thbtn" style="background:none;cursor:pointer">🎨 Theme</button>
     <div class="thpop" id="thpop"><div class="thl">Mode</div><div class="seg" id="thmode"></div><div class="thl">Colours</div><div class="sw" id="thpal"></div>
     <div class="thn">Applies to the App Maker and every page inside it.</div></div></span>
@@ -286,6 +287,11 @@ function drawPstat(){const el=document.getElementById('pstat');if(!el||!PSTAT)re
 function render(){needsLine(); route.view==='home'?home():route.view==='guide'?guide():appView()}
 async function load(){try{M=await fetch('/api/maker').then(r=>r.json());}catch(e){M={apps:[]}} render()}
 $('#logo').onclick=()=>go('/');
+// Mute / unmute: every Mac notification (app servers, ticker) checks this switch
+let MUTED=false;
+const drawMute=()=>{$('#mute').textContent=MUTED?'🔕 Muted':'🔔 Notifications on';$('#mute').style.opacity=MUTED?.75:1};
+fetch('/api/maker/prefs').then(r=>r.json()).then(p=>{MUTED=!!p.muted;drawMute()}).catch(()=>{});
+$('#mute').onclick=async()=>{const r=await post('/api/maker/mute',{muted:!MUTED});if(r&&!r.error){MUTED=r.muted;drawMute();toast(MUTED?'Muted — no Mac notifications':'Notifications on')}};
 $('#thbtn').onclick=e=>{e.stopPropagation();$('#thpop').classList.toggle('on');drawThemeMenu()};
 document.addEventListener('click',e=>{if(!e.target.closest('#thpop')&&e.target.id!=='thbtn')$('#thpop').classList.remove('on')});
 applyTheme();

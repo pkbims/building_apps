@@ -199,6 +199,15 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             importlib.reload(maker)
             try:
                 body = json.loads(self.rfile.read(int(self.headers.get("Content-Length", 0))) or b"{}")
+                if p == "/api/maker/mute":          # the top bar's Mute switch → every Mac notification checks it
+                    pf = os.path.join(os.path.dirname(MAKER_HTML), "prefs.json")
+                    try:
+                        prefs = json.load(open(pf))
+                    except (OSError, ValueError):
+                        prefs = {}
+                    prefs["muted"] = bool(body.get("muted"))
+                    json.dump(prefs, open(pf, "w"), indent=1)
+                    return self._json({"ok": True, "muted": prefs["muted"]})
                 if p == "/api/maker/start":
                     return self._json({"ok": True, "msg": maker.start_stage(body["app"], body["stage"])})
                 if p == "/api/maker/new":
@@ -227,6 +236,11 @@ class Handler(http.server.SimpleHTTPRequestHandler):
                 return self._json(maker.state(scanner.scan(), hidden_apps()))
             except Exception as e:
                 return self._json({"error": str(e), "apps": []}, 500)
+        if u.path == "/api/maker/prefs":
+            try:
+                return self._json(json.load(open(os.path.join(os.path.dirname(MAKER_HTML), "prefs.json"))))
+            except (OSError, ValueError):
+                return self._json({"muted": False})
         if u.path == "/md":
             # a document as a readable page, for the App Maker's frame
             app = (q.get("app") or [""])[0]; rel = (q.get("path") or [""])[0]
