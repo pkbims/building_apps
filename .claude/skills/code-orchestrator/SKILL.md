@@ -168,7 +168,8 @@ each on, what's next, anything waiting on the user. Check git and the workers fi
   latest 5, and only the first sentence until the user opens it: stage started or finished, a worker started, a merge, CI
   red or green, a decision you made and its tradeoff in one sentence. Not "still working" —
   the ticker covers that every 5 minutes.
-- An **ask** the moment something needs the user. Options carry the three plain lines' worth
+- An **ask** the moment something needs the user. **A fresh id every time** — the page remembers answers by id, so a
+  reused id shows the old answer pre-selected (app_1, 2026-09-27). Options carry the three plain lines' worth
   of detail and **exactly one `--rec`** (series rule). An ask with no options is answered by
   comment. Never ask only in the terminal.
 - **Whenever you need the user, or have just unblocked them, it goes in Needs you** (user, 2026-09-27):
