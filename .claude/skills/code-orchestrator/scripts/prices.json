@@ -1,0 +1,6 @@
+{
+ "_source": "https://claude.com/pricing, read 2026-09-27. Dollars per million tokens. The page lists 5-minute cache writes only; Claude Code uses 1-hour cache writes, priced at 2x input (Anthropic's stated rule) — cache_write_1h.",
+ "claude-opus-5-5":  {"input": 4.0, "output": 20.0, "cache_write_5m": 5.0,  "cache_write_1h": 8.0, "cache_read": 0.20},
+ "claude-sonnet-5":  {"input": 2.0, "output": 10.0, "cache_write_5m": 2.5,  "cache_write_1h": 4.0, "cache_read": 0.20},
+ "claude-haiku-4-5": {"input": 1.0, "output": 5.0,  "cache_write_5m": 1.25, "cache_write_1h": 2.0, "cache_read": 0.10}
+}

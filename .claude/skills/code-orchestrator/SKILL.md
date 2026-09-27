@@ -55,6 +55,13 @@ orchestrator**, it types a prompt into your herdr pane telling you to read
 `engineering-center/INBOX.md`. You never run a watcher of your own. If the page's dot turns red
 ("the 5-minute check is not running"), re-run `setup.py`.
 
+**Claude usage and Expenses** (2026-09-27). *Claude usage*: the user's plan limits (5-hour and weekly %, read
+off a Claude status line) and, per Claude, busy time, tokens, written, and cost at API prices
+(`scripts/prices.json`, dated, from claude.com/pricing). *Expenses*: monthly bills the user sets on the page,
+and tests — **record every real run that calls OpenAI or SearchApi**:
+`python3 scripts/expense.py <room> test "<what>" --openai $ --searchapi $ --calls n --searches n --source "<where from>"`
+(real figures; say "estimate" if not). Keep the page's notes to one short line.
+
 **The Ticker section** (2026-09-27) is the ticker's dashboard, on the engineering center: is it alive,
 today's counts (wake-ups by reason, fresh starts, status checks, problems), its jobs with their last run
 and result (folded behind "Show its jobs"), and a timeline of **every time a helper nudged Claude** —

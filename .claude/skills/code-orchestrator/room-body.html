@@ -115,6 +115,24 @@
   .tk-ev .rs{font-size:11.5px;font-weight:700;white-space:nowrap} .tk-ev.ok .rs{color:var(--ok)} .tk-ev.bad .rs{color:#d4a017}
   .tk-ev .raw{display:none;grid-column:3/5;background:var(--soft);border-radius:8px;padding:7px 9px;font:11.5px/1.5 ui-monospace,monospace;color:var(--muted);white-space:pre-wrap;word-break:break-word}
   .tk-ev.open .raw{display:block}
+  .fine{font-size:11.5px;color:var(--faint);margin:6px 0 0}
+  .plan{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+  @media(max-width:760px){.plan{grid-template-columns:1fr}}
+  .gauge{border:1px solid var(--line);border-radius:12px;padding:10px 14px;background:var(--bg)}
+  .gauge .t{font-size:12px;color:var(--muted)} .gauge .p{font-size:26px;font-weight:800;letter-spacing:-.02em}
+  .gauge .bar{height:8px;border-radius:5px;background:var(--soft);overflow:hidden;margin:4px 0} .gauge .bar i{display:block;height:100%;background:var(--ok)}
+  .gauge .bar i.warm{background:#d4a017} .gauge .bar i.hot{background:#c0392b} .gauge .r{font-size:11.5px;color:var(--muted)}
+  .ex3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:6px}
+  @media(max-width:760px){.ex3{grid-template-columns:1fr}}
+  .ex3 .tile{border:1px solid var(--line);border-radius:12px;padding:10px 14px;background:var(--bg)}
+  .ex3 .n{font-size:24px;font-weight:800} .ex3 .l{font-size:12px;color:var(--muted)}
+  .exh{font-size:14px;margin:14px 0 4px}
+  table.ex{width:100%;border-collapse:collapse;font-size:13px}
+  table.ex th{text-align:left;font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);padding:5px 6px;border-bottom:1px solid var(--line)}
+  table.ex td{padding:7px 6px;border-bottom:1px solid var(--line);vertical-align:top} table.ex .r{text-align:right;white-space:nowrap}
+  table.ex small{display:block;font-size:11px;color:var(--faint)} table.ex tr.sum td{font-weight:800;border-bottom:0}
+  table.ex input{width:74px;font:inherit;font-size:12.5px;text-align:right;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);padding:2px 6px}
+  .setlink{font-size:11.5px;color:var(--accent);cursor:pointer}
 </style>
 
 <div class="strip"><span class="pill">Building v1</span><span class="clock" id="clock" title=""></span><span><span class="dot" id="dot"></span><span id="alive">connecting…</span></span>
@@ -131,11 +149,25 @@
   <p class="orch" id="orch"></p>
 </section>
 
-<section id="s-usage" data-anchor="usage" data-label="Tokens & time" data-group="Engineering center" data-title="Tokens & time">
+<section id="s-usage" data-anchor="usage" data-label="Claude usage" data-group="Engineering center" data-title="Claude usage">
   <button class="cbtn">comment</button>
-  <h2>Tokens &amp; time</h2>
+  <h2>Claude usage</h2>
+  <div class="plan" id="plan"></div>
   <div class="uwrap"><table class="usage" id="usage"></table></div>
-  <p class="hint" id="usage-note" style="margin-top:8px"></p>
+  <p class="fine" id="usage-note"></p>
+</section>
+
+<section id="s-expenses" data-anchor="expenses" data-label="Expenses" data-group="Engineering center" data-title="Expenses">
+  <button class="cbtn">comment</button>
+  <h2>Expenses</h2>
+  <div class="ex3" id="ex3"></div>
+  <h3 class="exh">Monthly bills</h3>
+  <table class="ex" id="bills"></table>
+  <h3 class="exh">Tests</h3>
+  <table class="ex" id="tests"></table>
+  <a class="tk-more" id="runs-toggle"></a>
+  <table class="ex" id="runs" hidden></table>
+  <p class="fine">Bills: you set them. Tests: recorded per run by the orchestrator.</p>
 </section>
 
 <section id="s-updates" data-anchor="updates" data-label="Updates" data-group="Engineering center" data-title="Updates">
@@ -245,13 +277,47 @@ function renderUsage(){
   const rows=Object.entries(U.agents), sum={total:0,output_tokens:0,cache_read_input_tokens:0,busy_s:0,calls:0};
   rows.forEach(([,r])=>Object.keys(sum).forEach(k=>sum[k]+=r[k]||0));
   const mdl=m=>(m||[]).map(x=>x.replace(/^claude-/,'').replace(/-(\d+)-(\d+)$/,' $1.$2').replace(/-(\d+)$/,' $1').replace(/^./,c=>c.toUpperCase())).join(', ');
-  el.innerHTML='<tr><th>Agent</th><th>Busy</th><th>Tokens</th><th>Written</th></tr>'+rows.map(([k,r])=>{const [label,col]=who[k]||[k,'var(--muted)'];
+  const usd=v=>'$'+(v||0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2}); let usum=0; rows.forEach(([,r])=>usum+=r.usd||0);
+  el.innerHTML='<tr><th>Agent</th><th>Busy</th><th>Tokens</th><th>Written</th><th>At API prices</th></tr>'+rows.map(([k,r])=>{const [label,col]=who[k]||[k,'var(--muted)'];
     return `<tr style="--c:${col}"><td><span class="who"><i></i>${esc(label)}</span><small>${esc(mdl(r.models))} · ${r.sessions} session${r.sessions==1?'':'s'} · ${r.calls.toLocaleString()} calls</small></td>
       <td>${hm(r.busy_s)}<small>${sum.busy_s?Math.round(r.busy_s/sum.busy_s*100):0}%</small></td>
       <td title="fresh input ${r.input_tokens.toLocaleString()} · cache writes ${r.cache_creation_input_tokens.toLocaleString()} · cache reads ${r.cache_read_input_tokens.toLocaleString()} · written ${r.output_tokens.toLocaleString()}">${n(r.total)}<small>${n(r.cache_read_input_tokens)} re-read</small><div class="share"><i style="width:${sum.total?r.total/sum.total*100:0}%"></i></div></td>
-      <td>${n(r.output_tokens)}</td></tr>`}).join('')
-    +`<tr class="all"><td>All</td><td>${hm(sum.busy_s)}</td><td>${n(sum.total)}</td><td>${n(sum.output_tokens)}</td></tr>`;
-  $$('usage-note').innerHTML=`Since the hand-over, counted ${ago(U.t)}. <b>Busy</b> is only while an agent is mid-turn — writing or running a tool; waiting and the Mac asleep don't count, and agents work side by side, so the total can pass the wall clock. <b>Tokens</b> is mostly the conversation re-read from cache on every call (${sum.total?Math.round(sum.cache_read_input_tokens/sum.total*100):0}%, the cheap part); <b>written</b> is what the models produced. Hover a number for the split.`;
+      <td>${n(r.output_tokens)}</td><td>${r.usd!=null?usd(r.usd):'—'}</td></tr>`}).join('')
+    +`<tr class="all"><td>All</td><td>${hm(sum.busy_s)}</td><td>${n(sum.total)}</td><td>${n(sum.output_tokens)}</td><td>${usd(usum)}</td></tr>`;
+  $$('usage-note').textContent=`Since the hand-over · updated ${ago(U.t)} · busy = mid-task only · hover for token split · API prices: claude.com/pricing`;
+  const P=S2.plan, g=(t,p,r)=>`<div class="gauge"><div class="t">${t}</div><div class="p">${p}%</div><div class="bar"><i class="${p>=85?'hot':p>=60?'warm':''}" style="width:${Math.min(p,100)}%"></i></div><div class="r">resets in ${esc(r)}</div></div>`;
+  const rs=v=>{const m=String(v).match(/(\d+)h(\d+)?m?/);if(!m)return v;const h=+m[1];return h>=48?Math.round(h/24)+' days':h+' h '+(m[2]||'0')+' min'};
+  $$('plan').innerHTML=P?g('Your Claude plan · this 5-hour window',P.five_h,rs(P.five_h_reset))+g('Your Claude plan · this week',P.week,rs(P.week_reset)):'';
+}
+// ---- Expenses: monthly bills (the user sets them; saved as page decisions) + tests (expenses.json via expense.py) ----
+const BILLS=[['bill_claude','Claude plan','the Claudes building the app',null],['bill_server','Server','the app’s server, database and files',null],
+  ['bill_apple','Apple Developer','Sign in with Apple, TestFlight, App Store',99/12],['bill_github','GitHub Actions','building and testing on every change',null],
+  ['bill_sentry','Sentry','error tracking (free plan)',0]];
+let EX={tests:[]}, editing=null;
+const money=v=>'$'+(+v||0).toFixed(2);
+async function loadExpenses(){try{EX=await fetch('expenses.json',{cache:'no-store'}).then(r=>r.ok?r.json():{tests:[]})}catch(e){EX={tests:[]}}}
+function billVal(k,def){const v=(S.decisions||{})[k];return v!=null&&v!==''?+v:def}
+function renderExpenses(){
+  if(document.activeElement&&document.activeElement.dataset&&document.activeElement.dataset.bill)return;   // don't redraw under typing
+  let bills=0;
+  $$('bills').innerHTML='<tr><th>What</th><th>Why</th><th class="r">Per month</th></tr>'+BILLS.map(([k,n,why,def])=>{const v=billVal(k,def);bills+=v||0;
+    return `<tr><td><b>${n}</b></td><td>${why}</td><td class="r">${editing===k?`<input data-bill="${k}" value="${v??''}" placeholder="0.00">`:(v==null?`<span class="setlink" data-set="${k}">set</span>`:money(v)+(def===null||k==='bill_apple'?` <span class="setlink" data-set="${k}">edit</span>`:''))}</td></tr>`}).join('')
+    +`<tr class="sum"><td colspan="2">Monthly bills</td><td class="r">${money(bills)}</td></tr>`;
+  $$('bills').querySelectorAll('[data-set]').forEach(a=>a.onclick=()=>{editing=a.dataset.set;renderExpenses();const i=document.querySelector(`[data-bill="${editing}"]`);if(i){i.focus();i.select()}});
+  $$('bills').querySelectorAll('[data-bill]').forEach(i=>{const save=async()=>{const v=i.value.trim();editing=null;S.decisions[i.dataset.bill]=v;
+      await post('/api/decision',{id:i.dataset.bill,value:v===''?null:v});renderExpenses()};i.onkeydown=e=>{if(e.key==='Enter')save();if(e.key==='Escape'){editing=null;renderExpenses()}};i.onblur=save});
+  const T=EX.tests||[], oa=T.reduce((a,r)=>a+(r.openai||0),0), sa=T.reduce((a,r)=>a+(r.searchapi||0),0);
+  const calls=T.reduce((a,r)=>a+(r.calls||0),0), srch=T.reduce((a,r)=>a+(r.searches||0),0);
+  $$('tests').innerHTML='<tr><th>What</th><th>How much</th><th class="r">Cost</th></tr>'+
+    `<tr><td><b>OpenAI</b><small>planning, reading photos, drawing rooms</small></td><td>${calls} calls</td><td class="r">${money(oa)}</td></tr>`+
+    `<tr><td><b>SearchApi</b><small>finding real products</small></td><td>${srch} searches</td><td class="r">${money(sa)}</td></tr>`+
+    `<tr class="sum"><td colspan="2">Tests so far · ${T.length} run${T.length===1?'':'s'}</td><td class="r">${money(oa+sa)}</td></tr>`;
+  const mon=new Date().toISOString().slice(0,7), tm=T.filter(r=>(r.t||'').slice(0,7)===mon).reduce((a,r)=>a+(r.openai||0)+(r.searchapi||0),0);
+  $$('ex3').innerHTML=[[money(bills+tm),'this month so far'],[money(bills),'monthly bills'],[money(oa+sa),'tests so far']]
+    .map(([n,l])=>`<div class="tile"><div class="n">${n}</div><div class="l">${l}</div></div>`).join('');
+  const rt=$$('runs-toggle'); rt.textContent=T.length?(($$('runs').hidden?'▸ Show each test run':'▾ Hide the test runs')):'';
+  rt.onclick=()=>{$$('runs').hidden=!$$('runs').hidden;renderExpenses()};
+  $$('runs').innerHTML='<tr><th>When</th><th>What</th><th class="r">Cost</th></tr>'+[...T].reverse().map(r=>`<tr><td>${new Date(r.t).toLocaleDateString()}</td><td>${esc(r.what)}<small>${r.calls||0} calls · ${r.searches||0} searches · ${esc(r.source||'')}</small></td><td class="r">${money((r.openai||0)+(r.searchapi||0))}</td></tr>`).join('');
 }
 // Things only the user can do that don't block anything yet — at the bottom, out of the way.
 function renderLater(){
@@ -346,6 +412,7 @@ async function tick(){
     if(fj!==lastFeed){lastFeed=fj;renderNeeds();renderLater()}
     renderBuilders(); renderUsage(); renderFeed(); renderLive();
     await loadTicker(); renderTicker();
+    await loadExpenses(); renderExpenses();
     if(renderAsk()&&shownFor!==asked){shownFor=asked;$$('s-updates').scrollIntoView({behavior:'smooth'})}
     if(!document.querySelector('.cm.open'))renderCommits();   // don't close a commit the user opened
   }catch(e){$$('alive').textContent='page server not answering'}

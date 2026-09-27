@@ -152,6 +152,33 @@ def context_use(name):
     return int(found[-1]) if found else None
 
 
+PRICES = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "prices.json")))
+
+
+def usd(r):
+    """What an agent's tokens would cost at API prices (prices.json). Cache writes are 1-hour ones."""
+    p = PRICES.get((r.get("models") or ["claude-sonnet-5"])[0], PRICES["claude-sonnet-5"])
+    return round((r.get("input_tokens", 0) * p["input"] + r.get("output_tokens", 0) * p["output"]
+                  + r.get("cache_creation_input_tokens", 0) * p["cache_write_1h"]
+                  + r.get("cache_read_input_tokens", 0) * p["cache_read"]) / 1e6, 2)
+
+
+def plan_usage(names):
+    """The user's Claude plan limits, read off a Claude status line: "5h 31%↻19m  wk 5%↻151h18m"."""
+    for n in names:
+        raw = sh(["herdr", "agent", "read", n])
+        try:
+            raw = json.loads(raw)["result"].get("text", raw)
+        except (ValueError, KeyError, TypeError, AttributeError):
+            pass
+        m = re.findall(r"5h (\d+)%\S*?(\d+h\d+m|\d+h|\d+m)\s+wk (\d+)%\S*?(\d+h\d+m|\d+h|\d+m)", raw)
+        if m:
+            f, fr, w, wr = m[-1]
+            return {"five_h": int(f), "five_h_reset": fr, "week": int(w), "week_reset": wr,
+                    "t": datetime.now(timezone.utc).isoformat(timespec="seconds")}
+    return None
+
+
 def build_started(app, room):
     """When the build began: the PRD page's hand-over round (the first round that carries prd_ready).
     Falls back to the engineering center's first post."""
@@ -384,6 +411,8 @@ def main():
             status["context"] = {w: context_use(w) for w in watch if w in ag}
             try:
                 status["usage"] = {"t": now_iso, "agents": usage(watch, status.get("build_started"))}
+                for r in status["usage"]["agents"].values():
+                    r["usd"] = usd(r)
                 job(status, "usage", f"read {len(status['usage']['agents'])} sessions")
             except Exception as e:                    # a bad transcript line must not stop the heartbeat
                 status["usage_error"] = repr(e)[:200]
@@ -393,6 +422,9 @@ def main():
                            "branches": branches(app)[:8], "open_questions": oq, "heartbeats": heartbeats})
             last_beat, last_iso = time.time(), now_iso
             status["checks"] = status.get("checks", 0) + 1
+            pl = plan_usage([x.orchestrator] + workers)
+            if pl:
+                status["plan"] = pl
             job(status, "snapshot", "saved")
         if time.time() - last_commits >= 30:          # commits are cheap to read: every 30 s
             before = {h["hash"] for lane in (status.get("commits") or {}).values() for h in lane}
