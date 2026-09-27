@@ -215,8 +215,7 @@ function appView(){
   let url='', title='', head='';
   if(doc){title=doc.label;url=doc.path.endsWith('.md')?`/md?app=${encodeURIComponent(a.id)}&path=${encodeURIComponent(doc.path)}`:`http://localhost:${a.port}/${doc.path}`}
   else{title=st.label;url=st.page&&a.port?`http://localhost:${a.port}/${st.page}/${st.hash}`:'';
-    head=(st.agent?`<span class="who ${esc(st.agent_status||'')}">Claude: ${esc(st.agent)} · ${esc(st.agent_status||'not running')}</span>`:'')+
-      (st.can_start?`<button class="btn" id="startbtn">Start ${esc(st.label)}</button>`:'')}
+    head=st.can_start?`<button class="btn" id="startbtn">Start ${esc(st.label)}</button>`:''}   // who answers is shown in the page's Chat center
   const v=$('#view');
   const same=v.dataset.key===a.id+'|'+(doc?doc.path:st.key);
   if(!same){
