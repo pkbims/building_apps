@@ -25,6 +25,7 @@ APP = os.path.abspath(sys.argv[1])
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..", ".."))
 sys.path.insert(0, os.path.join(ROOT, ".claude", "skills", "html-worker"))
 import server as hw          # html-worker's own load/save/write_inbox, pointed at one page at a time
+from helperlog import log as hlog   # the helpers' log (the engineering center's Ticker section)
 
 LOCK = threading.Lock()
 SKIP = {".git", "node_modules", ".venv", "venv", "__pycache__", "DerivedData", ".build", "output-from-claude-design"}
@@ -155,13 +156,15 @@ def wake(pg, rnd):
     if not agent:
         return None
     port = open(os.path.join(APP, ".appserver.port")).read().strip()
-    post = os.path.join(ROOT, ".claude", "skills", "code-orchestrator", "scripts", "post.py")
+    reply = os.path.join(ROOT, ".claude", "skills", "html-worker", "reply.py")
     r = subprocess.run(["herdr", "agent", "prompt", agent,
                         f"The user sent round {rnd} on the {pg[0]} page of {os.path.basename(APP)}. Read {pg[1]}/INBOX.md and act on it: "
-                        f"change requests → revise the page; questions and notes → answer on the page with "
-                        f"python3 {post} {pg[1]} update \"...\" (never only in this terminal). Then mark the comments addressed: "
+                        f"change requests → revise the page; any question or note still open → answer it on the page with "
+                        f"python3 {reply} {pg[1]} <id> \"...\" (never only in this terminal). Then mark the comments addressed: "
                         f"curl -s -X POST localhost:{port}{pg[0]}api/comment/addressed -d '{{}}'"],
                        capture_output=True, text=True, timeout=20)
+    hlog(APP, "app server", "wake", f"You pressed Send on {pg[0].strip('/') or 'the app'} (round {rnd}) → woke {agent}.",
+         ok=r.returncode == 0, detail=(r.stderr.strip()[:300] if r.returncode else ""))
     return agent if r.returncode == 0 else None
 
 
@@ -203,6 +206,10 @@ def bundle_messages():
                 lines.append(f"[id {c['id']} · {c.get('kind', 'change')} · on {c.get('anchorLabel') or c.get('anchor')}] {c.get('text', '')}"
                              + (f" — conversation so far: {convo}" if convo else ""))
             reply = os.path.join(ROOT, ".claude", "skills", "html-worker", "reply.py")
+            kinds = sorted({c.get("kind", "change") for c in open_})
+            hlog(APP, "app server", "wake", f"You wrote {len(open_)} message{'s' if len(open_) != 1 else ''} "
+                 f"({', '.join(kinds)}) on {pg[0].strip('/') or 'the app'} → sent to {agent}.",
+                 detail="  ||  ".join(lines)[:1500])
             subprocess.run(["herdr", "agent", "prompt", agent,
                             f"The user wrote on the {pg[0]} page of {os.path.basename(APP)} (answer each ON THE PAGE, short and plain: "
                             f"python3 {reply} {pg[1]} <id> \"answer\" — add --suggest if the answer implies changing the page; "
@@ -242,6 +249,8 @@ def watch_questions():
             fresh = [i for i in items if i.get("kind") == "ask" and i.get("status") == "open" and i["id"] not in seen]
             for i in fresh:
                 notify(f"{os.path.basename(APP)} · {p.strip('/') or 'app'} — needs you", i.get("text", "")[:180])
+                hlog(APP, "app server", "notify", f"A question for you on {p.strip('/') or 'the app'} → sent a Mac notification.",
+                     detail=i.get("text", "")[:300])
                 seen.add(i["id"])
             if fresh:
                 json.dump(sorted(seen), open(sp, "w"))

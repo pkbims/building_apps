@@ -89,6 +89,32 @@
   .cm .w{display:none;font-size:12.5px;color:var(--muted);margin-top:4px}
   .cm.open .w{display:block}
   .morebtn{font:inherit;font-size:12px;color:var(--accent);background:none;border:0;cursor:pointer;padding:2px 0}
+  /* Ticker */
+  .tk-health{display:flex;align-items:center;gap:16px;flex-wrap:wrap;border:1px solid var(--line);border-radius:14px;padding:12px 16px;background:var(--bg);margin-bottom:10px}
+  .tk-health .big{display:flex;align-items:center;gap:9px;font-size:19px;font-weight:800}
+  .tk-health .big i{width:12px;height:12px;border-radius:50%;background:var(--ok);animation:pulse 2s infinite}
+  .tk-health.bad .big i{background:#c0392b;animation:none} .tk-health.bad .big{color:#c0392b}
+  .tk-health .facts{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--muted)} .tk-health .facts b{color:var(--ink)}
+  .tk-tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px}
+  @media(max-width:760px){.tk-tiles{grid-template-columns:1fr 1fr}}
+  .tk-tile{border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--bg)}
+  .tk-tile .n{font-size:24px;font-weight:800;letter-spacing:-.02em} .tk-tile .l{font-size:12.5px;color:var(--muted)}
+  .tk-tile .s{font-size:11px;color:var(--faint);margin-top:3px}
+  .tk-jobs-toggle,.tk-more{display:inline-block;font-size:12.5px;color:var(--accent);cursor:pointer;margin:2px 0 8px}
+  table.tk-jobs{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:8px}
+  table.tk-jobs td{padding:7px 6px;border-top:1px solid var(--line);vertical-align:top}
+  table.tk-jobs td.ic{width:26px;font-size:16px} table.tk-jobs .sub2{font-size:11.5px;color:var(--muted)}
+  table.tk-jobs .res{white-space:nowrap} table.tk-jobs tr.ok .res{color:var(--ok)} table.tk-jobs tr.warn .res{color:#d4a017}
+  .tk-h3{font-size:15px;margin:10px 0 2px}
+  .tk-filters{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0}
+  .tk-filters button{font:inherit;font-size:12px;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:999px;padding:3px 11px;cursor:pointer}
+  .tk-filters button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+  .tk-ev{display:grid;grid-template-columns:62px 24px 1fr auto;gap:8px;align-items:start;padding:8px 4px;border-top:1px solid var(--line);cursor:pointer;font-size:13px}
+  .tk-ev:hover{background:var(--bg)} .tk-ev .tm{color:var(--muted);font-size:12px} .tk-ev .ic{font-size:15px}
+  .tk-ev .by{margin-left:8px;font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--faint)}
+  .tk-ev .rs{font-size:11.5px;font-weight:700;white-space:nowrap} .tk-ev.ok .rs{color:var(--ok)} .tk-ev.bad .rs{color:#d4a017}
+  .tk-ev .raw{display:none;grid-column:3/5;background:var(--soft);border-radius:8px;padding:7px 9px;font:11.5px/1.5 ui-monospace,monospace;color:var(--muted);white-space:pre-wrap;word-break:break-word}
+  .tk-ev.open .raw{display:block}
 </style>
 
 <div class="strip"><span class="pill">Building v1</span><span class="clock" id="clock" title=""></span><span><span class="dot" id="dot"></span><span id="alive">connecting…</span></span>
@@ -122,6 +148,21 @@
   <button class="cbtn">comment</button>
   <h2>Commits</h2>
   <div class="lanes"><div class="lane" id="lane-backend"></div><div class="lane" id="lane-ios"></div></div>
+</section>
+
+<section id="s-ticker" data-anchor="ticker" data-label="Ticker" data-group="Engineering center" data-title="Ticker">
+  <button class="cbtn">comment</button>
+  <h2>Ticker</h2>
+  <p class="hint" style="margin:0 0 12px">A small helper script — <b>no AI, no cost</b> — that watches the build around the clock and nudges Claude when something happens. This is what it did.</p>
+  <div class="tk-health" id="tk-health"></div>
+  <div class="tk-tiles" id="tk-tiles"></div>
+  <a class="tk-jobs-toggle" id="tk-jobs-toggle">▸ Show its jobs</a>
+  <table class="tk-jobs" id="tk-jobs" hidden></table>
+  <h3 class="tk-h3">What it did</h3>
+  <p class="hint" style="margin:0 0 6px">Newest first. Click a line to see exactly what was sent. <b>App server</b> lines are the other helper — it wakes Claude when you press Send or ask a question.</p>
+  <div class="tk-filters" id="tk-filters"></div>
+  <div id="tk-events"></div>
+  <a class="tk-more" id="tk-more"></a>
 </section>
 
 <section id="s-later" data-anchor="later" data-label="Your to-do list" data-group="Engineering center" data-title="Your to-do list">
@@ -257,12 +298,54 @@ function renderLive(){
   let nx='';if(S2.t&&S2.interval){const m=Math.ceil((new Date(S2.t).getTime()+S2.interval*1000-Date.now())/60000);nx=m>0?` · next check in ${m} min`:''}
   $$('alive').textContent=a>60?'Status check stopped — ask Claude to restart it':`Live${nx}`;
 }
+// ---- Ticker: the helpers' log (<app>/helpers-log.jsonl) + the ticker's job status (status.json → jobs) ----
+const JOBS=[['update','🙋','Answers “Get me an update”','when you press it'],['watch','👀','Watches the builders for finished steps and stops','every 30 seconds'],
+  ['commits','📝','Collects new commits','every 30 seconds'],['memory','🧠',"Stops a Claude's memory from filling up",'every 30 seconds'],
+  ['snapshot','📊',"Saves the page's live numbers",'every 5 minutes'],['usage','🪙','Counts tokens and time','every 5 minutes']];
+let TK=[], tkFilter='all', tkShow=12;
+const tkIcon=e=>e.kind==='problem'?'⚠️':e.kind==='handover'?'♻️':e.kind==='update'?'🙋':e.kind==='notify'?'🔔':e.kind==='start'?'▶️':(e.by==='app server'?'📨':'⏰');
+const since=t=>{if(!t)return'—';const m=Math.floor((Date.now()-new Date(t))/60000);return m<60?m+' min':Math.floor(m/60)+' h '+(m%60)+' min'};
+// the Live dot at the top jumps to the Ticker section
+{const live=$$('alive').parentElement;live.style.cursor='pointer';live.title='See what the ticker did';
+  live.onclick=()=>$$('s-ticker').scrollIntoView({behavior:'smooth'})}
+$$('tk-jobs-toggle').onclick=()=>{const t=$$('tk-jobs');t.hidden=!t.hidden;$$('tk-jobs-toggle').textContent=t.hidden?'▸ Show its jobs':'▾ Hide its jobs'};
+$$('tk-more').onclick=()=>{tkShow+=40;renderTicker()};
+async function loadTicker(){try{const t=await fetch('../helpers-log.jsonl',{cache:'no-store'}).then(r=>r.ok?r.text():'');
+  TK=t.split('\n').filter(Boolean).map(l=>{try{return JSON.parse(l)}catch(e){return null}}).filter(Boolean).reverse()}catch(e){TK=[]}}
+function renderTicker(){
+  const alive=S2.alive?(Date.now()-new Date(S2.alive))/1000:1e9, ok=alive<60;
+  const today=new Date().toDateString(), T=TK.filter(e=>new Date(e.t).toDateString()===today);
+  const wakes=T.filter(e=>e.kind==='wake'||e.kind==='update'), fresh=T.filter(e=>e.kind==='handover'&&/is back/.test(e.text)), probs=T.filter(e=>!e.ok);
+  const h=$$('tk-health'); h.className='tk-health'+(ok?'':' bad');
+  h.innerHTML=`<div class="big"><i></i>${ok?'Working fine':'Stopped'}</div><div class="facts">${ok?`<span>Last check <b>${Math.max(1,Math.round(alive))} seconds ago</b></span>`:'<span><b>Ask Claude to restart the ticker</b></span>'}
+    <span>Running for <b>${since(S2.ticker_started)}</b></span><span><b>${probs.length}</b> problem${probs.length===1?'':'s'} today</span></div>`;
+  const byWhy=k=>wakes.filter(e=>k.test(e.text)).length;
+  $$('tk-tiles').innerHTML=[[wakes.length,'times Claude was woken',`${byWhy(/ORCH-QUESTIONS|finished/)} finished steps · ${byWhy(/stopped/)} stops · ${byWhy(/Get me an update/)} update requests · ${wakes.filter(e=>e.by==='app server').length} from you`],
+    [fresh.length,'fresh starts','a Claude’s memory got too full'],[S2.checks||0,'status checks','one every 5 minutes, since it started'],
+    [probs.length,probs.length===1?'problem today':'problems today',probs.length?'see “Problems” below':'nothing went wrong']]
+    .map(([n,l,s])=>`<div class="tk-tile"><div class="n">${n}</div><div class="l">${l}</div><div class="s">${esc(s)}</div></div>`).join('');
+  const J=S2.jobs||{};
+  $$('tk-jobs').innerHTML=JOBS.map(([k,ic,name,how])=>{const j=J[k];return `<tr class="${j&&!j.ok?'warn':'ok'}"><td class="ic">${ic}</td><td><b>${name}</b><div class="sub2">${how}</div></td>
+    <td>${j?ago(j.last):'not yet'}</td><td class="res">${j?(j.ok?'✓ ':'⚠ ')+esc(j.result):''}</td></tr>`}).join('');
+  const F=[['all','Everything',()=>true],['wake','Woke Claude',e=>e.kind==='wake'||e.kind==='update'],['handover','Fresh starts',e=>e.kind==='handover'],['bad','Problems',e=>!e.ok]];
+  $$('tk-filters').innerHTML=F.map(([k,l])=>`<button data-f="${k}" class="${tkFilter===k?'on':''}">${l}</button>`).join('');
+  $$('tk-filters').querySelectorAll('[data-f]').forEach(b=>b.onclick=()=>{tkFilter=b.dataset.f;tkShow=12;renderTicker()});
+  const list=TK.filter(F.find(f=>f[0]===tkFilter)[2]);
+  const open=new Set([...document.querySelectorAll('.tk-ev.open')].map(e=>e.dataset.k));
+  $$('tk-events').innerHTML=list.slice(0,tkShow).map(e=>{const k=e.t+e.text;return `<div class="tk-ev ${e.ok?'ok':'bad'}${open.has(k)?' open':''}" data-k="${esc(k)}">
+    <span class="tm">${new Date(e.t).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</span><span class="ic">${tkIcon(e)}</span>
+    <span>${esc(e.text)}<span class="by">${esc(e.by)}</span></span><span class="rs">${e.ok?'✓ worked':'⚠ problem'}</span>
+    ${e.detail?`<div class="raw"><b>Exactly what was sent:</b>\n${esc(e.detail)}</div>`:''}</div>`}).join('')||'<p class="hint">Nothing yet — it starts logging from now.</p>';
+  $$('tk-events').querySelectorAll('.tk-ev').forEach(el=>el.onclick=()=>el.classList.toggle('open'));
+  $$('tk-more').textContent=list.length>tkShow?`▸ show ${Math.min(40,list.length-tkShow)} more`:''; 
+}
 async function tick(){
   try{
     const [f,s]=await Promise.all([fetch('feed.json',{cache:'no-store'}).then(r=>r.json()),fetch('status.json',{cache:'no-store'}).then(r=>r.json()).catch(()=>({}))]);
     F=f; S2=s; const fj=JSON.stringify(f);
     if(fj!==lastFeed){lastFeed=fj;renderNeeds();renderLater()}
     renderBuilders(); renderUsage(); renderFeed(); renderLive();
+    await loadTicker(); renderTicker();
     if(renderAsk()&&shownFor!==asked){shownFor=asked;$$('s-updates').scrollIntoView({behavior:'smooth'})}
     if(!document.querySelector('.cm.open'))renderCommits();   // don't close a commit the user opened
   }catch(e){$$('alive').textContent='page server not answering'}

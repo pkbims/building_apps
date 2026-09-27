@@ -55,6 +55,15 @@ orchestrator**, it types a prompt into your herdr pane telling you to read
 `engineering-center/INBOX.md`. You never run a watcher of your own. If the page's dot turns red
 ("the 5-minute check is not running"), re-run `setup.py`.
 
+**The Ticker section** (2026-09-27) is the ticker's dashboard, on the engineering center: is it alive,
+today's counts (wake-ups by reason, fresh starts, status checks, problems), its jobs with their last run
+and result (folded behind "Show its jobs"), and a timeline of **every time a helper nudged Claude** —
+the ticker's wake-ups, handover steps, update requests and problems, plus the app server's Send wake-ups,
+message wake-ups and notifications — each with exactly what was sent. The log is
+`<app>/helpers-log.jsonl` (`app-maker/scripts/helperlog.py`, last 2,000 lines); the job status is
+`status.json → jobs`. When you change what the ticker does, log it with `hlog(...)` and record the job
+with `job(...)`, or it disappears from the dashboard.
+
 ## Step 2 — HANDOFF.md
 
 Write `<app>/HANDOFF.md`: your role, the reading order, every settled decision from the PRD

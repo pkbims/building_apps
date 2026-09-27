@@ -17,12 +17,30 @@ Every --interval seconds (default 5 min):
 import argparse, json, os, re, subprocess, tempfile, time
 from datetime import datetime, timezone
 from usage import usage
+import sys as _sys
+_sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "app-maker", "scripts"))
+from helperlog import log as _hlog          # the helpers' log, shown in the engineering center's Ticker section
+
+APP_DIR = None                               # set in main(); the log lives in the app folder
+PROBLEMS = []                                # herdr/git calls that failed or timed out this pass
+
+
+def hlog(kind, text, ok=True, detail=""):
+    if APP_DIR:
+        _hlog(APP_DIR, "ticker", kind, text, ok, detail)
+
+
+def job(status, key, result, ok=True):
+    """Record a job's last run and how it went — the Ticker section's "Its jobs" table."""
+    status.setdefault("jobs", {})[key] = {"last": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+                                          "result": result, "ok": ok}
 
 
 def sh(args, cwd=None):
     try:
         return subprocess.run(args, cwd=cwd, capture_output=True, text=True, timeout=20).stdout
-    except (OSError, subprocess.TimeoutExpired):
+    except (OSError, subprocess.TimeoutExpired) as e:
+        PROBLEMS.append(f"{' '.join(args[:4])} — {'timed out' if isinstance(e, subprocess.TimeoutExpired) else 'failed'}")
         return ""
 
 
@@ -208,12 +226,15 @@ def handovers(x, room, app, workers, status, ag):
                     + f"then run: touch {marker} — and stop. The ticker restarts you under the same name with a "
                     + "fresh session that reads your notes" + ("; wake-ups are held until you're back." if orch else ".")])
                 ho[w] = {"phase": "asked", "since": iso, "pct": pct}
+                hlog("handover", f"Asked {w} to save its work and get a fresh start — "
+                     + ("you requested it" if forced else f"its memory was {pct}% full") + ".")
             continue
         if h["phase"] in ("asked", "nudged"):
             if h["phase"] == "asked" and pct is not None and pct >= x.nudge_at:
                 sh(["herdr", "agent", "prompt", w, f"Reminder from the ticker: context {pct}% — please hand over "
                     f"at your next safe point (commit, notes, then touch {marker} and stop)."])
                 h["phase"] = "nudged"
+                hlog("handover", f"Reminded {w} to hand over — its memory is at {pct}%.")
             busy = any(k != w and v.get("phase") == "restarting" for k, v in ho.items())
             clean = orch or not sh(["git", "-C", _cwd(w), "status", "--porcelain"]).strip()
             if os.path.exists(marker) and st in ("idle", "done") and clean and not busy:
@@ -243,8 +264,10 @@ def handovers(x, room, app, workers, status, ag):
                 try:
                     subprocess.run([RESTART, w, model, x.effort, resume], env=env, capture_output=True,
                                    text=True, timeout=120)
+                    hlog("handover", f"{w} saved its notes — restarted it with a fresh session.", detail=resume)
                 except (OSError, subprocess.TimeoutExpired) as e:
                     h["error"] = repr(e)[:200]
+                    hlog("problem", f"Couldn't restart {w}: {h['error']}", ok=False)
             continue
         if h["phase"] == "restarting":
             age = (now - datetime.fromisoformat(h["restarted_at"])).total_seconds()
@@ -253,6 +276,7 @@ def handovers(x, room, app, workers, status, ag):
                     if os.path.exists(f):
                         os.remove(f)
                 ho.pop(w, None)
+                hlog("handover", f"{w} is back — memory down from {h.get('pct')}% to {pct}%.")
                 held = status.pop("held_wakeups", []) if orch else []
                 if held:
                     sh(["herdr", "agent", "prompt", w, "Held while you restarted — " + " || ".join(held)])
@@ -262,6 +286,7 @@ def handovers(x, room, app, workers, status, ag):
                     f"where it left off."])
             elif age > 300:
                 h["error"] = "the new session didn't come up within 5 minutes — check the pane"
+                hlog("problem", f"{w}'s fresh session didn't start within 5 minutes — check its tab.", ok=False)
                 status.setdefault("handover_errors", []).append({"t": iso, "agent": w})
                 ho.pop(w, None)
 
@@ -283,6 +308,8 @@ def main():
     x = ap.parse_args()
     room, app = os.path.abspath(x.room), os.path.abspath(x.app)
     name = os.path.basename(app)
+    global APP_DIR
+    APP_DIR = app
     open(os.path.join(room, ".ticker.pid"), "w").write(str(os.getpid()))
     inbox = os.path.join(room, "INBOX.md")
     status_path = os.path.join(room, "status.json")
@@ -303,12 +330,15 @@ def main():
     workers = [w for w in x.workers.split(",") if w]
     ctx_alerted = status.get("ctx_alerted", {})     # worker -> highest threshold already reported
     last_beat, last_iso = 0.0, datetime.now(timezone.utc).isoformat(timespec="seconds")
+    status["ticker_started"] = last_iso
+    hlog("start", "The ticker started.")
 
     def wake(msg):
         """Type a prompt into the orchestrator's pane — or hold it while the orchestrator is
         being restarted, so nothing typed into a half-started session is lost."""
         if status.get("handover", {}).get(x.orchestrator, {}).get("phase") == "restarting":
             status.setdefault("held_wakeups", []).append(msg)
+            hlog("wake", "Held a wake-up for the orchestrator until it's back from its fresh start.", detail=msg)
         else:
             sh(["herdr", "agent", "prompt", x.orchestrator, msg])
 
@@ -329,8 +359,12 @@ def main():
                     f"your last update, what backend and ios are each on, what's next, and anything blocked or "
                     f"waiting on the user (say 'nothing' if nothing). Check git and the workers before you write it.")
                 status["update_forwarded"] = ask
+                hlog("update", f"You pressed Get me an update → asked {x.orchestrator}.")
+                job(status, "update", f"asked {x.orchestrator}")
             else:
                 status["update_forwarded"] = "no orchestrator running"
+                hlog("problem", "You pressed Get me an update, but the orchestrator isn't running.", ok=False)
+                job(status, "update", "the orchestrator isn't running", False)
         # (Sends and new-question notifications are handled by the app's server for every page —
         #  App Maker, 2026-09-26. The ticker keeps the heartbeat, commits, runtime and update requests.)
         # 3. the heartbeat
@@ -350,17 +384,29 @@ def main():
             status["context"] = {w: context_use(w) for w in watch if w in ag}
             try:
                 status["usage"] = {"t": now_iso, "agents": usage(watch, status.get("build_started"))}
+                job(status, "usage", f"read {len(status['usage']['agents'])} sessions")
             except Exception as e:                    # a bad transcript line must not stop the heartbeat
                 status["usage_error"] = repr(e)[:200]
+                job(status, "usage", "couldn't read a transcript", False)
+                hlog("problem", f"Couldn't count tokens: {repr(e)[:160]}", ok=False)
             status.update({"t": now_iso, "interval": x.interval, "agents": {w: ag.get(w, "not running") for w in watch},
                            "branches": branches(app)[:8], "open_questions": oq, "heartbeats": heartbeats})
             last_beat, last_iso = time.time(), now_iso
+            status["checks"] = status.get("checks", 0) + 1
+            job(status, "snapshot", "saved")
         if time.time() - last_commits >= 30:          # commits are cheap to read: every 30 s
+            before = {h["hash"] for lane in (status.get("commits") or {}).values() for h in lane}
             status["commits"] = commits(app)
             last_commits = time.time()
+            new = [h for lane in status["commits"].values() for h in lane if h["hash"] not in before]
+            job(status, "commits", f"{len(new)} new commit{'s' if len(new) != 1 else ''}" if before else "read")
             # what each agent is doing right now, for the page (no model, no tokens)
             status["activity"] = {w: activity(w) for w in [x.orchestrator] + workers if w in agents()}
             handovers(x, room, app, workers, status, agents())
+            cx = {w: context_use(w) for w in [x.orchestrator] + workers if w in agents()}
+            hot = [f"{w} at {p}%" for w, p in cx.items() if p is not None and p >= x.handover_at - 10]
+            job(status, "memory", ("; ".join(hot) + " — fresh start soon") if hot else
+                " · ".join(f"{w} {p}%" for w, p in cx.items() if p is not None) or "no readings", not hot)
             # 4. worker events → wake the orchestrator
             events = []
             for title in sorted(open_entries(app) - seen_entries):
@@ -377,6 +423,9 @@ def main():
                         events.append(f"{w} stopped working (now {st}) — at a checkpoint, finished, or blocked")
                 if st:
                     last_states[w] = st
+            job(status, "watch", f"{len(events)} event{'s' if len(events) != 1 else ''}" if events else "nothing new")
+            for e in events:
+                hlog("wake", f"Woke {x.orchestrator} — {e}.")
             if events and x.orchestrator in ag:
                 wake(
                     "Worker event: " + "; ".join(events) + ". Read the worker's ORCH-QUESTIONS.md in its "
@@ -386,6 +435,9 @@ def main():
             status["build_started"] = build_started(app, room)
         status["seen_asks"] = sorted(seen_asks)
         status["seen_entries"] = sorted(seen_entries)
+        for p in sorted(set(PROBLEMS)):
+            hlog("problem", f"A check didn't answer in time ({p}) — it'll try again on the next pass.", ok=False)
+        PROBLEMS.clear()
         status["alive"] = datetime.now(timezone.utc).isoformat(timespec="seconds")
         write_json(status_path, status)
         time.sleep(10)
