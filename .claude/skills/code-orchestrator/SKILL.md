@@ -144,7 +144,12 @@ something must be fixed first — a checkpoint that waits on you leaves a worker
    restart at a time; wake-ups for the orchestrator are held while it restarts; a snapshot of
    the build is left in `.handover/snapshot.json`. Force one with `touch .handover/<name>.request`.
    When the ticker asks you to hand over, do it at your next clean point.
-5. **Stage changes** — update `PROGRESS.md` and the app's `CLAUDE.md`; post an update.
+5. **Every real paid test run → Expenses** (user, 2026-09-27). One line per run that called OpenAI or
+   SearchApi: `python3 .claude/skills/code-orchestrator/scripts/expense.py <app>/engineering-center test "<what>"
+   --openai <$> --searchapi <$> --calls <n> --searches <n> --when <iso> --source "<where the figure comes from>"`.
+   Real figures only (the backend's cost log, a provider's usage page, a run you measured); anything priced from
+   call counts says "estimate" in `--source`. Monthly bills are the user's, set on the page.
+6. **Stage changes** — update `PROGRESS.md` and the app's `CLAUDE.md`; post an update.
 
 **"Get me an update"** — a button on the page. The ticker sees it within ~10 s and prompts you:
 post **one** update, at most 4 short lines — done since your last update, what backend and ios are
