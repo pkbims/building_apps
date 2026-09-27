@@ -220,17 +220,18 @@ let seen=new Set(); try{seen=new Set(JSON.parse(localStorage.getItem('room-seen'
 function renderNeeds(){
   const items=F.items||[], open=items.filter(i=>i.kind==='ask'&&i.status==='open');
   const todos=items.filter(i=>i.kind==='todo'&&i.status!=='done'&&i.now);   // only what the build is waiting on
-  const box=$$('needs');
-  box.className='needs '+(open.length?'hot':'calm');
-  box.innerHTML=(open.length
-    ?`<h2>Needs you <span class="count">${open.length}</span></h2><p class="hint">Pick an answer (or comment), then <b>Send to the orchestrator</b>.</p>`+
+  // A to-do the build is waiting on counts too: the box never says "nothing needs you" above one (round 13).
+  const n=open.length+todos.length, box=$$('needs');
+  box.className='needs '+(n?'hot':'calm');
+  box.innerHTML=(n?`<h2>Needs you <span class="count">${n}</span></h2>`:'')+(open.length
+    ?`<p class="hint">Pick an answer (or comment), then <b>Send to the orchestrator</b>.</p>`+
       open.map(a=>`<div class="d open ask" data-anchor="${esc(a.id)}" data-label="Ask: ${esc(a.text.slice(0,60))}">
         <button class="cbtn">comment</button><div class="q">${esc(a.text)}</div>${a.why?`<div class="why">${esc(a.why)}</div>`:''}
         ${a.options&&a.options.length?`<div data-radio="${esc(a.id)}">${a.options.map(([v,l,d])=>`
           <label class="opt"><input type="radio" name="${esc(a.id)}" value="${esc(v)}">
           <span><span class="oh">${esc(l)}${v===a.rec?' <span class="rec">· recommended</span>':''}</span><span class="od">${esc(d)}</span></span></label>`).join('')}</div>`
           :`<p class="hint">Answer with <b>comment</b>.</p>`}</div>`).join('')
-    :`<span class="ok">✓ Nothing needs you right now.</span>`)
+    :n?'':`<span class="ok">✓ Nothing needs you right now.</span>`)
     +(todos.length?`<div class="todos"><div class="lbl">The build is waiting on you for</div>${todos.map(t=>`<div class="task">${esc(t.text)}</div>`).join('')}</div>`:'');
   for(const [k,v] of Object.entries(S.decisions||{})){const i=document.querySelector(`input[name="${k}"][value="${v}"]`);if(i)i.checked=true}
   document.querySelectorAll('label.opt').forEach(l=>l.classList.toggle('sel',l.querySelector('input').checked));
@@ -241,7 +242,7 @@ function renderNeeds(){
     if(window.Notification&&Notification.permission==='granted')fresh.forEach(a=>new Notification('Engineering center — needs you',{body:a.text}));
     fresh.forEach(a=>seen.add(a.id));try{localStorage.setItem('room-seen',JSON.stringify([...seen]))}catch(e){}
   }
-  document.title=(open.length?`(${open.length}) `:'')+document.title.replace(/^\(\d+\) /,'');
+  document.title=(n?`(${n}) `:'')+document.title.replace(/^\(\d+\) /,'');
 }
 // How full a Claude's working memory is: amber at 60% (fresh session at the next step), red at 80%.
 function mem(p){if(p==null)return'';const c=p>=80?' hot':p>=60?' warn':'';
