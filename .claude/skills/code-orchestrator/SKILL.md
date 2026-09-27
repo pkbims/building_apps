@@ -101,7 +101,7 @@ python3 $POST $ROOM ask github_repo "Where should app_1's code live on GitHub?" 
 
 One brief per worker, `<half>/AGENT.md`: read order, what it owns, what it must not touch,
 **the one rule** (never edit the contract; append to `ORCH-QUESTIONS.md` and keep working),
-TDD, commit discipline — **every commit body opens with one plain-English sentence saying
+TDD, commit discipline — **commit the work before posting its checkpoint, and name the commit in it** (third time it came uncommitted, app_1 2026-09-27); **every commit body opens with one plain-English sentence saying
 what changed for the app** (the engineering center shows that sentence under the title; the technical
 detail follows) — the build order it works down. Each in its own git worktree and
 branch, outside the app folder (app_1's layout):
