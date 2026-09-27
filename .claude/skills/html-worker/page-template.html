@@ -120,6 +120,8 @@
     display:flex;flex-direction:column;gap:6px;border-bottom:1px solid var(--line)}
   .sendto{font-size:11.5px;color:var(--muted);text-align:center} .sendto b{color:var(--ink)}
   .sendto.busy b{color:var(--accent)}
+  .pagec{font:inherit;font-size:12.5px;border:1px dashed var(--line);background:none;color:var(--muted);
+    border-radius:10px;padding:6px;cursor:pointer} .pagec:hover{color:var(--accent);border-color:var(--accent)}
   #queue{display:flex;flex-direction:column;gap:6px;margin-top:6px}
   .sect{font-size:10.5px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin:8px 2px 0}
   .th{border:1px solid var(--line);border-radius:12px;background:var(--bg);padding:9px 10px;font-size:13px}
@@ -262,6 +264,7 @@ addEventListener('DOMContentLoaded',()=>{const h=document.querySelector('header'
   <div class="topact">
     <button class="primary" id="send">Send</button>
     <div class="sendto" id="sendto"></div>
+    <button class="pagec" id="pagec">💬 General comment</button>
   </div>
   <div id="queue"></div>
 </aside>
@@ -343,6 +346,10 @@ function renderDecisions(){
     el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash')});
   report();
 }
+// "General comment": the same popup, not pinned to a block
+$('#pagec').onclick=e=>{e.stopPropagation();target={anchor:'page',label:'General',text:''};
+  const p=$('#pop'),r=$('#pagec').getBoundingClientRect();$('#popanchor').textContent='General — not about one block';$('#poptext').value='';setKind('question');
+  p.style.display='block';p.style.top=(window.scrollY+r.bottom+8)+'px';p.style.left=Math.max(12,r.right-328+window.scrollX)+'px';$('#poptext').focus()};
 $('#cpfab').onclick=()=>$('aside.right').classList.toggle('open');
 $('#dtoggle').onclick=()=>{const l=$('#dlist');l.hidden=!l.hidden;$('#dtoggle').textContent=l.hidden?'show all':'hide'};
 // ---- The page's conversation: every comment is a small thread; answers come back here, not to the terminal ----
@@ -359,7 +366,7 @@ function stateOf(c){const m=c.messages||[], last=m[m.length-1];
   return['wait',AGENT.status==='working'?'Claude is busy — you\'re next':'waiting for Claude']}
 function waiting(c){const [cls,txt]=stateOf(c);return c.status==='queued'||c.suggest||cls==='wait'}
 function item(c,wide){
-  const [cls,txt]=stateOf(c), m=c.messages||[], where=c.anchor==='page'?'whole page':`on <a data-goto="${esc(c.anchor)}">${esc(c.anchorLabel||c.anchor)}</a>`;
+  const [cls,txt]=stateOf(c), m=c.messages||[], where=c.anchor==='page'?'general':`on <a data-goto="${esc(c.anchor)}">${esc(c.anchorLabel||c.anchor)}</a>`;
   const fold=!wide&&!waiting(c)&&!openIds.has(c.id);
   const kind=c.kind||'change';
   const mm=x=>`<div class="msg ${x.from==='claude'?'claude':'you'}"><span class="who">${x.from==='claude'?'Claude':'You'} · ${ago(x.t)}</span>${md(x.text||'')}</div>`;
@@ -434,7 +441,7 @@ function setKind(k){$(`#pop input[name=kind][value="${k}"]`).checked=true;
 let target=null;
 document.addEventListener('click',e=>{
   const btn=e.target.closest('.cbtn');
-  if(!btn){ if(!e.target.closest('#pop')) $('#pop').style.display='none'; return }
+  if(!btn){ if(!e.target.closest('#pop')&&!e.target.closest('#pagec')) $('#pop').style.display='none'; return }
   const el=btn.closest('[data-anchor]');
   target={anchor:el.dataset.anchor,label:el.dataset.label,
           text:(el.querySelector('h2,.q')||{}).textContent||''};

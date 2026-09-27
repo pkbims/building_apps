@@ -85,7 +85,7 @@ of who receives it (`→ code-orchestrator · working`), then a thread of everyt
 *Waiting* expanded (long conversations show only the latest message, "▸ N earlier messages"),
 *Answered* folded to one line. It is pinned at full window height with its own scroll, so the page and
 the chat scroll separately; Send stays pinned at its top. Narrow windows: a **💬 Chat center** button
-slides it in. A general question goes on the nearest block's comment button (no whole-page button).
+slides it in. **💬 General comment** (under Send) is for anything not about one block; it shows as "general" in the thread.
 
 Three kinds of comment, picked on the popup, handled differently:
 
