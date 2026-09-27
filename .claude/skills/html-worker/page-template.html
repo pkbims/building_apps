@@ -393,7 +393,9 @@ function renderQueue(){
   $('#sendto').innerHTML=AGENT.agent?`→ <b>${esc(AGENT.agent)}</b>${AGENT.status?` · ${esc(AGENT.status)}`:''}`:'→ the Claude session in the terminal';
   $('#sendto').className='sendto'+(AGENT.status==='working'?' busy':'');
   const all=[...S.comments].reverse(), wait=all.filter(waiting), done=all.filter(c=>!waiting(c));
-  if(document.activeElement&&document.activeElement.dataset&&document.activeElement.dataset.rin)return;   // don't redraw under a reply being typed
+  renderWide();
+  const ae=document.activeElement;
+  if(ae&&ae.dataset&&ae.dataset.rin&&!ae.closest('#wideview'))return;   // don't redraw under a reply being typed
   $('#queue').innerHTML=(all.length?'':'<div class="empty">No messages yet.<br>Hover any block and press <em>comment</em> to ask, suggest a change or leave a note.</div>')+
     (wait.length?'<div class="sect">Waiting</div>'+wait.map(c=>item(c)).join(''):'')+
     (done.length?'<div class="sect">Answered — click to open</div>'+done.map(c=>item(c)).join(''):'');
@@ -411,8 +413,11 @@ function wireThread(root){
   root.querySelectorAll('[data-del]').forEach(b=>b.onclick=async()=>{const r=await post('/api/comment/delete',{id:b.dataset.del});
     S.comments=r.comments;renderQueue();markAnchors();renderDecisions()});
   root.querySelectorAll('[data-rsend]').forEach(b=>{const id=b.dataset.rsend, inp=root.querySelector(`[data-rin="${id}"]`);
-    const go=async()=>{const t=inp.value.trim();if(!t)return;inp.blur();const r=await post('/api/reply',{id,text:t});
-      if(r.comments)S.comments=r.comments;openIds.add(id);renderQueue();toast(AGENT.agent?'Sent to '+AGENT.agent:'Sent')};
+    const go=async()=>{const t=inp.value.trim();if(!t||b.disabled)return;b.disabled=true;inp.disabled=true;
+      try{const r=await post('/api/reply',{id,text:t});if(r.comments)S.comments=r.comments;
+        if(DRAFT[id]!=null)delete DRAFT[id];inp.value='';openIds.add(id);toast(AGENT.agent?'Sent to '+AGENT.agent:'Sent')}
+      finally{b.disabled=false;inp.disabled=false;inp.blur();renderQueue();refreshSoon()}};
+    inp.oninput=()=>{DRAFT[id]=inp.value};
     b.onclick=go;inp.onkeydown=e=>{if(e.key==='Enter')go()}});
   root.querySelectorAll('[data-mkchange]').forEach(b=>b.onclick=async()=>{const c=S.comments.find(x=>x.id===b.dataset.mkchange);
     const m=c.messages||[], ans=[...m].reverse().find(x=>x.from==='claude');
@@ -422,10 +427,23 @@ function wireThread(root){
     toast('Added as a change — it goes with Send')});
   root.querySelectorAll('[data-nothanks]').forEach(b=>b.onclick=async()=>{const r=await post('/api/comment/update',{id:b.dataset.nothanks,fields:{suggest:false}});
     S.comments=r.comments;renderQueue()});
-  root.querySelectorAll('[data-wide]').forEach(b=>b.onclick=()=>{const c=S.comments.find(x=>x.id===b.dataset.wide);
-    const w=$('#wideview');w.innerHTML='<button class="x">×</button>'+item(c,true);w.classList.add('on');
-    w.querySelector('.x').onclick=()=>w.classList.remove('on');wireThread(w)});
+  root.querySelectorAll('[data-wide]').forEach(b=>b.onclick=()=>{WIDE=b.dataset.wide;renderWide()});
 }
+// The wide view of one thread (⤢): redrawn on every refresh, so answers and your own replies appear in it.
+let WIDE=null; const DRAFT={};
+function renderWide(){const w=$('#wideview');if(!w)return;
+  const c=WIDE&&S.comments.find(x=>x.id===WIDE);
+  if(!c){w.classList.remove('on');w.innerHTML='';return}
+  const inp=w.querySelector('[data-rin]'), typing=inp&&document.activeElement===inp, pos=inp?inp.selectionStart:0;
+  if(inp&&inp.value)DRAFT[WIDE]=inp.value;
+  const sc=w.scrollTop, atBottom=w.scrollHeight-w.scrollTop-w.clientHeight<40;
+  w.innerHTML='<button class="x" title="Close">×</button>'+item(c,true);w.classList.add('on');
+  w.querySelector('.x').onclick=()=>{WIDE=null;renderWide()};
+  wireThread(w);
+  const ni=w.querySelector('[data-rin]');
+  if(ni&&DRAFT[WIDE]!=null){ni.value=DRAFT[WIDE]}
+  if(ni&&typing){ni.focus();try{ni.setSelectionRange(pos,pos)}catch(e){}}
+  w.scrollTop=atBottom?w.scrollHeight:sc}
 // Tell the App Maker (when this page is inside it) the round and counts it shows in its own header.
 function report(){try{if(window.top===window)return;const gs=groups();
   const done=gs.filter(g=>g.querySelector('input:checked')).length;
@@ -519,7 +537,11 @@ async function refresh(){try{
   const [st,ag]=await Promise.all([fetch('/api/state',{cache:'no-store'}).then(r=>r.json()),fetch('/api/agent',{cache:'no-store'}).then(r=>r.json()).catch(()=>({}))]);
   AGENT=ag||{}; const before=JSON.stringify(S.comments); S.comments=st.comments||[]; S.batches=st.batches||[];
   if(JSON.stringify(S.comments)!==before||true)renderQueue();}catch(e){}}
-setInterval(refresh,6000);
+// every 6 s; every 2.5 s while Claude owes an answer
+function owed(){return S.comments.some(c=>c.status==='sent'&&!c.addressed&&(c.kind==='question'||c.kind==='note'||(c.messages||[]).length))}
+let rtimer=null;
+function refreshSoon(){clearTimeout(rtimer);rtimer=setTimeout(async()=>{await refresh();refreshSoon()},owed()?2500:6000)}
+refreshSoon();
 fetch('/api/agent').then(r=>r.json()).then(a=>{AGENT=a||{};renderQueue()}).catch(()=>{});
 fetch('/api/state').then(r=>r.json()).then(async st=>{
   S.decisions=st.decisions||{}; S.comments=st.comments||[]; S.batches=st.batches||[];

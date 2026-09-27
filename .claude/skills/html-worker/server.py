@@ -149,7 +149,12 @@ def api(ep, payload):
         # the user continues a conversation → it goes to Claude again
         for c in state["comments"]:
             if c.get("id") == payload.get("id"):
-                c.setdefault("messages", []).append({"from": "you", "t": now_iso(), "text": payload.get("text", "")})
+                m = c.setdefault("messages", [])
+                last = m[-1] if m else None
+                if (last and last.get("from") == "you" and last.get("text") == payload.get("text", "")
+                        and (datetime.now(timezone.utc) - datetime.fromisoformat(last["t"])).total_seconds() < 10):
+                    break                      # the same reply twice in a row (a double press) — keep one
+                m.append({"from": "you", "t": now_iso(), "text": payload.get("text", "")})
                 c["status"], c["addressed"] = "sent", False
                 event = "message"
     elif ep == "/api/answer":
