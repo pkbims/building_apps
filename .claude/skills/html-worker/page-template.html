@@ -289,7 +289,6 @@ addEventListener('DOMContentLoaded',()=>{const h=document.querySelector('header'
     <label><input type="radio" name="kind" value="note"> Comment</label>
   </div>
   <textarea id="poptext" placeholder="What do you want to know? Answered right here, in the panel."></textarea>
-  <div class="pophint">Enter to send · Shift+Enter for a new line</div>
   <div class="row"><button id="popcancel">Cancel</button><button id="popadd" class="add">Send now</button></div>
 </div>
 <div id="toast"></div>
@@ -385,7 +384,7 @@ function item(c,wide){
     (c.status==='queued'?`<div class="act"><button data-del="${c.id}">Delete</button></div>`:
      (c.suggest?`<div class="act"><button class="pri" data-mkchange="${c.id}">Make it a change request</button><button data-nothanks="${c.id}">No thanks</button></div>`:'')+
      (!m.length||m[m.length-1].from!=='you'?'':'<div class="typing">'+(AGENT.status==='working'?'Claude is busy — your message is next.':'Claude is answering…')+'</div>')+
-     `<div class="rb"><textarea data-rin="${c.id}" rows="1" placeholder="Reply…  (Enter to send · Shift+Enter for a new line)"></textarea><button data-rsend="${c.id}">Reply</button></div>`)+`</div>`;
+     `<div class="rb"><textarea data-rin="${c.id}" rows="1" placeholder="Reply…"></textarea><button data-rsend="${c.id}">Reply</button></div>`)+`</div>`;
   return `<div class="th ${fold?'fold':''}" data-th="${c.id}"><div class="hd"><span class="ktag ${kind}">${KL[kind]||'Change'}</span><span class="where" title="${esc(c.anchorLabel||'')}">${where}</span>
       <span class="st ${cls}">${txt}${m.length>1?` · ${m.length+1} msgs`:''}</span>${wide?'':`<button class="wide" data-wide="${c.id}" title="Open wide">⤢</button>`}</div>
     <div class="row1"><span class="q1">${fold?esc(c.text):md(c.text||'')}</span></div>${body}</div>`}
