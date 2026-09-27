@@ -15,10 +15,12 @@ Every 30 s:
     stop at each checkpoint and wait, so a missed one means idle workers (happened 2026-09-26).
 Every --interval seconds (default 5 min):
   - a status snapshot → status.json: each agent's state, each branch's latest commit, commits since
-    the last check, open ORCH-QUESTIONS, and a one-line heartbeat the page shows in its feed.
+    the last check, open ORCH-QUESTIONS, a one-line heartbeat the page shows in its feed, and each
+    agent's tokens and busy time since the hand-over (usage.py, read off the transcripts).
 """
 import argparse, json, os, re, subprocess, tempfile, time
 from datetime import datetime, timezone
+from usage import usage
 
 
 def sh(args, cwd=None):
@@ -196,7 +198,7 @@ def main():
                 sh(["herdr", "agent", "prompt", x.orchestrator,
                     f"The user sent a round on the engineering center. Read {room}/INBOX.md and act on it: answer "
                     f"questions with post.py update, resolve answered asks with post.py resolve, then mark the "
-                    f"comments addressed (curl -s -X POST localhost:$(cat {room}/.port)/api/comment/addressed -d '{{}}')."])
+                    f"comments addressed (curl -s -X POST localhost:$(cat {app}/.appserver.port)/engineering-center/api/comment/addressed -d '{{}}')."])
                 status["last_forwarded"] = datetime.now(timezone.utc).isoformat(timespec="seconds")
 
         # 2. a new question for the user → notify
@@ -237,6 +239,10 @@ def main():
                     ctx_alerted.pop(w, None)                # a fresh session: re-arm the alerts
             status["context"] = ctx
             status["ctx_alerted"] = ctx_alerted
+            try:
+                status["usage"] = {"t": now_iso, "agents": usage(watch, status.get("build_started"))}
+            except Exception as e:                    # a bad transcript line must not stop the heartbeat
+                status["usage_error"] = repr(e)[:200]
             status.update({"t": now_iso, "interval": x.interval, "agents": {w: ag.get(w, "not running") for w in watch},
                            "branches": branches(app)[:8], "open_questions": oq, "heartbeats": heartbeats})
             last_beat, last_iso = time.time(), now_iso

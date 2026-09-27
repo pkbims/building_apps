@@ -112,7 +112,7 @@ something must be fixed first — a checkpoint that waits on you leaves a worker
    `post.py $ROOM resolve <id> --note "<what you did>"`. Comments: change requests → do them;
    questions → answer with `post.py update`; notes → acknowledge with `post.py update`.
    Then mark comments addressed:
-   `curl -s -X POST localhost:$(cat <app>/engineering-center/.port)/api/comment/addressed -d '{}'`,
+   `curl -s -X POST localhost:$(cat <app>/.appserver.port)/engineering-center/api/comment/addressed -d '{}'`,
    and **always** `touch <app>/engineering-center/index.html` — the page's "Claude is working" bar
    clears only when that round's comments are addressed *or* the page file changes, so a
    round with no comments (decisions only) otherwise shows "Still waiting" forever. Re-read

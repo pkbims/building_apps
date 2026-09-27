@@ -17,6 +17,10 @@ import socketserver
 from urllib.parse import urlparse, parse_qs
 
 import scan as scanner
+import sys as _sys
+_sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "app-maker", "scripts"))
+import maker                              # the App Maker (2026-09-26): this server grew into it — D3
+MAKER_HTML = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "app-maker", "maker.html")
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = scanner.ROOT
@@ -190,6 +194,20 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         self.wfile.write(b)
 
     def do_POST(self):
+        p = urlparse(self.path).path
+        if p.startswith("/api/maker/"):
+            importlib.reload(maker)
+            try:
+                body = json.loads(self.rfile.read(int(self.headers.get("Content-Length", 0))) or b"{}")
+                if p == "/api/maker/talk":
+                    return self._json(maker.talk(body["app"], body["page"], body["text"]))
+                if p == "/api/maker/start":
+                    return self._json({"ok": True, "msg": maker.start_stage(body["app"], body["stage"])})
+                if p == "/api/maker/new":
+                    return self._json({"ok": True, "msg": maker.new_app(body.get("name", ""), body.get("problem", ""))})
+            except Exception as e:
+                return self._json({"error": str(e)[:300]}, 400)
+            return self._json({"error": "unknown"}, 404)
         if urlparse(self.path).path != "/api/hidden":
             return self._json({"error": "unknown endpoint"}, 404)
         try:
@@ -204,6 +222,31 @@ class Handler(http.server.SimpleHTTPRequestHandler):
     def do_GET(self):
         u = urlparse(self.path)
         q = parse_qs(u.query)
+
+        if u.path == "/api/maker":
+            importlib.reload(scanner); importlib.reload(maker)
+            try:
+                return self._json(maker.state(scanner.scan(), hidden_apps()))
+            except Exception as e:
+                return self._json({"error": str(e), "apps": []}, 500)
+        if u.path == "/api/maker/talk":
+            importlib.reload(maker)
+            return self._json(maker.talk_thread((q.get("app") or [""])[0], (q.get("page") or [""])[0]))
+        if u.path == "/md":
+            # a document as a readable page, for the App Maker's frame
+            app = (q.get("app") or [""])[0]; rel = (q.get("path") or [""])[0]
+            target = os.path.normpath(os.path.join(ROOT, app, rel))
+            if not target.startswith(ROOT) or not os.path.isfile(target):
+                return self._html("<p>Not found.</p>", 404)
+            return self._html("<!doctype html><meta charset=utf-8><style>body{font:15px/1.6 system-ui;max-width:860px;margin:24px auto;padding:0 20px;color:#1c1912}"
+                              "table{border-collapse:collapse}td,th{border:1px solid #ddd;padding:4px 8px}pre{background:#f4f2ee;padding:10px;overflow:auto}"
+                              "@media(prefers-color-scheme:dark){body{background:#1b1917;color:#ece7df}pre{background:#26231f}td,th{border-color:#3a352f}}</style>"
+                              + render_markdown(target))
+        if u.path == "/":
+            return self._html(open(MAKER_HTML, encoding="utf-8").read())
+        if u.path == "/progress":
+            self.path = "/index.html"
+            return super().do_GET()
 
         if u.path == "/api/scan":
             try:
@@ -267,8 +310,6 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             self.end_headers()
             return self.wfile.write(b)
 
-        if u.path == "/":
-            self.path = "/index.html"
         return super().do_GET()
 
 

@@ -66,21 +66,15 @@ def main():
         if not os.path.exists(p):
             json.dump(init, open(p, "w"))
 
-    port_file = os.path.join(room, ".port")
-    up = os.path.exists(port_file) and listening(int(open(port_file).read().strip() or 0))
-    if not up:
-        if os.path.exists(port_file):
-            os.remove(port_file)
-        run_in_pane(room, "python3 server.py")
-        for _ in range(50):
-            if os.path.exists(port_file) and listening(int(open(port_file).read().strip() or 0)):
-                break
-            time.sleep(0.2)
+    # The page is served by the app's one server (App Maker D1), not a server of its own.
+    import sys as _sys
+    _sys.path.insert(0, os.path.join(ROOT, ".claude", "skills", "app-maker", "scripts"))
+    import maker
+    port = maker.app_server(app)
     if not alive(os.path.join(room, ".ticker.pid")):
         run_in_pane(room, f"python3 {os.path.join(SKILL, 'scripts', 'ticker.py')} {room} --app {app} "
                           f"--orchestrator {x.orchestrator} --workers {x.workers} --interval {x.interval}")
-    port = open(port_file).read().strip() if os.path.exists(port_file) else "?"
-    print(f"http://localhost:{port}/")
+    print(f"http://localhost:{port}/engineering-center/  (also inside the App Maker: http://localhost:7710/#/{name}/engineering)")
 
 
 if __name__ == "__main__":

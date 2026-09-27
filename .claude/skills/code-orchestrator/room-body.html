@@ -55,6 +55,19 @@
   .steps li.done b{color:var(--ok)} .steps li.doing{color:var(--ink);font-weight:700} .steps li.doing b{color:var(--c)}
   .orch{font-size:12.5px;color:var(--muted);margin:10px 0 0}
 
+  /* usage */
+  .usage{width:100%;border-collapse:collapse;font-size:13.5px;font-variant-numeric:tabular-nums}
+  .usage th{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;text-align:right;padding:0 8px 6px;border-bottom:1px solid var(--line)}
+  .usage td{text-align:right;padding:8px;border-bottom:1px solid var(--line);vertical-align:top}
+  .usage th:first-child,.usage td:first-child{text-align:left;padding-left:0}
+  .usage td small{display:block;font-size:11.5px;color:var(--muted)}
+  .usage tr.all td{font-weight:800;border-bottom:0}
+  .usage .who{display:flex;gap:8px;align-items:center;font-weight:700}
+  .usage .who i{width:10px;height:10px;border-radius:3px;background:var(--c);flex:none}
+  .usage .share{height:5px;border-radius:3px;background:var(--soft);margin-top:5px;overflow:hidden}
+  .usage .share i{display:block;height:100%;background:var(--c)}
+  .uwrap{overflow-x:auto}
+
   /* updates */
   .tl{list-style:none;margin:0;padding:0}
   .tl li{display:flex;gap:10px;align-items:baseline;padding:8px 0;border-bottom:1px solid var(--line);font-size:14px}
@@ -88,6 +101,13 @@
   <h2>Progress</h2>
   <div class="builders"><div class="bcard" id="b-backend"></div><div class="bcard" id="b-ios"></div></div>
   <p class="orch" id="orch"></p>
+</section>
+
+<section id="s-usage" data-anchor="usage" data-label="Tokens & time" data-group="Engineering center" data-title="Tokens & time">
+  <button class="cbtn">comment</button>
+  <h2>Tokens &amp; time</h2>
+  <div class="uwrap"><table class="usage" id="usage"></table></div>
+  <p class="hint" id="usage-note" style="margin-top:8px"></p>
 </section>
 
 <section id="s-updates" data-anchor="updates" data-label="Updates" data-group="Engineering center" data-title="Updates">
@@ -168,6 +188,24 @@ function renderBuilders(){
   const o=ag['code-orchestrator'];
   $$('orch').innerHTML=o?`Orchestrator: <b>${esc(o)}</b>${cx['code-orchestrator']!=null?' · memory '+cx['code-orchestrator']+'%':''} · a step turns green only after it checks and merges it.`:'';
 }
+// Tokens and busy time per agent since the hand-over (the ticker's usage.py, refreshed with each status check).
+// Busy = a turn in progress (the model writing or a tool running); waiting and the Mac asleep are left out.
+function renderUsage(){
+  const U=S2.usage, el=$$('usage'); if(!U||!U.agents){el.innerHTML='<tr><td class="hint">Counted at the next status check.</td></tr>';return}
+  const n=v=>v>=1e9?(v/1e9).toFixed(2)+'B':v>=1e6?(v/1e6).toFixed(1)+'M':v>=1e3?Math.round(v/1e3)+'k':String(v);
+  const hm=s=>`${Math.floor(s/3600)}h ${String(Math.floor(s%3600/60)).padStart(2,'0')}m`;
+  const who={'code-orchestrator':['Orchestrator','var(--accent)'],backend:['Backend','var(--be)'],ios:['iPhone app','var(--io)']};
+  const rows=Object.entries(U.agents), sum={total:0,output_tokens:0,cache_read_input_tokens:0,busy_s:0,calls:0};
+  rows.forEach(([,r])=>Object.keys(sum).forEach(k=>sum[k]+=r[k]||0));
+  const mdl=m=>(m||[]).map(x=>x.replace(/^claude-/,'').replace(/-(\d+)-(\d+)$/,' $1.$2').replace(/-(\d+)$/,' $1').replace(/^./,c=>c.toUpperCase())).join(', ');
+  el.innerHTML='<tr><th>Agent</th><th>Busy</th><th>Tokens</th><th>Written</th></tr>'+rows.map(([k,r])=>{const [label,col]=who[k]||[k,'var(--muted)'];
+    return `<tr style="--c:${col}"><td><span class="who"><i></i>${esc(label)}</span><small>${esc(mdl(r.models))} · ${r.sessions} session${r.sessions==1?'':'s'} · ${r.calls.toLocaleString()} calls</small></td>
+      <td>${hm(r.busy_s)}<small>${sum.busy_s?Math.round(r.busy_s/sum.busy_s*100):0}%</small></td>
+      <td title="fresh input ${r.input_tokens.toLocaleString()} · cache writes ${r.cache_creation_input_tokens.toLocaleString()} · cache reads ${r.cache_read_input_tokens.toLocaleString()} · written ${r.output_tokens.toLocaleString()}">${n(r.total)}<small>${n(r.cache_read_input_tokens)} re-read</small><div class="share"><i style="width:${sum.total?r.total/sum.total*100:0}%"></i></div></td>
+      <td>${n(r.output_tokens)}</td></tr>`}).join('')
+    +`<tr class="all"><td>All</td><td>${hm(sum.busy_s)}</td><td>${n(sum.total)}</td><td>${n(sum.output_tokens)}</td></tr>`;
+  $$('usage-note').innerHTML=`Since the hand-over, counted ${ago(U.t)}. <b>Busy</b> is only while an agent is mid-turn — writing or running a tool; waiting and the Mac asleep don't count, and agents work side by side, so the total can pass the wall clock. <b>Tokens</b> is mostly the conversation re-read from cache on every call (${sum.total?Math.round(sum.cache_read_input_tokens/sum.total*100):0}%, the cheap part); <b>written</b> is what the models produced. Hover a number for the split.`;
+}
 // Things only the user can do that don't block anything yet — at the bottom, out of the way.
 function renderLater(){
   const t=(F.items||[]).filter(i=>i.kind==='todo'&&!(i.now&&i.status!=='done'));
@@ -218,7 +256,7 @@ async function tick(){
     const [f,s]=await Promise.all([fetch('feed.json',{cache:'no-store'}).then(r=>r.json()),fetch('status.json',{cache:'no-store'}).then(r=>r.json()).catch(()=>({}))]);
     F=f; S2=s; const fj=JSON.stringify(f);
     if(fj!==lastFeed){lastFeed=fj;renderNeeds();renderLater()}
-    renderBuilders(); renderFeed(); renderLive();
+    renderBuilders(); renderUsage(); renderFeed(); renderLive();
     if(renderAsk()&&shownFor!==asked){shownFor=asked;$$('s-updates').scrollIntoView({behavior:'smooth'})}
     if(!document.querySelector('.cm.open'))renderCommits();   // don't close a commit the user opened
   }catch(e){$$('alive').textContent='page server not answering'}

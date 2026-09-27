@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>App Maker</title>
+<link rel="preconnect" href="https://fonts.gstatic.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+<style>
+:root{--bg:#f6f4f0;--panel:#fffdf9;--ink:#1c1912;--muted:#6f675c;--faint:#a79f93;--line:#e4ded4;--soft:#efe9df;
+  --accent:#b2582f;--hot:#e0672c;--ok:#22a55a;--now:#3b82f6;--r:12px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#171513;--panel:#1f1c19;--ink:#ece7df;--muted:#a59d91;--faint:#6f685f;--line:#34302a;--soft:#2a2622}}
+:root[data-theme="dark"]{--bg:#171513;--panel:#1f1c19;--ink:#ece7df;--muted:#a59d91;--faint:#6f685f;--line:#34302a;--soft:#2a2622}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 Inter,system-ui,sans-serif;height:100vh;display:flex;flex-direction:column}
+button{font:inherit;cursor:pointer}
+a{color:inherit}
+/* top */
+.top{display:flex;align-items:center;gap:12px;padding:10px 16px;background:#141414;color:#fff;flex:none}
+.top .logo{font-weight:800;font-size:16px;letter-spacing:-.01em;cursor:pointer}
+.top .logo i{display:inline-block;width:9px;height:9px;border-radius:50%;background:#c8ff3d;margin-left:4px}
+.top select{font:inherit;font-size:13px;border-radius:8px;padding:4px 8px;background:#2a2a2a;color:#fff;border:1px solid #444}
+.top .sp{flex:1}
+.top a.lnk{font-size:12.5px;color:#cfcfcf;text-decoration:none;border:1px solid #444;border-radius:999px;padding:4px 10px}
+.top a.lnk:hover{color:#fff;border-color:#888}
+/* needs line */
+.needs{display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding:8px 16px;border-bottom:1px solid var(--line);background:var(--panel);flex:none;min-height:42px}
+.chip{border:0;border-radius:999px;padding:5px 12px;font-size:12.5px;font-weight:700;background:var(--hot);color:#fff}
+.chip.term{background:#141414;color:#fff;border:1px solid #555}
+.calm{color:var(--ok);font-weight:600;font-size:13px}
+/* home */
+.home{padding:24px;overflow:auto;flex:1}
+.home h1{font-size:24px;margin:0 0 4px;letter-spacing:-.02em} .home .sub{color:var(--muted);margin:0 0 18px}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;cursor:pointer;transition:border-color .15s}
+.card:hover{border-color:var(--accent)}
+.card h3{margin:0;font-size:17px} .card .id{font-size:12px;color:var(--muted)}
+.card .stage{margin:10px 0 6px;font-size:13px} .card .stage b{font-weight:700}
+.segs{display:flex;gap:3px} .segs i{flex:1;height:7px;border-radius:3px;background:var(--soft)}
+.segs i.done{background:var(--ok)} .segs i.now{background:var(--now)}
+.card .foot{display:flex;justify-content:space-between;margin-top:10px;font-size:12.5px;color:var(--muted)}
+.card .foot .n{color:var(--hot);font-weight:700}
+.card.new{border-style:dashed;display:flex;flex-direction:column;gap:8px;cursor:default}
+.card.new h3{color:var(--accent)}
+.card.new input,.card.new textarea{font:inherit;font-size:13px;padding:7px 9px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);width:100%}
+.card.new textarea{min-height:56px;resize:vertical}
+.btn{border:0;border-radius:9px;padding:8px 14px;font-weight:700;background:var(--accent);color:#fff}
+.btn.ghost{background:var(--soft);color:var(--ink)}
+/* app view */
+.appv{flex:1;display:flex;min-height:0}
+.nav{width:232px;flex:none;border-right:1px solid var(--line);background:var(--panel);overflow:auto;padding:10px 8px 20px}
+.nav .g{font-size:10.5px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--faint);margin:14px 8px 4px}
+.nav a{display:flex;align-items:center;gap:8px;padding:6px 9px;border-radius:8px;text-decoration:none;font-size:13px;cursor:pointer}
+.nav a:hover{background:var(--soft)} .nav a.on{background:var(--soft);font-weight:700}
+.nav a.off{color:var(--faint)}
+.nav a .d{width:8px;height:8px;border-radius:50%;background:var(--line);flex:none}
+.nav a .d.done{background:var(--ok)} .nav a .d.now{background:var(--now)}
+.nav a em{margin-left:auto;font-style:normal;background:var(--hot);color:#fff;border-radius:999px;font-size:10.5px;font-weight:800;padding:1px 7px}
+.main{flex:1;display:flex;flex-direction:column;min-width:0}
+.head{display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid var(--line);background:var(--panel);flex:none;flex-wrap:wrap}
+.head h2{font-size:16px;margin:0} .head .crumb{font-size:12px;color:var(--muted)}
+.head .who{font-size:12px;border:1px solid var(--line);border-radius:999px;padding:3px 10px;color:var(--muted)}
+.head .who.working{color:var(--ok);border-color:var(--ok)} .head .who.blocked{color:#fff;background:#141414}
+.head .sp{flex:1}
+.frame{flex:1;border:0;width:100%;background:var(--bg);min-height:0}
+.empty{flex:1;display:grid;place-items:center;color:var(--muted);text-align:center;padding:30px}
+/* talk */
+.talk{flex:none;border-top:1px solid var(--line);background:var(--panel)}
+.talk summary{padding:8px 16px;cursor:pointer;font-size:13px;font-weight:700;list-style:none;display:flex;gap:8px;align-items:center}
+.talk summary::-webkit-details-marker{display:none}
+.talk summary small{font-weight:500;color:var(--muted)}
+.thread{max-height:220px;overflow:auto;padding:0 16px 6px;display:flex;flex-direction:column;gap:6px}
+.msg{max-width:78%;padding:7px 11px;border-radius:12px;font-size:13px;white-space:pre-wrap}
+.msg.you{align-self:flex-end;background:var(--accent);color:#fff;border-bottom-right-radius:4px}
+.msg.claude{align-self:flex-start;background:var(--soft);border-bottom-left-radius:4px}
+.msg .t{display:block;font-size:10.5px;opacity:.7;margin-top:2px}
+.ask{display:flex;gap:8px;padding:8px 16px 12px}
+.ask input{flex:1;font:inherit;font-size:13px;padding:8px 11px;border:1px solid var(--line);border-radius:9px;background:var(--bg);color:var(--ink)}
+.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#141414;color:#fff;padding:9px 16px;border-radius:10px;font-size:13px;display:none;z-index:9}
+@media (max-width:760px){.nav{width:170px}.home{padding:16px}}
+</style>
+</head>
+<body>
+<div class="top">
+  <span class="logo" id="logo">App Maker<i></i></span>
+  <select id="appsel" style="display:none"></select>
+  <span class="sp"></span>
+  <a class="lnk" href="/progress" target="_blank">Progress board</a>
+  <a class="lnk" href="http://localhost:7700/" target="_blank">Monitoring center ↗</a>
+</div>
+<div class="needs" id="needs"></div>
+<div id="view" style="flex:1;display:flex;min-height:0"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+const $=s=>document.querySelector(s);
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const ago=t=>{if(!t)return'';const s=(Date.now()-new Date(t))/1000;return s<60?'now':s<3600?Math.round(s/60)+'m ago':s<86400?Math.round(s/3600)+'h ago':new Date(t).toLocaleDateString()};
+const toast=m=>{const t=$('#toast');t.textContent=m;t.style.display='block';clearTimeout(t._h);t._h=setTimeout(()=>t.style.display='none',3500)};
+const post=(u,b)=>fetch(u,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b)}).then(r=>r.json());
+let M={apps:[]}, route={view:'home'}, framed='';
+
+// routes: #/  ·  #/<app>/<stage>
+function parse(){const h=decodeURIComponent(location.hash.slice(1)).split('/').filter(Boolean);
+  // an app id can hold a slash (research/<niche>): the last part is the stage
+  if(!h.length)return{view:'home'};
+  const stage=h.length>1?h[h.length-1]:null, app=h.length>1?h.slice(0,-1).join('/'):h[0];
+  return{view:'app',app,stage}}
+function go(h){location.hash=h}
+window.onhashchange=()=>{route=parse();render()};
+
+function needsLine(){
+  const chips=[];
+  M.apps.forEach(a=>{
+    a.stages.filter(s=>s.needs).forEach(s=>chips.push(`<button class="chip" data-go="/${a.id}/${s.key}">${esc(a.name)} · ${esc(s.label)} needs you (${s.needs})</button>`));
+    a.terminal.forEach(t=>chips.push(`<button class="chip term" title="Open the ${esc(t.agent)} tab in herdr and answer what it shows">Terminal: ${esc(t.agent)} is waiting for you — open its tab and answer</button>`));
+  });
+  $('#needs').innerHTML=chips.join('')||'<span class="calm">✓ Nothing needs you right now.</span>';
+  $('#needs').querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>go(b.dataset.go));
+  const n=M.apps.reduce((x,a)=>x+a.needs,0); document.title=(n?`(${n}) `:'')+'App Maker';
+}
+function clock(t){if(!t)return'';const m=Math.floor((Date.now()-new Date(t))/60000);const d=Math.floor(m/1440);return `⏱ ${d?d+'d ':''}${Math.floor(m%1440/60)}h ${String(m%60).padStart(2,'0')}m`}
+
+function home(){
+  $('#appsel').style.display='none';
+  const v=$('#view');
+  if(v.dataset.key!=='home'){   // build the page once; later refreshes only update the cards, so a half-typed New app survives
+    v.dataset.key='home';
+    v.innerHTML=`<div class="home"><h1>Your apps</h1><p class="sub">Open an app to see its stages and pages. Everything that needs you is in the line above.</p>
+      <div class="cards"><div id="cardlist" style="display:contents"></div>
+      <div class="card new"><h3>+ New app</h3><input id="nname" placeholder="A short name, e.g. Pantry"><textarea id="nprob" placeholder="The problem, in one line — e.g. people with food in the fridge can't decide what to cook"></textarea>
+        <button class="btn" id="nstart">Start research</button><span style="font-size:12px;color:var(--muted)">Opens a Claude session in a new herdr tab running /research. Its review page appears here.</span></div>
+      </div></div>`;
+    $('#nstart').onclick=async()=>{$('#nstart').disabled=true;const r=await post('/api/maker/new',{name:$('#nname').value,problem:$('#nprob').value});
+      toast(r.error||r.msg);$('#nstart').disabled=false;if(!r.error){$('#nname').value='';$('#nprob').value='';load()}};
+  }
+  $('#cardlist').innerHTML=M.apps.map(a=>{const now=a.stages.find(s=>s.status==='now');
+    return `<div class="card" data-go="/${esc(a.id)}/${now?now.key:'research'}"><h3>${esc(a.name)}</h3><div class="id">${esc(a.id)}</div>
+      <div class="stage">Now: <b>${esc(now?now.label:a.stage_name)}</b></div>
+      <div class="segs">${a.stages.map(s=>`<i class="${s.status}" title="${esc(s.label)}"></i>`).join('')}</div>
+      <div class="foot"><span>${a.needs?`<span class="n">${a.needs} need${a.needs>1?'':'s'} you</span>`:'nothing needs you'}</span><span>${clock(a.build_started)}</span></div></div>`}).join('');
+  $('#cardlist').querySelectorAll('[data-go]').forEach(c=>c.onclick=()=>go(c.dataset.go));
+}
+function appView(){
+  const a=M.apps.find(x=>x.id===route.app); if(!a)return home();
+  const sel=$('#appsel'); sel.style.display=''; sel.innerHTML=M.apps.map(x=>`<option value="${esc(x.id)}"${x.id===a.id?' selected':''}>${esc(x.name)} · ${esc(x.id)}</option>`).join('');
+  sel.onchange=()=>{const b=M.apps.find(x=>x.id===sel.value);const n=b.stages.find(s=>s.status==='now');go(`/${b.id}/${n?n.key:'research'}`)};
+  let st=a.stages.find(s=>s.key===route.stage); let doc=null;
+  if(!st&&route.stage&&route.stage.startsWith('doc:')){doc=a.docs.find(d=>'doc:'+d.path===route.stage)}
+  if(!st&&!doc)st=a.stages.find(s=>s.status==='now')||a.stages[0];
+  let groups='', last='';
+  a.stages.forEach(s=>{if(s.group!==last){groups+=`<div class="g">${esc(s.group)}</div>`;last=s.group}
+    groups+=`<a class="${st&&s.key===st.key?'on':''} ${!s.page&&!s.status?'off':''}" data-go="/${a.id}/${s.key}"><span class="d ${s.status}"></span>${esc(s.label)}${s.needs?`<em>${s.needs}</em>`:''}</a>`});
+  groups+=`<div class="g">Documents</div>`+a.docs.map(d=>`<a class="${doc&&doc.path===d.path?'on':''}" data-go="/${a.id}/doc:${encodeURIComponent(d.path)}">📄 ${esc(d.label)}</a>`).join('');
+  let url='', title='', head='';
+  if(doc){title=doc.label;url=doc.path.endsWith('.md')?`/md?app=${encodeURIComponent(a.id)}&path=${encodeURIComponent(doc.path)}`:`http://localhost:${a.port}/${doc.path}`}
+  else{title=st.label;url=st.page&&a.port?`http://localhost:${a.port}/${st.page}/${st.hash}`:'';
+    head=(st.agent?`<span class="who ${esc(st.agent_status||'')}">Claude: ${esc(st.agent)} · ${esc(st.agent_status||'not running')}</span>`:'')+
+      (st.can_start?`<button class="btn" id="startbtn">Start ${esc(st.label)}</button>`:'')}
+  const v=$('#view');
+  const same=v.dataset.key===a.id+'|'+(doc?doc.path:st.key);
+  if(!same){
+    v.dataset.key=a.id+'|'+(doc?doc.path:st.key);
+    v.innerHTML=`<div class="appv"><div class="nav" id="nav"></div><div class="main">
+      <div class="head" id="head"></div>
+      ${url?`<iframe class="frame" id="frame" src="${url}"></iframe>`:`<div class="empty"><div><h2 style="margin:0 0 6px">${esc(title)}</h2>${st&&st.can_start?'Not started yet — press Start above.':'Nothing here yet for this app.'}</div></div>`}
+      ${!doc&&st&&st.page?`<details class="talk" id="talk"><summary>💬 Talk to Claude about this stage <small id="talkwho"></small></summary><div class="thread" id="thread"></div>
+        <div class="ask"><input id="talkin" placeholder="Ask, suggest, or think out loud — it goes to this stage's Claude session"><button class="btn" id="talksend">Send</button></div></details>`:''}
+    </div></div>`;
+    try{if(localStorage.getItem('talk-open')==='1'&&$('#talk'))$('#talk').open=true}catch(e){}
+    if($('#talk'))$('#talk').ontoggle=()=>{try{localStorage.setItem('talk-open',$('#talk').open?'1':'0')}catch(e){}};
+    if($('#talksend')){const send=async()=>{const t=$('#talkin').value.trim();if(!t)return;$('#talkin').value='';
+        const r=await post('/api/maker/talk',{app:a.id,page:st.page,text:t});toast(r.error||(r.delivered?'Sent to '+r.agent:(r.why||'Saved — no Claude session for this stage')));loadTalk()};
+      $('#talksend').onclick=send;$('#talkin').onkeydown=e=>{if(e.key==='Enter')send()}}
+  }
+  $('#nav').innerHTML=groups;
+  $('#nav').querySelectorAll('[data-go]').forEach(x=>x.onclick=()=>go(x.dataset.go));
+  $('#head').innerHTML=`<div><div class="crumb">${esc(a.name)} › ${esc(doc?'Documents':st.group)}</div><h2>${esc(title)}</h2></div><span class="sp"></span>${head}${url?`<a class="lnk" style="font-size:12px;color:var(--muted)" href="${url}" target="_blank">open on its own ↗</a>`:''}`;
+  if($('#startbtn'))$('#startbtn').onclick=async()=>{$('#startbtn').disabled=true;const r=await post('/api/maker/start',{app:a.id,stage:st.key});toast(r.error||r.msg);load()};
+  if($('#talkwho'))$('#talkwho').textContent=st.agent?'→ '+st.agent:'— no Claude session for this stage yet';
+  loadTalk();
+}
+let talkKey='';
+async function loadTalk(){
+  const a=M.apps.find(x=>x.id===route.app); const st=a&&a.stages.find(s=>s.key===route.stage)||(a&&a.stages.find(s=>s.status==='now'));
+  if(!$('#thread')||!st||!st.page)return;
+  const t=await fetch(`/api/maker/talk?app=${encodeURIComponent(a.id)}&page=${encodeURIComponent(st.page)}`).then(r=>r.json()).catch(()=>({messages:[]}));
+  const k=JSON.stringify(t.messages);if(k===talkKey)return;talkKey=k;
+  $('#thread').innerHTML=(t.messages||[]).slice(-30).map(m=>`<div class="msg ${m.from==='you'?'you':'claude'}">${esc(m.text)}<span class="t">${m.from==='you'?'you':'Claude'} · ${ago(m.t)}</span></div>`).join('')||'<p style="color:var(--muted);font-size:12.5px;margin:4px 0">No messages yet.</p>';
+  $('#thread').scrollTop=1e9;
+}
+function render(){needsLine(); route.view==='home'?home():appView()}
+async function load(){try{M=await fetch('/api/maker').then(r=>r.json());}catch(e){M={apps:[]}} render()}
+$('#logo').onclick=()=>go('/');
+route=parse(); load(); setInterval(load,15000); setInterval(loadTalk,5000);
+</script>
+</body>
+</html>
