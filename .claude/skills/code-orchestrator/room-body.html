@@ -117,6 +117,7 @@
   .tk-ev .rs{font-size:11.5px;font-weight:700;white-space:nowrap} .tk-ev.ok .rs{color:var(--ok)} .tk-ev.bad .rs{color:#d4a017}
   .tk-ev .raw{display:none;grid-column:3/5;background:var(--soft);border-radius:8px;padding:7px 9px;font:11.5px/1.5 ui-monospace,monospace;color:var(--muted);white-space:pre-wrap;word-break:break-word}
   .tk-ev.open .raw{display:block}
+  .actline{font-size:12.5px;color:var(--muted);margin:-2px 0 8px} .actline b{color:var(--ink)} .actline b.you{color:var(--hot)}
   .fine{font-size:11.5px;color:var(--faint);margin:6px 0 0}
   .plan{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
   @media(max-width:760px){.plan{grid-template-columns:1fr}}
@@ -163,6 +164,7 @@
 <section id="s-updates" data-anchor="updates" data-label="Updates" data-group="Engineering center" data-title="Updates">
   <button class="cbtn">comment</button>
   <h2 style="display:flex;align-items:center;gap:10px">Updates <button id="getupd">↻ Get me an update</button></h2>
+  <p class="actline" id="actline"></p>
   <ul class="tl" id="feed"></ul>
 </section>
 
@@ -341,6 +343,16 @@ function renderAsk(){const b=$$('getupd');
     b.textContent=m>=5?'Still waiting — the orchestrator may be mid-step':'Asked the orchestrator…';}
   else{b.disabled=false;b.textContent='↻ Get me an update';}
   return got;}
+// One quiet line under Updates: is anything happening, and who is the build waiting on?
+function renderActivity(){
+  const C=S2.commits||{}, all=Object.values(C).flat(), last=all.map(c=>c.when).sort().pop();
+  const ag=S2.agents||{}, name={'code-orchestrator':'orchestrator',backend:'backend',ios:'iPhone app'};
+  const busy=Object.entries(ag).filter(([,st])=>st==='working').map(([n])=>name[n]||n);
+  const items=F.items||[], asks=items.filter(i=>i.kind==='ask'&&i.status==='open').length, now=items.filter(i=>i.kind==='todo'&&i.now&&i.status!=='done').length;
+  const wait=asks||now?`<b class="you">waiting on you</b> (${asks?asks+' question'+(asks>1?'s':''):''}${asks&&now?', ':''}${now?now+' to-do'+(now>1?'s':''):''})`
+    :busy.length?`<b>${busy.join(' and ')} working</b>`:`<b class="you">everyone idle — waiting on you or the next step</b>`;
+  $$('actline').innerHTML=`Latest activity: ${last?'a commit '+ago(last):'no commits yet'} · status check ${S2.t?ago(S2.t):'—'} · ${wait}`;
+}
 function renderFeed(){
   const rows=(F.items||[]).filter(i=>i.kind==='update'||i.kind==='checkpoint'||i.kind==='ask').sort((a,b)=>b.t<a.t?-1:1).slice(0,5);
   $$('feed').innerHTML=rows.map(i=>`<li${asked&&i.kind==='update'&&i.t>=asked.slice(0,19)?' class="fresh"':''}><span class="ic">${i.kind==='ask'?(i.status==='open'?'❓':'✔︎'):i.kind==='checkpoint'?'✅':'•'}</span>
@@ -414,7 +426,7 @@ async function tick(){
     const [f,s]=await Promise.all([fetch('feed.json',{cache:'no-store'}).then(r=>r.json()),fetch('status.json',{cache:'no-store'}).then(r=>r.json()).catch(()=>({}))]);
     F=f; S2=s; const fj=JSON.stringify(f);
     if(fj!==lastFeed){lastFeed=fj;renderNeeds();renderLater()}
-    renderBuilders(); renderUsage(); renderFeed(); renderLive();
+    renderBuilders(); renderUsage(); renderFeed(); renderActivity(); renderLive();
     await loadTicker(); renderTicker();
     await loadExpenses(); renderExpenses();
     if(renderAsk()&&shownFor!==asked){shownFor=asked;$$('s-updates').scrollIntoView({behavior:'smooth'})}
