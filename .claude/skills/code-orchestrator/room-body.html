@@ -28,6 +28,8 @@
   .todos{margin-top:10px;border-top:1px dashed var(--line);padding-top:8px}
   .todos .lbl{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
   .task{display:flex;gap:8px;align-items:flex-start;font-size:13.5px;padding:4px 0}
+  .todos .task{position:relative;padding-right:92px} .todos .task .cbtn{top:0;right:0} .todos .task:hover .cbtn{opacity:1}
+  @media (hover:none){.todos .task .cbtn{opacity:1}}
   .task:before{content:"";width:14px;height:14px;border:2px solid var(--muted);border-radius:4px;flex:none;margin-top:2px}
 
   /* builders */
@@ -232,7 +234,7 @@ function renderNeeds(){
           <span><span class="oh">${esc(l)}${v===a.rec?' <span class="rec">· recommended</span>':''}</span><span class="od">${esc(d)}</span></span></label>`).join('')}</div>`
           :`<p class="hint">Answer with <b>comment</b>.</p>`}</div>`).join('')
     :n?'':`<span class="ok">✓ Nothing needs you right now.</span>`)
-    +(todos.length?`<div class="todos"><div class="lbl">The build is waiting on you for</div>${todos.map(t=>`<div class="task">${esc(t.text)}</div>`).join('')}</div>`:'');
+    +(todos.length?`<div class="todos"><div class="lbl">The build is waiting on you for</div>${todos.map(t=>`<div class="task" data-anchor="todo-${esc(t.id)}" data-label="To-do: ${esc(t.text.slice(0,60))}"><button class="cbtn">comment</button>${esc(t.text)}</div>`).join('')}</div>`:'');
   for(const [k,v] of Object.entries(S.decisions||{})){const i=document.querySelector(`input[name="${k}"][value="${v}"]`);if(i)i.checked=true}
   document.querySelectorAll('label.opt').forEach(l=>l.classList.toggle('sel',l.querySelector('input').checked));
   post('/api/groups',{groups:[...document.querySelectorAll('[data-radio],[data-check]')].map(g=>g.dataset.radio||g.dataset.check)});
