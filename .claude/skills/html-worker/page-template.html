@@ -130,6 +130,19 @@
   .pagec{font:inherit;font-size:12.5px;border:1px dashed var(--line);background:none;color:var(--muted);
     border-radius:10px;padding:6px;cursor:pointer} .pagec:hover{color:var(--accent);border-color:var(--accent)}
   #queue{display:flex;flex-direction:column;gap:6px;margin-top:6px}
+  /* Progress meter (user, 2026-09-28): what Claude is working on, answered recently, or all caught up. */
+  .cprog{border:1px solid var(--line);border-radius:12px;padding:8px 10px;font-size:12.5px;background:var(--bg)}
+  .cprog:empty{display:none}
+  .cprog .l{display:flex;gap:7px;align-items:center}
+  .cprog .spin{width:11px;height:11px;border:2px solid var(--warn);border-right-color:transparent;border-radius:50%;animation:spin .8s linear infinite;flex:none}
+  .cprog.working{border-color:var(--warn)} .cprog.working .l{color:var(--warn);font-weight:700}
+  .cprog .pb{height:6px;border-radius:99px;background:var(--line);overflow:hidden;margin-top:7px}
+  .cprog .pb i{display:block;height:100%;background:var(--warn);transition:width .4s}
+  .cprog .sub{margin-top:5px;color:var(--muted);font-size:11.5px}
+  .cprog.recent{border-color:var(--accent);background:var(--soft)} .cprog.recent .l{color:var(--accent);font-weight:700}
+  .cprog.idle{color:var(--muted)}
+  .th.unread{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset}
+  .th .ndot{width:8px;height:8px;border-radius:50%;background:var(--accent);flex:none}
   .sect{font-size:10.5px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin:8px 2px 0}
   .th{border:1px solid var(--line);border-radius:12px;background:var(--bg);padding:9px 10px;font-size:13px}
   .th .hd{display:flex;gap:6px;align-items:center;font-size:11px;color:var(--muted);margin-bottom:4px}
@@ -271,6 +284,7 @@ addEventListener('DOMContentLoaded',()=>{const h=document.querySelector('header'
   <div id="dchg"></div>
   <div class="dlist" id="dlist" hidden></div>
   <div class="topact">
+    <div class="cprog" id="cprog"></div>
     <button class="primary" id="send">Send</button>
     <div class="sendto" id="sendto"></div>
     <div class="wstat" id="wstat"></div>
@@ -387,9 +401,45 @@ function item(c,wide){
      (c.suggest?`<div class="act"><button class="pri" data-mkchange="${c.id}">Make it a change request</button><button data-nothanks="${c.id}">No thanks</button></div>`:'')+
      (!m.length||m[m.length-1].from!=='you'?'':'<div class="typing">'+(AGENT.status==='working'?'Claude is busy — your message is next.':'Claude is answering…')+'</div>')+
      `<div class="rb"><textarea data-rin="${c.id}" rows="1" placeholder="Reply…"></textarea><button data-rsend="${c.id}">Reply</button></div>`)+`</div>`;
-  return `<div class="th ${fold?'fold':''}" data-th="${c.id}"><div class="hd"><span class="ktag ${kind}">${KL[kind]||'Change'}</span><span class="where" title="${esc(c.anchorLabel||'')}">${where}</span>
+  const un=isUnread(c);
+  return `<div class="th ${fold?'fold':''}${un?' unread':''}" data-th="${c.id}"><div class="hd">${un?'<span class="ndot" title="New answer"></span>':''}<span class="ktag ${kind}">${KL[kind]||'Change'}</span><span class="where" title="${esc(c.anchorLabel||'')}">${where}</span>
       <span class="st ${cls}">${txt}${m.length>1?` · ${m.length+1} msgs`:''}</span>${wide?'':`<button class="wide" data-wide="${c.id}" title="Open wide">⤢</button>`}</div>
     <div class="row1"><span class="q1">${fold?esc(c.text):md(c.text||'')}</span></div>${body}</div>`}
+// ---- Progress meter + unread answers (user, 2026-09-28) ----
+// Unread: a thread whose latest message is Claude's and newer than when this viewer last opened it.
+// "Answered recently" stays until the viewer opens any one unread answer. Per viewer, in localStorage.
+const PK='cprog:'+location.pathname;
+function pget(){try{return JSON.parse(localStorage.getItem(PK)||'null')}catch(e){return null}}
+function pset(v){try{localStorage.setItem(PK,JSON.stringify(v))}catch(e){}}
+const lastClaude=c=>{const m=(c.messages||[]).filter(x=>x.from==='claude');return m.length?m[m.length-1].t:null};
+function progInit(){if(pget())return;const seen={};S.comments.forEach(c=>{const t=lastClaude(c);if(t)seen[c.id]=t});pset({seen,dismissed:new Date().toISOString(),wave:null})}
+function isUnread(c){const p=pget()||{seen:{}},t=lastClaude(c);if(!t)return false;const m=c.messages||[];
+  return m[m.length-1].from==='claude'&&(!p.seen[c.id]||p.seen[c.id]<t)}
+function markRead(id){const c=S.comments.find(x=>x.id===id);if(!c)return;const p=pget()||{seen:{}};const t=lastClaude(c);
+  if(t&&isUnread(c)){p.seen[c.id]=t;p.dismissed=new Date().toISOString();pset(p)}}
+function workingRound(){try{return JSON.parse(localStorage.getItem(WK)||'null')}catch(e){return null}}
+function changedDecisions(round){const b=(S.batches||[])[round-1];if(!b)return 0;const prev=((S.batches||[])[round-2]||{}).decisions||{};
+  const cur=b.decisions||{};return Object.keys(cur).filter(k=>JSON.stringify(cur[k])!==JSON.stringify(prev[k])).length}
+let PLOADED=false;   // the page state has loaded — until then there's nothing true to show (and nothing to reset)
+function renderProgress(){const box=$('#cprog');if(!box||!PLOADED)return;progInit();const p=pget();
+  const pend=S.comments.filter(c=>c.status!=='queued'&&!c.suggest&&stateOf(c)[0]==='wait');
+  const n={question:0,note:0,change:0};pend.forEach(c=>{n[c.kind||'change']=(n[c.kind||'change']||0)+1});
+  const wr=workingRound(), nd=wr?changedDecisions(wr.round):0;
+  const busy=pend.length+nd;
+  if(busy&&!p.wave){p.wave={start:new Date().toISOString()};pset(p)}
+  if(!busy&&p.wave){p.wave=null;pset(p)}
+  const unread=S.comments.filter(isUnread);
+  const pl=(k,w)=>k?`${k} ${w}${k===1?'':'s'}`:'';
+  if(busy){const done=S.comments.filter(c=>!pend.includes(c)&&lastClaude(c)&&lastClaude(c)>=p.wave.start).length;
+    const parts=[pl(n.question,'question'),pl(n.note,'comment'),pl(n.change,'change'),pl(nd,'decision')].filter(Boolean).join(' · ');
+    const pct=Math.round(100*done/Math.max(1,done+pend.length+(nd?1:0)));
+    box.className='cprog working';
+    box.innerHTML=`<div class="l"><span class="spin"></span>Working on ${parts}</div><div class="pb"><i style="width:${Math.max(6,pct)}%"></i></div>`+
+      `<div class="sub">${done?`${done} answered so far`:(AGENT.status==='working'?'Claude is busy — yours are next':'Claude will pick these up shortly')}${unread.length?` · ${unread.length} new answer${unread.length>1?'s':''} below`:''}</div>`;return}
+  const fresh=unread.filter(c=>lastClaude(c)>(p.dismissed||''));
+  if(fresh.length){box.className='cprog recent';
+    box.innerHTML=`<div class="l">✓ Answered recently — check the answers below</div><div class="sub">${fresh.length} new answer${fresh.length>1?'s':''} · marked with a dot</div>`;return}
+  box.className='cprog idle';box.innerHTML=S.comments.length?'<div class="l">✓ All caught up</div>':''}
 function renderQueue(){
   const q=S.comments.filter(c=>c.status==='queued');
   const nd=Object.keys(S.decisions).length;
@@ -399,17 +449,18 @@ function renderQueue(){
   const all=[...S.comments].reverse(), wait=all.filter(waiting), done=all.filter(c=>!waiting(c));
   renderWide();
   const ae=document.activeElement;
-  if(ae&&ae.dataset&&ae.dataset.rin&&!ae.closest('#wideview'))return;   // don't redraw under a reply being typed
+  if(ae&&ae.dataset&&ae.dataset.rin&&!ae.closest('#wideview')){renderProgress();return}   // don't redraw under a reply being typed
   $('#queue').innerHTML=(all.length?'':'<div class="empty">No messages yet.<br>Hover any block and press <em>comment</em> to ask, suggest a change or leave a note.</div>')+
     (wait.length?'<div class="sect">Waiting</div>'+wait.map(c=>item(c)).join(''):'')+
     (done.length?'<div class="sect">Answered — click to open</div>'+done.map(c=>item(c)).join(''):'');
   wireThread($('#queue'));
   const nw=wait.length; $('#cpfab').innerHTML='💬 Chat center'+(nw?` <em>${nw}</em>`:'');
+  renderProgress();
   report();
 }
 function wireThread(root){
   root.querySelectorAll('[data-th]').forEach(el=>el.onclick=e=>{if(e.target.closest('button,input,a'))return;
-    const id=el.dataset.th; if(el.classList.contains('fold')){openIds.add(id)}else if(!waiting(S.comments.find(c=>c.id===id)||{})){openIds.delete(id)} renderQueue()});
+    const id=el.dataset.th; markRead(id); if(el.classList.contains('fold')){openIds.add(id)}else if(!waiting(S.comments.find(c=>c.id===id)||{})){openIds.delete(id)} renderQueue()});
   root.querySelectorAll('[data-goto]').forEach(a=>a.onclick=()=>{const el=document.querySelector(`[data-anchor="${a.dataset.goto}"]`);
     if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.classList.remove('flash');void el.offsetWidth;el.classList.add('flash')}});
   root.querySelectorAll('[data-earlier]').forEach(e=>e.onclick=()=>{const o=e.nextElementSibling;o.classList.toggle('on');
@@ -515,7 +566,7 @@ function pollWorking(){clearTimeout(wtimer);let w;try{w=JSON.parse(localStorage.
     const b=st?(st.batches||[])[w.round-1]:null;const ids=new Set((b&&b.commentIds)||[]);
     const mine=st?(st.comments||[]).filter(c=>ids.has(c.id)):[];
     const allDone=mine.length>0&&mine.every(c=>c.addressed);
-    if((lm&&w.lm&&lm!==w.lm)||allDone){try{localStorage.removeItem(WK)}catch(e){}
+    if((lm&&w.lm&&lm!==w.lm)||allDone){try{localStorage.removeItem(WK)}catch(e){};setTimeout(renderProgress,0)
       wset('ready',`<b>Round ${w.round} revision is ready.</b> Reload to see what changed — it's listed at the top of the left rail.`);return}
     if(Date.now()-w.t>4*60*1000){wset('stale',`<b>Still waiting on round ${w.round}.</b> If nothing arrives, type “sent” in the terminal — the automatic wake-up may have missed it.`)}
     pollWorking()},4000)}
@@ -550,7 +601,7 @@ function refreshSoon(){clearTimeout(rtimer);rtimer=setTimeout(async()=>{await re
 refreshSoon();
 fetch('/api/agent').then(r=>r.json()).then(a=>{AGENT=a||{};renderQueue()}).catch(()=>{});
 fetch('/api/state').then(r=>r.json()).then(async st=>{
-  S.decisions=st.decisions||{}; S.comments=st.comments||[]; S.batches=st.batches||[];
+  S.decisions=st.decisions||{}; S.comments=st.comments||[]; S.batches=st.batches||[]; PLOADED=true;
   ROUND=S.batches.length+1; $('#round').textContent=`Round ${ROUND}`;
   for(const [k,v] of Object.entries(S.decisions))
     (Array.isArray(v)?v:[v]).forEach(val=>{
