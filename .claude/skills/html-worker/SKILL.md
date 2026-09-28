@@ -21,7 +21,11 @@ short answer; a page is heavier than a sentence and should earn its weight.
 
 **Inside an app, don't start a server.** A page in an app folder (`app_N/…` or a
 `research/<niche>/` started from the App Maker) is served by that app's one server — see the
-`app-maker` skill; it appears in the App Maker's navbar on the next load. The steps below are
+`app-maker` skill; it appears in the App Maker's navbar on the next load. **The folder needs an `index.html` AND a `state.json`
+(`echo '{}' > <dir>/state.json`)** — without it the app server doesn't count the folder as a page, every `/api/*` call
+404s, and the Chat center looks broken (empty contents list, no "→ agent" under Send). Register it in
+`<app>/.appmaker.json → agents`, gitignore its `state.json` + `INBOX.md`, replace both `TITLE HERE`s, and open it in a
+browser before giving the link (app_1, 2026-09-28). The steps below are
 for a page that lives outside any app (a review of the pipeline itself, say).
 
 Work in a `<project>/<name>/` directory. Copy `server.py` from this skill beside the page.
