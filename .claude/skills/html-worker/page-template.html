@@ -51,6 +51,7 @@
   nav.toc .grp{color:var(--faint);text-transform:uppercase;letter-spacing:.07em;
     font-size:10.5px;font-weight:700;margin:var(--s5) 0 var(--s2)}
   nav.toc .grp:first-child{margin-top:0}
+  a[href]{color:var(--accent)}
   nav.toc a{display:block;color:var(--muted);text-decoration:none;padding:5px var(--s3);
     border-left:2px solid transparent;border-radius:0 var(--s1) var(--s1) 0}
   nav.toc a.on{color:var(--accent);border-left-color:var(--accent);background:var(--soft);font-weight:600}
@@ -363,7 +364,8 @@ $('#cpfab').onclick=()=>$('aside.right').classList.toggle('open');
 $('#dtoggle').onclick=()=>{const l=$('#dlist');l.hidden=!l.hidden;$('#dtoggle').textContent=l.hidden?'show all':'hide'};
 // ---- The page's conversation: every comment is a small thread; answers come back here, not to the terminal ----
 let AGENT={agent:null,status:null}, openIds=new Set();
-const md=t=>esc(t).replace(/\*\*([^*]+)\*\*/g,'<b>$1</b>').replace(/`([^`]+)`/g,'<code>$1</code>')
+// Links: any http(s) URL is clickable (user, 2026-09-28); a full stop or bracket after it stays outside the link.
+const md=t=>esc(t).replace(/https?:\/\/[^\s<]+?(?=[.,;:!?)\]]*(?:\s|<|&quot;|&lt;|&gt;|$))/g,u=>`<a href="${u}" target="_blank" rel="noopener">${u}</a>`).replace(/\*\*([^*]+)\*\*/g,'<b>$1</b>').replace(/`([^`]+)`/g,'<code>$1</code>')
   .replace(/(^|\n)- (.+)/g,'$1<li>$2</li>').replace(/(<li>.*<\/li>)/s,'<ul>$1</ul>').replace(/\n/g,'<br>');
 const KL={question:'Question',change:'Change',note:'Note'};
 const ago=t=>{if(!t)return'';const s=(Date.now()-new Date(t))/1000;return s<60?'now':s<3600?Math.round(s/60)+'m ago':s<86400?Math.round(s/3600)+'h ago':new Date(t).toLocaleDateString()};

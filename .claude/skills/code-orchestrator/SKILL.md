@@ -186,7 +186,9 @@ each on, what's next, anything waiting on the user. Check git and the workers fi
   the build is waiting on it — those show under *Needs you*; the rest sit in *Your to-do list — no
   rush* at the bottom of the page.
 
-Plain English, short, no codes the user must remember; state the tradeoff behind each
+**Every link you give the user is clickable** (user, 2026-09-28): a full `http://…` URL, never bare `localhost:8080`
+and never inside backticks — the room and page replies turn full URLs into links (in the terminal they are clickable
+too). Plain English, short, no codes the user must remember; state the tradeoff behind each
 engineering choice in a sentence (this is narrated on camera).
 
 ## Rules

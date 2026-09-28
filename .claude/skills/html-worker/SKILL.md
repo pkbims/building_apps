@@ -93,7 +93,9 @@ Three kinds of comment, picked on the popup, handled differently:
   the revision is the answer.
 - **Question** — goes **straight away**. Answer it **on the page, in its thread** — never only in the
   terminal: `python3 .claude/skills/html-worker/reply.py <page_dir> <id> "answer"`. Short, plain;
-  `**bold**`, `` `code` ``, line breaks and `- ` bullets render. Don't revise the page for a question:
+  `**bold**`, `` `code` ``, line breaks and `- ` bullets render. **Links must be clickable** (user, 2026-09-28): write
+  every link as a full `http://…`/`https://…` URL, outside backticks — the page turns those into links; `localhost:8080`
+  without `http://`, or a URL inside backticks, stays plain text. Don't revise the page for a question:
   if the answer implies a change, add `--suggest` — the page shows **Make it a change request** and
   the user decides.
 - **Note** ("Comment") — queues with change requests and comes with Send (user, 2026-09-28: "I dont like the

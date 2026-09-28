@@ -212,11 +212,13 @@
 (()=>{
 const $$=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+// esc + clickable links, for anything Claude writes to the feed (user, 2026-09-28).
+const lk=s=>esc(s).replace(/https?:\/\/[^\s<]+?(?=[.,;:!?)\]]*(?:\s|<|&quot;|&lt;|&gt;|$))/g,u=>`<a href="${u}" target="_blank" rel="noopener">${u}</a>`);
 const ago=t=>{if(!t)return'';const s=(Date.now()-new Date(t))/1000;return s<60?'now':s<3600?Math.round(s/60)+'m ago':s<86400?Math.round(s/3600)+'h ago':new Date(t).toLocaleDateString()};
 // the first sentence; if that is long, cut at a word near 120 characters and add "…"
 const first=t=>{t=String(t||'');const m=t.match(/^.{15,160}?[.!?](\s|$)/);
   let h=m?m[0].trim():t.slice(0,120).replace(/\s+\S*$/,'')+'…';
-  return h.replace(/…$/,'').length<t.trim().length?`${esc(h)}<details><summary>more</summary>${esc(t.slice(h.replace(/…$/,'').length))}</details>`:esc(t)};
+  return h.replace(/…$/,'').length<t.trim().length?`${lk(h)}<details><summary>more</summary>${lk(t.slice(h.replace(/…$/,'').length))}</details>`:lk(t)};
 const HALF={backend:['B','var(--be)','Backend'],ios:['i','var(--io)','iPhone app']};
 let F={items:[],progress:{}}, lastFeed='', showAll={}, S2={};
 let seen=new Set(); try{seen=new Set(JSON.parse(localStorage.getItem('room-seen')||'[]'))}catch(e){}
@@ -231,13 +233,13 @@ function renderNeeds(){
   box.innerHTML=(n?`<h2>Needs you <span class="count">${n}</span></h2>`:'')+(open.length
     ?`<p class="hint">Pick an answer (or comment), then <b>Send to the orchestrator</b>.</p>`+
       open.map(a=>`<div class="d open ask" data-anchor="${esc(a.id)}" data-label="Ask: ${esc(a.text.slice(0,60))}">
-        <button class="cbtn">comment</button><div class="q">${esc(a.text)}</div>${a.why?`<div class="why">${esc(a.why)}</div>`:''}
+        <button class="cbtn">comment</button><div class="q">${lk(a.text)}</div>${a.why?`<div class="why">${lk(a.why)}</div>`:''}
         ${a.options&&a.options.length?`<div data-radio="${esc(a.id)}">${a.options.map(([v,l,d])=>`
           <label class="opt"><input type="radio" name="${esc(a.id)}" value="${esc(v)}">
-          <span><span class="oh">${esc(l)}${v===a.rec?' <span class="rec">· recommended</span>':''}</span><span class="od">${esc(d)}</span></span></label>`).join('')}</div>`
+          <span><span class="oh">${esc(l)}${v===a.rec?' <span class="rec">· recommended</span>':''}</span><span class="od">${lk(d)}</span></span></label>`).join('')}</div>`
           :`<p class="hint">Answer with <b>comment</b>.</p>`}</div>`).join('')
     :n?'':`<span class="ok">✓ Nothing needs you right now.</span>`)
-    +(todos.length?`<div class="todos"><div class="lbl">The build is waiting on you for</div>${todos.map(t=>`<div class="task" data-anchor="todo-${esc(t.id)}" data-label="To-do: ${esc(t.text.slice(0,60))}"><button class="cbtn">comment</button>${esc(t.text)}</div>`).join('')}</div>`:'');
+    +(todos.length?`<div class="todos"><div class="lbl">The build is waiting on you for</div>${todos.map(t=>`<div class="task" data-anchor="todo-${esc(t.id)}" data-label="To-do: ${esc(t.text.slice(0,60))}"><button class="cbtn">comment</button>${lk(t.text)}</div>`).join('')}</div>`:'');
   for(const [k,v] of Object.entries(S.decisions||{})){const i=document.querySelector(`input[name="${k}"][value="${v}"]`);if(i)i.checked=true}
   document.querySelectorAll('label.opt').forEach(l=>l.classList.toggle('sel',l.querySelector('input').checked));
   post('/api/groups',{groups:[...document.querySelectorAll('[data-radio],[data-check]')].map(g=>g.dataset.radio||g.dataset.check)});
@@ -329,8 +331,8 @@ function renderExpenses(){
 function renderLater(){
   const t=(F.items||[]).filter(i=>i.kind==='todo'&&!(i.now&&i.status!=='done'));
   const open=t.filter(i=>i.status!=='done'), done=t.filter(i=>i.status==='done');
-  $$('later').innerHTML=(open.map(i=>`<div class="task">${esc(i.text)}</div>`).join('')||'<p class="hint">Nothing on your list.</p>')
-    +(done.length?`<details><summary class="hint" style="cursor:pointer">Done (${done.length})</summary>${done.map(i=>`<div class="task done">${esc(i.text)}</div>`).join('')}</details>`:'');
+  $$('later').innerHTML=(open.map(i=>`<div class="task">${lk(i.text)}</div>`).join('')||'<p class="hint">Nothing on your list.</p>')
+    +(done.length?`<details><summary class="hint" style="cursor:pointer">Done (${done.length})</summary>${done.map(i=>`<div class="task done">${lk(i.text)}</div>`).join('')}</details>`:'');
 }
 // "Get me an update": saved as a decision (no round is sent); the ticker sees it within ~10 s and
 // asks the orchestrator, which posts one update. The button waits until an update newer than the ask arrives.
@@ -363,7 +365,7 @@ function renderCommits(){
   ['backend','ios'].forEach(k=>{const [,col,label]=HALF[k], list=C[k]||[], n=showAll[k]?list.length:5;
     const el=$$('lane-'+k); el.style.setProperty('--c',col);
     el.innerHTML=`<h3><i></i>${label}</h3>`+(list.length?list.slice(0,n).map(c=>`<div class="cm" onclick="this.classList.toggle('open')">
-      <div class="t"><span>${esc(c.title)}</span><em>${ago(c.when)}</em></div>${c.why?`<div class="w">${esc(c.why)}</div>`:''}</div>`).join('')
+      <div class="t"><span>${esc(c.title)}</span><em>${ago(c.when)}</em></div>${c.why?`<div class="w">${lk(c.why)}</div>`:''}</div>`).join('')
       +(list.length>5?`<button class="morebtn" data-lane="${k}">${showAll[k]?'Show fewer':'Show '+(list.length-5)+' more'}</button>`:''):'<p class="hint">No commits yet.</p>')});
   document.querySelectorAll('.morebtn').forEach(b=>b.onclick=()=>{showAll[b.dataset.lane]=!showAll[b.dataset.lane];renderCommits()});
 }
