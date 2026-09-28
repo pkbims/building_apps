@@ -215,7 +215,7 @@ function appView(){
   groups+=`<div class="g">Documents</div>`+a.docs.map(d=>`<a class="${doc&&doc.path===d.path?'on':''}" data-go="/${a.id}/doc:${encodeURIComponent(d.path)}">📄 ${esc(d.label)}</a>`).join('');
   if((a.pages||[]).length)groups+=`<div class="g">Docs · newest first</div>`+a.pages.map(d=>`<a class="${doc&&doc.path===d.path?'on':''}" data-go="/${a.id}/doc:${encodeURIComponent(d.path)}">🗂 ${esc(d.label)}</a>`).join('');
   let url='', title='', head='';
-  if(doc){title=doc.label;url=doc.path.endsWith('.md')?`/md?app=${encodeURIComponent(a.id)}&path=${encodeURIComponent(doc.path)}`:`http://localhost:${a.port}/${doc.path}`}
+  if(doc){title=doc.label;url=doc.path.endsWith('.md')?`/md?app=${encodeURIComponent(a.id)}&path=${encodeURIComponent(doc.path)}`:`http://localhost:${a.port}/${doc.path}${/\.[a-z0-9]+$/i.test(doc.path)?'':'/'}`}
   else{title=st.label;url=st.page&&a.port?`http://localhost:${a.port}/${st.page}/${st.hash}`:'';
     head=st.can_start?`<button class="btn" id="startbtn">Start ${esc(st.label)}</button>`:''}   // who answers is shown in the page's Chat center
   const v=$('#view');

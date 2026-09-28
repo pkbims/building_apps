@@ -90,7 +90,7 @@ def pages(d):
         except OSError:
             continue
         m = re.search(r"<title>([^<]+)</title>", head)
-        found.append({"label": (m.group(1).strip() if m else rel), "path": rel + "/", "t": os.path.getmtime(path)})
+        found.append({"label": (m.group(1).strip() if m else rel), "path": rel, "t": os.path.getmtime(path)})
     return sorted(found, key=lambda x: -x["t"])
 
 
