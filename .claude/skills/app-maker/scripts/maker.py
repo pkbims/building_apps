@@ -67,6 +67,33 @@ DOCS = [("PRD", "PRD.md"), ("Positioning", "positioning.md"), ("Design brief", "
         ("Progress notes", "CLAUDE.md")]
 
 
+# Pages made along the way (fill-explained, ui-review, compare pages…) — not stages, so STAGES never lists them.
+# Found automatically: a folder (one or two levels down) with an index.html, newest first (user, 2026-09-28).
+_PAGE_SKIP = ("ios", "backend", "spike", "node_modules", "contract", "deploy", "research/reviews",
+              "design/clickable", "design/output-from-claude-design")
+
+
+def pages(d):
+    import re
+    stage_pages = {pg for _, _, pg, *_ in STAGES if pg}
+    found = []
+    for root, dirs, files in os.walk(d):
+        rel = os.path.relpath(root, d)
+        depth = 0 if rel == "." else rel.count(os.sep) + 1
+        dirs[:] = [x for x in dirs if not x.startswith(".") and depth < 2
+                   and not any(os.path.join(rel, x).lstrip("./").startswith(k) for k in _PAGE_SKIP)]
+        if depth == 0 or "index.html" not in files or rel in stage_pages:
+            continue
+        path = os.path.join(root, "index.html")
+        try:
+            head = open(path, encoding="utf-8", errors="ignore").read(4000)
+        except OSError:
+            continue
+        m = re.search(r"<title>([^<]+)</title>", head)
+        found.append({"label": (m.group(1).strip() if m else rel), "path": rel + "/", "t": os.path.getmtime(path)})
+    return sorted(found, key=lambda x: -x["t"])
+
+
 def _open(port):
     with socket.socket() as s:
         s.settimeout(0.3)
@@ -193,7 +220,7 @@ def state(scan, hidden=()):
         apps.append({"id": id_, "name": c.get("name") or id_, "problem": c.get("problem", ""),
                      "workspace": c.get("workspace"), "pipeline": pipeline,
                      "stage_name": (a or {}).get("stage_name") or "Research", "stages": stages,
-                     "needs": total + len(terminal), "terminal": terminal, "docs": docs,
+                     "needs": total + len(terminal), "terminal": terminal, "docs": docs, "pages": pages(d),
                      "port": app_server(d, start=True), "build_started": started})
     return {"apps": apps, "agents": {k: v.get("agent_status") for k, v in ag.items()}}
 

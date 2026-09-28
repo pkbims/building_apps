@@ -207,12 +207,13 @@ function appView(){
   const sel=$('#appsel'); sel.style.display=''; sel.innerHTML=M.apps.map(x=>`<option value="${esc(x.id)}"${x.id===a.id?' selected':''}>${esc(x.name)} · ${esc(x.id)}</option>`).join('');
   sel.onchange=()=>{const b=M.apps.find(x=>x.id===sel.value);const n=b.stages.find(s=>s.status==='now');go(`/${b.id}/${n?n.key:'research'}`)};
   let st=a.stages.find(s=>s.key===route.stage); let doc=null;
-  if(!st&&route.stage&&route.stage.startsWith('doc:')){doc=a.docs.find(d=>'doc:'+d.path===route.stage)}
+  if(!st&&route.stage&&route.stage.startsWith('doc:')){doc=[...a.docs,...(a.pages||[])].find(d=>'doc:'+d.path===route.stage)}
   if(!st&&!doc)st=a.stages.find(s=>s.status==='now')||a.stages[0];
   let groups=`<a data-go="/${a.id}">📊 Overall progress</a>`, last='';
   a.stages.forEach(s=>{if(s.group!==last){groups+=`<div class="g">${esc(s.group)}</div>`;last=s.group}
     groups+=`<a class="${st&&s.key===st.key?'on':''} ${!s.page&&!s.status?'off':''}" data-go="/${a.id}/${s.key}"><span class="d ${s.status}"></span>${esc(s.label)}${s.needs?`<em>${s.needs}</em>`:''}</a>`});
   groups+=`<div class="g">Documents</div>`+a.docs.map(d=>`<a class="${doc&&doc.path===d.path?'on':''}" data-go="/${a.id}/doc:${encodeURIComponent(d.path)}">📄 ${esc(d.label)}</a>`).join('');
+  if((a.pages||[]).length)groups+=`<div class="g">Docs · newest first</div>`+a.pages.map(d=>`<a class="${doc&&doc.path===d.path?'on':''}" data-go="/${a.id}/doc:${encodeURIComponent(d.path)}">🗂 ${esc(d.label)}</a>`).join('');
   let url='', title='', head='';
   if(doc){title=doc.label;url=doc.path.endsWith('.md')?`/md?app=${encodeURIComponent(a.id)}&path=${encodeURIComponent(doc.path)}`:`http://localhost:${a.port}/${doc.path}`}
   else{title=st.label;url=st.page&&a.port?`http://localhost:${a.port}/${st.page}/${st.hash}`:'';
@@ -242,6 +243,7 @@ function shell(a,active,inner){
   a.stages.forEach(s=>{if(s.group!==last){nav+=`<div class="g">${esc(s.group)}</div>`;last=s.group}
     nav+=`<a class="${!s.page&&!s.status?'off':''}" data-go="/${a.id}/${s.key}"><span class="d ${s.status}"></span>${esc(s.label)}${s.needs?`<em>${s.needs}</em>`:''}</a>`});
   nav+=`<div class="g">Documents</div>`+a.docs.map(d=>`<a data-go="/${a.id}/doc:${encodeURIComponent(d.path)}">📄 ${esc(d.label)}</a>`).join('');
+  if((a.pages||[]).length)nav+=`<div class="g">Docs · newest first</div>`+a.pages.map(d=>`<a data-go="/${a.id}/doc:${encodeURIComponent(d.path)}">🗂 ${esc(d.label)}</a>`).join('');
   const v=$('#view'), key='overview|'+a.id, html=`<div class="appv"><div class="nav">${nav}</div><div class="main" style="overflow:auto">${inner}</div></div>`;
   if(v.dataset.key===key&&v._html===html)return;   // the 15-second refresh changed nothing: leave the view (and your scroll) alone
   const top=v.dataset.key===key&&v.querySelector('.main')?v.querySelector('.main').scrollTop:0;
