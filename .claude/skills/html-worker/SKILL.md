@@ -96,7 +96,8 @@ Three kinds of comment, picked on the popup, handled differently:
   `**bold**`, `` `code` ``, line breaks and `- ` bullets render. Don't revise the page for a question:
   if the answer implies a change, add `--suggest` — the page shows **Make it a change request** and
   the user decides.
-- **Note** — goes straight away; acknowledge it in one line with `reply.py` (what you took from it).
+- **Note** ("Comment") — queues with change requests and comes with Send (user, 2026-09-28: "I dont like the
+  comment as send now"); acknowledge it in one line with `reply.py` (what you took from it).
 
 The user can **reply** under any answer; the follow-up comes with the whole conversation, so answer
 the follow-up, not the first question again.

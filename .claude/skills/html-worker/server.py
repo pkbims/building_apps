@@ -133,7 +133,7 @@ def api(ep, payload):
         else:
             state["decisions"][payload["id"]] = payload["value"]
     elif ep == "/api/comment":
-        # Changes queue until Send; questions and notes go straight away ("now") and get answered in the page.
+        # Changes and notes queue until Send (user, 2026-09-28); questions go straight away ("now") and get answered in the page.
         payload["status"] = "sent" if payload.pop("now", False) else "queued"
         payload["ts"] = now_iso()
         payload.setdefault("messages", [])

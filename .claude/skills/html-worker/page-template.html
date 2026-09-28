@@ -461,11 +461,11 @@ function markAnchors(){
 }
 const PH={change:'What is wrong, missing, or should change here? Waits for Send.',
           question:'What do you want to know? Answered right here, in the panel.',
-          note:'A thought, context or reaction. Goes straight away; the page only changes if you ask.'};
+          note:'A thought, context or reaction. Waits for Send; the page only changes if you ask.'};
 const kind=()=>$('#pop input[name=kind]:checked').value;
 function setKind(k){$(`#pop input[name=kind][value="${k}"]`).checked=true;
   document.querySelectorAll('#pop .kind label').forEach(l=>l.classList.toggle('sel',l.querySelector('input').value===k));
-  $('#poptext').placeholder=PH[k]; $('#popadd').textContent=k==='change'?'Add to queue':'Send now'}
+  $('#poptext').placeholder=PH[k]; $('#popadd').textContent=k==='question'?'Send now':'Add to queue'}
 let target=null;
 document.addEventListener('click',e=>{
   const btn=e.target.closest('.cbtn');
@@ -483,7 +483,7 @@ $('#poptext').onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing){e.p
 $('#popcancel').onclick=()=>$('#pop').style.display='none';
 $('#popadd').onclick=async()=>{
   const t=$('#poptext').value.trim(); if(!t||!target)return;
-  const k=kind(), now=k!=='change';
+  const k=kind(), now=k==='question';
   const r=await post('/api/comment',{id:'c'+Date.now(),anchor:target.anchor,
     anchorLabel:target.label,anchorText:target.text,text:t,kind:k,now});
   S.comments=r.comments; $('#pop').style.display='none';
