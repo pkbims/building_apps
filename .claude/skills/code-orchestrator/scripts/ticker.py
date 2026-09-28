@@ -295,9 +295,19 @@ def handovers(x, room, app, workers, status, ag):
                 env = dict(os.environ, HERDR_ENV="1", **({"SKIP_GIT_CHECK": "1"} if orch else {}))
                 model = x.orch_model if orch else x.worker_model
                 try:
-                    subprocess.run([RESTART, w, model, x.effort, resume], env=env, capture_output=True,
-                                   text=True, timeout=120)
-                    hlog("handover", f"{w} saved its notes — restarted it with a fresh session.", detail=resume)
+                    r = subprocess.run([RESTART, w, model, x.effort, resume], env=env, capture_output=True,
+                                       text=True, timeout=120)
+                    if r.returncode == 0:
+                        hlog("handover", f"{w} saved its notes — restarted it with a fresh session.", detail=resume)
+                    else:
+                        # The script refuses to start over a live session (e.g. /exit answered a late background
+                        # notification instead of exiting). Never log that as a restart (it was, twice: 2026-09-27/28).
+                        h["error"] = (r.stderr or r.stdout or f"exit {r.returncode}").strip()[-200:]
+                        hlog("problem", f"Couldn't restart {w}: {h['error']}", ok=False)
+                        if not orch:
+                            sh(["herdr", "agent", "prompt", x.orchestrator,
+                                f"The ticker couldn't restart {w} for its handover: {h['error']}. Its old session may "
+                                f"still be open — check with `herdr agent read {w}`, close it, then restart it."])
                 except (OSError, subprocess.TimeoutExpired) as e:
                     h["error"] = repr(e)[:200]
                     hlog("problem", f"Couldn't restart {w}: {h['error']}", ok=False)
