@@ -33,6 +33,14 @@
   button.theme{background:var(--bg);border:1px solid var(--line);color:var(--muted);font:inherit;
     font-size:12px;padding:4px var(--s3);border-radius:var(--s2);cursor:pointer}
   button.theme:hover{color:var(--accent);border-color:var(--accent)}
+  button.theme.danger:hover{color:var(--warn);border-color:var(--warn)}
+  .discardask{display:flex;gap:var(--s2);align-items:center;font-size:12.5px;color:var(--warn)}
+  .discardask[hidden],button.theme[hidden]{display:none}
+  .discardask button{font:inherit;font-size:12px;padding:4px var(--s3);border-radius:var(--s2);cursor:pointer;
+    border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+  .discardask button.yes{background:var(--warn);border-color:var(--warn);color:var(--panel)}
+  .discarded{max-width:520px;margin:18vh auto;padding:0 var(--s5);text-align:center;color:var(--muted)}
+  .discarded h1{color:var(--ink);font-size:22px}
   .layout{display:grid;grid-template-columns:206px minmax(0,1fr) 350px;gap:var(--s7);
     max-width:1400px;margin:0 auto;padding:var(--s6) var(--s6) 140px}
   @media(max-width:1200px){.layout{grid-template-columns:186px minmax(0,1fr)}
@@ -190,6 +198,7 @@
   html.embedded section{scroll-margin-top:16px}
   button.primary{width:100%;background:var(--accent);color:#fff;border:0;padding:11px;
     border-radius:var(--r);font:inherit;font-size:13.5px;font-weight:650;cursor:pointer}
+  button.primary:disabled{background:var(--bg);color:var(--faint);border:1px solid var(--line);cursor:default}
   #pop{position:absolute;z-index:100;width:328px;background:var(--panel);
     border:1px solid var(--line);border-radius:var(--r);padding:var(--s4);
     box-shadow:0 10px 34px rgba(0,0,0,.18);display:none}
@@ -362,8 +371,10 @@ function renderDecisions(){
   $('#dtoggle').style.display=gs.length?'':'none';
   $('#dbar').style.width=(gs.length?done/gs.length*100:0)+'%';
   // what changed since the last round was sent
-  const last=(S.batches[S.batches.length-1]||{}).decisions||{};
-  const chg=gs.map(g=>g.dataset.radio||g.dataset.check).filter(id=>JSON.stringify(S.decisions[id]??null)!==JSON.stringify(last[id]??null)&&S.decisions[id]!=null);
+  // Same rule as Send: compare with the last round (or the baseline before any round); an empty choice is no choice.
+  const last=(S.batches[S.batches.length-1]||{}).decisions||S.base||{};
+  const v=x=>Array.isArray(x)?(x.length?JSON.stringify([...x].sort()):null):(x??null);
+  const chg=gs.map(g=>g.dataset.radio||g.dataset.check).filter(id=>v(S.decisions[id])!==v(last[id])&&v(S.decisions[id])!==null);
   $('#dchg').innerHTML=chg.length?`<b>CHANGED SINCE LAST ROUND:</b> `+chg.map(id=>`${id.toUpperCase()} → ${esc(label(id)||'')}`).join(' · '):'';
   $('#dcount').textContent=`${done}/${gs.length} decided · ${S.comments.filter(c=>c.status==='queued').length} queued`;
   document.querySelectorAll('.dr').forEach(r=>r.onclick=()=>{
@@ -445,7 +456,16 @@ function renderProgress(){const box=$('#cprog');if(!box||!PLOADED)return;progIni
 function renderQueue(){
   const q=S.comments.filter(c=>c.status==='queued');
   const nd=Object.keys(S.decisions).length;
-  $('#send').textContent=q.length?`Send ${q.length} change${q.length===1?'':'s'} + decisions`:`Send decisions (round ${ROUND})`;
+  // Send says exactly what it will send (user, 2026-09-30: "Send 1 decision, 2 comments, 4 changes",
+  // and "Nothing to send" when the user hasn't done anything). An empty choice counts as no choice.
+  const val=v=>Array.isArray(v)?(v.length?JSON.stringify([...v].sort()):null):(v??null);
+  const lastDec=(S.batches[S.batches.length-1]||{}).decisions||S.base||{};
+  const nDec=[...new Set([...Object.keys(S.decisions),...Object.keys(lastDec)])].filter(k=>val(S.decisions[k])!==val(lastDec[k])).length;
+  const nNote=q.filter(c=>c.kind==='note').length, nChg=q.length-nNote;
+  const pl=(n,w)=>`${n} ${w}${n===1?'':'s'}`;
+  const parts=[nDec&&pl(nDec,'decision'),nNote&&pl(nNote,'comment'),nChg&&pl(nChg,'change')].filter(Boolean);
+  $('#send').disabled=!parts.length;
+  $('#send').textContent=parts.length?'Send '+parts.join(', '):'Nothing to send';
   $('#sendto').innerHTML=AGENT.agent?`→ <b>${esc(AGENT.agent)}</b>${AGENT.status?` · ${esc(AGENT.status)}`:''}`:'→ the Claude session in the terminal';
   $('#sendto').className='sendto'+(AGENT.status==='working'?' busy':'');
   const all=[...S.comments].reverse(), wait=all.filter(waiting), done=all.filter(c=>!waiting(c));
@@ -573,10 +593,23 @@ function pollWorking(){clearTimeout(wtimer);let w;try{w=JSON.parse(localStorage.
     if(Date.now()-w.t>4*60*1000){wset('stale',`<b>Still waiting on round ${w.round}.</b> If nothing arrives, type “sent” in the terminal — the automatic wake-up may have missed it.`)}
     pollWorking()},4000)}
 $('#wreload').onclick=()=>location.reload();
+// Discard: close the review and throw it away (user, 2026-09-30). The server moves the folder to the
+// Trash, tells Claude, and stops. Not offered inside the App Maker, whose header is hidden anyway.
+(()=>{const h=document.querySelector('header'); if(!h||document.documentElement.classList.contains('embedded'))return;
+  const b=document.createElement('button'); b.className='theme danger'; b.textContent='Discard'; b.title='Close this review and move it to the Trash';
+  const ask=document.createElement('span'); ask.className='discardask'; ask.hidden=true;
+  ask.innerHTML='Move this review to the Trash and stop it? <button class="yes">Discard</button><button class="no">Cancel</button>';
+  b.onclick=()=>{b.hidden=true; ask.hidden=false};
+  ask.querySelector('.no').onclick=()=>{ask.hidden=true; b.hidden=false};
+  ask.querySelector('.yes').onclick=async()=>{
+    try{await fetch('/api/discard',{method:'POST',body:'{}'})}catch(e){}
+    document.body.innerHTML='<div class="discarded"><h1>Review discarded</h1><p>It\'s in the Trash if you need it back. You can close this tab.</p></div>'};
+  h.insertBefore(ask,h.querySelector('#dcount').nextSibling); h.insertBefore(b,ask)})();
 
 $('#send').onclick=async()=>{
   const r=await post('/api/send',{});
   S.comments.forEach(c=>{if(c.status==='queued')c.status='sent'});
+  S.batches.push({decisions:{...S.decisions}});
   ROUND+=1; $('#round').textContent=`Round ${ROUND}`;
   renderQueue(); markAnchors(); renderDecisions();
   toast(`Round ${ROUND-1} sent — ${r.sent} comment${r.sent===1?'':'s'} + decisions`);
@@ -590,11 +623,24 @@ document.addEventListener('change',async e=>{
     S.decisions[i.name]=v; await post('/api/decision',{id:i.name,value:v})}
   else return;
   document.querySelectorAll('label.opt').forEach(l=>l.classList.toggle('sel',l.querySelector('input').checked));
-  renderDecisions(); toast('Saved')});
+  renderDecisions(); renderQueue(); toast('Saved')});
+// Clicking the chosen radio again clears it (user, 2026-09-30: "how to unselect").
+let wasOn=null;
+document.addEventListener('pointerdown',e=>{
+  const i=e.target.closest('label.opt')?.querySelector('input[type=radio]'); wasOn=i&&i.checked?i:null},true);
+document.addEventListener('click',e=>{
+  const i=e.target.closest('label.opt')?.querySelector('input[type=radio]');
+  if(!i||i!==wasOn)return;
+  e.preventDefault(); wasOn=null;
+  setTimeout(async()=>{
+    i.checked=false; delete S.decisions[i.name];
+    await post('/api/decision',{id:i.name,value:null});
+    document.querySelectorAll('label.opt').forEach(l=>l.classList.toggle('sel',l.querySelector('input').checked));
+    renderDecisions(); renderQueue(); toast('Cleared')},0)});
 
 async function refresh(){try{
   const [st,ag]=await Promise.all([fetch('/api/state',{cache:'no-store'}).then(r=>r.json()),fetch('/api/agent',{cache:'no-store'}).then(r=>r.json()).catch(()=>({}))]);
-  AGENT=ag||{}; const before=JSON.stringify(S.comments); S.comments=st.comments||[]; S.batches=st.batches||[];
+  AGENT=ag||{}; const before=JSON.stringify(S.comments); S.comments=st.comments||[]; S.batches=st.batches||[]; S.base=st.baseline||{};
   if(JSON.stringify(S.comments)!==before||true)renderQueue();}catch(e){}}
 // every 6 s; every 2.5 s while Claude owes an answer
 function owed(){return S.comments.some(c=>c.status==='sent'&&!c.addressed&&(c.kind==='question'||c.kind==='note'||(c.messages||[]).length))}
@@ -603,7 +649,7 @@ function refreshSoon(){clearTimeout(rtimer);rtimer=setTimeout(async()=>{await re
 refreshSoon();
 fetch('/api/agent').then(r=>r.json()).then(a=>{AGENT=a||{};renderQueue()}).catch(()=>{});
 fetch('/api/state').then(r=>r.json()).then(async st=>{
-  S.decisions=st.decisions||{}; S.comments=st.comments||[]; S.batches=st.batches||[]; PLOADED=true;
+  S.decisions=st.decisions||{}; S.comments=st.comments||[]; S.batches=st.batches||[]; S.base=st.baseline||{}; PLOADED=true;
   ROUND=S.batches.length+1; $('#round').textContent=`Round ${ROUND}`;
   for(const [k,v] of Object.entries(S.decisions))
     (Array.isArray(v)?v:[v]).forEach(val=>{

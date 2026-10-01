@@ -42,6 +42,12 @@ for arg in sys.argv[1:]:
     if not page.exists():
         sys.exit(f"{d}: no index.html")
     s = page.read_text()
+    # A page may carry its own <style>/<script> inside <main> (e.g. tabs). Those are content: hide
+    # <main> while matching, or the first page-level regex grabs them instead (bug, 2026-10-01).
+    m = re.search(r"<main>.*?</main>", s, re.S)
+    main = m.group(0) if m else ""
+    if m:
+        s = s.replace(main, "\x00MAIN\x00", 1)
     for name, rx in PARTS.items():
         if name == "font":
             s = re.sub(rx, "", s)                      # dropped, re-added with style
@@ -51,8 +57,9 @@ for arg in sys.argv[1:]:
         s = re.sub(rx, "", s, count=1, flags=re.S)
     s = s.replace("</head>", FRESH["font"] + FRESH["style"] + FRESH["theme"] + "</head>", 1)
     s = s.replace('<div id="toast"></div>', FRESH["pop"] + '<div id="toast"></div>', 1)
-    s = s.replace("</main>\n", "</main>\n\n" + FRESH["aside"], 1)
+    s = s.replace("\x00MAIN\x00\n", "\x00MAIN\x00\n\n" + FRESH["aside"], 1)
     s = s.replace("</body>", FRESH["script"] + "</body>", 1)
+    s = s.replace("\x00MAIN\x00", main, 1)
     page.write_text(s)
     for f in ("server.py", "export-md.py"):
         shutil.copy(SKILL / f, d / f)

@@ -32,6 +32,7 @@ Work in a `<project>/<name>/` directory. Copy `server.py` from this skill beside
 
 ```bash
 mkdir -p <dir> && cp <skill>/server.py <dir>/
+echo "$HERDR_PANE_ID" > <dir>/.agent   # who Send wakes (see Waking up); gitignore it
 cd <dir> && python3 server.py    # first free port from 7777 up
 ```
 
@@ -77,7 +78,12 @@ pre-select it: the user still clicks. A decision with no recommendation is a bug
 the user bare labels. The only exception is a question about the user's own taste or facts
 Claude cannot know (e.g. "which room is yours"); then say so in the "why" line.
 
-Decisions save the instant they are clicked. Comments do not send until the user confirms.
+Decisions save the instant they are clicked, and clicking a chosen option again clears it. Send names what it
+will send ("Send 1 decision, 2 comments, 4 changes") and dims to "Nothing to send" otherwise.
+**When you write a decision yourself** (carrying answers over, retiring an id), POST it with
+`"baseline": true`, or Send counts your write as the user's unsent change. **Discard** (header) closes
+the review for good: the server moves the page folder to `~/.Trash/<name>-<time>`, wakes you
+to say so, and stops. Don't restart it or recreate the page unless asked. Comments do not send until the user confirms.
 That split is deliberate: decisions are state and must survive a refresh, comments are
 messages the user should be able to draft, edit and delete first.
 
@@ -111,7 +117,8 @@ the follow-up, not the first question again.
 **How you hear about it.** Inside an app, the App Maker's app server types a prompt into your pane:
 immediately for **Send** (a round — read `INBOX.md`), and for questions/notes/replies a few seconds
 after the last one, bundled, with each id and its conversation. Without the App Maker, the page's own
-server writes `INBOX.md` on every message and send, and the watcher below is the fallback.
+server does the same through `<dir>/.agent` (see Waking up), and also writes `INBOX.md` on every
+message and send.
 
 The round itself:
 
@@ -144,8 +151,16 @@ of them (`touch index.html` is enough), or the user watches a spinner that never
 
 ## Waking up
 
-A local page cannot wake your session. A background watcher can, by blocking on the file
-and exiting when it changes, which re-invokes you:
+**A round must never be missed** (user, 2026-09-30, after one sat unread). The page's server wakes
+you directly, the way the App Maker does: on **Send** it runs `herdr agent prompt <pane>` with a
+prompt to read `INBOX.md`, and questions/replies follow a few seconds after the last one, bundled.
+The pane comes from `<dir>/.agent`, written at setup from `$HERDR_PANE_ID`. **Without that file the
+server can't wake anyone**, so write it every time. The Chat center then shows who Send goes to
+(`→ claude · working`).
+
+Outside herdr (no `$HERDR_PANE_ID`) there is no `.agent`, and a background watcher is the only way
+back. Start it in the same turn the server comes up. It blocks on the file and exits when it
+changes, which re-invokes you:
 
 ```bash
 INBOX=<dir>/INBOX.md
@@ -157,11 +172,9 @@ while :; do
 done
 ```
 
-**Tell the user this is unreliable.** It only works as a harness background task, and those
+**Tell the user the watcher is unreliable.** It only works as a harness background task, and those
 get reaped. Say plainly: if they confirm and hear nothing within a minute, they should say
-"sent". Do not promise the automatic path works.
-
-Restart it after each round. It fires once and exits.
+"sent". Restart it after each round. It fires once and exits.
 
 ## Rules learned the hard way
 

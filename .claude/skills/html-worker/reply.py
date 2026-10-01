@@ -6,8 +6,9 @@
 --suggest marks the answer as implying a change: the page shows "Make it a change request" so the
 user decides; never revise the page just because a conversation led there.
 
-Writes through the page's server (only the server writes state.json): the App Maker's app server if
-the page is inside an app (<app>/.appserver.port), else the page's own server (<page_dir>/.port).
+Writes through the page's server (only the server writes state.json): a multi-page server if the page
+sits under one (<dir>/.appserver.port for the App Maker, <dir>/.pages.port for others such as Ideation),
+else the page's own server (<page_dir>/.port).
 Short and plain; **bold**, `code`, line breaks and "- " bullets render.
 """
 import json, os, sys, urllib.request
@@ -19,8 +20,9 @@ page, cid, text = os.path.abspath(args[0]), args[1], " ".join(args[2:])
 url = None
 d = page
 while d != os.path.dirname(d):                      # walk up to an app with an app server
-    pf = os.path.join(d, ".appserver.port")
-    if os.path.exists(pf):
+    # a server for many pages: the App Maker's app server, or any other (e.g. Ideation) via .pages.port
+    pf = next((os.path.join(d, f) for f in (".appserver.port", ".pages.port") if os.path.exists(os.path.join(d, f))), None)
+    if pf:
         rel = os.path.relpath(page, d).replace(os.sep, "/")
         url = f"http://127.0.0.1:{open(pf).read().strip()}/{'' if rel == '.' else rel + '/'}api/answer"
         break
