@@ -1,0 +1,6 @@
+# runtime files from running the pages locally
+.port
+.pages.port
+.agent
+__pycache__/
+ideation.json

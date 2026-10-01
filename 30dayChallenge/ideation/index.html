@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ideation</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+<style>
+/* Ideation shell, modelled on the App Maker (user, 2026-10-01): top bar, a left navbar of
+   Ideation / Runs / Bank, and the chosen page on the right with its own Chat center. */
+:root{--bg:#f6f4f0;--panel:#fffdf9;--ink:#1c1912;--muted:#6f675c;--faint:#a79f93;--line:#e4ded4;--soft:#efe9df;
+  --accent:#b2582f;--hot:#e0672c;--ok:#22a55a;--now:#3b82f6;--r:12px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#171513;--panel:#1f1c19;--ink:#ece7df;--muted:#a59d91;--faint:#6f685f;--line:#34302a;--soft:#2a2622;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#171513;--panel:#1f1c19;--ink:#ece7df;--muted:#a59d91;--faint:#6f685f;--line:#34302a;--soft:#2a2622;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 Inter,system-ui,sans-serif;display:flex;flex-direction:column}
+a{color:inherit}
+.top{display:flex;align-items:center;gap:12px;padding:10px 16px;background:#141414;color:#fff;flex:none}
+.top .logo{font-weight:800;font-size:16px;letter-spacing:-.01em}
+.top .logo i{display:inline-block;width:9px;height:9px;border-radius:50%;background:#c8ff3d;margin-left:4px}
+.top .sub{font-size:12.5px;color:#9a9a9a}
+.top .sp{flex:1}
+.top a.lnk{font-size:12.5px;color:#cfcfcf;text-decoration:none;border:1px solid #444;border-radius:999px;padding:4px 10px}
+.top a.lnk:hover{color:#fff;border-color:#888}
+.appv{flex:1;display:flex;min-height:0}
+.nav{width:232px;flex:none;border-right:1px solid var(--line);background:var(--panel);overflow:auto;padding:10px 8px 20px}
+.nav .g{font-size:10.5px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--faint);margin:14px 8px 4px}
+.nav .g:first-child{margin-top:4px}
+.nav a{display:flex;align-items:center;gap:8px;padding:6px 9px;border-radius:8px;text-decoration:none;font-size:13px;cursor:pointer}
+.nav a:hover{background:var(--soft)} .nav a.on{background:var(--soft);font-weight:700}
+.nav a .d{width:8px;height:8px;border-radius:50%;background:var(--line);flex:none}
+.nav a .d.done{background:var(--ok)} .nav a .d.now{background:var(--now)}
+.nav a .ic{width:16px;text-align:center;flex:none}
+.nav a .note{margin-left:auto;font-size:11px;color:var(--now);font-weight:600}
+.nav a em{margin-left:auto;font-style:normal;background:var(--soft);color:var(--muted);border:1px solid var(--line);border-radius:999px;font-size:10.5px;font-weight:800;padding:0 7px}
+.nav a.on em{background:var(--panel)}
+.main{flex:1;display:flex;flex-direction:column;min-width:0}
+.head{display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid var(--line);background:var(--panel);flex:none;flex-wrap:wrap}
+.head h2{font-size:16px;margin:0} .head .crumb{font-size:12px;color:var(--muted)}
+.head .sp{flex:1}
+.head a.own{font-size:12px;color:var(--muted);text-decoration:none;border:1px solid var(--line);border-radius:999px;padding:3px 10px}
+.head a.own:hover{color:var(--accent);border-color:var(--accent)}
+.pstat{display:flex;gap:10px;align-items:center;font-size:12px;color:var(--muted);margin-left:14px}
+.pstat .rtag{font-size:10.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;background:var(--soft);color:var(--accent);border-radius:6px;padding:2px 7px}
+.pstat .wt{color:var(--hot);font-weight:700}
+.frame{flex:1;border:0;width:100%;background:var(--bg);min-height:0}
+@media (max-width:760px){.nav{width:160px}}
+</style>
+</head>
+<body>
+<div class="top"><span class="logo">Ideation<i></i></span><span class="sub">AI Maxxing · finding ideas worth building</span><span class="sp"></span>
+  <a class="lnk" id="ownlink" href="#" target="_blank">open page on its own ↗</a></div>
+<div class="appv">
+  <nav class="nav" id="nav"></nav>
+  <div class="main">
+    <div class="head"><div><div class="crumb" id="crumb"></div><h2 id="title"></h2></div><span class="pstat" id="pstat"></span><span class="sp"></span></div>
+    <iframe class="frame" id="frame" title="Ideation page"></iframe>
+  </div>
+</div>
+<script>
+const $=s=>document.querySelector(s);
+let NAV={groups:[]}, CUR=null, PSTAT=null;
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const items=()=>NAV.groups.flatMap(g=>g.items.map(i=>({...i,group:g.name})));
+function draw(){
+  $('#nav').innerHTML=NAV.groups.map(g=>`<div class="g">${esc(g.name)}</div>`+g.items.map(i=>
+    `<a class="${CUR&&CUR.path===i.path?'on':''}" href="#${esc(i.path)}">`+
+    (i.status?`<span class="d ${esc(i.status)}"></span>`:`<span class="ic">${esc(i.icon||'')}</span>`)+
+    `${esc(i.label)}${i.note?`<span class="note">${esc(i.note)}</span>`:''}${i.badge!==undefined?`<em>${esc(i.badge)}</em>`:''}</a>`).join('')).join('');
+}
+function open(){
+  const all=items(); const want=decodeURIComponent(location.hash.slice(1));
+  const it=all.find(i=>i.path===want)||all[0]; if(!it)return;
+  if(!CUR||CUR.path!==it.path){CUR=it; PSTAT=null; $('#frame').src=it.path; $('#ownlink').href=it.path}
+  CUR=it; $('#crumb').textContent='Ideation › '+it.group; $('#title').textContent=it.label; drawPstat(); draw();
+}
+function drawPstat(){const el=$('#pstat'); if(!PSTAT){el.innerHTML='';return}
+  el.innerHTML=`<span class="rtag">Round ${PSTAT.round}</span>${PSTAT.total?`<span>${PSTAT.decided}/${PSTAT.total} decided</span>`:''}`+
+    `<span>${PSTAT.queued} queued</span>${PSTAT.waiting?`<span class="wt">${PSTAT.waiting} waiting</span>`:''}`}
+addEventListener('message',e=>{const d=e.data; if(d&&d.type==='am-page'){PSTAT=d; drawPstat()}});
+addEventListener('hashchange',open);
+async function load(){try{NAV=await fetch('nav.json',{cache:'no-store'}).then(r=>r.json())}catch(e){} open()}
+load(); setInterval(load,15000);   // statuses and run tabs change as runs progress
+</script>
+</body>
+</html>

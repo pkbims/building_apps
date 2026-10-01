@@ -1,0 +1,161 @@
+{
+  "decisions": {
+    "d1": [
+      "everyday-builders",
+      "everyone",
+      "business"
+    ],
+    "d2": "v2",
+    "d3": [
+      "tiktok",
+      "youtube",
+      "hn",
+      "producthunt",
+      "github",
+      "google",
+      "life",
+      "instagram",
+      "x",
+      "reddit"
+    ],
+    "d4": "twist-credit",
+    "d5": "now"
+  },
+  "comments": [
+    {
+      "id": "c1790756794588",
+      "anchor": "rubric-v2",
+      "anchorLabel": "Proposed rubric v2",
+      "anchorText": "Proposed v2: 4 gates and 5 scores",
+      "text": "Ai is the magic in helping it build in a day and as well as the AI model which is good which we already know. \n\nSo we know AI is the magic, I think we should remove this, what do you think?",
+      "kind": "note",
+      "status": "sent",
+      "ts": "2026-09-30T08:26:34.593205+00:00",
+      "messages": [
+        {
+          "from": "claude",
+          "t": "2026-09-30T08:36:08.156491+00:00",
+          "text": "Agreed, removed. Every build is made with AI, so that gate would always pass. The thing it was really checking is covered by **Surprising**, now worded \"Wait, I can build that with AI?\". There are **3 gates** now. Chess still dies: it scores 1 on Relatable, Useful, Surprising and Shareable."
+        }
+      ],
+      "addressed": true
+    },
+    {
+      "id": "c1790756936987",
+      "anchor": "d1",
+      "anchorLabel": "D1 the viewer",
+      "anchorText": "D1: Who is the viewer?",
+      "text": "I want to multi-select here.",
+      "kind": "change",
+      "status": "sent",
+      "ts": "2026-09-30T08:28:56.990308+00:00",
+      "messages": [],
+      "addressed": true
+    },
+    {
+      "id": "c1790756979621",
+      "anchor": "d3",
+      "anchorLabel": "D3 sources",
+      "anchorText": "D3: Which sources in the first run?",
+      "text": "You can search on reddit via google if you want.",
+      "kind": "note",
+      "status": "sent",
+      "ts": "2026-09-30T08:29:39.625979+00:00",
+      "messages": [
+        {
+          "from": "claude",
+          "t": "2026-09-30T08:36:08.197008+00:00",
+          "text": "Tested it, and it works. **Google in your Chrome, limited to Reddit and the past month**, shows post titles, subreddits, comment counts, snippets and the top answer. I can't open the threads, but that's enough to spot real pain. Updated the table, section 6 and D3."
+        }
+      ],
+      "addressed": true
+    },
+    {
+      "id": "c1790757470640",
+      "anchor": "page",
+      "anchorLabel": "General",
+      "anchorText": "",
+      "text": "I feel we are ready to run the experiment. \nLets find 5 ideas. \nAnd showcase me everything about. \nThe whole process.\nReasoning\nAnd the output.",
+      "kind": "question",
+      "status": "sent",
+      "ts": "2026-09-30T08:37:50.643317+00:00",
+      "messages": [
+        {
+          "from": "claude",
+          "t": "2026-09-30T08:38:08.438510+00:00",
+          "text": "Starting run 1 now. I'll harvest TikTok, YouTube, Hacker News, Product Hunt, GitHub and Reddit (through Google), turn the signals into ideas, kill and score them with rubric v2, and bring you the **top 5**. Everything will be on a new page: what I searched, what I found, why each idea was kept or killed, and the 5 idea cards. Instagram and X are skipped this run because they need you logged in, and so is your annoyance list, which we don't have yet."
+        },
+        {
+          "from": "claude",
+          "t": "2026-09-30T08:45:43.881714+00:00",
+          "text": "Run 1 is done. Results: http://localhost:7782/ (the 5 ideas, what I searched, every signal, all 15 killed ideas and why, and the full reasoning for each winner)."
+        }
+      ],
+      "addressed": true,
+      "suggest": true
+    }
+  ],
+  "batches": [
+    {
+      "round": 1,
+      "ts": "2026-09-30T08:35:14.876375+00:00",
+      "commentIds": [
+        "c1790756794588",
+        "c1790756936987",
+        "c1790756979621"
+      ],
+      "decisions": {
+        "d1": "everyday-builders",
+        "d2": "v2",
+        "d3": [
+          "tiktok",
+          "youtube",
+          "hn",
+          "producthunt",
+          "github",
+          "google",
+          "life",
+          "instagram",
+          "x",
+          "reddit"
+        ],
+        "d4": "twist-credit",
+        "d5": "now"
+      }
+    },
+    {
+      "round": 2,
+      "ts": "2026-09-30T08:37:58.575720+00:00",
+      "commentIds": [],
+      "decisions": {
+        "d1": [
+          "everyday-builders",
+          "everyone",
+          "business"
+        ],
+        "d2": "v2",
+        "d3": [
+          "tiktok",
+          "youtube",
+          "hn",
+          "producthunt",
+          "github",
+          "google",
+          "life",
+          "instagram",
+          "x",
+          "reddit"
+        ],
+        "d4": "twist-credit",
+        "d5": "now"
+      }
+    }
+  ],
+  "groups": [
+    "d1",
+    "d2",
+    "d3",
+    "d4",
+    "d5"
+  ]
+}

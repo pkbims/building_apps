@@ -1,0 +1,291 @@
+{
+  "decisions": {
+    "b3": [
+      "web",
+      "extension",
+      "skill",
+      "automation",
+      "agent"
+    ],
+    "b4": "10",
+    "b5": "no",
+    "b6": "parallel",
+    "b1": [
+      "smallbiz",
+      "smallbiz:realestate",
+      "smallbiz:fitness",
+      "smallbiz:clinics",
+      "smallbiz:photographers"
+    ],
+    "b2": [
+      "money",
+      "time"
+    ],
+    "b8": "go",
+    "k3": "kill",
+    "k4": "kill",
+    "k5": "kill"
+  },
+  "comments": [
+    {
+      "id": "c1790823964708",
+      "anchor": "run3",
+      "anchorLabel": "Run 3",
+      "anchorText": "9Run 3",
+      "text": "I was thinking that there are some general inputs and there are some inputs required per run correct? \n\nSo each run should ask me that first, once we confirm, then it hsould produce the resuts. \n\nDoes it make sense?",
+      "kind": "note",
+      "status": "sent",
+      "ts": "2026-10-01T03:06:04.713105+00:00",
+      "messages": [
+        {
+          "from": "claude",
+          "t": "2026-10-01T03:08:44.791965+00:00",
+          "text": "Yes, that makes sense, and it's the right split. **General inputs** (Inputs tab) are set once. **Each run starts with a brief**: its own questions, and nothing runs until you confirm. Run 3's brief is in the Run 3 tab: B1 audiences, B2 theme (October means midterms for students and holiday/Black Friday prep for small biz), B3 bring back the 6 earlier survivors, B4 anything extra, and **B5 Confirm**. When B5 says Confirmed and you press Send, I start."
+        }
+      ],
+      "addressed": true
+    },
+    {
+      "id": "c1790824454554",
+      "anchor": "run3",
+      "anchorLabel": "Run 3 brief",
+      "anchorText": "9Run 3: the brief",
+      "text": "Why dont I have the option to select the audience and everything. \nWhy are you assuming Ih ave slected the audience and all. \n\nImagine this is our fresh run and it must select ideas that are not in our Selected Ideas. \n\nCurrenly we have 0 Selected Ideas. \nAlso create a tab of selected ideas. \n\nWhere once decided we will send the ideas to the selected ideas bank.",
+      "kind": "note",
+      "status": "sent",
+      "ts": "2026-10-01T03:14:14.557063+00:00",
+      "messages": [
+        {
+          "from": "claude",
+          "t": "2026-10-01T03:17:21.378918+00:00",
+          "text": "You're right, I shouldn't have assumed. Run 3 is now a **fresh run**. **B1** lists all 13 audiences with **none ticked**, and B2 (theme) is unpicked too. I removed the \"bring back old ideas\" question. There's a new **Selected Ideas** tab (0 so far): ideas you Keep in a run move there, and runs skip anything already in it."
+        }
+      ],
+      "addressed": true
+    },
+    {
+      "id": "c1790824576383",
+      "anchor": "run3",
+      "anchorLabel": "Run 3 brief",
+      "anchorText": "9Run 3: the brief",
+      "text": "So maybe you The Run3 Inputs should be here. \n\nAnd you can remove the inputs tab what you think?",
+      "kind": "note",
+      "status": "sent",
+      "ts": "2026-10-01T03:16:16.385968+00:00",
+      "messages": [
+        {
+          "from": "claude",
+          "t": "2026-10-01T03:17:21.419697+00:00",
+          "text": "Agreed, done. **The Inputs tab is gone.** Every input now lives in each run's brief (B1\u2013B8). Your earlier answers carried over only where you'd actually given them: build types, 10 ideas, no startup remix, parallel research. Budget (/bin/zsh) is now a note under S1 in the Sources tab. Tabs: Plan \u00b7 Sources \u00b7 Run 3 \u00b7 Selected Ideas."
+        }
+      ],
+      "addressed": true
+    },
+    {
+      "id": "c1790825481192",
+      "anchor": "b2",
+      "anchorLabel": "B2 theme",
+      "anchorText": "B2: A theme for this run?",
+      "text": "I want a multiselect here.",
+      "kind": "note",
+      "status": "sent",
+      "ts": "2026-10-01T03:31:21.195911+00:00",
+      "messages": [
+        {
+          "from": "claude",
+          "t": "2026-10-01T03:31:37.665838+00:00",
+          "text": "Done. B2 is now multi-select, and your pick (**Saving them time**) carried over. Tick as many themes as you like. Send stays at \"Nothing to send\" until you change something."
+        }
+      ],
+      "addressed": true
+    },
+    {
+      "id": "c1790825601662",
+      "anchor": "b1",
+      "anchorLabel": "B1 audiences",
+      "anchorText": "B1: Who is this run for?",
+      "text": "I really feel that we can have more options in an option.\nSo like small business owners of what?\nReal estate, restaurant, salons etc etc.\n\nCorrect? \nSo how can we make B1 descriptive, what do you think?",
+      "kind": "note",
+      "status": "sent",
+      "ts": "2026-10-01T03:33:21.665447+00:00",
+      "messages": [
+        {
+          "from": "claude",
+          "t": "2026-10-01T03:34:22.801816+00:00",
+          "text": "Yes, correct, and done. **B1 now has two levels**: tick an audience, and its specific groups open right under it. Small business shows 12 (restaurants and caf\u00e9s, salons, real estate, trades, cleaning, local shops, online sellers, gyms, clinics, photographers, coaches, accountants). Students, creators, freelancers and parents have theirs too. Leave the groups blank to mean \"all of them\". I'd tick **restaurants and caf\u00e9s, salons, and trades**: huge, poorly served by software, and very visual on camera. Unticking an audience also unticks its groups."
+        }
+      ],
+      "addressed": true
+    }
+  ],
+  "batches": [
+    {
+      "round": 1,
+      "ts": "2026-10-01T02:52:39.842398+00:00",
+      "commentIds": [
+        "c1790820450956",
+        "c1790823159022"
+      ],
+      "decisions": {}
+    },
+    {
+      "round": 2,
+      "ts": "2026-10-01T02:57:04.792561+00:00",
+      "commentIds": [],
+      "decisions": {}
+    },
+    {
+      "round": 3,
+      "ts": "2026-10-01T02:58:21.006087+00:00",
+      "commentIds": [
+        "c1790823499038"
+      ],
+      "decisions": {}
+    },
+    {
+      "round": 4,
+      "ts": "2026-10-01T03:04:11.438314+00:00",
+      "commentIds": [
+        "c1790823849039"
+      ],
+      "decisions": {}
+    },
+    {
+      "round": 5,
+      "ts": "2026-10-01T03:07:23.214926+00:00",
+      "commentIds": [
+        "c1790823964708",
+        "c1790824000908"
+      ],
+      "decisions": {}
+    },
+    {
+      "round": 6,
+      "ts": "2026-10-01T03:16:18.058309+00:00",
+      "commentIds": [
+        "c1790824454554",
+        "c1790824576383"
+      ],
+      "decisions": {}
+    },
+    {
+      "round": 7,
+      "ts": "2026-10-01T03:20:01.272115+00:00",
+      "commentIds": [
+        "c1790824799885"
+      ],
+      "decisions": {
+        "b3": [
+          "web",
+          "extension",
+          "skill",
+          "automation",
+          "agent"
+        ],
+        "b4": "10",
+        "b5": "no",
+        "b6": "parallel",
+        "b1": []
+      }
+    },
+    {
+      "round": 8,
+      "ts": "2026-10-01T03:31:24.956581+00:00",
+      "commentIds": [
+        "c1790825481192"
+      ],
+      "decisions": {
+        "b3": [
+          "web",
+          "extension",
+          "skill",
+          "automation",
+          "agent"
+        ],
+        "b4": "10",
+        "b5": "no",
+        "b6": "parallel",
+        "b1": [
+          "smallbiz"
+        ],
+        "b2": [
+          "time"
+        ]
+      }
+    },
+    {
+      "round": 9,
+      "ts": "2026-10-01T03:33:23.488053+00:00",
+      "commentIds": [
+        "c1790825601662"
+      ],
+      "decisions": {
+        "b3": [
+          "web",
+          "extension",
+          "skill",
+          "automation",
+          "agent"
+        ],
+        "b4": "10",
+        "b5": "no",
+        "b6": "parallel",
+        "b1": [
+          "smallbiz"
+        ],
+        "b2": [
+          "money",
+          "time"
+        ]
+      }
+    },
+    {
+      "round": 10,
+      "ts": "2026-10-01T03:35:39.221440+00:00",
+      "commentIds": [],
+      "decisions": {
+        "b3": [
+          "web",
+          "extension",
+          "skill",
+          "automation",
+          "agent"
+        ],
+        "b4": "10",
+        "b5": "no",
+        "b6": "parallel",
+        "b1": [
+          "smallbiz",
+          "smallbiz:realestate",
+          "smallbiz:fitness",
+          "smallbiz:clinics",
+          "smallbiz:photographers"
+        ],
+        "b2": [
+          "money",
+          "time"
+        ],
+        "b8": "go"
+      }
+    }
+  ],
+  "groups": [
+    "k1",
+    "k2",
+    "k3",
+    "k4",
+    "k5",
+    "k6",
+    "k7",
+    "k8",
+    "k9",
+    "k10",
+    "b1",
+    "b2",
+    "b3",
+    "b4",
+    "b5",
+    "b6",
+    "b8"
+  ]
+}

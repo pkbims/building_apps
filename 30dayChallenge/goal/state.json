@@ -1,0 +1,199 @@
+{
+  "decisions": {},
+  "comments": [
+    {
+      "id": "c1790752503311",
+      "anchor": "follow",
+      "anchorLabel": "Why people follow",
+      "anchorText": "5Why people will follow me",
+      "text": "Yes this is really valuable section. \n\nWhat value will my audience get. \nLets frame it that way.",
+      "kind": "change",
+      "status": "sent",
+      "ts": "2026-09-30T07:15:03.314424+00:00",
+      "messages": [],
+      "addressed": true
+    },
+    {
+      "id": "c1790752598276",
+      "anchor": "doubt",
+      "anchorLabel": "When I doubt",
+      "anchorText": "7Read this when I doubt",
+      "text": "And in here do mention that. \n\nYou are doing this so when you something solid to mark it as a product. \n\nYou have a real audience.",
+      "kind": "change",
+      "status": "sent",
+      "ts": "2026-09-30T07:16:38.278957+00:00",
+      "messages": [],
+      "addressed": true
+    },
+    {
+      "id": "c1790752613258",
+      "anchor": "goal",
+      "anchorLabel": "The goal",
+      "anchorText": "1My goal",
+      "text": "AI Maxxing",
+      "kind": "change",
+      "status": "sent",
+      "ts": "2026-09-30T07:16:53.262815+00:00",
+      "messages": [],
+      "addressed": true
+    },
+    {
+      "id": "c1790752695598",
+      "anchor": "page",
+      "anchorLabel": "General",
+      "anchorText": "",
+      "text": "A build can be a web app, tool, skill, workflow, automation, agent, extension or small experiment.\n\nWe should also discuss what value should my build bring to the audience. \n\nSo this can be used as a rubric for my build. \n\nLike for example I dont want to build chess correct.",
+      "kind": "note",
+      "status": "sent",
+      "ts": "2026-09-30T07:18:15.601830+00:00",
+      "messages": [
+        {
+          "from": "claude",
+          "t": "2026-09-30T07:24:20.663771+00:00",
+          "text": "Yes, skip chess. I turned this into a **build rubric** (section 5): six tests every build must pass. Chess fails three of them: not useful, not surprising, and AI isn't the magic."
+        }
+      ],
+      "addressed": true
+    },
+    {
+      "id": "c1790752765569",
+      "anchor": "why",
+      "anchorLabel": "Why this goal",
+      "anchorText": "2Why this is my goal",
+      "text": "Also this should have. \n\nWhat this goal helps me achieve and that achievement is what I really want to achive.",
+      "kind": "note",
+      "status": "sent",
+      "ts": "2026-09-30T07:19:25.572546+00:00",
+      "messages": [
+        {
+          "from": "claude",
+          "t": "2026-09-30T07:24:20.705131+00:00",
+          "text": "Added **What this goal gets me** at the top of section 3: a real audience, a name, a launch pad, and income from your own products."
+        }
+      ],
+      "addressed": true
+    },
+    {
+      "id": "c1790752804619",
+      "anchor": "money",
+      "anchorLabel": "$10k a month",
+      "anchorText": "6How this becomes $10,000 a month",
+      "text": "It should become 10,000 a month in the next 90 days. \nSo we need a plan around that.",
+      "kind": "change",
+      "status": "sent",
+      "ts": "2026-09-30T07:20:04.622335+00:00",
+      "messages": [],
+      "addressed": true
+    },
+    {
+      "id": "c1790752829603",
+      "anchor": "doubt",
+      "anchorLabel": "When I doubt",
+      "anchorText": "7Read this when I doubt",
+      "text": "I love this section. \nThis should be on top somwhere",
+      "kind": "note",
+      "status": "sent",
+      "ts": "2026-09-30T07:20:29.607465+00:00",
+      "messages": [
+        {
+          "from": "claude",
+          "t": "2026-09-30T07:24:20.745118+00:00",
+          "text": "Moved it to the top as section 1, **Read this first**."
+        }
+      ],
+      "addressed": true
+    },
+    {
+      "id": "c1790753399259",
+      "anchor": "money",
+      "anchorLabel": "$10k in 90 days",
+      "anchorText": "8$10,000 a month within 90 days",
+      "text": "I mean we can start selling after day 30. \nWe should be selling something after day 30.",
+      "kind": "note",
+      "status": "sent",
+      "ts": "2026-09-30T07:29:59.262818+00:00",
+      "messages": [
+        {
+          "from": "claude",
+          "t": "2026-09-30T07:33:05.229978+00:00",
+          "text": "Done. I recorded **D1 as Start selling on Day 31** from your note. I also added it to the 90-day plan and to **How I'll achieve it**: the builds stay free, and something paid is always on offer after Day 30."
+        }
+      ],
+      "addressed": true
+    },
+    {
+      "id": "c1790753536156",
+      "anchor": "rubric",
+      "anchorLabel": "Build rubric",
+      "anchorText": "5The build rubric",
+      "text": "It should have relatability and also share worthiness. \nBut it might come from somehitng already mentioned.",
+      "kind": "note",
+      "status": "sent",
+      "ts": "2026-09-30T07:32:16.158138+00:00",
+      "messages": [
+        {
+          "from": "claude",
+          "t": "2026-09-30T07:33:05.269893+00:00",
+          "text": "Added both to the rubric, so it has 8 tests now: **Relatable** (they see their own problem in it) and **Shareable** (they'd send it to a friend). They overlap a little with Surprising, but they check different things, so I kept all three."
+        }
+      ],
+      "addressed": true
+    },
+    {
+      "id": "c1790754518609",
+      "anchor": "page",
+      "anchorLabel": "General",
+      "anchorText": "",
+      "text": "Okay lets finalize this. I like it. and remove all these changed Round1 and stuff. \n\nLets finalize this.",
+      "kind": "note",
+      "status": "sent",
+      "ts": "2026-09-30T07:48:38.612955+00:00",
+      "messages": [
+        {
+          "from": "claude",
+          "t": "2026-09-30T07:49:42.688030+00:00",
+          "text": "Finalized. I removed every **changed \u00b7 round** tag, and D1 is now a plain line: **the builds stay free, and selling starts on Day 31.**"
+        }
+      ],
+      "addressed": true
+    }
+  ],
+  "batches": [
+    {
+      "round": 1,
+      "ts": "2026-09-30T07:20:30.588792+00:00",
+      "commentIds": [
+        "c1790752503311",
+        "c1790752598276",
+        "c1790752613258",
+        "c1790752695598",
+        "c1790752765569",
+        "c1790752804619",
+        "c1790752829603"
+      ],
+      "decisions": {}
+    },
+    {
+      "round": 2,
+      "ts": "2026-09-30T07:32:35.577217+00:00",
+      "commentIds": [
+        "c1790753399259",
+        "c1790753536156"
+      ],
+      "decisions": {}
+    },
+    {
+      "round": 3,
+      "ts": "2026-09-30T07:49:22.513185+00:00",
+      "commentIds": [
+        "c1790754518609"
+      ],
+      "decisions": {
+        "d-selling": "day31"
+      }
+    }
+  ],
+  "groups": [
+    "d-selling"
+  ]
+}

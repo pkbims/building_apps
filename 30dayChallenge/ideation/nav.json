@@ -1,0 +1,47 @@
+{
+  "groups": [
+    {
+      "name": "Ideation",
+      "items": [
+        {
+          "label": "Plan",
+          "path": "plan/",
+          "icon": "\ud83d\udccb"
+        },
+        {
+          "label": "Sources",
+          "path": "sources/",
+          "icon": "\ud83d\udd0e"
+        }
+      ]
+    },
+    {
+      "name": "Runs",
+      "items": [
+        {
+          "label": "Run 3",
+          "path": "runs/run-03/",
+          "status": "done",
+          "note": "10 to review"
+        },
+        {
+          "label": "Run 4",
+          "path": "runs/run-04/",
+          "status": "now",
+          "note": "10 to review"
+        }
+      ]
+    },
+    {
+      "name": "Bank",
+      "items": [
+        {
+          "label": "Selected Ideas",
+          "path": "selected/",
+          "icon": "\u2b50",
+          "badge": 2
+        }
+      ]
+    }
+  ]
+}

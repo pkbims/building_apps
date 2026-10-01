@@ -1,0 +1,1578 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ideation · Run 4</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<style>
+  :root{--bg:#f4eee2;--panel:#fdf9f1;--ink:#2a2521;--muted:#6a6157;--faint:#978d82;
+    --line:#e3d9c7;--accent:#b0523a;--soft:#f5e4dc;--warn:#7a5a1e;--warnsoft:#f3ead3;
+    --quote:#efe7d6;--s1:6px;--s2:8px;--s3:10px;--s4:12px;--s5:16px;--s6:24px;--s7:32px;
+    --r:10px;--r2:14px}
+  :root{color-scheme:light}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;
+    --bg:#1b1916;--panel:#242019;--ink:#ede4d6;--muted:#a89e8f;--faint:#766d60;
+    --line:#38322a;--accent:#e28f72;--soft:#3b2a24;--warn:#dcb66e;--warnsoft:#302a1c;
+    --quote:#2a2620}}
+  :root[data-theme="dark"]{color-scheme:dark;
+    --bg:#1b1916;--panel:#242019;--ink:#ede4d6;--muted:#a89e8f;--faint:#766d60;
+    --line:#38322a;--accent:#e28f72;--soft:#3b2a24;--warn:#dcb66e;--warnsoft:#302a1c;
+    --quote:#2a2620}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:18px/1.7 "IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+  h1,h2,h3{letter-spacing:-.015em}
+  header{position:sticky;top:0;z-index:60;background:var(--panel);
+    border-bottom:1px solid var(--line);padding:var(--s4) var(--s6);
+    display:flex;align-items:center;gap:var(--s5)}
+  header h1{font-size:15px;margin:0;font-weight:650}
+  .tag{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);
+    background:var(--soft);padding:3px var(--s2);border-radius:var(--s1);font-weight:650}
+  .spacer{flex:1}.count{font-size:13px;color:var(--muted)}
+  button.theme{background:var(--bg);border:1px solid var(--line);color:var(--muted);font:inherit;
+    font-size:12px;padding:4px var(--s3);border-radius:var(--s2);cursor:pointer}
+  button.theme:hover{color:var(--accent);border-color:var(--accent)}
+  button.theme.danger:hover{color:var(--warn);border-color:var(--warn)}
+  .discardask{display:flex;gap:var(--s2);align-items:center;font-size:12.5px;color:var(--warn)}
+  .discardask[hidden],button.theme[hidden]{display:none}
+  .discardask button{font:inherit;font-size:12px;padding:4px var(--s3);border-radius:var(--s2);cursor:pointer;
+    border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+  .discardask button.yes{background:var(--warn);border-color:var(--warn);color:var(--panel)}
+  .discarded{max-width:520px;margin:18vh auto;padding:0 var(--s5);text-align:center;color:var(--muted)}
+  .discarded h1{color:var(--ink);font-size:22px}
+  .layout{display:grid;grid-template-columns:206px minmax(0,1fr) 350px;gap:var(--s7);
+    max-width:1400px;margin:0 auto;padding:var(--s6) var(--s6) 140px}
+  @media(max-width:1200px){.layout{grid-template-columns:186px minmax(0,1fr)}
+    /* narrow: the conversation slides in from the right instead of disappearing */
+    aside.right{position:fixed;top:0;right:0;bottom:0;max-height:none;width:min(380px,92vw);z-index:110;overflow-y:auto;
+      border-radius:0;transform:translateX(105%);transition:transform .2s;box-shadow:-12px 0 40px rgba(0,0,0,.25)}
+    aside.right.open{transform:none} #cpfab{display:flex!important}
+    html.embedded aside.right{top:0;max-height:none}}
+  #cpfab{display:none;position:fixed;right:16px;bottom:16px;z-index:111;align-items:center;gap:6px;border:0;
+    border-radius:999px;padding:10px 16px;background:var(--accent);color:#fff;font:inherit;font-size:13px;font-weight:700;
+    cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+  #cpfab em{font-style:normal;background:#fff;color:var(--accent);border-radius:999px;padding:0 7px;font-size:11.5px}
+  @media(max-width:820px){.layout{grid-template-columns:1fr}nav.toc{display:none}}
+  nav.toc{position:sticky;top:78px;align-self:start;max-height:calc(100vh - 110px);
+    overflow-y:auto;font-size:13px}
+  nav.toc .grp{color:var(--faint);text-transform:uppercase;letter-spacing:.07em;
+    font-size:10.5px;font-weight:700;margin:var(--s5) 0 var(--s2)}
+  nav.toc .grp:first-child{margin-top:0}
+  a[href]{color:var(--accent)}
+  nav.toc a{display:block;color:var(--muted);text-decoration:none;padding:5px var(--s3);
+    border-left:2px solid transparent;border-radius:0 var(--s1) var(--s1) 0}
+  nav.toc a.on{color:var(--accent);border-left-color:var(--accent);background:var(--soft);font-weight:600}
+  section{background:var(--panel);border:1px solid var(--line);border-radius:var(--r2);
+    padding:var(--s6) 28px;margin-bottom:var(--s6);position:relative;scroll-margin-top:84px}
+  section:hover > .cbtn{opacity:1}
+  section > h2{font-size:21px;margin:0 0 var(--s1)}
+  .num{color:var(--faint);font-weight:600;font-size:14px;margin-right:var(--s2)}
+  .sub{color:var(--muted);font-size:13.5px;margin:0 0 var(--s5)}
+  blockquote{margin:var(--s3) 0;padding:var(--s3) var(--s5);background:var(--quote);
+    border-left:2px solid var(--line);border-radius:0 var(--s2) var(--s2) 0;font-size:13.5px}
+  .plain{background:var(--soft);border-left:3px solid var(--accent);padding:var(--s3) var(--s5);
+    border-radius:0 var(--s2) var(--s2) 0;margin:var(--s4) 0;font-size:13.5px}
+  .plain b{color:var(--accent)}
+  .risk{background:var(--warnsoft);border-left:3px solid var(--warn);padding:var(--s3) var(--s5);
+    border-radius:0 var(--s2) var(--s2) 0;margin:var(--s4) 0;font-size:13.5px}
+  .risk b{color:var(--warn)}
+  .cbtn{position:absolute;top:var(--s5);right:var(--s5);opacity:0;transition:opacity .15s;
+    background:var(--bg);border:1px solid var(--line);color:var(--muted);font:inherit;
+    font-size:12px;padding:4px var(--s3);border-radius:var(--s2);cursor:pointer}
+  .cbtn:hover{color:var(--accent);border-color:var(--accent)}
+  .cbtn.has{opacity:1;color:var(--accent);border-color:var(--accent);background:var(--soft)}
+  .d{border:1px solid var(--line);border-radius:var(--r);padding:var(--s5) 18px;
+    margin:var(--s5) 0;position:relative}
+  .d:hover .cbtn{opacity:1}
+  .d.open{border-left:3px solid var(--accent)}
+  .q{font-weight:650;font-size:14.5px;margin-bottom:3px}
+  .why{color:var(--muted);font-size:13px;margin-bottom:var(--s4)}
+  label.opt{display:flex;gap:var(--s3);align-items:flex-start;padding:9px var(--s4);
+    border:1px solid transparent;border-radius:var(--s2);cursor:pointer;font-size:14px}
+  label.opt:hover{background:var(--bg)}
+  label.opt.sel{border-color:var(--accent);background:var(--soft)}
+  label.opt input{margin-top:3px;accent-color:var(--accent);flex:none}
+  .oh{font-weight:550}.od{color:var(--muted);font-size:12.5px;display:block;margin-top:1px}
+  .mm{background:var(--bg);border:1px solid var(--line);border-radius:var(--r);
+    padding:18px;margin:var(--s4) 0;overflow-x:auto;text-align:center}
+  table.t{width:100%;border-collapse:collapse;font-size:13px;margin:var(--s4) 0}
+  table.t th,table.t td{border:1px solid var(--line);padding:var(--s2) var(--s3);
+    text-align:left;vertical-align:top}
+  table.t th{background:var(--bg);font-weight:650}
+  code{background:var(--quote);padding:1px 5px;border-radius:5px;font-size:12.5px}
+  pre.code{background:var(--quote);padding:var(--s5);border-radius:var(--r);
+    overflow-x:auto;font-size:12.5px;margin:var(--s4) 0}
+  details.ref{border:1px solid var(--line);border-radius:var(--r);padding:var(--s4) 18px;
+    margin:var(--s4) 0;background:var(--bg)}
+  details.ref summary{cursor:pointer;font-weight:650;font-size:14px;color:var(--accent)}
+  /* The Chat center (the right column): decisions in brief, Send, then the page's conversation.
+     Pinned at full window height with its own scroll, so the page and the chat scroll separately. */
+  aside.right{position:sticky;top:78px;align-self:start;background:var(--panel);border:1px solid var(--line);
+    border-radius:var(--r2);padding:var(--s5) 18px;max-height:calc(100vh - 92px);overflow-y:auto;overscroll-behavior:contain}
+  aside.right h2{font-size:15px;margin:0}
+  .bar{height:4px;background:var(--line);border-radius:2px;overflow:hidden;margin-top:9px}
+  .bar i{display:block;height:100%;background:var(--accent);transition:width .3s}
+  .dsum{display:flex;align-items:center;gap:8px;font-size:13px;margin-top:4px}
+  .dsum a{margin-left:auto;font-size:12px;color:var(--accent);cursor:pointer}
+  #dchg{font-size:12px;border-left:3px solid var(--accent);background:var(--soft);border-radius:6px;
+    padding:5px 9px;margin-top:8px} #dchg:empty{display:none} #dchg b{font-size:10.5px;letter-spacing:.05em}
+  .dlist{margin:var(--s3) -4px 0;padding:0 4px;border-top:1px dashed var(--line)} .dlist[hidden]{display:none}
+  .dr{display:flex;gap:9px;align-items:center;padding:5px var(--s2);border-radius:var(--s1);
+    cursor:pointer;font-size:12.5px}
+  .dr:hover{background:var(--bg)}
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--line);flex:none}
+  .dr.done .dot{background:var(--accent)}
+  .dn{color:var(--muted);font-weight:700;flex:none}
+  .dr.todo .dv{color:var(--muted);font-style:italic}
+  .topact{position:sticky;top:calc(-1 * var(--s5));z-index:5;background:var(--panel);padding:12px 0 8px;margin-top:6px;
+    display:flex;flex-direction:column;gap:6px;border-bottom:1px solid var(--line)}
+  .sendto{font-size:11.5px;color:var(--muted);text-align:center} .sendto b{color:var(--ink)}
+  .sendto.busy b{color:var(--accent)}
+  .wstat{font-size:12px;text-align:center;display:flex;gap:6px;align-items:center;justify-content:center;flex-wrap:wrap}
+  .wstat:empty{display:none}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .wstat .spin{width:11px;height:11px;border:2px solid var(--warn);border-right-color:transparent;border-radius:50%;animation:spin .8s linear infinite}
+  .wstat.working{color:var(--warn)} .wstat.ready{color:var(--accent)} .wstat.stale{color:var(--muted)}
+  .wstat button{font:inherit;font-size:11.5px;border:0;border-radius:7px;background:var(--accent);color:#fff;padding:2px 9px;cursor:pointer}
+  .pagec{font:inherit;font-size:12.5px;border:1px dashed var(--line);background:none;color:var(--muted);
+    border-radius:10px;padding:6px;cursor:pointer} .pagec:hover{color:var(--accent);border-color:var(--accent)}
+  #queue{display:flex;flex-direction:column;gap:6px;margin-top:6px}
+  /* Progress meter (user, 2026-09-28): what Claude is working on, answered recently, or all caught up. */
+  .cprog{border:1px solid var(--line);border-radius:12px;padding:8px 10px;font-size:12.5px;background:var(--bg)}
+  .cprog:empty{display:none}
+  .cprog .l{display:flex;gap:7px;align-items:center}
+  .cprog .spin{width:11px;height:11px;border:2px solid var(--warn);border-right-color:transparent;border-radius:50%;animation:spin .8s linear infinite;flex:none}
+  .cprog.working{border-color:var(--warn)} .cprog.working .l{color:var(--warn);font-weight:700}
+  .cprog .pb{height:6px;border-radius:99px;background:var(--line);overflow:hidden;margin-top:7px}
+  .cprog .pb i{display:block;height:100%;background:var(--warn);transition:width .4s}
+  .cprog .sub{margin-top:5px;color:var(--muted);font-size:11.5px}
+  .cprog.recent{border-color:var(--accent);background:var(--soft)} .cprog.recent .l{color:var(--accent);font-weight:700}
+  .cprog.idle{color:var(--muted)}
+  .th.unread{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset}
+  .th .ndot{width:8px;height:8px;border-radius:50%;background:var(--accent);flex:none}
+  /* The recommended option's tag (SKILL: "a small tag on the option"). */
+  .rec{display:inline-block;font:700 10.5px ui-monospace,Menlo,monospace;letter-spacing:.04em;text-transform:uppercase;padding:1px 7px;margin-left:6px;border-radius:999px;background:#C8FF3D;color:#141414;border:1px solid #141414;vertical-align:middle}
+  .sect{font-size:10.5px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin:8px 2px 0}
+  .th{border:1px solid var(--line);border-radius:12px;background:var(--bg);padding:9px 10px;font-size:13px}
+  .th .hd{display:flex;gap:6px;align-items:center;font-size:11px;color:var(--muted);margin-bottom:4px}
+  .th .hd .where{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .th .hd .st{margin-left:0;white-space:nowrap}
+  .th .hd a{color:var(--accent);cursor:pointer}
+  .ktag{font-size:10.5px;font-weight:700;border-radius:999px;padding:1px 7px;text-transform:uppercase;letter-spacing:.03em}
+  .ktag.question{background:color-mix(in srgb,#3b82f6 16%,transparent);color:#3b82f6}
+  .ktag.change{background:color-mix(in srgb,var(--accent) 16%,transparent);color:var(--accent)}
+  .ktag.note{background:color-mix(in srgb,#22a55a 16%,transparent);color:#22a55a}
+  .th .st{margin-left:auto;font-weight:700} .st.ok{color:#22a55a} .st.wait{color:var(--accent)}
+  .th .msg{margin-top:7px;padding:7px 9px;border-radius:9px;line-height:1.5}
+  .th .msg.claude{background:var(--soft)} .th .msg.you{border:1px solid var(--line);margin-left:16px}
+  .th .msg .who{display:block;font-size:10.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;margin-bottom:2px}
+  .th .msg.claude .who{color:var(--accent)} .th .msg.you .who{color:var(--muted)}
+  .th .msg code{background:var(--bg);padding:0 4px;border-radius:4px;font-size:12px}
+  .th .msg ul{margin:4px 0 0 16px;padding:0}
+  .th .act{display:flex;gap:6px;margin-top:7px;flex-wrap:wrap}
+  .th .act button,.th .rb button{font:inherit;font-size:11.5px;border:1px solid var(--line);background:var(--panel);
+    color:var(--ink);border-radius:8px;padding:3px 9px;cursor:pointer}
+  .th .act button.pri,.th .rb button{background:var(--accent);border-color:var(--accent);color:#fff}
+  .th .rb{display:flex;gap:6px;margin-top:8px}
+  .th .rb{align-items:flex-end}
+  .th .rb textarea{flex:1;min-width:0;font:inherit;font-size:12.5px;line-height:1.4;border:1px solid var(--line);border-radius:8px;
+    background:var(--panel);color:var(--ink);padding:5px 8px;resize:none;max-height:160px;overflow-y:auto}
+  .th .earlier{font-size:11.5px;color:var(--accent);cursor:pointer;margin-top:6px}
+  .th .older{display:none} .th .older.on{display:block}
+  .th .typing{font-size:12px;color:var(--muted);font-style:italic;margin-top:6px}
+  .th.fold{padding:6px 10px;cursor:pointer} .th.fold:hover{border-color:var(--accent)}
+  .th.fold .body{display:none}
+  .th .row1{display:flex;gap:7px;align-items:center}
+  .th .row1 .q1{flex:1;min-width:0}
+  .th.fold .row1 .q1{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12.5px}
+  .th .n{font-size:10.5px;color:var(--muted);white-space:nowrap}
+  .th .wide{margin-left:auto;border:0;background:none;color:var(--muted);cursor:pointer;font-size:13px}
+  #wideview{display:none;position:fixed;inset:6vh 10vw;z-index:120;background:var(--panel);border:1px solid var(--line);
+    border-radius:var(--r2);padding:20px 24px;overflow:auto;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+  #wideview.on{display:block} #wideview .th{font-size:14px} #wideview .x{float:right;cursor:pointer;border:0;background:none;font-size:18px;color:var(--muted)}
+  .empty{color:var(--muted);font-size:13px;text-align:center;padding:var(--s5) var(--s3)}
+  /* Inside the App Maker the page's own header is hidden — the App Maker shows the round and the counts. */
+  html.embedded header{display:none}
+  html.embedded nav.toc{top:12px} html.embedded aside.right{top:12px;max-height:calc(100vh - 24px)}
+  html.embedded section{scroll-margin-top:16px}
+  button.primary{width:100%;background:var(--accent);color:#fff;border:0;padding:11px;
+    border-radius:var(--r);font:inherit;font-size:13.5px;font-weight:650;cursor:pointer}
+  button.primary:disabled{background:var(--bg);color:var(--faint);border:1px solid var(--line);cursor:default}
+  #pop{position:absolute;z-index:100;width:328px;background:var(--panel);
+    border:1px solid var(--line);border-radius:var(--r);padding:var(--s4);
+    box-shadow:0 10px 34px rgba(0,0,0,.18);display:none}
+  #pop .pa{font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;
+    color:var(--accent);font-weight:700;margin-bottom:var(--s2)}
+  #pop .kind{display:flex;gap:var(--s2);margin-bottom:var(--s2)}
+  #pop .pophint{font-size:11px;color:var(--faint);margin:3px 0 0}
+  #pop .kind label{flex:1;display:flex;gap:6px;align-items:center;font-size:12.5px;
+    padding:5px var(--s2);border:1px solid var(--line);border-radius:var(--s2);cursor:pointer;color:var(--muted)}
+  #pop .kind label.sel{border-color:var(--accent);background:var(--soft);color:var(--accent)}
+  #pop .kind input{margin:0;accent-color:var(--accent)}
+  #pop textarea{width:100%;min-height:88px;border:1px solid var(--line);border-radius:var(--s2);
+    padding:9px;font:inherit;font-size:13.5px;background:var(--bg);color:var(--ink)}
+  #pop .row{display:flex;gap:var(--s2);margin-top:var(--s3)}
+  #pop button{flex:1;padding:var(--s2);border-radius:var(--s2);font:inherit;font-size:13px;
+    cursor:pointer;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+  #pop button.add{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:650}
+  /* "Claude is working" strip: shown after a round is sent, until the page is revised */
+  #working{display:none!important;position:sticky;top:53px;z-index:55;background:var(--warnsoft);color:var(--warn);
+    border-bottom:1px solid var(--line);padding:9px var(--s6);font-size:13.5px;align-items:center;gap:var(--s3)}
+  #working.on{display:flex}
+  #working.ready{background:var(--soft);color:var(--accent)}
+  #working .spin{width:14px;height:14px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;
+    animation:wspin .8s linear infinite;flex:none}
+  #working.ready .spin,#working.stale .spin{display:none}
+  #working button{margin-left:auto;background:var(--accent);color:#fff;border:0;border-radius:var(--s2);
+    padding:5px 12px;font:inherit;font-size:13px;font-weight:650;cursor:pointer;display:none}
+  #working.ready button{display:inline-block}
+  @keyframes wspin{to{transform:rotate(360deg)}}
+  #toast{position:fixed;bottom:var(--s6);left:50%;transform:translateX(-50%);
+    background:var(--ink);color:var(--bg);padding:var(--s3) 18px;border-radius:var(--s2);
+    font-size:13.5px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:200}
+  #toast.on{opacity:1}
+  .flash{animation:fl 1.1s ease-out}
+  @keyframes fl{0%{background:var(--soft)}100%{background:transparent}}
+  [data-changed]{box-shadow:inset 3px 0 0 var(--warn)}
+  [data-changed]::before{content:"changed · round " attr(data-changed);position:absolute;top:-9px;left:12px;
+    font-size:10px;letter-spacing:.06em;text-transform:uppercase;font-weight:700;color:var(--warn);
+    background:var(--warnsoft);padding:2px 7px;border-radius:5px;z-index:1}
+  nav.toc .chg a{color:var(--warn)} nav.toc .chg a.on{color:var(--warn);border-left-color:var(--warn);background:var(--warnsoft)}
+  nav.toc .chg .grp{color:var(--warn)}
+</style>
+<script id="theme">
+try{if(window.top!==window)document.documentElement.classList.add('embedded')}catch(e){document.documentElement.classList.add('embedded')}
+(()=>{const K='theme',R=document.documentElement,L={'':'Auto',light:'Light',dark:'Dark'};
+const set=v=>{v?R.dataset.theme=v:delete R.dataset.theme;try{v?localStorage.setItem(K,v):localStorage.removeItem(K)}catch(e){}};
+try{set(localStorage.getItem(K)||'')}catch(e){}
+addEventListener('DOMContentLoaded',()=>{const h=document.querySelector('header');if(!h)return;
+  const b=document.createElement('button');b.className='theme';b.title='Auto → Light → Dark';
+  const show=()=>b.textContent=L[R.dataset.theme||''];
+  b.onclick=()=>{const c=['','light','dark'];set(c[(c.indexOf(R.dataset.theme||'')+1)%3]);show()};
+  show();h.appendChild(b)})})();
+</script>
+</head>
+<body>
+<header>
+  <h1>Ideation · Run 4</h1>
+  <span class="tag" id="round">Round 1</span>
+  <div class="spacer"></div>
+  <span class="count" id="dcount">—</span>
+</header>
+
+<div id="working"><span class="spin"></span><span id="wtext"></span><button id="wreload">Reload</button></div>
+<div class="layout">
+<nav class="toc" id="toc"></nav>
+<main>
+<style>
+  .lines{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:var(--s2)}
+  .lines li{padding-left:22px;position:relative}
+  .lines li::before{content:"→";position:absolute;left:0;color:var(--accent);font-weight:700}
+  .blk{position:relative;padding:var(--s4) 0;border-top:1px solid var(--line)}
+  .blk.first{border-top:0;padding-top:0}
+  .blk:hover > .cbtn{opacity:1}
+  .ok{color:#22a55a;font-weight:700;white-space:nowrap}
+  .no{color:var(--warn);font-weight:700;white-space:nowrap}
+  .mid{color:var(--muted);font-weight:700;white-space:nowrap}
+  .t td:first-child{white-space:nowrap}
+  [data-check="b1"] .niche{display:none;margin:2px 0 var(--s3) 30px;padding-left:var(--s3);border-left:2px solid var(--accent)}
+  [data-check="b1"] .niche .nlab{font-size:12px;color:var(--muted);margin:2px 0 4px}
+  [data-check="b1"] label.opt.sub{padding:5px var(--s3);font-size:13.5px}
+  .flow{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:var(--s3);margin:var(--s4) 0;counter-reset:st}
+  .flow .box{position:relative;border:1.5px solid var(--line);border-radius:var(--r);padding:var(--s3) var(--s4);background:var(--panel);min-width:0}
+  .flow .box.you{border-color:var(--accent);background:var(--soft)}
+  .flow .box .who{display:block;font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+  .flow .box.you .who{color:var(--accent)}
+  .flow .box b{display:block;font-size:15px;margin:2px 0}
+  .flow .box span.ds{font-size:12.5px;color:var(--muted);line-height:1.45;display:block}
+  .flow .box .n{position:absolute;top:-10px;left:10px;background:var(--bg);color:var(--faint);font-size:11px;font-weight:800;padding:0 6px;border-radius:6px}
+  .loop{display:flex;align-items:center;gap:var(--s2);font-size:13px;color:var(--muted);border:1.5px dashed var(--line);border-radius:var(--r);padding:var(--s2) var(--s4)}
+  .loop b{color:var(--ink)}
+  .legend{display:flex;gap:var(--s4);font-size:12.5px;color:var(--muted);margin-top:var(--s2)}
+  .legend i{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-2px;margin-right:5px;border:1.5px solid var(--line)}
+  .legend i.you{border-color:var(--accent);background:var(--soft)}
+  .ask{border:1px dashed var(--accent);border-radius:var(--r);padding:var(--s4) 18px;margin:var(--s4) 0;position:relative;background:var(--soft)}
+  .ask:hover > .cbtn{opacity:1}
+  .ask .how{font-size:13px;color:var(--muted)}
+  .done{border-style:solid;border-color:var(--line);background:var(--panel)}
+  .empty-run{text-align:center;padding:var(--s7) var(--s5);color:var(--muted)}
+  .empty-run h3{color:var(--ink);font-size:18px;margin:0 0 var(--s2)}
+  .kinds{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:var(--s3);margin-top:var(--s3)}
+  .kind{border:1px solid var(--line);border-radius:var(--r);padding:var(--s3) var(--s4);background:var(--bg);min-width:0}
+  .kind b{display:block;font-size:14px}
+  .kind span{font-size:13px;color:var(--muted)}
+  [data-check="b1"] details.cat{border:1px solid var(--line);border-radius:var(--r);margin:6px 0;background:var(--panel)}
+  [data-check="b1"] details.cat[open]{border-color:var(--accent)}
+  [data-check="b1"] details.cat summary{display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;list-style:none;font-weight:700;font-size:14.5px}
+  [data-check="b1"] details.cat summary::-webkit-details-marker{display:none}
+  [data-check="b1"] details.cat summary::before{content:"▸";color:var(--muted);font-size:12px;width:10px}
+  [data-check="b1"] details.cat[open] summary::before{content:"▾"}
+  [data-check="b1"] details.cat .ce{font-size:16px}
+  [data-check="b1"] details.cat .ca{margin-left:auto;font-size:12px;font-weight:500;color:var(--muted)}
+  [data-check="b1"] details.cat .cc:not(:empty){font-size:11px;font-weight:800;color:#fff;background:var(--accent);border-radius:999px;padding:1px 8px}
+  [data-check="b1"] details.cat .cbody{padding:0 10px 8px}
+  [data-check="b1"]:has(input[value="budgeting"]:checked) .niche[data-for="budgeting"]{display:block}
+  [data-check="b1"]:has(input[value="investors"]:checked) .niche[data-for="investors"]{display:block}
+  [data-check="b1"]:has(input[value="sidehustle"]:checked) .niche[data-for="sidehustle"]{display:block}
+  [data-check="b1"]:has(input[value="selfemployed"]:checked) .niche[data-for="selfemployed"]{display:block}
+  [data-check="b1"]:has(input[value="reinvestors"]:checked) .niche[data-for="reinvestors"]{display:block}
+  [data-check="b1"]:has(input[value="advisors"]:checked) .niche[data-for="advisors"]{display:block}
+  [data-check="b1"]:has(input[value="aicreators"]:checked) .niche[data-for="aicreators"]{display:block}
+  [data-check="b1"]:has(input[value="creators"]:checked) .niche[data-for="creators"]{display:block}
+  [data-check="b1"]:has(input[value="designers"]:checked) .niche[data-for="designers"]{display:block}
+  [data-check="b1"]:has(input[value="writers"]:checked) .niche[data-for="writers"]{display:block}
+  [data-check="b1"]:has(input[value="youngpros"]:checked) .niche[data-for="youngpros"]{display:block}
+  [data-check="b1"]:has(input[value="jobseekers"]:checked) .niche[data-for="jobseekers"]{display:block}
+  [data-check="b1"]:has(input[value="freelancers"]:checked) .niche[data-for="freelancers"]{display:block}
+  [data-check="b1"]:has(input[value="sales"]:checked) .niche[data-for="sales"]{display:block}
+  [data-check="b1"]:has(input[value="smallbiz"]:checked) .niche[data-for="smallbiz"]{display:block}
+  [data-check="b1"]:has(input[value="ecom"]:checked) .niche[data-for="ecom"]{display:block}
+  [data-check="b1"]:has(input[value="agencies"]:checked) .niche[data-for="agencies"]{display:block}
+  [data-check="b1"]:has(input[value="students"]:checked) .niche[data-for="students"]{display:block}
+  [data-check="b1"]:has(input[value="teachers"]:checked) .niche[data-for="teachers"]{display:block}
+  [data-check="b1"]:has(input[value="fitnessppl"]:checked) .niche[data-for="fitnessppl"]{display:block}
+  [data-check="b1"]:has(input[value="healthworkers"]:checked) .niche[data-for="healthworkers"]{display:block}
+  [data-check="b1"]:has(input[value="parents"]:checked) .niche[data-for="parents"]{display:block}
+  [data-check="b1"]:has(input[value="pets"]:checked) .niche[data-for="pets"]{display:block}
+  [data-check="b1"]:has(input[value="homeowners"]:checked) .niche[data-for="homeowners"]{display:block}
+  [data-check="b1"]:has(input[value="travelers"]:checked) .niche[data-for="travelers"]{display:block}
+  .yi{display:flex;flex-direction:column;gap:var(--s2);margin:var(--s3) 0}
+  .yi textarea{width:100%;min-height:84px;font:inherit;font-size:14px;line-height:1.5;padding:10px 12px;border:1.5px solid var(--line);border-radius:var(--r);background:var(--bg);color:var(--ink);resize:vertical}
+  .yi textarea:focus{outline:none;border-color:var(--accent)}
+  .yi .row{display:flex;gap:var(--s3);align-items:center;flex-wrap:wrap}
+  .yi button{font:inherit;font-size:13.5px;font-weight:700;border:0;border-radius:var(--r);padding:9px 16px;background:var(--accent);color:#fff;cursor:pointer}
+  .yi button:disabled{opacity:.5;cursor:default}
+  .yi .hint{font-size:12.5px;color:var(--muted)}
+  .yilist{display:flex;flex-direction:column;gap:6px;margin-top:var(--s3)}
+  .yilist .it{border:1px solid var(--line);border-radius:var(--r);padding:8px 12px;font-size:13.5px;background:var(--panel);display:flex;gap:var(--s3);align-items:flex-start}
+  .yilist .it .st{margin-left:auto;font-size:11px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap;color:var(--warn)}
+  .yilist .it .st.done{color:#22a55a}
+</style>
+
+<style>
+  .tag{display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;padding:1px 8px;border-radius:999px;background:var(--quote);color:var(--muted);white-space:nowrap}
+  .t td.c,.t th.c{text-align:center;white-space:nowrap;font-variant-numeric:tabular-nums}
+  .t tr.win td{background:var(--soft)}
+  .tools{font-size:12.5px}
+  .tools td{vertical-align:top}
+  .tools td:first-child{font-weight:650;white-space:nowrap}
+  .tools .grp td{background:var(--bg);font-weight:800;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+  .v-in{color:#22a55a;font-weight:700;white-space:nowrap}
+  .v-cut{color:var(--warn);font-weight:700;white-space:nowrap}
+  .idea{border:1px solid var(--line);border-radius:var(--r);padding:var(--s5) 18px;margin:var(--s5) 0;position:relative;background:var(--panel)}
+  .idea:hover > .cbtn{opacity:1}
+  .idea h3{font-size:18px;margin:0 0 2px;padding-right:80px;text-wrap:balance}
+  .idea .hook{font-size:15px;color:var(--muted);margin:0 0 var(--s3);font-style:italic}
+  .idea .rank{display:flex;gap:var(--s2);align-items:center;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);margin-bottom:4px}
+  .idea .score{float:right;font-weight:800;font-size:20px;color:var(--accent);font-variant-numeric:tabular-nums;margin-left:var(--s3)}
+  .idea .score small{font-size:12px;color:var(--muted);font-weight:600}
+  .idea dl{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:6px var(--s4);margin:0 0 var(--s3);font-size:14px}
+  .idea dt{font-weight:650;color:var(--muted)}
+  .idea dd{margin:0;min-width:0}
+  .idea .t{font-size:13px;margin:var(--s2) 0}
+  .idea .t td:first-child{white-space:nowrap;font-weight:650}
+  .beyond{display:inline-block;font-size:12px;font-weight:700;color:#22a55a;border:1px solid color-mix(in srgb,#22a55a 40%,transparent);border-radius:999px;padding:1px 9px;margin-bottom:var(--s3)}
+  .keep{margin-top:var(--s3);border-top:1px dashed var(--line);padding-top:var(--s3)}
+  .keep .kq{font-size:13px;color:var(--muted);margin-bottom:4px}
+  .lines{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:var(--s2)}
+  .lines li{padding-left:22px;position:relative}
+  .lines li::before{content:"→";position:absolute;left:0;color:var(--accent);font-weight:700}
+</style>
+
+<section id="s-results" data-anchor="results" data-label="Run 4 results" data-group="Run 4" data-title="Results">
+  <button class="cbtn">comment</button>
+  <h2><span class="num">1</span>Run 4: 10 ideas from 48 real tools</h2>
+  <p class="sub">Oct 1, 2026 · product-first · couples managing money together, stock investors, crypto holders and traders · 3 helpers searched 14 sources → about 130 tool entries → <b>48 tools</b> judged (a few rows group look-alikes) → 10 ideas, each built on tools that are already proven.</p>
+  <div style="overflow-x:auto">
+  <table class="t">
+    <tr><th>#</th><th>Your idea</th><th>For</th><th>Built on (proof)</th><th class="c">Score</th></tr>
+    <tr class="win"><td>1</td><td><b>Trade Journal Coach</b>: your broker export becomes a P&amp;L calendar, and Claude finds your losing habits</td><td><span class="tag">Traders</span></td><td>TradeWithInsight 227K views · TradesViz 256K visits/mo · Heron $8.2k/mo</td><td class="c">12</td></tr>
+    <tr class="win"><td>2</td><td><b>Fee X-Ray</b>: drop your statements, see every hidden fee in dollars over 30 years</td><td><span class="tag">Investors</span></td><td>PortfolioPilot 123K visits +14% · Autonomous (YC F25) · IdeaBrowser idea</td><td class="c">12</td></tr>
+    <tr class="win"><td>3</td><td><b>Couples Money Pot</b>: a shared money view built from your bank alert emails, no bank login</td><td><span class="tag">Couples</span></td><td>Tandem 25K couples at $10/mo · Honeydue 10K ratings · Reddit 190+ comments</td><td class="c">11</td></tr>
+    <tr><td>4</td><td><b>Chart Second Opinion</b>: one click on TradingView, a bull and a bear AI debate the chart</td><td><span class="tag">Traders</span></td><td>Trade AI 9.8K ratings · Econic $5.1k/mo · TradingWizard +87%</td><td class="c">11</td></tr>
+    <tr><td>5</td><td><b>Market-Mover Alerts</b>: when Trump, Musk or the Fed posts, see which of your stocks it hits</td><td><span class="tag">Traders</span></td><td>Profile Tracer $2.9k/30 days at $49–$4,999/mo</td><td class="c">11</td></tr>
+    <tr><td>6</td><td><b>Whale Watch</b>: follow 5 whales (Bitcoin or Polymarket) and get a plain-English alert when they move</td><td><span class="tag">Crypto</span></td><td>PolyScout +819% · Reddit 397 upvotes · Cielo 4M wallets</td><td class="c">10</td></tr>
+    <tr><td>7</td><td><b>Crypto Dead Man's Switch</b>: if you stop checking in, your family gets your instructions</td><td><span class="tag">Crypto</span></td><td>IdeaBrowser idea ($140B in lost coins)</td><td class="c">10</td></tr>
+    <tr><td>8</td><td><b>Filing Radar</b>: dilution, insider trades and CEO exits for your stocks, in plain English</td><td><span class="tag">Investors</span></td><td>Dilutracker $1.2k/mo at $59–$299 · TrackSuccession HN 191</td><td class="c">9</td></tr>
+    <tr><td>9</td><td><b>Earnings Recap</b>: after each of your stocks reports, a 5-bullet recap in your inbox</td><td><span class="tag">Investors</span></td><td>StockStory 406K visits/mo · LangAlpha HN 148</td><td class="c">9</td></tr>
+    <tr><td>10</td><td><b>Dividend Paycheck</b>: every dividend you'll get, on your calendar, privately</td><td><span class="tag">Investors</span></td><td>TopDividendTools $12k/30 days +90% · Snowball 2.2K ratings</td><td class="c">9</td></tr>
+  </table>
+  </div>
+  <div class="plain"><b>What stood out:</b> <b>couples' money is an open gap</b>. Zeta shut down, Tandem was sold, dozens of new indie apps have almost no users, yet a Reddit post about building one drew 190+ comments. For traders, <b>trading journals</b> got the most attention of anything found. Score = Relatable + Value + Shareable + Visual, out of 12. Ties are ordered by Value.</div>
+</section>
+
+<section id="s-yourideas" data-anchor="yourideas" data-label="Your ideas" data-group="Run 4" data-title="Your ideas">
+  <button class="cbtn">comment</button>
+  <h2><span class="num">2</span>Your ideas for this audience</h2>
+  <p class="sub">Got ideas for couples, stock investors or crypto holders? Add as many as you like, one per line. I look for existing tools like it (the proof), suggest your twist, judge it with the same rubric, and add it below as a card with Keep or Kill.</p>
+  <div class="yi">
+    <textarea id="yi-text" placeholder="One idea per line, as many as you like. e.g.
+An app that tells a couple how long until they can afford a house, based on both incomes
+A Chrome extension that warns me before I buy a stock I sold at a loss last month"></textarea>
+    <div class="row"><button id="yi-add">Add ideas</button><span class="hint" id="yi-count">One idea per line. They go to me right away, no need to press Send.</span></div>
+  </div>
+  <div class="yilist" id="yi-list"></div>
+  <div class="yicards" style="margin-top:var(--s5)">
+  <div class="idea" data-anchor="y1" data-label="Your idea 1 Copy-Trade Delay Simulator" data-changed="5">
+    <button class="cbtn">comment</button>
+    <div class="score">11<small>/12</small></div>
+    <div class="rank">Your idea 1 <span class="tag">Stock investors</span></div>
+    <h3>Copy-Trade Delay Simulator</h3>
+    <p class="hook">"Everyone wants to copy Pelosi. I simulated it, and the 45-day filing delay cost 9%."</p>
+    <span class="beyond">Beyond ChatGPT: reads real SEC filings and price history, then runs the paper trades</span>
+    <dl>
+      <dt>Your idea</dt><dd>Track top funds' and politicians' trades and copy them, starting with simulated buying and selling, because timing matters.</dd>
+      <dt>Proof it works</dt><dd><b>Autopilot</b>, an app that copies Pelosi, Buffett and hedge funds, manages <b>$750M+</b>, with <b>$445M on its Pelosi tracker</b> alone (<a href="https://www.investmentnews.com/fintech/autopilot-surges-to-750m-aum-touts-ria-growth-as-users-copy-pelosi-buffett-trades/260729">InvestmentNews</a>). Its trades follow SEC filings, so they land after a delay.</dd>
+      <dt>Your twist</dt><dd>Make <b>the timing</b> the product, as you said. Pick a fund or politician and see two lines: profit if you'd copied <b>on the trade date</b>, and profit copying <b>when the filing appeared</b> (up to 45 days later). Then paper-trade going forward with real delays, before risking money.</dd>
+      <dt>How it works</dt><dd>Pick Pelosi or a fund → see the chart: copying on the trade date vs on the disclosure date → turn on "paper copy" → a bot checks the House, Senate and SEC disclosure sites every 15 minutes, and the moment a new filing appears it "buys" in your paper portfolio at that price and alerts you → you decide whether to copy for real.<br><b>Real time isn't possible:</b> Congress members can take up to 45 days to disclose a trade, and funds file quarterly. The fastest anyone can copy is the moment the filing goes public. Autopilot averages about 2 weeks behind, and this tool shows you what that delay costs.</dd>
+      <dt>One-day build</dt><dd>Web app: SEC filings (13F and congressional disclosures) → price history → simulation chart → paper-trade tracker.</dd>
+    </dl>
+    <table class="t">
+      <tr><td>One day / Takeable / Beyond ChatGPT</td><td>✓ ✓ ✓</td></tr>
+      <tr><td>Relatable 3</td><td>"Copy Pelosi" is a meme every investor knows</td></tr>
+      <tr><td>Value 2</td><td>Shows the real cost of copying late before you risk money</td></tr>
+      <tr><td>Shareable 3</td><td>Politicians and hedge funds: very shareable</td></tr>
+      <tr><td>Visual 3</td><td>Two lines pulling apart on one chart</td></tr>
+    </table>
+    <div class="keep" data-radio="y1"><div class="kq">Keep or Kill?</div>
+      <label class="opt"><input type="radio" name="y1" value="keep"><span><span class="oh">Keep<span class="rec">recommended</span></span><span class="od">Huge proven demand, and your timing insight is the twist nobody shows.</span></span></label>
+      <label class="opt"><input type="radio" name="y1" value="kill"><span><span class="oh">Kill</span></span></label>
+    </div>
+  </div>
+
+  <div class="idea" data-anchor="y2" data-label="Your idea 2 Money Baby Steps" data-changed="5">
+    <button class="cbtn">comment</button>
+    <div class="score">10<small>/12</small></div>
+    <div class="rank">Your idea 2 <span class="tag">Money beginners</span></div>
+    <h3>Money Baby Steps</h3>
+    <p class="hook">"I knew nothing about money. Now an app gives me one small step a week, and checks I did it."</p>
+    <span class="beyond">Beyond ChatGPT (only with the twist): it remembers your plan and checks in every week</span>
+    <dl>
+      <dt>Your idea</dt><dd>For someone new to personal finance: it asks about your situation and suggests baby steps, plus what to learn next with resources.</dd>
+      <dt>Proof it works</dt><dd><b>EveryDollar</b>, built on Dave Ramsey's 7 Baby Steps, is one of the best-known budgeting apps (<a href="https://www.ramseysolutions.com/">Ramsey Solutions</a>). Beginner guides and "2026 money roadmaps" are everywhere, which shows the demand for a guided path.</dd>
+      <dt>Your twist</dt><dd>A one-time plan is just a ChatGPT answer. The twist is <b>it stays with you</b>: your plan becomes a checklist, one step a week (with a 5-minute resource to learn it), a weekly email asking "did you do it?", and the next step unlocks when you do. Progress is saved.</dd>
+      <dt>How it works</dt><dd>Answer about 10 questions (income, debts, savings, goals) → get your personal step list → each week one step and a 5-minute resource arrive by email → click "done" to unlock the next.</dd>
+      <dt>One-day build</dt><dd>Web app: questionnaire → personal step plan → weekly check-in email → progress page.</dd>
+    </dl>
+    <table class="t">
+      <tr><td>One day / Takeable / Beyond ChatGPT</td><td>✓ ✓ ✓ only with the check-ins. Without them, ChatGPT does it.</td></tr>
+      <tr><td>Relatable 3</td><td>Most young people feel behind on money</td></tr>
+      <tr><td>Value 3</td><td>Real habits, not just tips</td></tr>
+      <tr><td>Shareable 2</td><td>People share their progress, but quietly</td></tr>
+      <tr><td>Visual 2</td><td>A checklist filling up</td></tr>
+    </table>
+    <div class="keep" data-radio="y2"><div class="kq">Keep or Kill?</div>
+      <label class="opt"><input type="radio" name="y2" value="keep"><span><span class="oh">Keep<span class="rec">recommended</span></span><span class="od">Only if built with the weekly check-ins, so it's more than a chat answer.</span></span></label>
+      <label class="opt"><input type="radio" name="y2" value="kill"><span><span class="oh">Kill</span></span></label>
+    </div>
+  </div>
+
+  <div class="idea" data-anchor="y3" data-label="Your idea 3 Which Card For This Bill" data-changed="5">
+    <button class="cbtn">comment</button>
+    <div class="score">10<small>/12</small></div>
+    <div class="rank">Your idea 3 <span class="tag">Credit card users</span></div>
+    <h3>Which Card For This Bill?</h3>
+    <p class="hook">"I photograph the restaurant bill, and my phone shows which of my cards to hand over."</p>
+    <span class="beyond">Beyond ChatGPT: remembers your cards and this quarter's bonus categories</span>
+    <dl>
+      <dt>Your idea</dt><dd>Scan a bill, and it tells you which of your current credit cards earns the most on it.</dd>
+      <dt>Proof it works</dt><dd><b>CardPointers</b> ($49–90/yr), <b>Kudos</b> (free core, Premium $71.95/yr, raised $10M) and <b>MaxRewards</b> ($108/yr) all do "best card to use" (<a href="https://cardstack.money/articles/guides/credit-card-rewards-optimizer-apps-2026">2026 comparison</a>). People clearly pay for it.</dd>
+      <dt>Your twist</dt><dd>Those mostly work at <b>online checkout</b>. Yours is for <b>in-person bills</b>: snap the bill and it reads the merchant and amount, checks your cards' current bonus categories, and shows the card picture plus "+$4.80 back".</dd>
+      <dt>How it works</dt><dd>Add your cards once (names only, no numbers) → at the restaurant, snap the bill → see the best card's picture and what it earns on this bill.</dd>
+      <dt>One-day build</dt><dd>Phone-friendly web app: save your cards once → photo → Claude reads the bill → best card and reward shown.</dd>
+    </dl>
+    <table class="t">
+      <tr><td>One day / Takeable / Beyond ChatGPT</td><td>✓ ✓ ✓</td></tr>
+      <tr><td>Relatable 3</td><td>Anyone with 2+ cards</td></tr>
+      <tr><td>Value 2</td><td>A few dollars per bill, adding up</td></tr>
+      <tr><td>Shareable 2</td><td>Points fans share it; a crowded space</td></tr>
+      <tr><td>Visual 3</td><td>Photo → the right card pops up</td></tr>
+    </table>
+    <div class="risk"><b>Heads-up:</b> a crowded space. Three established apps already do "best card", so the in-person bill angle has to carry it.</div>
+    <div class="keep" data-radio="y3"><div class="kq">Keep or Kill?</div>
+      <label class="opt"><input type="radio" name="y3" value="keep"><span><span class="oh">Keep<span class="rec">recommended</span></span><span class="od">Proven demand and a clear visual, but expect comparisons to CardPointers.</span></span></label>
+      <label class="opt"><input type="radio" name="y3" value="kill"><span><span class="oh">Kill</span></span></label>
+    </div>
+  </div>
+
+  <div class="idea" data-anchor="y4" data-label="Your idea 4 Points Goal Planner" data-changed="5">
+    <button class="cbtn">comment</button>
+    <div class="score">11<small>/12</small></div>
+    <div class="rank">Your idea 4 <span class="tag">Points and travel</span></div>
+    <h3>Points Goal Planner</h3>
+    <p class="hook">"I want to fly to Tokyo on points next March. The app told me exactly how to spend to get there."</p>
+    <span class="beyond">Beyond ChatGPT: uses real award prices and your spending, and tracks progress monthly</span>
+    <dl>
+      <dt>Your idea</dt><dd>Work backwards from a trip: how many points it needs, what you'd have to spend, and the best strategy given your spending.</dd>
+      <dt>Proof it works</dt><dd><b>point.me</b> and <b>Roame</b> (paid award-flight search) and <b>AwardWallet</b> are well established (<a href="https://roame.travel/guides/roame-vs-point-me">Roame vs point.me</a>). But they <b>search for seats</b>; they don't build a plan from your spending to the goal.</dd>
+      <dt>Your twist</dt><dd>Goal first: "Tokyo, March, 2 people" → points needed (from typical award prices) → given your cards and monthly spending: which card for groceries, dining and travel, which sign-up bonus closes the gap, and <b>the month you'll get there</b>. A progress bar updates as you log points.</dd>
+      <dt>How it works</dt><dd>Enter the trip goal, your cards and your monthly spending by category → see the points needed, the best card for each category, the sign-up bonus to add, and the month you'll get there → log your points each month and the progress bar moves.</dd>
+      <dt>One-day build</dt><dd>Web app: trip goal → award price lookup (published award charts and sweet spots) → plan from your cards and spending → monthly progress.</dd>
+    </dl>
+    <table class="t">
+      <tr><td>One day / Takeable / Beyond ChatGPT</td><td>✓ ✓ ✓ (award prices are estimates, from published charts)</td></tr>
+      <tr><td>Relatable 2</td><td>Points fans, plus anyone dreaming of a trip</td></tr>
+      <tr><td>Value 3</td><td>A free flight worth $1,000+</td></tr>
+      <tr><td>Shareable 3</td><td>Travel-hack videos spread fast</td></tr>
+      <tr><td>Visual 3</td><td>A progress bar toward Tokyo</td></tr>
+    </table>
+    <div class="keep" data-radio="y4"><div class="kq">Keep or Kill?</div>
+      <label class="opt"><input type="radio" name="y4" value="keep"><span><span class="oh">Keep<span class="rec">recommended</span></span><span class="od">The planning gap is real, and the payoff is a free trip.</span></span></label>
+      <label class="opt"><input type="radio" name="y4" value="kill"><span><span class="oh">Kill</span></span></label>
+    </div>
+  </div>
+  </div>
+</section>
+
+<section id="s-tools" data-anchor="tools" data-label="All 48 tools" data-group="Run 4" data-title="All 48 tools analysed">
+  <button class="cbtn">comment</button>
+  <h2><span class="num">3</span>All 48 tools analysed</h2>
+  <p class="sub">Every tool found, with its proof and verdict. "→ Idea N" means it's evidence for that idea. Cut tools say why.</p>
+  <div style="overflow-x:auto">
+  <table class="t tools">
+    <tr><th>Tool</th><th>What it does</th><th>Price</th><th>Proof it's working</th><th>Verdict</th></tr>
+    <tr class="grp"><td colspan="5">Couples managing money together</td></tr>
+    <tr><td>Tandem</td><td>Split shared costs from card transactions</td><td>$10/couple/mo</td><td>25K+ couples, PH 266, acquired Nov 2025</td><td class="v-in">→ Idea 3</td></tr>
+    <tr><td>Honeydue</td><td>Both partners' accounts and bills in one view</td><td>Free</td><td>10.2K iOS ratings, 100K+ installs</td><td class="v-in">→ Idea 3</td></tr>
+    <tr><td>Buddy</td><td>One shared budget for two</td><td>~$35/yr</td><td>9.5K iOS ratings</td><td class="v-in">→ Idea 3</td></tr>
+    <tr><td>Lumio</td><td>Couples IOU and bill tracker</td><td>£4.49/mo</td><td>10.4K visits/mo</td><td class="v-in">→ Idea 3</td></tr>
+    <tr><td>Skwad</td><td>Budgeting from bank email alerts, no bank login</td><td>—</td><td>4K views, 29 saves</td><td class="v-in">→ Idea 3 (the twist)</td></tr>
+    <tr><td>"Wife and I built our own split app"</td><td>Couples expense splitting</td><td>—</td><td>190+ comments, r/iosapps</td><td class="v-in">→ Idea 3</td></tr>
+    <tr><td>Cash Captain</td><td>Shared finances workspace</td><td>—</td><td>5.9K TikTok views</td><td class="v-in">→ Idea 3</td></tr>
+    <tr><td>Halfway / UnityPay</td><td>Split by income instead of 50/50</td><td>Free</td><td>14 ratings; r/roastmystartup 30+</td><td class="v-in">→ Idea 3 (as a feature)</td></tr>
+    <tr><td>Splitwise</td><td>Who owes whom</td><td>$4.99/mo</td><td>10M+ installs</td><td class="v-cut">Cut: a giant, plus 6+ clones</td></tr>
+    <tr><td>DuoDime</td><td>AI couples money coach</td><td>Free</td><td>6 ratings, Reddit 10+</td><td class="v-cut">Cut: a chat, ChatGPT does it</td></tr>
+    <tr><td>OpenBudget</td><td>Pipes bank transactions into Claude or Sheets</td><td>$9.95/mo</td><td>5.2K visits, −65%</td><td class="v-cut">Cut: needs bank connections</td></tr>
+    <tr><td>Thrive Financial</td><td>Money analysis for divorce</td><td>From $29/mo</td><td>8.9K views</td><td class="v-cut">Cut: Relatable 1</td></tr>
+    <tr class="grp"><td colspan="5">Stock investors and traders</td></tr>
+    <tr><td>TradeWithInsight</td><td>Free journal built with Claude, 15 brokers</td><td>Free</td><td>1.8K likes, 227K views on X</td><td class="v-in">→ Idea 1</td></tr>
+    <tr><td>TradesViz</td><td>Trading journal with 400+ stats</td><td>$19–29/mo</td><td>255.6K visits/mo</td><td class="v-in">→ Idea 1</td></tr>
+    <tr><td>Heron Copier</td><td>Journal + trade copier</td><td>$19/mo</td><td>Verified $8.2k/mo</td><td class="v-in">→ Idea 1 (journal part)</td></tr>
+    <tr><td>P&amp;L Calendar</td><td>Daily P&amp;L calendar</td><td>—</td><td>660 ratings in a year</td><td class="v-in">→ Idea 1</td></tr>
+    <tr><td>"Journal to fix my habits"</td><td>Behaviour-focused journal</td><td>Free</td><td>60+ comments, r/Daytrading</td><td class="v-in">→ Idea 1</td></tr>
+    <tr><td>PortfolioPilot</td><td>AI advisor for DIY investors</td><td>From $29/mo</td><td>122.6K visits, +13.5%</td><td class="v-in">→ Idea 2 (demand)</td></tr>
+    <tr><td>Autonomous (YC F25)</td><td>AI advisor at 0% fees</td><td>0%</td><td>YC-backed, hiring 9</td><td class="v-in">→ Idea 2 (demand)</td></tr>
+    <tr><td>Trade AI: Chart Analysis</td><td>Upload a chart, get AI analysis</td><td>In-app</td><td>9.8K iOS ratings</td><td class="v-in">→ Idea 4</td></tr>
+    <tr><td>Trade Hunterr</td><td>Chart image → trade setup</td><td>$8.99/wk</td><td>Verified $894/mo</td><td class="v-in">→ Idea 4</td></tr>
+    <tr><td>TradingWizard AI</td><td>AI chart analysis</td><td>$20/mo</td><td>11K visits, +87%</td><td class="v-in">→ Idea 4</td></tr>
+    <tr><td>Econic</td><td>AI agents debate a trade</td><td>$432/yr</td><td>Verified $5.1k/mo</td><td class="v-in">→ Idea 4</td></tr>
+    <tr><td>Profile Tracer</td><td>Instant Trump-post alerts for traders</td><td>$49–4,999/mo</td><td>Verified $2.9k in 30 days, +35%</td><td class="v-in">→ Idea 5</td></tr>
+    <tr><td>Dilutracker</td><td>Dilution filings alerts</td><td>$59–299/mo</td><td>Verified $1.2k/mo</td><td class="v-in">→ Idea 8</td></tr>
+    <tr><td>TrackSuccession</td><td>Every CEO/CFO change from SEC filings</td><td>Free</td><td>HN 191 points</td><td class="v-in">→ Idea 8</td></tr>
+    <tr><td>Kapitol.ai</td><td>Congress trades tracker</td><td>$25/mo</td><td>828 views</td><td class="v-in">→ Idea 8</td></tr>
+    <tr><td>"Insider-filings scanner"</td><td>Scans SEC insider buys</td><td>—</td><td>50+ comments, r/trading212</td><td class="v-in">→ Idea 8</td></tr>
+    <tr><td>StockStory</td><td>AI earnings reports</td><td>From $11.99/mo</td><td>406K visits/mo, +5%</td><td class="v-in">→ Idea 9</td></tr>
+    <tr><td>LangAlpha</td><td>Open-source research agent</td><td>Free</td><td>HN 148 points</td><td class="v-in">→ Idea 9</td></tr>
+    <tr><td>TopDividendTools</td><td>Dividend tools directory</td><td>Premium</td><td>Verified $12k in 30 days, +90%</td><td class="v-in">→ Idea 10</td></tr>
+    <tr><td>Snowball Analytics</td><td>Dividend portfolio tracker</td><td>—</td><td>2.2K iOS ratings</td><td class="v-in">→ Idea 10</td></tr>
+    <tr><td>"Self-hosted dividend tracker"</td><td>Private dividend tracker</td><td>Free</td><td>41 comments, r/dividends</td><td class="v-in">→ Idea 10</td></tr>
+    <tr><td>AltIndex</td><td>AI score per stock from alt-data</td><td>$29–99/mo</td><td><b>Verified $16.9k/mo</b> (top revenue)</td><td class="v-cut">Cut: dozens of data feeds, not one day</td></tr>
+    <tr><td>Composer</td><td>No-code trading strategies</td><td>—</td><td>303.5K visits, +11%</td><td class="v-cut">Cut: needs a broker, not one day</td></tr>
+    <tr><td>StockNest</td><td>Free fundamentals, 25 years of data</td><td>Free</td><td>70+ comments</td><td class="v-cut">Cut: data at scale; free giants exist</td></tr>
+    <tr><td>GoAI / Edge Hound</td><td>AI stock research chat</td><td>~$8–10/mo</td><td>48K views</td><td class="v-cut">Cut: a chat, ChatGPT does it</td></tr>
+    <tr class="grp"><td colspan="5">Crypto holders and traders</td></tr>
+    <tr><td>PolyScout</td><td>Track top Polymarket traders</td><td>—</td><td>Verified, +819% in 30 days</td><td class="v-in">→ Idea 6</td></tr>
+    <tr><td>"Polymarket whale tracker"</td><td>Every trade over $10k</td><td>—</td><td>397 upvotes, 71 comments</td><td class="v-in">→ Idea 6</td></tr>
+    <tr><td>"Bitcoin whale tracker"</td><td>Old wallets and big transfers</td><td>—</td><td>90 upvotes, r/Bitcoin</td><td class="v-in">→ Idea 6</td></tr>
+    <tr><td>Cielo</td><td>Wallet tracker + Telegram alerts</td><td>$59–199/mo</td><td>Tracks 4M wallets</td><td class="v-in">→ Idea 6</td></tr>
+    <tr><td>Crypto inheritance (idea)</td><td>Pass your crypto on safely</td><td>$10–30/mo</td><td>IdeaBrowser Idea of the Day</td><td class="v-in">→ Idea 7</td></tr>
+    <tr><td>CoinStats</td><td>Portfolio tracker</td><td>Premium</td><td>85.7K iOS ratings</td><td class="v-cut">Cut: giants own this</td></tr>
+    <tr><td>Koinly / CoinTracker / Awaken</td><td>Crypto tax</td><td>From $49/yr</td><td>CoinTracker 3M users</td><td class="v-cut">Cut: tax rules, not one day</td></tr>
+    <tr><td>Zerano Club</td><td>Options gamma and order flow</td><td>€79.90/mo</td><td>Verified $5.5k/mo, +49%</td><td class="v-cut">Cut: real-time data, not one day</td></tr>
+    <tr><td>Surf</td><td>Crypto AI research</td><td>—</td><td>149.7K visits, +9%</td><td class="v-cut">Cut: data-heavy chat</td></tr>
+    <tr><td>Oddpool</td><td>Prediction-market odds</td><td>$30–100/mo</td><td>−97% in 30 days</td><td class="v-cut">Cut: demand collapsed</td></tr>
+    <tr><td>Exit Strategy (idea)</td><td>Take-profit rules and alerts</td><td>$49/mo</td><td>IdeaBrowser card</td><td class="v-cut">Runner-up (11th)</td></tr>
+  </table>
+  </div>
+</section>
+
+<section id="s-cards" data-anchor="cards" data-label="Idea cards" data-group="Run 4" data-title="The 10 idea cards">
+  <button class="cbtn">comment</button>
+  <h2><span class="num">4</span>The 10 idea cards</h2>
+  <p class="sub">Each card shows the proven tools behind it, your version (the twist), and the one-day build. Keep or Kill, with one line on why in a comment.</p>
+
+  <div class="idea" data-anchor="i1" data-label="Idea 1 Trade Journal Coach">
+    <button class="cbtn">comment</button>
+    <div class="score">12<small>/12</small></div>
+    <div class="rank">1 <span class="tag">Active traders</span></div>
+    <h3>Trade Journal Coach</h3>
+    <p class="hook">"I gave Claude 6 months of my trades. It found I lose 70% of the time after 2pm."</p>
+    <span class="beyond">Beyond ChatGPT: reads your whole trade history and remembers it week to week</span>
+    <dl>
+      <dt>Built on</dt><dd>TradeWithInsight (free, built with Claude: 1.8K likes, 227K views) · TradesViz ($19–29/mo, 256K visits) · Heron ($8.2k/mo verified) · a journal post with 60+ comments on r/Daytrading · how-to posts on "use Claude to review your journal" with 172K views</dd>
+      <dt>Your twist</dt><dd>Not another stats dashboard: <b>a coach</b>. Drop your broker export. You get a P&amp;L calendar, then plain-English habits ("revenge trades after a loss", "your best hour is 10–11am") and a weekly check-in email that tracks whether you fixed them.</dd>
+      <dt>How it works</dt><dd>Export your trades as a CSV from your broker → drop it in → see your P&amp;L calendar and your top 3 losing habits → every Sunday an email shows whether you fixed them (upload the new CSV each week).</dd>
+      <dt>One-day build</dt><dd>Web app: CSV import for 3 big brokers → calendar heatmap → Claude habit analysis → weekly email.</dd>
+    </dl>
+    <table class="t">
+      <tr><td>Relatable 3</td><td>Every active trader, and journaling is already a habit they're told to have</td></tr>
+      <tr><td>Value 3</td><td>Fixing one habit saves real money. Journals charge $19–29/mo.</td></tr>
+      <tr><td>Shareable 3</td><td>Traders post their stats. The proof post had 227K views.</td></tr>
+      <tr><td>Visual 3</td><td>A red and green P&amp;L calendar, then the habit reveal</td></tr>
+    </table>
+    <div class="keep" data-radio="k1"><div class="kq">Keep or Kill?</div>
+      <label class="opt"><input type="radio" name="k1" value="keep"><span><span class="oh">Keep<span class="rec">recommended</span></span><span class="od">The most proven demand in this run, and it's built with Claude.</span></span></label>
+      <label class="opt"><input type="radio" name="k1" value="kill"><span><span class="oh">Kill</span></span></label>
+    </div>
+  </div>
+
+  <div class="idea" data-anchor="i2" data-label="Idea 2 Fee X-Ray">
+    <button class="cbtn">comment</button>
+    <div class="score">12<small>/12</small></div>
+    <div class="rank">2 <span class="tag">Investors</span></div>
+    <h3>Fee X-Ray</h3>
+    <p class="hook">"My 401k charges '0.9%'. Over 30 years that's $186,000. I built an app that shows you yours."</p>
+    <span class="beyond">Beyond ChatGPT: reads all your statements, looks up each fund's real fees, and projects them</span>
+    <dl>
+      <dt>Built on</dt><dd>PortfolioPilot (AI advisor, 123K visits, +14%) · Autonomous (YC F25, "0% advisory fees") · IdeaBrowser's fee calculator idea ($49 report + $15/mo)</dd>
+      <dt>Your twist</dt><dd>Free and private. Drop your 401k, IRA or brokerage statements. It finds every fee (advisor %, fund expense ratios, account fees), shows the total in dollars per year and over 30 years, and lists cheaper look-alike funds.</dd>
+      <dt>How it works</dt><dd>Download your 401k, IRA or brokerage statements (PDF) → drop them in → see every fee, the total per year and over 30 years, and cheaper look-alike funds.</dd>
+      <dt>One-day build</dt><dd>Web app: PDF upload → Claude extracts holdings and fees → fund fee lookup → one big number and a 30-year chart.</dd>
+    </dl>
+    <table class="t">
+      <tr><td>Relatable 3</td><td>Anyone with a 401k, IRA or advisor</td></tr>
+      <tr><td>Value 3</td><td>Often thousands of dollars a year</td></tr>
+      <tr><td>Shareable 3</td><td>A shocking number people send to their partner</td></tr>
+      <tr><td>Visual 3</td><td>One huge dollar figure</td></tr>
+    </table>
+    <div class="risk"><b>Honest flag:</b> it passes Beyond ChatGPT only just. ChatGPT can read one PDF; the fund look-ups and the 30-year projection across all statements are what make it more.</div>
+    <div class="keep" data-radio="k2"><div class="kq">Keep or Kill?</div>
+      <label class="opt"><input type="radio" name="k2" value="keep"><span><span class="oh">Keep<span class="rec">recommended</span></span><span class="od">The best hook in the run.</span></span></label>
+      <label class="opt"><input type="radio" name="k2" value="kill"><span><span class="oh">Kill</span></span></label>
+    </div>
+  </div>
+
+  <div class="idea" data-anchor="i3" data-label="Idea 3 Couples Money Pot">
+    <button class="cbtn">comment</button>
+    <div class="score">11<small>/12</small></div>
+    <div class="rank">3 <span class="tag">Couples</span></div>
+    <h3>Couples Money Pot</h3>
+    <p class="hook">"Zeta shut down. Tandem got sold. So I built a couples money app that doesn't need your bank login."</p>
+    <span class="beyond">Beyond ChatGPT: reads both partners' bank alert emails and keeps a running shared ledger</span>
+    <dl>
+      <dt>Built on</dt><dd>Tandem (25K couples at $10/mo, acquired) · Honeydue (10.2K ratings) · Buddy (9.5K ratings) · Skwad (budgeting from bank emails) · a "my wife and I built our own" post with 190+ comments · There's An AI For That's couples finance page: 2,136 followers and only one tool</dd>
+      <dt>Your twist</dt><dd><b>No bank connection.</b> Each partner forwards their bank's purchase-alert emails. Shared spending lands in one pot, split <b>by income, not 50/50</b>, and a Sunday "money date" email shows who's ahead.</dd>
+      <dt>How it works</dt><dd>Each partner turns on purchase-alert emails at their bank and auto-forwards them to one shared address → each purchase lands in the shared sheet, and you tap "shared" or "mine" → a Sunday email shows totals and who owes whom, split by income.</dd>
+      <dt>One-day build</dt><dd>Automation: Gmail filter → parse alerts → Google Sheet ledger → weekly summary email.</dd>
+    </dl>
+    <table class="t">
+      <tr><td>Relatable 3</td><td>Every couple sharing costs</td></tr>
+      <tr><td>Value 3</td><td>Ends the monthly "who owes what" argument</td></tr>
+      <tr><td>Shareable 3</td><td>You send it to your partner, by definition</td></tr>
+      <tr><td>Visual 2</td><td>A ledger and a summary email</td></tr>
+    </table>
+    <div class="keep" data-radio="k3"><div class="kq">Keep or Kill?</div>
+      <label class="opt"><input type="radio" name="k3" value="keep"><span><span class="oh">Keep<span class="rec">recommended</span></span><span class="od">The clearest open gap in this run.</span></span></label>
+      <label class="opt"><input type="radio" name="k3" value="kill"><span><span class="oh">Kill</span></span></label>
+    </div>
+  </div>
+
+  <div class="idea" data-anchor="i4" data-label="Idea 4 Chart Second Opinion">
+    <button class="cbtn">comment</button>
+    <div class="score">11<small>/12</small></div>
+    <div class="rank">4 <span class="tag">Traders</span></div>
+    <h3>Chart Second Opinion</h3>
+    <p class="hook">"Before every trade, a bull and a bear argue about my chart. One click."</p>
+    <span class="beyond">Beyond ChatGPT: lives on TradingView and reads the chart you're looking at, plus live news</span>
+    <dl>
+      <dt>Built on</dt><dd>Trade AI chart analysis (9.8K ratings) · Profit AI (3.5K) · Trade Hunterr ($894/mo at $8.99/week) · TradingWizard (+87%) · Econic (AI agents debate a trade, $5.1k/mo) · a 9-agent AI committee post with 30+ comments</dd>
+      <dt>Your twist</dt><dd>No screenshots to upload. A <b>Chrome extension</b> on TradingView: one click and two agents debate the live chart, with the latest headlines, then give a verdict and the one thing that would change their mind.</dd>
+      <dt>How it works</dt><dd>Install the extension → open any chart on TradingView → click "Second opinion" → a side panel shows the bull and bear debate, with recent headlines and a verdict.</dd>
+      <dt>One-day build</dt><dd>Extension: capture the visible chart → Claude bull and bear prompts → side panel.</dd>
+    </dl>
+    <table class="t">
+      <tr><td>Relatable 3</td><td>Retail traders on TradingView</td></tr>
+      <tr><td>Value 2</td><td>A check before impulsive trades</td></tr>
+      <tr><td>Shareable 3</td><td>Bull-vs-bear debates are fun to share</td></tr>
+      <tr><td>Visual 3</td><td>Two AIs arguing beside a chart</td></tr>
+    </table>
+    <div class="keep" data-radio="k4"><div class="kq">Keep or Kill?</div>
+      <label class="opt"><input type="radio" name="k4" value="keep"><span><span class="oh">Keep<span class="rec">recommended</span></span></span></label>
+      <label class="opt"><input type="radio" name="k4" value="kill"><span><span class="oh">Kill</span></span></label>
+    </div>
+  </div>
+
+  <div class="idea" data-anchor="i5" data-label="Idea 5 Market-Mover Alerts">
+    <button class="cbtn">comment</button>
+    <div class="score">11<small>/12</small></div>
+    <div class="rank">5 <span class="tag">Traders</span></div>
+    <h3>Market-Mover Alerts</h3>
+    <p class="hook">"Someone charges $4,999 a month for Trump-post alerts. I built one for any account, for my stocks."</p>
+    <span class="beyond">Beyond ChatGPT: watches accounts around the clock and pings you within seconds</span>
+    <dl>
+      <dt>Built on</dt><dd>Profile Tracer: verified $2.9k in 30 days (+35%), priced $49–$4,999/mo</dd>
+      <dt>Your twist</dt><dd>Pick <b>any</b> market-moving accounts (Trump, Musk, the Fed, a CEO). When one posts, you get an alert naming the tickers it mentions, the ones you hold, and the price move since.</dd>
+      <dt>How it works</dt><dd>Pick the accounts to watch and list your holdings → a bot checks their posts every minute → if a post mentions a ticker or sector you hold, you get a Telegram or email alert with the tickers and the price move since the post.</dd>
+      <dt>One-day build</dt><dd>Automation: account feeds → Claude ticker extraction → price check → Telegram or email alert.</dd>
+    </dl>
+    <table class="t">
+      <tr><td>Relatable 2</td><td>Active traders</td></tr>
+      <tr><td>Value 3</td><td>Speed is money, and people pay up to $4,999/mo</td></tr>
+      <tr><td>Shareable 3</td><td>Topical and newsy</td></tr>
+      <tr><td>Visual 3</td><td>A post appears and an alert fires seconds later</td></tr>
+    </table>
+    <div class="risk"><b>Check first:</b> reading X posts fast needs X's paid API. Truth Social has a public feed.</div>
+    <div class="keep" data-radio="k5"><div class="kq">Keep or Kill?</div>
+      <label class="opt"><input type="radio" name="k5" value="keep"><span><span class="oh">Keep<span class="rec">recommended</span></span></span></label>
+      <label class="opt"><input type="radio" name="k5" value="kill"><span><span class="oh">Kill</span></span></label>
+    </div>
+  </div>
+
+  <div class="idea" data-anchor="i6" data-label="Idea 6 Whale Watch">
+    <button class="cbtn">comment</button>
+    <div class="score">10<small>/12</small></div>
+    <div class="rank">6 <span class="tag">Crypto</span></div>
+    <h3>Whale Watch</h3>
+    <p class="hook">"A wallet that's been asleep since 2011 just moved 10,000 BTC. My bot told me before Twitter did."</p>
+    <span class="beyond">Beyond ChatGPT: watches the blockchain and Polymarket live and alerts you</span>
+    <dl>
+      <dt>Built on</dt><dd>PolyScout (+819% in 30 days) · Polymarket whale tracker (397 upvotes) · Bitcoin whale tracker (90 upvotes, r/Bitcoin) · Cielo ($59–199/mo, 4M wallets)</dd>
+      <dt>Your twist</dt><dd>Follow just <b>5 whales you choose</b>: old Bitcoin wallets or top Polymarket traders. Alerts explain in plain English what happened and why it might matter. Free.</dd>
+      <dt>How it works</dt><dd>Paste up to 5 wallet addresses or Polymarket traders (or pick from a top list) → a bot checks every few minutes → when one moves, you get a plain-English Telegram alert.</dd>
+      <dt>One-day build</dt><dd>Automation: public blockchain and Polymarket APIs → Claude explanation → Telegram alert.</dd>
+    </dl>
+    <table class="t">
+      <tr><td>Relatable 2</td><td>Crypto and prediction-market traders</td></tr>
+      <tr><td>Value 2</td><td>Early signals</td></tr>
+      <tr><td>Shareable 3</td><td>Whale moves go viral</td></tr>
+      <tr><td>Visual 3</td><td>An alert landing as the money moves</td></tr>
+    </table>
+    <div class="keep" data-radio="k6"><div class="kq">Keep or Kill?</div>
+      <label class="opt"><input type="radio" name="k6" value="keep"><span><span class="oh">Keep<span class="rec">recommended</span></span></span></label>
+      <label class="opt"><input type="radio" name="k6" value="kill"><span><span class="oh">Kill</span></span></label>
+    </div>
+  </div>
+
+  <div class="idea" data-anchor="i7" data-label="Idea 7 Crypto Dead Man's Switch">
+    <button class="cbtn">comment</button>
+    <div class="score">10<small>/12</small></div>
+    <div class="rank">7 <span class="tag">Crypto</span></div>
+    <h3>Crypto Dead Man's Switch</h3>
+    <p class="hook">"$140 billion in crypto is lost forever because someone died without telling anyone. I fixed that in a day."</p>
+    <span class="beyond">Beyond ChatGPT: runs by itself for years and acts when you stop answering</span>
+    <dl>
+      <dt>Built on</dt><dd>IdeaBrowser's crypto inheritance idea ($10–30/mo, "$140B locked forever") · Shardium (Show HN)</dd>
+      <dt>Your twist</dt><dd>It never holds your keys. You write instructions for your family (where the hardware wallet is, who to call), encrypted. Monthly "still here?" emails go out; miss two and your chosen person gets the instructions.</dd>
+      <dt>How it works</dt><dd>Write your instructions (encrypted in your browser) and pick your person → each month an email arrives with a one-click "I'm here" → miss two in a row and your person gets the encrypted note and the key to open it.</dd>
+      <dt>One-day build</dt><dd>Web app plus a scheduled job: encrypted letter → monthly check-ins → release.</dd>
+    </dl>
+    <table class="t">
+      <tr><td>Relatable 2</td><td>Crypto holders, and their families</td></tr>
+      <tr><td>Value 3</td><td>Their whole stack, for their family</td></tr>
+      <tr><td>Shareable 3</td><td>A morbid hook that gets sent to friends</td></tr>
+      <tr><td>Visual 2</td><td>Emails over time; needs a good story on camera</td></tr>
+    </table>
+    <div class="keep" data-radio="k7"><div class="kq">Keep or Kill?</div>
+      <label class="opt"><input type="radio" name="k7" value="keep"><span><span class="oh">Keep<span class="rec">recommended</span></span></span></label>
+      <label class="opt"><input type="radio" name="k7" value="kill"><span><span class="oh">Kill</span></span></label>
+    </div>
+  </div>
+
+  <div class="idea" data-anchor="i8" data-label="Idea 8 Filing Radar">
+    <button class="cbtn">comment</button>
+    <div class="score">9<small>/12</small></div>
+    <div class="rank">8 <span class="tag">Investors</span></div>
+    <h3>Filing Radar</h3>
+    <p class="hook">"The CEO of a stock I own quit. It was in an SEC filing 3 hours before the news."</p>
+    <span class="beyond">Beyond ChatGPT: watches SEC filings for your stocks and alerts you</span>
+    <dl>
+      <dt>Built on</dt><dd>Dilutracker ($1.2k/mo at $59–299/mo) · TrackSuccession (HN 191) · Kapitol (congress trades, $25/mo) · an insider-filings scanner post (50+ comments)</dd>
+      <dt>Your twist</dt><dd>One free radar for <b>your holdings</b> covering what moves small caps: dilution, insider buys and sells, CEO/CFO exits. Each alert is one plain-English line.</dd>
+      <dt>How it works</dt><dd>Enter your tickers → a bot checks the SEC's filing feed every 10 minutes → when a dilution, insider or CEO-change filing appears for your stock, you get a one-line email.</dd>
+      <dt>One-day build</dt><dd>Automation: SEC's free filing feed → filter by your tickers → Claude summary → email.</dd>
+    </dl>
+    <table class="t">
+      <tr><td>Relatable 2</td><td>Investors in individual stocks</td></tr>
+      <tr><td>Value 3</td><td>Dodging dilution saves real money</td></tr>
+      <tr><td>Shareable 2</td><td>Investor circles</td></tr>
+      <tr><td>Visual 2</td><td>A filing becomes an alert</td></tr>
+    </table>
+    <div class="keep" data-radio="k8"><div class="kq">Keep or Kill?</div>
+      <label class="opt"><input type="radio" name="k8" value="keep"><span><span class="oh">Keep<span class="rec">recommended</span></span></span></label>
+      <label class="opt"><input type="radio" name="k8" value="kill"><span><span class="oh">Kill</span></span></label>
+    </div>
+  </div>
+
+  <div class="idea" data-anchor="i9" data-label="Idea 9 Earnings Recap">
+    <button class="cbtn">comment</button>
+    <div class="score">9<small>/12</small></div>
+    <div class="rank">9 <span class="tag">Investors</span></div>
+    <h3>Earnings Recap</h3>
+    <p class="hook">"I own 15 stocks and never read the earnings. Now Claude does, and texts me 5 bullets."</p>
+    <span class="beyond">Beyond ChatGPT: runs every earnings season on your list and remembers last quarter</span>
+    <dl>
+      <dt>Built on</dt><dd>StockStory (406K visits/mo, from $11.99/mo) · LangAlpha (HN 148) · FN2 (from $29/mo)</dd>
+      <dt>Your twist</dt><dd>Only <b>your</b> stocks, and only <b>what changed since last quarter</b>: guidance up or down, surprises, how the stock reacted.</dd>
+      <dt>How it works</dt><dd>Enter your stocks → when each one reports, a bot grabs the press release or transcript → compares it with last quarter → emails you 5 bullets.</dd>
+      <dt>One-day build</dt><dd>Claude skill plus an automation: earnings calendar → transcript or press release → recap compared with last quarter → email.</dd>
+    </dl>
+    <table class="t">
+      <tr><td>Relatable 3</td><td>Anyone holding individual stocks</td></tr>
+      <tr><td>Value 2</td><td>Hours saved each quarter</td></tr>
+      <tr><td>Shareable 2</td><td>Investor friends</td></tr>
+      <tr><td>Visual 2</td><td>An email recap</td></tr>
+    </table>
+    <div class="keep" data-radio="k9"><div class="kq">Keep or Kill?</div>
+      <label class="opt"><input type="radio" name="k9" value="keep"><span><span class="oh">Keep<span class="rec">recommended</span></span></span></label>
+      <label class="opt"><input type="radio" name="k9" value="kill"><span><span class="oh">Kill</span></span></label>
+    </div>
+  </div>
+
+  <div class="idea" data-anchor="i10" data-label="Idea 10 Dividend Paycheck">
+    <button class="cbtn">comment</button>
+    <div class="score">9<small>/12</small></div>
+    <div class="rank">10 <span class="tag">Dividend investors</span></div>
+    <h3>Dividend Paycheck</h3>
+    <p class="hook">"I turned my dividends into a paycheck calendar. October: $412."</p>
+    <span class="beyond">Beyond ChatGPT: puts every payout on your real calendar and alerts you to cuts</span>
+    <dl>
+      <dt>Built on</dt><dd>TopDividendTools (verified $12k in 30 days, +90%) · Snowball Analytics (2.2K ratings) · Moning (68K visits/mo) · a self-hosted tracker post (41 comments)</dd>
+      <dt>Your twist</dt><dd><b>Private:</b> runs from your holdings file and nothing is uploaded. Every expected payout goes into Google Calendar, with a monthly "paycheck" bar chart and an alert if a company cuts its dividend.</dd>
+      <dt>How it works</dt><dd>Upload your holdings CSV → it looks up each stock's dividend dates and amounts → adds them to your Google Calendar and shows a monthly bar chart → emails you if a dividend is cut.</dd>
+      <dt>One-day build</dt><dd>Web app: holdings CSV → dividend data → calendar events plus chart.</dd>
+    </dl>
+    <table class="t">
+      <tr><td>Relatable 2</td><td>Dividend investors, a big and loyal crowd</td></tr>
+      <tr><td>Value 2</td><td>Clarity, and cut alerts</td></tr>
+      <tr><td>Shareable 2</td><td>Dividend communities</td></tr>
+      <tr><td>Visual 3</td><td>A calendar full of paydays</td></tr>
+    </table>
+    <div class="keep" data-radio="k10"><div class="kq">Keep or Kill?</div>
+      <label class="opt"><input type="radio" name="k10" value="keep"><span><span class="oh">Keep<span class="rec">recommended</span></span></span></label>
+      <label class="opt"><input type="radio" name="k10" value="kill"><span><span class="oh">Kill</span></span></label>
+    </div>
+  </div>
+</section>
+
+<section id="s-patterns" data-anchor="patterns" data-label="What run 4 showed" data-group="Run 4" data-title="What the run showed">
+  <button class="cbtn">comment</button>
+  <h2><span class="num">5</span>What the run showed</h2>
+  <ul class="lines">
+    <li><b>Couples:</b> the old apps are fading (Zeta closed in May 2025, Tandem sold in Nov 2025). Dozens of new indie couples apps launched in 2025–26, and almost none has more than 15 ratings. The demand is clear, and nobody has broken through yet.</li>
+    <li><b>Stocks:</b> the verified indie money is in <b>narrow tools for active traders</b> at $30–$300/mo (alt-data scores, dilution, Trump alerts, AI second opinions), plus trading journals.</li>
+    <li><b>Crypto:</b> indie revenue clusters around <b>Polymarket and whale tracking</b>. Portfolio tracking and tax are owned by giants. Revenue swings hard (Oddpool fell 97% in a month).</li>
+    <li><b>Process:</b> product-first worked. Every idea above stands on tools with real numbers. The weak spot: Reddit posts often hide the product name, because I only see Google's snippets.</li>
+  </ul>
+</section>
+
+
+<section id="s-brief4" data-anchor="brief4" data-label="Run 4 brief" data-group="Run 4" data-title="The brief (confirmed)">
+  <button class="cbtn">comment</button>
+  <h2><span class="num">6</span>The brief (confirmed)</h2>
+  <div class="plain"><b>Confirmed and run</b> (Oct 1). Results are above. Brief: couples managing money together · stock investors · crypto holders and traders · 40 tools to analyse → 10 cards · web, extension, skill, automation, browser agent. </div>
+  <p class="sub">The first product-first run. I find tools already built for your audience, judge each with the rubric, and bring you the best with your twist. It skips anything already in Selected Ideas. When B6 says Confirmed and you press Send, I start.</p>
+
+  <div class="d open" data-anchor="b1" data-label="B1 audiences" data-changed="1">
+    <button class="cbtn">comment</button>
+    <div class="q">B1: Who is this run for?</div>
+    <div class="why">Open a category, tick 1–2 audiences, and narrow them down if you want. Narrow beats broad. If you're unsure, I'd start with <b>AI creators</b> (your own crowd, so they'll follow you) or <b>side hustlers</b> (money tools spread fast and people pay for them).</div>
+    <div data-check="b1">
+      <details class="cat"><summary><span class="ce">💰</span><span class="cn">Money and finance</span><span class="cc"></span><span class="ca">6 audiences</span></summary>
+        <div class="cbody">
+        <label class="opt"><input type="checkbox" name="b1" value="budgeting"><span><span class="oh">People trying to get their money in order</span></span></label>
+        <div class="niche" data-for="budgeting"><div class="nlab">Which ones? Optional. Leave blank for all of them.</div>
+          <label class="opt sub"><input type="checkbox" name="b1" value="budgeting:debt"><span><span class="oh">Paying off debt</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="budgeting:savehouse"><span><span class="oh">Saving for a house</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="budgeting:budget"><span><span class="oh">First real budget</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="budgeting:couples"><span><span class="oh">Couples managing money together</span></span></label>
+        </div>
+        <label class="opt"><input type="checkbox" name="b1" value="investors"><span><span class="oh">Investors and traders</span></span></label>
+        <div class="niche" data-for="investors"><div class="nlab">Which ones? Optional. Leave blank for all of them.</div>
+          <label class="opt sub"><input type="checkbox" name="b1" value="investors:stocks"><span><span class="oh">Stock investors</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="investors:dividend"><span><span class="oh">Dividend investors</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="investors:options"><span><span class="oh">Options traders</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="investors:crypto"><span><span class="oh">Crypto holders and traders</span></span></label>
+        </div>
+        <label class="opt"><input type="checkbox" name="b1" value="sidehustle"><span><span class="oh">Side hustlers</span></span></label>
+        <div class="niche" data-for="sidehustle"><div class="nlab">Which ones? Optional. Leave blank for all of them.</div>
+          <label class="opt sub"><input type="checkbox" name="b1" value="sidehustle:resellers"><span><span class="oh">Resellers (eBay, Vinted, Depop)</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="sidehustle:gig"><span><span class="oh">Gig drivers and couriers</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="sidehustle:etsy"><span><span class="oh">Etsy and print-on-demand sellers</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="sidehustle:affiliate"><span><span class="oh">Affiliate and UGC creators</span></span></label>
+        </div>
+        <label class="opt"><input type="checkbox" name="b1" value="selfemployed"><span><span class="oh">Self-employed money</span></span></label>
+        <div class="niche" data-for="selfemployed"><div class="nlab">Which ones? Optional. Leave blank for all of them.</div>
+          <label class="opt sub"><input type="checkbox" name="b1" value="selfemployed:quarterly"><span><span class="oh">Quarterly taxes</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="selfemployed:invoicing"><span><span class="oh">Invoicing and getting paid</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="selfemployed:bookkeeping"><span><span class="oh">DIY bookkeeping</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="selfemployed:expenses"><span><span class="oh">Expense and receipt tracking</span></span></label>
+        </div>
+        <label class="opt"><input type="checkbox" name="b1" value="reinvestors"><span><span class="oh">Real estate investors</span></span></label>
+        <div class="niche" data-for="reinvestors"><div class="nlab">Which ones? Optional. Leave blank for all of them.</div>
+          <label class="opt sub"><input type="checkbox" name="b1" value="reinvestors:landlords"><span><span class="oh">Small landlords</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="reinvestors:airbnb"><span><span class="oh">Airbnb and short-term rental hosts</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="reinvestors:flippers"><span><span class="oh">House flippers</span></span></label>
+        </div>
+        <label class="opt"><input type="checkbox" name="b1" value="advisors"><span><span class="oh">Financial advisors and accountants</span></span></label>
+        <div class="niche" data-for="advisors"><div class="nlab">Which ones? Optional. Leave blank for all of them.</div>
+          <label class="opt sub"><input type="checkbox" name="b1" value="advisors:planners"><span><span class="oh">Financial planners</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="advisors:accountants"><span><span class="oh">Accountants and tax preparers</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="advisors:mortgage"><span><span class="oh">Mortgage brokers</span></span></label>
+        </div>
+        </div>
+      </details>
+      <details class="cat"><summary><span class="ce">🤖</span><span class="cn">AI and creators</span><span class="cc"></span><span class="ca">5 audiences</span></summary>
+        <div class="cbody">
+        <label class="opt"><input type="checkbox" name="b1" value="aicreators"><span><span class="oh">AI creators</span></span></label>
+        <div class="niche" data-for="aicreators"><div class="nlab">Which ones? Optional. Leave blank for all of them.</div>
+          <label class="opt sub"><input type="checkbox" name="b1" value="aicreators:aiart"><span><span class="oh">AI artists and image makers</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="aicreators:aivideo"><span><span class="oh">AI video makers</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="aicreators:aiautomation"><span><span class="oh">AI automation builders</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="aicreators:aieducators"><span><span class="oh">AI educators and AI influencers</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="aicreators:prompts"><span><span class="oh">Prompt and GPT/skill sellers</span></span></label>
+        </div>
+        <label class="opt"><input type="checkbox" name="b1" value="creators"><span><span class="oh">Content creators</span></span></label>
+        <div class="niche" data-for="creators"><div class="nlab">Which ones? Optional. Leave blank for all of them.</div>
+          <label class="opt sub"><input type="checkbox" name="b1" value="creators:youtube"><span><span class="oh">YouTubers</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="creators:shortform"><span><span class="oh">TikTok and Instagram creators</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="creators:podcast"><span><span class="oh">Podcasters</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="creators:newsletter"><span><span class="oh">Newsletter writers</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="creators:streamers"><span><span class="oh">Streamers</span></span></label>
+        </div>
+        <label class="opt"><input type="checkbox" name="b1" value="designers"><span><span class="oh">Designers and artists</span></span></label>
+        <div class="niche" data-for="designers"><div class="nlab">Which ones? Optional. Leave blank for all of them.</div>
+          <label class="opt sub"><input type="checkbox" name="b1" value="designers:uiux"><span><span class="oh">UI/UX designers</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="designers:brand"><span><span class="oh">Brand and graphic designers</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="designers:illustrators"><span><span class="oh">Illustrators</span></span></label>
+        </div>
+        <label class="opt"><input type="checkbox" name="b1" value="writers"><span><span class="oh">Writers and authors</span></span></label>
+        <div class="niche" data-for="writers"><div class="nlab">Which ones? Optional. Leave blank for all of them.</div>
+          <label class="opt sub"><input type="checkbox" name="b1" value="writers:kdp"><span><span class="oh">Self-published and KDP authors</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="writers:copywriters"><span><span class="oh">Copywriters</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="writers:bloggers"><span><span class="oh">Bloggers</span></span></label>
+        </div>
+        <label class="opt"><input type="checkbox" name="b1" value="musicians"><span><span class="oh">Musicians and producers</span></span></label>
+        </div>
+      </details>
+      <details class="cat"><summary><span class="ce">💼</span><span class="cn">Work and careers</span><span class="cc"></span><span class="ca">6 audiences</span></summary>
+        <div class="cbody">
+        <label class="opt"><input type="checkbox" name="b1" value="youngpros"><span><span class="oh">Young professionals</span></span></label>
+        <div class="niche" data-for="youngpros"><div class="nlab">Which ones? Optional. Leave blank for all of them.</div>
+          <label class="opt sub"><input type="checkbox" name="b1" value="youngpros:newgrads"><span><span class="oh">New grads in their first job</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="youngpros:consultants"><span><span class="oh">Consultants and analysts</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="youngpros:remote"><span><span class="oh">Remote workers</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="youngpros:corporate"><span><span class="oh">Corporate 9-to-5ers</span></span></label>
+        </div>
+        <label class="opt"><input type="checkbox" name="b1" value="jobseekers"><span><span class="oh">Job seekers</span></span></label>
+        <div class="niche" data-for="jobseekers"><div class="nlab">Which ones? Optional. Leave blank for all of them.</div>
+          <label class="opt sub"><input type="checkbox" name="b1" value="jobseekers:jsnewgrads"><span><span class="oh">New grads</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="jobseekers:switchers"><span><span class="oh">Career switchers</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="jobseekers:laidoff"><span><span class="oh">Laid-off tech workers</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="jobseekers:visa"><span><span class="oh">International and visa job seekers</span></span></label>
+        </div>
+        <label class="opt"><input type="checkbox" name="b1" value="freelancers"><span><span class="oh">Freelancers and solopreneurs</span></span></label>
+        <div class="niche" data-for="freelancers"><div class="nlab">Which ones? Optional. Leave blank for all of them.</div>
+          <label class="opt sub"><input type="checkbox" name="b1" value="freelancers:fdesigners"><span><span class="oh">Designers</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="freelancers:fdevs"><span><span class="oh">Developers</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="freelancers:fwriters"><span><span class="oh">Writers and editors</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="freelancers:marketers"><span><span class="oh">Marketers and social media managers</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="freelancers:va"><span><span class="oh">Virtual assistants</span></span></label>
+        </div>
+        <label class="opt"><input type="checkbox" name="b1" value="managers"><span><span class="oh">Managers and team leads</span></span></label>
+        <label class="opt"><input type="checkbox" name="b1" value="sales"><span><span class="oh">Salespeople</span></span></label>
+        <div class="niche" data-for="sales"><div class="nlab">Which ones? Optional. Leave blank for all of them.</div>
+          <label class="opt sub"><input type="checkbox" name="b1" value="sales:sdr"><span><span class="oh">SDRs and cold outreach</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="sales:ae"><span><span class="oh">Account executives</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="sales:smallsales"><span><span class="oh">Solo sales and closers</span></span></label>
+        </div>
+        <label class="opt"><input type="checkbox" name="b1" value="recruiters"><span><span class="oh">Recruiters and HR</span></span></label>
+        </div>
+      </details>
+      <details class="cat"><summary><span class="ce">🏪</span><span class="cn">Business owners</span><span class="cc"></span><span class="ca">4 audiences</span></summary>
+        <div class="cbody">
+        <label class="opt"><input type="checkbox" name="b1" value="smallbiz"><span><span class="oh">Small business owners</span></span></label>
+        <div class="niche" data-for="smallbiz"><div class="nlab">Which ones? Optional. Leave blank for all of them.</div>
+          <label class="opt sub"><input type="checkbox" name="b1" value="smallbiz:restaurants"><span><span class="oh">Restaurants and cafés</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="smallbiz:salons"><span><span class="oh">Salons, barbers and spas</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="smallbiz:realestate"><span><span class="oh">Real estate agents</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="smallbiz:trades"><span><span class="oh">Trades: plumbers, electricians, HVAC</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="smallbiz:cleaning"><span><span class="oh">Cleaning and home services</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="smallbiz:retail"><span><span class="oh">Local shops and boutiques</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="smallbiz:fitness"><span><span class="oh">Gyms and fitness studios</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="smallbiz:clinics"><span><span class="oh">Clinics: dental, physio, vet</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="smallbiz:photographers"><span><span class="oh">Photographers and videographers</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="smallbiz:coaches"><span><span class="oh">Coaches and consultants</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="smallbiz:accountants"><span><span class="oh">Accountants and bookkeepers</span></span></label>
+        </div>
+        <label class="opt"><input type="checkbox" name="b1" value="ecom"><span><span class="oh">E-commerce sellers</span></span></label>
+        <div class="niche" data-for="ecom"><div class="nlab">Which ones? Optional. Leave blank for all of them.</div>
+          <label class="opt sub"><input type="checkbox" name="b1" value="ecom:shopify"><span><span class="oh">Shopify stores</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="ecom:amazon"><span><span class="oh">Amazon FBA sellers</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="ecom:tiktokshop"><span><span class="oh">TikTok Shop sellers</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="ecom:etsysellers"><span><span class="oh">Etsy shops</span></span></label>
+        </div>
+        <label class="opt"><input type="checkbox" name="b1" value="agencies"><span><span class="oh">Agencies</span></span></label>
+        <div class="niche" data-for="agencies"><div class="nlab">Which ones? Optional. Leave blank for all of them.</div>
+          <label class="opt sub"><input type="checkbox" name="b1" value="agencies:mktagency"><span><span class="oh">Marketing and social agencies</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="agencies:webagency"><span><span class="oh">Web design agencies</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="agencies:aiagency"><span><span class="oh">AI automation agencies</span></span></label>
+        </div>
+        <label class="opt"><input type="checkbox" name="b1" value="coachesbiz"><span><span class="oh">Coaches and course creators</span></span></label>
+        </div>
+      </details>
+      <details class="cat"><summary><span class="ce">🎓</span><span class="cn">Students and learning</span><span class="cc"></span><span class="ca">4 audiences</span></summary>
+        <div class="cbody">
+        <label class="opt"><input type="checkbox" name="b1" value="students"><span><span class="oh">Students</span></span></label>
+        <div class="niche" data-for="students"><div class="nlab">Which ones? Optional. Leave blank for all of them.</div>
+          <label class="opt sub"><input type="checkbox" name="b1" value="students:highschool"><span><span class="oh">High school students</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="students:college"><span><span class="oh">College and university students</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="students:grad"><span><span class="oh">Grad students</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="students:intl"><span><span class="oh">International students</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="students:nursing"><span><span class="oh">Nursing and med students</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="students:stem"><span><span class="oh">Engineering and CS students</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="students:examprep"><span><span class="oh">Big-exam prep (SAT, MCAT, bar…)</span></span></label>
+        </div>
+        <label class="opt"><input type="checkbox" name="b1" value="teachers"><span><span class="oh">Teachers and tutors</span></span></label>
+        <div class="niche" data-for="teachers"><div class="nlab">Which ones? Optional. Leave blank for all of them.</div>
+          <label class="opt sub"><input type="checkbox" name="b1" value="teachers:k12"><span><span class="oh">School teachers</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="teachers:profs"><span><span class="oh">University lecturers</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="teachers:tutors"><span><span class="oh">Private tutors</span></span></label>
+        </div>
+        <label class="opt"><input type="checkbox" name="b1" value="language"><span><span class="oh">Language learners</span></span></label>
+        <label class="opt"><input type="checkbox" name="b1" value="selflearners"><span><span class="oh">Self-learners and online course takers</span></span></label>
+        </div>
+      </details>
+      <details class="cat"><summary><span class="ce">🏃</span><span class="cn">Health and fitness</span><span class="cc"></span><span class="ca">5 audiences</span></summary>
+        <div class="cbody">
+        <label class="opt"><input type="checkbox" name="b1" value="fitnessppl"><span><span class="oh">Fitness people</span></span></label>
+        <div class="niche" data-for="fitnessppl"><div class="nlab">Which ones? Optional. Leave blank for all of them.</div>
+          <label class="opt sub"><input type="checkbox" name="b1" value="fitnessppl:gymgoers"><span><span class="oh">Gym-goers</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="fitnessppl:runners"><span><span class="oh">Runners</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="fitnessppl:homeworkout"><span><span class="oh">Home workout</span></span></label>
+        </div>
+        <label class="opt"><input type="checkbox" name="b1" value="weightloss"><span><span class="oh">People losing weight</span></span></label>
+        <label class="opt"><input type="checkbox" name="b1" value="adhd"><span><span class="oh">People with ADHD and procrastinators</span></span></label>
+        <label class="opt"><input type="checkbox" name="b1" value="healthworkers"><span><span class="oh">Healthcare workers</span></span></label>
+        <div class="niche" data-for="healthworkers"><div class="nlab">Which ones? Optional. Leave blank for all of them.</div>
+          <label class="opt sub"><input type="checkbox" name="b1" value="healthworkers:nurses"><span><span class="oh">Nurses</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="healthworkers:doctors"><span><span class="oh">Doctors and residents</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="healthworkers:therapists"><span><span class="oh">Therapists</span></span></label>
+        </div>
+        <label class="opt"><input type="checkbox" name="b1" value="mentalhealth"><span><span class="oh">Mental health and wellbeing</span></span></label>
+        </div>
+      </details>
+      <details class="cat"><summary><span class="ce">🏠</span><span class="cn">Home and family</span><span class="cc"></span><span class="ca">6 audiences</span></summary>
+        <div class="cbody">
+        <label class="opt"><input type="checkbox" name="b1" value="parents"><span><span class="oh">Busy parents</span></span></label>
+        <div class="niche" data-for="parents"><div class="nlab">Which ones? Optional. Leave blank for all of them.</div>
+          <label class="opt sub"><input type="checkbox" name="b1" value="parents:newborn"><span><span class="oh">Parents of babies and toddlers</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="parents:school"><span><span class="oh">Parents of school-age kids</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="parents:teens"><span><span class="oh">Parents of teens</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="parents:single"><span><span class="oh">Single parents</span></span></label>
+        </div>
+        <label class="opt"><input type="checkbox" name="b1" value="pets"><span><span class="oh">Pet owners</span></span></label>
+        <div class="niche" data-for="pets"><div class="nlab">Which ones? Optional. Leave blank for all of them.</div>
+          <label class="opt sub"><input type="checkbox" name="b1" value="pets:dogs"><span><span class="oh">Dog owners</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="pets:cats"><span><span class="oh">Cat owners</span></span></label>
+        </div>
+        <label class="opt"><input type="checkbox" name="b1" value="cooks"><span><span class="oh">Home cooks</span></span></label>
+        <label class="opt"><input type="checkbox" name="b1" value="homeowners"><span><span class="oh">Homeowners and renters</span></span></label>
+        <div class="niche" data-for="homeowners"><div class="nlab">Which ones? Optional. Leave blank for all of them.</div>
+          <label class="opt sub"><input type="checkbox" name="b1" value="homeowners:firsthome"><span><span class="oh">First-time buyers</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="homeowners:renters"><span><span class="oh">Renters</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="homeowners:diy"><span><span class="oh">DIY home improvers</span></span></label>
+        </div>
+        <label class="opt"><input type="checkbox" name="b1" value="weddings"><span><span class="oh">Couples planning a wedding</span></span></label>
+        <label class="opt"><input type="checkbox" name="b1" value="seniors"><span><span class="oh">Older adults and their families</span></span></label>
+        </div>
+      </details>
+      <details class="cat"><summary><span class="ce">💻</span><span class="cn">Tech and builders</span><span class="cc"></span><span class="ca">4 audiences</span></summary>
+        <div class="cbody">
+        <label class="opt"><input type="checkbox" name="b1" value="devs"><span><span class="oh">Developers</span></span></label>
+        <label class="opt"><input type="checkbox" name="b1" value="indiehackers"><span><span class="oh">Indie hackers and solo founders</span></span></label>
+        <label class="opt"><input type="checkbox" name="b1" value="nocode"><span><span class="oh">No-code builders</span></span></label>
+        <label class="opt"><input type="checkbox" name="b1" value="pms"><span><span class="oh">Product managers</span></span></label>
+        </div>
+      </details>
+      <details class="cat"><summary><span class="ce">✈️</span><span class="cn">Lifestyle and hobbies</span><span class="cc"></span><span class="ca">5 audiences</span></summary>
+        <div class="cbody">
+        <label class="opt"><input type="checkbox" name="b1" value="travelers"><span><span class="oh">Travelers</span></span></label>
+        <div class="niche" data-for="travelers"><div class="nlab">Which ones? Optional. Leave blank for all of them.</div>
+          <label class="opt sub"><input type="checkbox" name="b1" value="travelers:nomads"><span><span class="oh">Digital nomads</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="travelers:budgettravel"><span><span class="oh">Budget travelers</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="travelers:familytravel"><span><span class="oh">Family travelers</span></span></label>
+        </div>
+        <label class="opt"><input type="checkbox" name="b1" value="gamers"><span><span class="oh">Gamers</span></span></label>
+        <label class="opt"><input type="checkbox" name="b1" value="sportsfans"><span><span class="oh">Sports fans and fantasy sports</span></span></label>
+        <label class="opt"><input type="checkbox" name="b1" value="readers"><span><span class="oh">Readers and book lovers</span></span></label>
+        <label class="opt"><input type="checkbox" name="b1" value="carowners"><span><span class="oh">Car owners</span></span></label>
+        </div>
+      </details>
+    </div>
+  </div>
+
+  <div class="d open" data-anchor="b2" data-label="B2 build types">
+    <button class="cbtn">comment</button>
+    <div class="q">B2: What kinds of builds?</div>
+    <div class="why">Carried over from Run 3. Each idea's version is shaped to fit these.</div>
+    <div data-check="b2">
+      <label class="opt"><input type="checkbox" name="b2" value="web"><span><span class="oh">Web app</span></span></label>
+      <label class="opt"><input type="checkbox" name="b2" value="extension"><span><span class="oh">Chrome extension</span></span></label>
+      <label class="opt"><input type="checkbox" name="b2" value="skill"><span><span class="oh">Claude skill or plugin</span></span></label>
+      <label class="opt"><input type="checkbox" name="b2" value="automation"><span><span class="oh">Automation (email, calendar, Docs…)</span></span></label>
+      <label class="opt"><input type="checkbox" name="b2" value="agent"><span><span class="oh">Browser agent</span></span></label>
+      <label class="opt"><input type="checkbox" name="b2" value="ios"><span><span class="oh">iOS app</span></span></label>
+      <label class="opt"><input type="checkbox" name="b2" value="desktop"><span><span class="oh">Mac app or menu-bar tool</span></span></label>
+    </div>
+  </div>
+
+  <div class="d open" data-anchor="b3" data-label="B3 tools to analyse">
+    <button class="cbtn">comment</button>
+    <div class="q">B3: How many tools should I analyse?</div>
+    <div class="why">All of them appear in one table with their proof, scores and verdict. More tools means better picks but a longer table.</div>
+    <div data-radio="b3">
+      <label class="opt"><input type="radio" name="b3" value="30"><span><span class="oh">30</span></span></label>
+      <label class="opt"><input type="radio" name="b3" value="40"><span><span class="oh">40<span class="rec">recommended</span></span><span class="od">Enough variety, and still a quick scan for you.</span></span></label>
+      <label class="opt"><input type="radio" name="b3" value="60"><span><span class="oh">60</span></span></label>
+    </div>
+  </div>
+
+  <div class="d open" data-anchor="b4" data-label="B4 ideas to bring">
+    <button class="cbtn">comment</button>
+    <div class="q">B4: How many should become idea cards?</div>
+    <div class="why">These get the full card: the original tool, its proof, your twist, the one-day build, and Keep/Kill.</div>
+    <div data-radio="b4">
+      <label class="opt"><input type="radio" name="b4" value="10"><span><span class="oh">10<span class="rec">recommended</span></span></span></label>
+      <label class="opt"><input type="radio" name="b4" value="5"><span><span class="oh">5</span></span></label>
+      <label class="opt"><input type="radio" name="b4" value="15"><span><span class="oh">15</span></span></label>
+    </div>
+  </div>
+
+  <div class="d open" data-anchor="b5" data-label="B5 research style">
+    <button class="cbtn">comment</button>
+    <div class="q">B5: How should I research?</div>
+    <div class="why">Carried over. Three helpers: A reads sites directly, while B and C take turns in your Chrome.</div>
+    <div data-radio="b5">
+      <label class="opt"><input type="radio" name="b5" value="parallel"><span><span class="oh">Helpers, one per source group<span class="rec">recommended</span></span><span class="od">Faster and wider. Uses more of your plan.</span></span></label>
+      <label class="opt"><input type="radio" name="b5" value="me"><span><span class="oh">Me, one source at a time</span></span></label>
+    </div>
+  </div>
+
+  <div class="ask" data-anchor="b7" data-label="Anything else">
+    <button class="cbtn">comment</button>
+    <div class="q">Anything else for this run? (optional)</div>
+    <div class="how">A tool you've seen and liked, a source to lean on, something to avoid. Comment here.</div>
+  </div>
+
+  <div class="d open" data-anchor="b6" data-label="B6 confirm">
+    <button class="cbtn">comment</button>
+    <div class="q">B6: Confirm the brief</div>
+    <div class="why">Nothing runs until this says Confirmed and you press Send.</div>
+    <div data-radio="b6">
+      <label class="opt"><input type="radio" name="b6" value="go"><span><span class="oh">Confirmed, start Run 4<span class="rec">recommended</span></span><span class="od">Once B1–B5 look right.</span></span></label>
+      <label class="opt"><input type="radio" name="b6" value="wait"><span><span class="oh">Not yet</span></span></label>
+    </div>
+  </div>
+</section>
+
+<script>
+// Your ideas: each one is posted as a note on this block and goes straight to Claude (user, 2026-10-01).
+(()=>{const box=document.getElementById('yi-text'), btn=document.getElementById('yi-add'), list=document.getElementById('yi-list');
+  if(!box)return;
+  const esc=t=>String(t).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+  function draw(){ if(typeof S==='undefined')return;
+    const OLD=['c1790840458957','c1790840458958','c1790840458959','c1790840458960'];   // sent before ideas were marked
+    const mine=S.comments.filter(c=>c.anchor==='yourideas'&&(c.idea||OLD.includes(c.id)));
+    list.innerHTML=mine.map(c=>`<div class="it"><span>${esc(c.text)}</span><span class="st ${c.addressed?'done':''}">${c.addressed?'judged ↓':'researching…'}</span></div>`).join('');}
+  const lines=()=>box.value.split('\n').map(x=>x.trim()).filter(Boolean);
+  box.oninput=()=>{const n=lines().length; btn.textContent=n>1?`Add ${n} ideas`:'Add idea'};
+  btn.onclick=async()=>{const ls=lines(); if(!ls.length)return; btn.disabled=true;
+    try{let r; const base=Date.now();
+      for(let i=0;i<ls.length;i++)
+        r=await post('/api/comment',{id:'c'+(base+i),anchor:'yourideas',anchorLabel:'Your ideas',anchorText:'Your ideas for this audience',text:ls[i],kind:'note',now:true,idea:true});
+      S.comments=r.comments; box.value=''; btn.textContent='Add idea'; draw(); renderQueue(); markAnchors();
+      toast(ls.length>1?`${ls.length} ideas sent: I\'ll research and judge each`:'Idea sent: I\'ll research and judge it');}
+    finally{btn.disabled=false}};
+  setInterval(draw,3000); setTimeout(draw,800);})();
+// B1 categories: show how many are picked in each, and open any category that has picks.
+(()=>{const upd=open=>document.querySelectorAll('[data-check="b1"] details.cat').forEach(d=>{
+    const n=d.querySelectorAll('input[name="b1"]:not([value*=":"]):checked').length;
+    d.querySelector('.cc').textContent=n?n+' picked':''; if(open&&n)d.open=true});
+  document.addEventListener('change',e=>{if(e.target.name==='b1')setTimeout(()=>upd(false),0)});
+  [300,900,2000].forEach(t=>setTimeout(()=>upd(true),t))})();
+// B1: unticking an audience also unticks its specific groups (capture phase, so the save sees it).
+document.addEventListener('change',e=>{const i=e.target; if(i.name!=='b1'||i.checked||i.value.includes(':'))return;
+  document.querySelectorAll(`input[name="b1"][value^="${i.value}:"]:checked`).forEach(k=>k.checked=false)},true);
+</script>
+</main>
+
+<aside class="right">
+  <h2>Chat center</h2>
+  <div class="dsum"><span id="dprog">—</span><a id="dtoggle">show all</a></div>
+  <div class="bar"><i id="dbar" style="width:0"></i></div>
+  <div id="dchg"></div>
+  <div class="dlist" id="dlist" hidden></div>
+  <div class="topact">
+    <div class="cprog" id="cprog"></div>
+    <button class="primary" id="send">Send</button>
+    <div class="sendto" id="sendto"></div>
+    <div class="wstat" id="wstat"></div>
+    <button class="pagec" id="pagec">💬 General comment</button>
+  </div>
+  <div id="queue"></div>
+</aside>
+<div id="wideview"></div>
+<button id="cpfab">💬 Chat center</button>
+
+
+</div>
+
+<div id="pop">
+  <div class="pa" id="popanchor"></div>
+  <div class="kind">
+    <label class="sel"><input type="radio" name="kind" value="question" checked> Ask a question</label>
+    <label><input type="radio" name="kind" value="change"> Change this</label>
+    <label><input type="radio" name="kind" value="note"> Comment</label>
+  </div>
+  <textarea id="poptext" placeholder="What do you want to know? Answered right here, in the panel."></textarea>
+  <div class="row"><button id="popcancel">Cancel</button><button id="popadd" class="add">Send now</button></div>
+</div>
+<div id="toast"></div>
+
+<!-- optional: <script src="vendor/mermaid.min.js"></script> for <pre class="mermaid"> diagrams -->
+<script>
+const S={decisions:{},comments:[],batches:[]}; let ROUND=1;
+const $=s=>document.querySelector(s);
+const esc=t=>String(t).replace(/[<>&]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
+const toast=m=>{const t=$('#toast');t.textContent=m;t.classList.add('on');
+  setTimeout(()=>t.classList.remove('on'),1700)};
+const post=(u,b)=>fetch(u,{method:'POST',headers:{'Content-Type':'application/json'},
+  body:JSON.stringify(b)}).then(r=>r.json());
+const D=k=>S.decisions[k];
+function groups(){return [...document.querySelectorAll('[data-radio],[data-check]')]}
+
+function buildChanged(){
+  // Blocks the author marked data-changed="N" (N = the round they were revised in).
+  // The rail lists the latest round's blocks so the reviewer can find what moved.
+  const els=[...document.querySelectorAll('[data-changed]')]; if(!els.length) return;
+  const latest=Math.max(...els.map(e=>+e.dataset.changed));
+  const mine=els.filter(e=>+e.dataset.changed===latest);
+  $('#toc').insertAdjacentHTML('afterbegin',`<div class="chg"><div class="grp">Changed in round ${latest} (${mine.length})</div>`+
+    mine.map((e,i)=>{ if(!e.id) e.id='chg-'+latest+'-'+i;
+      return `<a href="#${e.id}" data-id="${e.id}">${esc(e.dataset.label||e.dataset.title||e.id)}</a>`}).join('')+
+    `<div class="grp" style="margin-top:10px">Contents</div></div>`);
+  document.querySelectorAll('#toc .chg a').forEach(a=>a.onclick=ev=>{ev.preventDefault();
+    const el=document.getElementById(a.dataset.id); el.scrollIntoView({behavior:'smooth',block:'center'});
+    el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash')});
+}
+function buildToc(){
+  let last='';
+  $('#toc').innerHTML=[...document.querySelectorAll('main section')].map(s=>{
+    let out=''; if(s.dataset.group!==last){out+=`<div class="grp">${s.dataset.group}</div>`;last=s.dataset.group}
+    return out+`<a href="#${s.id}" data-id="${s.id}">${s.dataset.title}</a>`}).join('');
+  const links=[...document.querySelectorAll('#toc a')];
+  const io=new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting)
+    links.forEach(l=>l.classList.toggle('on',l.dataset.id===e.target.id)) }),
+    {rootMargin:'-84px 0px -70% 0px'});
+  document.querySelectorAll('main section').forEach(s=>io.observe(s));
+}
+function renderDecisions(){
+  const gs=groups(); let done=0;
+  const label=(id)=>{const g=gs.find(x=>(x.dataset.radio||x.dataset.check)===id);if(!g)return null;
+    const ch=[...g.querySelectorAll('input:checked')];return ch.map(i=>i.closest('label').querySelector('.oh').textContent).join(', ')};
+  $('#dlist').innerHTML=gs.map(g=>{
+    const id=g.dataset.radio||g.dataset.check, blk=g.closest('.d');
+    const ch=[...g.querySelectorAll('input:checked')]; if(ch.length) done++;
+    const val=ch.map(i=>i.closest('label').querySelector('.oh').textContent).join(', ');
+    return `<div class="dr ${ch.length?'done':'todo'}" data-goto="${blk?blk.dataset.anchor:''}">
+      <span class="dot"></span><span class="dn">${id.toUpperCase()}</span>
+      <span class="dv">${esc(val||'not decided')}</span></div>`}).join('');
+  $('#dprog').innerHTML=gs.length?(done===gs.length?`<b style="color:#22a55a">✓ ${done} of ${gs.length} decided</b>`:`${done} of ${gs.length} decided`):'No decisions on this page';
+  $('#dtoggle').style.display=gs.length?'':'none';
+  $('#dbar').style.width=(gs.length?done/gs.length*100:0)+'%';
+  // what changed since the last round was sent
+  // Same rule as Send: compare with the last round (or the baseline before any round); an empty choice is no choice.
+  const last=(S.batches[S.batches.length-1]||{}).decisions||S.base||{};
+  const v=x=>Array.isArray(x)?(x.length?JSON.stringify([...x].sort()):null):(x??null);
+  const chg=gs.map(g=>g.dataset.radio||g.dataset.check).filter(id=>v(S.decisions[id])!==v(last[id])&&v(S.decisions[id])!==null);
+  $('#dchg').innerHTML=chg.length?`<b>CHANGED SINCE LAST ROUND:</b> `+chg.map(id=>`${id.toUpperCase()} → ${esc(label(id)||'')}`).join(' · '):'';
+  $('#dcount').textContent=`${done}/${gs.length} decided · ${S.comments.filter(c=>c.status==='queued').length} queued`;
+  document.querySelectorAll('.dr').forEach(r=>r.onclick=()=>{
+    const el=document.querySelector(`[data-anchor="${r.dataset.goto}"]`); if(!el)return;
+    el.scrollIntoView({behavior:'smooth',block:'center'});
+    el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash')});
+  report();
+}
+// "General comment": the same popup, not pinned to a block
+$('#pagec').onclick=e=>{e.stopPropagation();target={anchor:'page',label:'General',text:''};
+  const p=$('#pop'),r=$('#pagec').getBoundingClientRect();$('#popanchor').textContent='General — not about one block';$('#poptext').value='';setKind('question');
+  p.style.display='block';p.style.top=(window.scrollY+r.bottom+8)+'px';p.style.left=Math.max(12,r.right-328+window.scrollX)+'px';$('#poptext').focus()};
+$('#cpfab').onclick=()=>$('aside.right').classList.toggle('open');
+$('#dtoggle').onclick=()=>{const l=$('#dlist');l.hidden=!l.hidden;$('#dtoggle').textContent=l.hidden?'show all':'hide'};
+// ---- The page's conversation: every comment is a small thread; answers come back here, not to the terminal ----
+let AGENT={agent:null,status:null}, openIds=new Set();
+// Links: any http(s) URL is clickable (user, 2026-09-28); a full stop or bracket after it stays outside the link.
+const md=t=>esc(t).replace(/https?:\/\/[^\s<]+?(?=[.,;:!?)\]]*(?:\s|<|&quot;|&lt;|&gt;|$))/g,u=>`<a href="${u}" target="_blank" rel="noopener">${u}</a>`).replace(/\*\*([^*]+)\*\*/g,'<b>$1</b>').replace(/`([^`]+)`/g,'<code>$1</code>')
+  .replace(/(^|\n)- (.+)/g,'$1<li>$2</li>').replace(/(<li>.*<\/li>)/s,'<ul>$1</ul>').replace(/\n/g,'<br>');
+const KL={question:'Question',change:'Change',note:'Note'};
+const ago=t=>{if(!t)return'';const s=(Date.now()-new Date(t))/1000;return s<60?'now':s<3600?Math.round(s/60)+'m ago':s<86400?Math.round(s/3600)+'h ago':new Date(t).toLocaleDateString()};
+function stateOf(c){const m=c.messages||[], last=m[m.length-1];
+  if(c.status==='queued')return['wait','queued — not sent'];
+  if(c.suggest)return['ok','answered — your call'];
+  if(last&&last.from==='claude')return['ok','✓'];
+  if(c.addressed)return['ok',c.kind==='change'?'✓ done':'✓ taken on board'];
+  return['wait',AGENT.status==='working'?'Claude is busy — you\'re next':'waiting for Claude']}
+function waiting(c){const [cls,txt]=stateOf(c);return c.status==='queued'||c.suggest||cls==='wait'}
+function item(c,wide){
+  const [cls,txt]=stateOf(c), m=c.messages||[], where=c.anchor==='page'?'general':`on <a data-goto="${esc(c.anchor)}">${esc(c.anchorLabel||c.anchor)}</a>`;
+  const fold=!wide&&!waiting(c)&&!openIds.has(c.id);
+  const kind=c.kind||'change';
+  const mm=x=>`<div class="msg ${x.from==='claude'?'claude':'you'}"><span class="who">${x.from==='claude'?'Claude':'You'} · ${ago(x.t)}</span>${md(x.text||'')}</div>`;
+  const older=(!wide&&m.length>1)?m.slice(0,-1):[], shown=(!wide&&m.length>1)?m.slice(-1):m;
+  const body=`<div class="body">`+(older.length?`<div class="earlier" data-earlier="${c.id}">▸ ${older.length} earlier message${older.length>1?'s':''}</div><div class="older">${older.map(mm).join('')}</div>`:'')+shown.map(mm).join('')+
+    (c.status==='queued'?`<div class="act"><button data-del="${c.id}">Delete</button></div>`:
+     (c.suggest?`<div class="act"><button class="pri" data-mkchange="${c.id}">Make it a change request</button><button data-nothanks="${c.id}">No thanks</button></div>`:'')+
+     (!m.length||m[m.length-1].from!=='you'?'':'<div class="typing">'+(AGENT.status==='working'?'Claude is busy — your message is next.':'Claude is answering…')+'</div>')+
+     `<div class="rb"><textarea data-rin="${c.id}" rows="1" placeholder="Reply…"></textarea><button data-rsend="${c.id}">Reply</button></div>`)+`</div>`;
+  const un=isUnread(c);
+  return `<div class="th ${fold?'fold':''}${un?' unread':''}" data-th="${c.id}"><div class="hd">${un?'<span class="ndot" title="New answer"></span>':''}<span class="ktag ${kind}">${KL[kind]||'Change'}</span><span class="where" title="${esc(c.anchorLabel||'')}">${where}</span>
+      <span class="st ${cls}">${txt}${m.length>1?` · ${m.length+1} msgs`:''}</span>${wide?'':`<button class="wide" data-wide="${c.id}" title="Open wide">⤢</button>`}</div>
+    <div class="row1"><span class="q1">${fold?esc(c.text):md(c.text||'')}</span></div>${body}</div>`}
+// ---- Progress meter + unread answers (user, 2026-09-28) ----
+// Unread: a thread whose latest message is Claude's and newer than when this viewer last opened it.
+// "Answered recently" stays until the viewer opens any one unread answer. Per viewer, in localStorage.
+const PK='cprog:'+location.pathname;
+function pget(){try{return JSON.parse(localStorage.getItem(PK)||'null')}catch(e){return null}}
+function pset(v){try{localStorage.setItem(PK,JSON.stringify(v))}catch(e){}}
+const lastClaude=c=>{const m=(c.messages||[]).filter(x=>x.from==='claude');return m.length?m[m.length-1].t:null};
+function progInit(){if(pget())return;const seen={};S.comments.forEach(c=>{const t=lastClaude(c);if(t)seen[c.id]=t});pset({seen,dismissed:new Date().toISOString(),wave:null})}
+function isUnread(c){const p=pget()||{seen:{}},t=lastClaude(c);if(!t)return false;const m=c.messages||[];
+  return m[m.length-1].from==='claude'&&(!p.seen[c.id]||p.seen[c.id]<t)}
+function markRead(id){const c=S.comments.find(x=>x.id===id);if(!c)return;const p=pget()||{seen:{}};const t=lastClaude(c);
+  if(t&&isUnread(c)){p.seen[c.id]=t;p.dismissed=new Date().toISOString();pset(p)}}
+function workingRound(){try{return JSON.parse(localStorage.getItem(WK)||'null')}catch(e){return null}}
+function changedDecisions(round){const b=(S.batches||[])[round-1];if(!b)return 0;const prev=((S.batches||[])[round-2]||{}).decisions||{};
+  const cur=b.decisions||{};return Object.keys(cur).filter(k=>JSON.stringify(cur[k])!==JSON.stringify(prev[k])).length}
+let PLOADED=false;   // the page state has loaded — until then there's nothing true to show (and nothing to reset)
+function renderProgress(){const box=$('#cprog');if(!box||!PLOADED)return;progInit();const p=pget();
+  const pend=S.comments.filter(c=>c.status!=='queued'&&!c.suggest&&stateOf(c)[0]==='wait');
+  const n={question:0,note:0,change:0};pend.forEach(c=>{n[c.kind||'change']=(n[c.kind||'change']||0)+1});
+  const wr=workingRound(), nd=wr?changedDecisions(wr.round):0;
+  const busy=pend.length+nd;
+  if(busy&&!p.wave){p.wave={start:new Date().toISOString()};pset(p)}
+  if(!busy&&p.wave){p.wave=null;pset(p)}
+  const unread=S.comments.filter(isUnread);
+  const pl=(k,w)=>k?`${k} ${w}${k===1?'':'s'}`:'';
+  if(busy){const done=S.comments.filter(c=>!pend.includes(c)&&lastClaude(c)&&lastClaude(c)>=p.wave.start).length;
+    const parts=[pl(n.question,'question'),pl(n.note,'comment'),pl(n.change,'change'),pl(nd,'decision')].filter(Boolean).join(' · ');
+    const pct=Math.round(100*done/Math.max(1,done+pend.length+(nd?1:0)));
+    box.className='cprog working';
+    box.innerHTML=`<div class="l"><span class="spin"></span>Working on ${parts}</div><div class="pb"><i style="width:${Math.max(6,pct)}%"></i></div>`+
+      `<div class="sub">${done?`${done} answered so far`:(AGENT.status==='working'?'Claude is busy — yours are next':'Claude will pick these up shortly')}${unread.length?` · ${unread.length} new answer${unread.length>1?'s':''} below`:''}</div>`;return}
+  const fresh=unread.filter(c=>lastClaude(c)>(p.dismissed||''));
+  if(fresh.length){box.className='cprog recent';
+    box.innerHTML=`<div class="l">✓ Answered recently — check the answers below</div><div class="sub">${fresh.length} new answer${fresh.length>1?'s':''} · marked with a dot</div>`;return}
+  box.className='cprog idle';box.innerHTML=S.comments.length?'<div class="l">✓ All caught up</div>':''}
+function renderQueue(){
+  const q=S.comments.filter(c=>c.status==='queued');
+  const nd=Object.keys(S.decisions).length;
+  // Send says exactly what it will send (user, 2026-09-30: "Send 1 decision, 2 comments, 4 changes",
+  // and "Nothing to send" when the user hasn't done anything). An empty choice counts as no choice.
+  const val=v=>Array.isArray(v)?(v.length?JSON.stringify([...v].sort()):null):(v??null);
+  const lastDec=(S.batches[S.batches.length-1]||{}).decisions||S.base||{};
+  const nDec=[...new Set([...Object.keys(S.decisions),...Object.keys(lastDec)])].filter(k=>val(S.decisions[k])!==val(lastDec[k])).length;
+  const nNote=q.filter(c=>c.kind==='note').length, nChg=q.length-nNote;
+  const pl=(n,w)=>`${n} ${w}${n===1?'':'s'}`;
+  const parts=[nDec&&pl(nDec,'decision'),nNote&&pl(nNote,'comment'),nChg&&pl(nChg,'change')].filter(Boolean);
+  $('#send').disabled=!parts.length;
+  $('#send').textContent=parts.length?'Send '+parts.join(', '):'Nothing to send';
+  $('#sendto').innerHTML=AGENT.agent?`→ <b>${esc(AGENT.agent)}</b>${AGENT.status?` · ${esc(AGENT.status)}`:''}`:'→ the Claude session in the terminal';
+  $('#sendto').className='sendto'+(AGENT.status==='working'?' busy':'');
+  const all=[...S.comments].reverse(), wait=all.filter(waiting), done=all.filter(c=>!waiting(c));
+  renderWide();
+  const ae=document.activeElement;
+  if(ae&&ae.dataset&&ae.dataset.rin&&!ae.closest('#wideview')){renderProgress();return}   // don't redraw under a reply being typed
+  $('#queue').innerHTML=(all.length?'':'<div class="empty">No messages yet.<br>Hover any block and press <em>comment</em> to ask, suggest a change or leave a note.</div>')+
+    (wait.length?'<div class="sect">Waiting</div>'+wait.map(c=>item(c)).join(''):'')+
+    (done.length?'<div class="sect">Answered — click to open</div>'+done.map(c=>item(c)).join(''):'');
+  wireThread($('#queue'));
+  const nw=wait.length; $('#cpfab').innerHTML='💬 Chat center'+(nw?` <em>${nw}</em>`:'');
+  renderProgress();
+  report();
+}
+function wireThread(root){
+  root.querySelectorAll('[data-th]').forEach(el=>el.onclick=e=>{if(e.target.closest('button,input,a'))return;
+    const id=el.dataset.th; markRead(id); if(el.classList.contains('fold')){openIds.add(id)}else if(!waiting(S.comments.find(c=>c.id===id)||{})){openIds.delete(id)} renderQueue()});
+  root.querySelectorAll('[data-goto]').forEach(a=>a.onclick=()=>{const el=document.querySelector(`[data-anchor="${a.dataset.goto}"]`);
+    if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.classList.remove('flash');void el.offsetWidth;el.classList.add('flash')}});
+  root.querySelectorAll('[data-earlier]').forEach(e=>e.onclick=()=>{const o=e.nextElementSibling;o.classList.toggle('on');
+    e.textContent=o.classList.contains('on')?'▾ hide earlier messages':`▸ ${o.children.length} earlier message${o.children.length>1?'s':''}`});
+  root.querySelectorAll('[data-del]').forEach(b=>b.onclick=async()=>{const r=await post('/api/comment/delete',{id:b.dataset.del});
+    S.comments=r.comments;renderQueue();markAnchors();renderDecisions()});
+  root.querySelectorAll('[data-rsend]').forEach(b=>{const id=b.dataset.rsend, inp=root.querySelector(`[data-rin="${id}"]`);
+    const go=async()=>{const t=inp.value.trim();if(!t||b.disabled)return;b.disabled=true;inp.disabled=true;
+      try{const r=await post('/api/reply',{id,text:t});if(r.comments)S.comments=r.comments;
+        if(DRAFT[id]!=null)delete DRAFT[id];inp.value='';openIds.add(id);toast(AGENT.agent?'Sent to '+AGENT.agent:'Sent')}
+      finally{b.disabled=false;inp.disabled=false;inp.blur();renderQueue();refreshSoon()}};
+    const grow=()=>{inp.style.height='auto';inp.style.height=Math.min(inp.scrollHeight,160)+'px'};
+    inp.oninput=()=>{DRAFT[id]=inp.value;grow()}; if(inp.value)grow();
+    b.onclick=go;inp.onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing){e.preventDefault();go()}}});
+  root.querySelectorAll('[data-mkchange]').forEach(b=>b.onclick=async()=>{const c=S.comments.find(x=>x.id===b.dataset.mkchange);
+    const m=c.messages||[], ans=[...m].reverse().find(x=>x.from==='claude');
+    await post('/api/comment',{id:'c'+Date.now(),anchor:c.anchor,anchorLabel:c.anchorLabel,anchorText:c.anchorText||'',kind:'change',
+      text:`From the conversation “${c.text}”: ${ans?ans.text:''}`});
+    const r=await post('/api/comment/update',{id:c.id,fields:{suggest:false}});S.comments=r.comments;renderQueue();markAnchors();renderDecisions();
+    toast('Added as a change — it goes with Send')});
+  root.querySelectorAll('[data-nothanks]').forEach(b=>b.onclick=async()=>{const r=await post('/api/comment/update',{id:b.dataset.nothanks,fields:{suggest:false}});
+    S.comments=r.comments;renderQueue()});
+  root.querySelectorAll('[data-wide]').forEach(b=>b.onclick=()=>{WIDE=b.dataset.wide;renderWide()});
+}
+// The wide view of one thread (⤢): redrawn on every refresh, so answers and your own replies appear in it.
+let WIDE=null; const DRAFT={};
+function renderWide(){const w=$('#wideview');if(!w)return;
+  const c=WIDE&&S.comments.find(x=>x.id===WIDE);
+  if(!c){w.classList.remove('on');w.innerHTML='';return}
+  const inp=w.querySelector('[data-rin]'), typing=inp&&document.activeElement===inp, pos=inp?inp.selectionStart:0;
+  if(inp&&inp.value)DRAFT[WIDE]=inp.value;
+  const sc=w.scrollTop, atBottom=w.scrollHeight-w.scrollTop-w.clientHeight<40;
+  w.innerHTML='<button class="x" title="Close">×</button>'+item(c,true);w.classList.add('on');
+  w.querySelector('.x').onclick=()=>{WIDE=null;renderWide()};
+  wireThread(w);
+  const ni=w.querySelector('[data-rin]');
+  if(ni&&DRAFT[WIDE]!=null){ni.value=DRAFT[WIDE]}
+  if(ni&&typing){ni.focus();try{ni.setSelectionRange(pos,pos)}catch(e){}}
+  w.scrollTop=atBottom?w.scrollHeight:sc}
+// Tell the App Maker (when this page is inside it) the round and counts it shows in its own header.
+function report(){try{if(window.top===window)return;const gs=groups();
+  const done=gs.filter(g=>g.querySelector('input:checked')).length;
+  window.parent.postMessage({type:'am-page',title:(document.querySelector('header h1')||{}).textContent||document.title,
+    round:ROUND,decided:done,total:gs.length,queued:S.comments.filter(c=>c.status==='queued').length,
+    waiting:S.comments.filter(waiting).length},'*')}catch(e){}}
+function markAnchors(){
+  document.querySelectorAll('[data-anchor]').forEach(el=>{
+    const has=S.comments.some(c=>c.anchor===el.dataset.anchor&&c.status==='queued');
+    const b=el.querySelector(':scope > .cbtn');
+    if(b){b.classList.toggle('has',has); b.textContent=has?'commented':'comment'}});
+}
+const PH={change:'What is wrong, missing, or should change here? Waits for Send.',
+          question:'What do you want to know? Answered right here, in the panel.',
+          note:'A thought, context or reaction. Waits for Send; the page only changes if you ask.'};
+const kind=()=>$('#pop input[name=kind]:checked').value;
+function setKind(k){$(`#pop input[name=kind][value="${k}"]`).checked=true;
+  document.querySelectorAll('#pop .kind label').forEach(l=>l.classList.toggle('sel',l.querySelector('input').value===k));
+  $('#poptext').placeholder=PH[k]; $('#popadd').textContent=k==='question'?'Send now':'Add to queue'}
+let target=null;
+document.addEventListener('click',e=>{
+  const btn=e.target.closest('.cbtn');
+  if(!btn){ if(!e.target.closest('#pop')&&!e.target.closest('#pagec')) $('#pop').style.display='none'; return }
+  const el=btn.closest('[data-anchor]');
+  target={anchor:el.dataset.anchor,label:el.dataset.label,
+          text:(el.querySelector('h2,.q')||{}).textContent||''};
+  const p=$('#pop'),r=btn.getBoundingClientRect();
+  $('#popanchor').textContent=target.label; $('#poptext').value=''; setKind('question');
+  p.style.display='block'; p.style.top=(window.scrollY+r.bottom+8)+'px';
+  p.style.left=Math.max(12,Math.min(r.right-328+window.scrollX,document.body.clientWidth-340))+'px';
+  $('#poptext').focus();
+});
+$('#poptext').onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing){e.preventDefault();$('#popadd').click()}};
+$('#popcancel').onclick=()=>$('#pop').style.display='none';
+$('#popadd').onclick=async()=>{
+  const t=$('#poptext').value.trim(); if(!t||!target)return;
+  const k=kind(), now=k==='question';
+  const r=await post('/api/comment',{id:'c'+Date.now(),anchor:target.anchor,
+    anchorLabel:target.label,anchorText:target.text,text:t,kind:k,now});
+  S.comments=r.comments; $('#pop').style.display='none';
+  renderQueue(); markAnchors(); renderDecisions(); toast(now?(AGENT.agent?'Sent to '+AGENT.agent:'Sent'):'Queued — goes with Send')};
+
+// ---- "Claude is working" indicator ----
+// After a send, poll until the page file changes (Claude rebuilt it) or every comment in that
+// round is marked addressed. Survives a reload (localStorage), so a page that reloads itself
+// after sending (e.g. a stage gate) still shows it.
+const WK='working:'+location.pathname;
+const lastMod=()=>fetch(location.pathname,{method:'HEAD',cache:'no-store'}).then(r=>r.headers.get('Last-Modified')||'').catch(()=>'');
+// The round's status is one small line in the Chat center (the old bar above the page pushed it around).
+function wset(cls,text){const w=$('#wstat');if(!w)return;const k=cls||'working';
+  const msg={working:'Round sent — Claude is working on it',ready:'Page updated',stale:'Still waiting — if nothing comes, say “sent” in the terminal'}[k]||'';
+  w.className='wstat '+k;w.innerHTML=(k==='working'?'<span class="spin"></span>':k==='ready'?'✓ ':'')+msg+(k==='ready'?' <button id="wreload2">Reload</button>':'');
+  const b=document.getElementById('wreload2');if(b)b.onclick=()=>location.reload()}
+async function markWorking(round){const lm=await lastMod();
+  try{localStorage.setItem(WK,JSON.stringify({round,lm,t:Date.now()}))}catch(e){}
+  wset('',`<b>Claude is working on round ${round}…</b> Your comments and decisions are sent. This bar changes when the revision is ready.`);pollWorking()}
+window.markWorking=markWorking;
+let wtimer=null;
+function pollWorking(){clearTimeout(wtimer);let w;try{w=JSON.parse(localStorage.getItem(WK)||'null')}catch(e){w=null}
+  if(!w)return;
+  wtimer=setTimeout(async()=>{const lm=await lastMod();
+    const st=await fetch('/api/state',{cache:'no-store'}).then(r=>r.json()).catch(()=>null);
+    // this round's comments only: the batch records their ids
+    const b=st?(st.batches||[])[w.round-1]:null;const ids=new Set((b&&b.commentIds)||[]);
+    const mine=st?(st.comments||[]).filter(c=>ids.has(c.id)):[];
+    const allDone=mine.length>0&&mine.every(c=>c.addressed);
+    if((lm&&w.lm&&lm!==w.lm)||allDone){try{localStorage.removeItem(WK)}catch(e){};setTimeout(renderProgress,0)
+      wset('ready',`<b>Round ${w.round} revision is ready.</b> Reload to see what changed — it's listed at the top of the left rail.`);return}
+    if(Date.now()-w.t>4*60*1000){wset('stale',`<b>Still waiting on round ${w.round}.</b> If nothing arrives, type “sent” in the terminal — the automatic wake-up may have missed it.`)}
+    pollWorking()},4000)}
+$('#wreload').onclick=()=>location.reload();
+// Discard: close the review and throw it away (user, 2026-09-30). The server moves the folder to the
+// Trash, tells Claude, and stops. Not offered inside the App Maker, whose header is hidden anyway.
+(()=>{const h=document.querySelector('header'); if(!h||document.documentElement.classList.contains('embedded'))return;
+  const b=document.createElement('button'); b.className='theme danger'; b.textContent='Discard'; b.title='Close this review and move it to the Trash';
+  const ask=document.createElement('span'); ask.className='discardask'; ask.hidden=true;
+  ask.innerHTML='Move this review to the Trash and stop it? <button class="yes">Discard</button><button class="no">Cancel</button>';
+  b.onclick=()=>{b.hidden=true; ask.hidden=false};
+  ask.querySelector('.no').onclick=()=>{ask.hidden=true; b.hidden=false};
+  ask.querySelector('.yes').onclick=async()=>{
+    try{await fetch('/api/discard',{method:'POST',body:'{}'})}catch(e){}
+    document.body.innerHTML='<div class="discarded"><h1>Review discarded</h1><p>It\'s in the Trash if you need it back. You can close this tab.</p></div>'};
+  h.insertBefore(ask,h.querySelector('#dcount').nextSibling); h.insertBefore(b,ask)})();
+
+$('#send').onclick=async()=>{
+  const r=await post('/api/send',{});
+  S.comments.forEach(c=>{if(c.status==='queued')c.status='sent'});
+  S.batches.push({decisions:{...S.decisions}});
+  ROUND+=1; $('#round').textContent=`Round ${ROUND}`;
+  renderQueue(); markAnchors(); renderDecisions();
+  toast(`Round ${ROUND-1} sent — ${r.sent} comment${r.sent===1?'':'s'} + decisions`);
+  markWorking(ROUND-1)};
+document.addEventListener('change',async e=>{
+  const i=e.target;
+  if(i.closest('#pop')){ if(i.name==='kind') setKind(i.value); return }
+  if(i.type==='radio'){S.decisions[i.name]=i.value; await post('/api/decision',{id:i.name,value:i.value})}
+  else if(i.type==='checkbox'){
+    const v=[...document.querySelectorAll(`input[name="${i.name}"]:checked`)].map(x=>x.value);
+    S.decisions[i.name]=v; await post('/api/decision',{id:i.name,value:v})}
+  else return;
+  document.querySelectorAll('label.opt').forEach(l=>l.classList.toggle('sel',l.querySelector('input').checked));
+  renderDecisions(); renderQueue(); toast('Saved')});
+// Clicking the chosen radio again clears it (user, 2026-09-30: "how to unselect").
+let wasOn=null;
+document.addEventListener('pointerdown',e=>{
+  const i=e.target.closest('label.opt')?.querySelector('input[type=radio]'); wasOn=i&&i.checked?i:null},true);
+document.addEventListener('click',e=>{
+  const i=e.target.closest('label.opt')?.querySelector('input[type=radio]');
+  if(!i||i!==wasOn)return;
+  e.preventDefault(); wasOn=null;
+  setTimeout(async()=>{
+    i.checked=false; delete S.decisions[i.name];
+    await post('/api/decision',{id:i.name,value:null});
+    document.querySelectorAll('label.opt').forEach(l=>l.classList.toggle('sel',l.querySelector('input').checked));
+    renderDecisions(); renderQueue(); toast('Cleared')},0)});
+
+async function refresh(){try{
+  const [st,ag]=await Promise.all([fetch('/api/state',{cache:'no-store'}).then(r=>r.json()),fetch('/api/agent',{cache:'no-store'}).then(r=>r.json()).catch(()=>({}))]);
+  AGENT=ag||{}; const before=JSON.stringify(S.comments); S.comments=st.comments||[]; S.batches=st.batches||[]; S.base=st.baseline||{};
+  if(JSON.stringify(S.comments)!==before||true)renderQueue();}catch(e){}}
+// every 6 s; every 2.5 s while Claude owes an answer
+function owed(){return S.comments.some(c=>c.status==='sent'&&!c.addressed&&(c.kind==='question'||c.kind==='note'||(c.messages||[]).length))}
+let rtimer=null;
+function refreshSoon(){clearTimeout(rtimer);rtimer=setTimeout(async()=>{await refresh();refreshSoon()},owed()?2500:6000)}
+refreshSoon();
+fetch('/api/agent').then(r=>r.json()).then(a=>{AGENT=a||{};renderQueue()}).catch(()=>{});
+fetch('/api/state').then(r=>r.json()).then(async st=>{
+  S.decisions=st.decisions||{}; S.comments=st.comments||[]; S.batches=st.batches||[]; S.base=st.baseline||{}; PLOADED=true;
+  ROUND=S.batches.length+1; $('#round').textContent=`Round ${ROUND}`;
+  for(const [k,v] of Object.entries(S.decisions))
+    (Array.isArray(v)?v:[v]).forEach(val=>{
+      const i=document.querySelector(`input[name="${k}"][value="${val}"]`); if(i)i.checked=true});
+  document.querySelectorAll('label.opt').forEach(l=>l.classList.toggle('sel',l.querySelector('input').checked));
+  post('/api/groups',{groups:groups().map(g=>g.dataset.radio||g.dataset.check)});
+  buildToc(); buildChanged(); renderQueue(); markAnchors(); renderDecisions();
+  pollWorking();  // a round sent before a reload keeps its "working" bar
+  if(window.mermaid){mermaid.initialize({startOnLoad:false,
+    theme:matchMedia('(prefers-color-scheme: dark)').matches?'dark':'neutral',securityLevel:'loose'});
+    try{await mermaid.run({nodes:[...document.querySelectorAll('pre.mermaid')]})}catch(e){}}
+});
+</script>
+</body>
+</html>

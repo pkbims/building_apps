@@ -1,0 +1,206 @@
+{
+  "decisions": {},
+  "comments": [
+    {
+      "id": "c1790755036488",
+      "anchor": "miss-capture",
+      "anchorLabel": "Capture while building",
+      "anchorText": "5. Record while you build",
+      "text": "No I will record after I build. \nMy focus should be on the build.",
+      "kind": "note",
+      "status": "sent",
+      "ts": "2026-09-30T07:57:16.492384+00:00",
+      "messages": [
+        {
+          "from": "claude",
+          "t": "2026-09-30T08:07:10.729848+00:00",
+          "text": "Got it. I removed **Record while you build** from the list and the recorder line from Build. Recording happens after the build."
+        }
+      ],
+      "addressed": true
+    },
+    {
+      "id": "c1790755113704",
+      "anchor": "st-pick",
+      "anchorLabel": "1 Pick",
+      "anchorText": "1. Pick",
+      "text": "the rubric should be part of the idea bank process. \n\nan idea only enters idea bank if it has everything in it.",
+      "kind": "note",
+      "status": "sent",
+      "ts": "2026-09-30T07:58:33.707023+00:00",
+      "messages": [
+        {
+          "from": "claude",
+          "t": "2026-09-30T08:07:10.770753+00:00",
+          "text": "Done. The rubric now lives in the **Idea bank**: an idea gets in only if it passes all 8 tests. Pick just takes one from the bank and writes the hook."
+        }
+      ],
+      "addressed": true
+    },
+    {
+      "id": "c1790755193669",
+      "anchor": "st-build",
+      "anchorLabel": "3 Build",
+      "anchorText": "3. Build",
+      "text": "I will develop later a skill called create-content for the video. \n\nIt will do most work of summarizing of what to show in the content video. \n\nDont worru about this right now.",
+      "kind": "note",
+      "status": "sent",
+      "ts": "2026-09-30T07:59:53.671939+00:00",
+      "messages": [
+        {
+          "from": "claude",
+          "t": "2026-09-30T08:07:10.811098+00:00",
+          "text": "Noted. Record now says a **create-content** skill will plan what to show, and I left the details for later."
+        }
+      ],
+      "addressed": true
+    },
+    {
+      "id": "c1790755253969",
+      "anchor": "st-post",
+      "anchorLabel": "6 Post",
+      "anchorText": "6. Postnew",
+      "text": "Also I will post htis everyhwere. \n\nTiktok insta youtube shorts. \nEverywhere.",
+      "kind": "note",
+      "status": "sent",
+      "ts": "2026-09-30T08:00:53.973491+00:00",
+      "messages": [
+        {
+          "from": "claude",
+          "t": "2026-09-30T08:07:10.851190+00:00",
+          "text": "Post now says Instagram, TikTok and YouTube Shorts. Instagram still leads (D1) because the keyword DMs live there."
+        }
+      ],
+      "addressed": true
+    },
+    {
+      "id": "c1790755269302",
+      "anchor": "st-learn",
+      "anchorLabel": "7 Learn",
+      "anchorText": "7. Learnnew",
+      "text": "Agree",
+      "kind": "note",
+      "status": "sent",
+      "ts": "2026-09-30T08:01:09.306740+00:00",
+      "messages": [
+        {
+          "from": "claude",
+          "t": "2026-09-30T08:07:10.891157+00:00",
+          "text": "Thanks. Learn stays as it is."
+        }
+      ],
+      "addressed": true
+    },
+    {
+      "id": "c1790755410840",
+      "anchor": "video",
+      "anchorLabel": "Video shape",
+      "anchorText": "4What every video has",
+      "text": "I agree with this. \nWe can maybe make how a little longer thats fine. \nWe must have curiousity so that the person goes and watches till the end. \n\nGo and do some research what are the most important parts that make people watch full video and makes it viral. \nWe should plan for those things early on.",
+      "kind": "note",
+      "status": "sent",
+      "ts": "2026-09-30T08:03:30.844356+00:00",
+      "messages": [
+        {
+          "from": "claude",
+          "t": "2026-09-30T08:07:10.930704+00:00",
+          "text": "Researched and added a new section 5, **What makes people watch to the end**. The video is now 45\u201360s with a longer How, a re-hook around 20s, and the best result saved for the end, so the hook's question pays off. I also added **Plan the curiosity loop** to the Plan stage, so it's decided before the build."
+        }
+      ],
+      "addressed": true
+    },
+    {
+      "id": "c1790755461225",
+      "anchor": "d2",
+      "anchorLabel": "D2 on camera",
+      "anchorText": "D2: Are you on camera?",
+      "text": "I can also be part of the screen in smaller thing if required. \nDepends. \nNot a one-way door",
+      "kind": "note",
+      "status": "sent",
+      "ts": "2026-09-30T08:04:21.229688+00:00",
+      "messages": [
+        {
+          "from": "claude",
+          "t": "2026-09-30T08:07:10.970521+00:00",
+          "text": "Updated D2: choose per video, and a small face in the corner of the screen is fine."
+        }
+      ],
+      "addressed": true
+    },
+    {
+      "id": "c1790755525158",
+      "anchor": "d5",
+      "anchorLabel": "D5 AI cost",
+      "anchorText": "D5: How do live tools pay for AI?",
+      "text": "A later and specific build decision",
+      "kind": "note",
+      "status": "sent",
+      "ts": "2026-09-30T08:05:25.162985+00:00",
+      "messages": [
+        {
+          "from": "claude",
+          "t": "2026-09-30T08:07:11.010570+00:00",
+          "text": "Removed as a decision. It's now a per-build question in the **Plan** stage."
+        }
+      ],
+      "addressed": true
+    },
+    {
+      "id": "c1790755987956",
+      "anchor": "page",
+      "anchorLabel": "General",
+      "anchorText": "",
+      "text": "Finalize this doc for now. \nThanks.",
+      "kind": "note",
+      "status": "sent",
+      "ts": "2026-09-30T08:13:07.958896+00:00",
+      "messages": [
+        {
+          "from": "claude",
+          "t": "2026-09-30T08:13:23.649295+00:00",
+          "text": "Finalized. I removed every **changed \u00b7 round** tag, and the decisions are now a plain **Decisions** list in section 7."
+        }
+      ],
+      "addressed": true
+    }
+  ],
+  "batches": [
+    {
+      "round": 1,
+      "ts": "2026-09-30T08:05:39.552012+00:00",
+      "commentIds": [
+        "c1790755036488",
+        "c1790755113704",
+        "c1790755193669",
+        "c1790755253969",
+        "c1790755269302",
+        "c1790755410840",
+        "c1790755461225",
+        "c1790755525158"
+      ],
+      "decisions": {
+        "d1": "instagram",
+        "d2": "face-screen",
+        "d3": "tool-free-guide-email",
+        "d4": "one-default",
+        "d5": "cap",
+        "d6": "weekly-bank"
+      }
+    },
+    {
+      "round": 2,
+      "ts": "2026-09-30T08:13:10.280302+00:00",
+      "commentIds": [
+        "c1790755987956"
+      ],
+      "decisions": {
+        "d1": "instagram",
+        "d2": "face-screen",
+        "d3": "tool-free-guide-email",
+        "d4": "one-default",
+        "d6": "weekly-bank"
+      }
+    }
+  ],
+  "groups": []
+}

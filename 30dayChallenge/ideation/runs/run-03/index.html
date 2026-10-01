@@ -1,0 +1,1178 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ideation · Run 3</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<style>
+  :root{--bg:#f4eee2;--panel:#fdf9f1;--ink:#2a2521;--muted:#6a6157;--faint:#978d82;
+    --line:#e3d9c7;--accent:#b0523a;--soft:#f5e4dc;--warn:#7a5a1e;--warnsoft:#f3ead3;
+    --quote:#efe7d6;--s1:6px;--s2:8px;--s3:10px;--s4:12px;--s5:16px;--s6:24px;--s7:32px;
+    --r:10px;--r2:14px}
+  :root{color-scheme:light}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;
+    --bg:#1b1916;--panel:#242019;--ink:#ede4d6;--muted:#a89e8f;--faint:#766d60;
+    --line:#38322a;--accent:#e28f72;--soft:#3b2a24;--warn:#dcb66e;--warnsoft:#302a1c;
+    --quote:#2a2620}}
+  :root[data-theme="dark"]{color-scheme:dark;
+    --bg:#1b1916;--panel:#242019;--ink:#ede4d6;--muted:#a89e8f;--faint:#766d60;
+    --line:#38322a;--accent:#e28f72;--soft:#3b2a24;--warn:#dcb66e;--warnsoft:#302a1c;
+    --quote:#2a2620}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:18px/1.7 "IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+  h1,h2,h3{letter-spacing:-.015em}
+  header{position:sticky;top:0;z-index:60;background:var(--panel);
+    border-bottom:1px solid var(--line);padding:var(--s4) var(--s6);
+    display:flex;align-items:center;gap:var(--s5)}
+  header h1{font-size:15px;margin:0;font-weight:650}
+  .tag{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);
+    background:var(--soft);padding:3px var(--s2);border-radius:var(--s1);font-weight:650}
+  .spacer{flex:1}.count{font-size:13px;color:var(--muted)}
+  button.theme{background:var(--bg);border:1px solid var(--line);color:var(--muted);font:inherit;
+    font-size:12px;padding:4px var(--s3);border-radius:var(--s2);cursor:pointer}
+  button.theme:hover{color:var(--accent);border-color:var(--accent)}
+  button.theme.danger:hover{color:var(--warn);border-color:var(--warn)}
+  .discardask{display:flex;gap:var(--s2);align-items:center;font-size:12.5px;color:var(--warn)}
+  .discardask[hidden],button.theme[hidden]{display:none}
+  .discardask button{font:inherit;font-size:12px;padding:4px var(--s3);border-radius:var(--s2);cursor:pointer;
+    border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+  .discardask button.yes{background:var(--warn);border-color:var(--warn);color:var(--panel)}
+  .discarded{max-width:520px;margin:18vh auto;padding:0 var(--s5);text-align:center;color:var(--muted)}
+  .discarded h1{color:var(--ink);font-size:22px}
+  .layout{display:grid;grid-template-columns:206px minmax(0,1fr) 350px;gap:var(--s7);
+    max-width:1400px;margin:0 auto;padding:var(--s6) var(--s6) 140px}
+  @media(max-width:1200px){.layout{grid-template-columns:186px minmax(0,1fr)}
+    /* narrow: the conversation slides in from the right instead of disappearing */
+    aside.right{position:fixed;top:0;right:0;bottom:0;max-height:none;width:min(380px,92vw);z-index:110;overflow-y:auto;
+      border-radius:0;transform:translateX(105%);transition:transform .2s;box-shadow:-12px 0 40px rgba(0,0,0,.25)}
+    aside.right.open{transform:none} #cpfab{display:flex!important}
+    html.embedded aside.right{top:0;max-height:none}}
+  #cpfab{display:none;position:fixed;right:16px;bottom:16px;z-index:111;align-items:center;gap:6px;border:0;
+    border-radius:999px;padding:10px 16px;background:var(--accent);color:#fff;font:inherit;font-size:13px;font-weight:700;
+    cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+  #cpfab em{font-style:normal;background:#fff;color:var(--accent);border-radius:999px;padding:0 7px;font-size:11.5px}
+  @media(max-width:820px){.layout{grid-template-columns:1fr}nav.toc{display:none}}
+  nav.toc{position:sticky;top:78px;align-self:start;max-height:calc(100vh - 110px);
+    overflow-y:auto;font-size:13px}
+  nav.toc .grp{color:var(--faint);text-transform:uppercase;letter-spacing:.07em;
+    font-size:10.5px;font-weight:700;margin:var(--s5) 0 var(--s2)}
+  nav.toc .grp:first-child{margin-top:0}
+  a[href]{color:var(--accent)}
+  nav.toc a{display:block;color:var(--muted);text-decoration:none;padding:5px var(--s3);
+    border-left:2px solid transparent;border-radius:0 var(--s1) var(--s1) 0}
+  nav.toc a.on{color:var(--accent);border-left-color:var(--accent);background:var(--soft);font-weight:600}
+  section{background:var(--panel);border:1px solid var(--line);border-radius:var(--r2);
+    padding:var(--s6) 28px;margin-bottom:var(--s6);position:relative;scroll-margin-top:84px}
+  section:hover > .cbtn{opacity:1}
+  section > h2{font-size:21px;margin:0 0 var(--s1)}
+  .num{color:var(--faint);font-weight:600;font-size:14px;margin-right:var(--s2)}
+  .sub{color:var(--muted);font-size:13.5px;margin:0 0 var(--s5)}
+  blockquote{margin:var(--s3) 0;padding:var(--s3) var(--s5);background:var(--quote);
+    border-left:2px solid var(--line);border-radius:0 var(--s2) var(--s2) 0;font-size:13.5px}
+  .plain{background:var(--soft);border-left:3px solid var(--accent);padding:var(--s3) var(--s5);
+    border-radius:0 var(--s2) var(--s2) 0;margin:var(--s4) 0;font-size:13.5px}
+  .plain b{color:var(--accent)}
+  .risk{background:var(--warnsoft);border-left:3px solid var(--warn);padding:var(--s3) var(--s5);
+    border-radius:0 var(--s2) var(--s2) 0;margin:var(--s4) 0;font-size:13.5px}
+  .risk b{color:var(--warn)}
+  .cbtn{position:absolute;top:var(--s5);right:var(--s5);opacity:0;transition:opacity .15s;
+    background:var(--bg);border:1px solid var(--line);color:var(--muted);font:inherit;
+    font-size:12px;padding:4px var(--s3);border-radius:var(--s2);cursor:pointer}
+  .cbtn:hover{color:var(--accent);border-color:var(--accent)}
+  .cbtn.has{opacity:1;color:var(--accent);border-color:var(--accent);background:var(--soft)}
+  .d{border:1px solid var(--line);border-radius:var(--r);padding:var(--s5) 18px;
+    margin:var(--s5) 0;position:relative}
+  .d:hover .cbtn{opacity:1}
+  .d.open{border-left:3px solid var(--accent)}
+  .q{font-weight:650;font-size:14.5px;margin-bottom:3px}
+  .why{color:var(--muted);font-size:13px;margin-bottom:var(--s4)}
+  label.opt{display:flex;gap:var(--s3);align-items:flex-start;padding:9px var(--s4);
+    border:1px solid transparent;border-radius:var(--s2);cursor:pointer;font-size:14px}
+  label.opt:hover{background:var(--bg)}
+  label.opt.sel{border-color:var(--accent);background:var(--soft)}
+  label.opt input{margin-top:3px;accent-color:var(--accent);flex:none}
+  .oh{font-weight:550}.od{color:var(--muted);font-size:12.5px;display:block;margin-top:1px}
+  .mm{background:var(--bg);border:1px solid var(--line);border-radius:var(--r);
+    padding:18px;margin:var(--s4) 0;overflow-x:auto;text-align:center}
+  table.t{width:100%;border-collapse:collapse;font-size:13px;margin:var(--s4) 0}
+  table.t th,table.t td{border:1px solid var(--line);padding:var(--s2) var(--s3);
+    text-align:left;vertical-align:top}
+  table.t th{background:var(--bg);font-weight:650}
+  code{background:var(--quote);padding:1px 5px;border-radius:5px;font-size:12.5px}
+  pre.code{background:var(--quote);padding:var(--s5);border-radius:var(--r);
+    overflow-x:auto;font-size:12.5px;margin:var(--s4) 0}
+  details.ref{border:1px solid var(--line);border-radius:var(--r);padding:var(--s4) 18px;
+    margin:var(--s4) 0;background:var(--bg)}
+  details.ref summary{cursor:pointer;font-weight:650;font-size:14px;color:var(--accent)}
+  /* The Chat center (the right column): decisions in brief, Send, then the page's conversation.
+     Pinned at full window height with its own scroll, so the page and the chat scroll separately. */
+  aside.right{position:sticky;top:78px;align-self:start;background:var(--panel);border:1px solid var(--line);
+    border-radius:var(--r2);padding:var(--s5) 18px;max-height:calc(100vh - 92px);overflow-y:auto;overscroll-behavior:contain}
+  aside.right h2{font-size:15px;margin:0}
+  .bar{height:4px;background:var(--line);border-radius:2px;overflow:hidden;margin-top:9px}
+  .bar i{display:block;height:100%;background:var(--accent);transition:width .3s}
+  .dsum{display:flex;align-items:center;gap:8px;font-size:13px;margin-top:4px}
+  .dsum a{margin-left:auto;font-size:12px;color:var(--accent);cursor:pointer}
+  #dchg{font-size:12px;border-left:3px solid var(--accent);background:var(--soft);border-radius:6px;
+    padding:5px 9px;margin-top:8px} #dchg:empty{display:none} #dchg b{font-size:10.5px;letter-spacing:.05em}
+  .dlist{margin:var(--s3) -4px 0;padding:0 4px;border-top:1px dashed var(--line)} .dlist[hidden]{display:none}
+  .dr{display:flex;gap:9px;align-items:center;padding:5px var(--s2);border-radius:var(--s1);
+    cursor:pointer;font-size:12.5px}
+  .dr:hover{background:var(--bg)}
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--line);flex:none}
+  .dr.done .dot{background:var(--accent)}
+  .dn{color:var(--muted);font-weight:700;flex:none}
+  .dr.todo .dv{color:var(--muted);font-style:italic}
+  .topact{position:sticky;top:calc(-1 * var(--s5));z-index:5;background:var(--panel);padding:12px 0 8px;margin-top:6px;
+    display:flex;flex-direction:column;gap:6px;border-bottom:1px solid var(--line)}
+  .sendto{font-size:11.5px;color:var(--muted);text-align:center} .sendto b{color:var(--ink)}
+  .sendto.busy b{color:var(--accent)}
+  .wstat{font-size:12px;text-align:center;display:flex;gap:6px;align-items:center;justify-content:center;flex-wrap:wrap}
+  .wstat:empty{display:none}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .wstat .spin{width:11px;height:11px;border:2px solid var(--warn);border-right-color:transparent;border-radius:50%;animation:spin .8s linear infinite}
+  .wstat.working{color:var(--warn)} .wstat.ready{color:var(--accent)} .wstat.stale{color:var(--muted)}
+  .wstat button{font:inherit;font-size:11.5px;border:0;border-radius:7px;background:var(--accent);color:#fff;padding:2px 9px;cursor:pointer}
+  .pagec{font:inherit;font-size:12.5px;border:1px dashed var(--line);background:none;color:var(--muted);
+    border-radius:10px;padding:6px;cursor:pointer} .pagec:hover{color:var(--accent);border-color:var(--accent)}
+  #queue{display:flex;flex-direction:column;gap:6px;margin-top:6px}
+  /* Progress meter (user, 2026-09-28): what Claude is working on, answered recently, or all caught up. */
+  .cprog{border:1px solid var(--line);border-radius:12px;padding:8px 10px;font-size:12.5px;background:var(--bg)}
+  .cprog:empty{display:none}
+  .cprog .l{display:flex;gap:7px;align-items:center}
+  .cprog .spin{width:11px;height:11px;border:2px solid var(--warn);border-right-color:transparent;border-radius:50%;animation:spin .8s linear infinite;flex:none}
+  .cprog.working{border-color:var(--warn)} .cprog.working .l{color:var(--warn);font-weight:700}
+  .cprog .pb{height:6px;border-radius:99px;background:var(--line);overflow:hidden;margin-top:7px}
+  .cprog .pb i{display:block;height:100%;background:var(--warn);transition:width .4s}
+  .cprog .sub{margin-top:5px;color:var(--muted);font-size:11.5px}
+  .cprog.recent{border-color:var(--accent);background:var(--soft)} .cprog.recent .l{color:var(--accent);font-weight:700}
+  .cprog.idle{color:var(--muted)}
+  .th.unread{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset}
+  .th .ndot{width:8px;height:8px;border-radius:50%;background:var(--accent);flex:none}
+  /* The recommended option's tag (SKILL: "a small tag on the option"). */
+  .rec{display:inline-block;font:700 10.5px ui-monospace,Menlo,monospace;letter-spacing:.04em;text-transform:uppercase;padding:1px 7px;margin-left:6px;border-radius:999px;background:#C8FF3D;color:#141414;border:1px solid #141414;vertical-align:middle}
+  .sect{font-size:10.5px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin:8px 2px 0}
+  .th{border:1px solid var(--line);border-radius:12px;background:var(--bg);padding:9px 10px;font-size:13px}
+  .th .hd{display:flex;gap:6px;align-items:center;font-size:11px;color:var(--muted);margin-bottom:4px}
+  .th .hd .where{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .th .hd .st{margin-left:0;white-space:nowrap}
+  .th .hd a{color:var(--accent);cursor:pointer}
+  .ktag{font-size:10.5px;font-weight:700;border-radius:999px;padding:1px 7px;text-transform:uppercase;letter-spacing:.03em}
+  .ktag.question{background:color-mix(in srgb,#3b82f6 16%,transparent);color:#3b82f6}
+  .ktag.change{background:color-mix(in srgb,var(--accent) 16%,transparent);color:var(--accent)}
+  .ktag.note{background:color-mix(in srgb,#22a55a 16%,transparent);color:#22a55a}
+  .th .st{margin-left:auto;font-weight:700} .st.ok{color:#22a55a} .st.wait{color:var(--accent)}
+  .th .msg{margin-top:7px;padding:7px 9px;border-radius:9px;line-height:1.5}
+  .th .msg.claude{background:var(--soft)} .th .msg.you{border:1px solid var(--line);margin-left:16px}
+  .th .msg .who{display:block;font-size:10.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;margin-bottom:2px}
+  .th .msg.claude .who{color:var(--accent)} .th .msg.you .who{color:var(--muted)}
+  .th .msg code{background:var(--bg);padding:0 4px;border-radius:4px;font-size:12px}
+  .th .msg ul{margin:4px 0 0 16px;padding:0}
+  .th .act{display:flex;gap:6px;margin-top:7px;flex-wrap:wrap}
+  .th .act button,.th .rb button{font:inherit;font-size:11.5px;border:1px solid var(--line);background:var(--panel);
+    color:var(--ink);border-radius:8px;padding:3px 9px;cursor:pointer}
+  .th .act button.pri,.th .rb button{background:var(--accent);border-color:var(--accent);color:#fff}
+  .th .rb{display:flex;gap:6px;margin-top:8px}
+  .th .rb{align-items:flex-end}
+  .th .rb textarea{flex:1;min-width:0;font:inherit;font-size:12.5px;line-height:1.4;border:1px solid var(--line);border-radius:8px;
+    background:var(--panel);color:var(--ink);padding:5px 8px;resize:none;max-height:160px;overflow-y:auto}
+  .th .earlier{font-size:11.5px;color:var(--accent);cursor:pointer;margin-top:6px}
+  .th .older{display:none} .th .older.on{display:block}
+  .th .typing{font-size:12px;color:var(--muted);font-style:italic;margin-top:6px}
+  .th.fold{padding:6px 10px;cursor:pointer} .th.fold:hover{border-color:var(--accent)}
+  .th.fold .body{display:none}
+  .th .row1{display:flex;gap:7px;align-items:center}
+  .th .row1 .q1{flex:1;min-width:0}
+  .th.fold .row1 .q1{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12.5px}
+  .th .n{font-size:10.5px;color:var(--muted);white-space:nowrap}
+  .th .wide{margin-left:auto;border:0;background:none;color:var(--muted);cursor:pointer;font-size:13px}
+  #wideview{display:none;position:fixed;inset:6vh 10vw;z-index:120;background:var(--panel);border:1px solid var(--line);
+    border-radius:var(--r2);padding:20px 24px;overflow:auto;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+  #wideview.on{display:block} #wideview .th{font-size:14px} #wideview .x{float:right;cursor:pointer;border:0;background:none;font-size:18px;color:var(--muted)}
+  .empty{color:var(--muted);font-size:13px;text-align:center;padding:var(--s5) var(--s3)}
+  /* Inside the App Maker the page's own header is hidden — the App Maker shows the round and the counts. */
+  html.embedded header{display:none}
+  html.embedded nav.toc{top:12px} html.embedded aside.right{top:12px;max-height:calc(100vh - 24px)}
+  html.embedded section{scroll-margin-top:16px}
+  button.primary{width:100%;background:var(--accent);color:#fff;border:0;padding:11px;
+    border-radius:var(--r);font:inherit;font-size:13.5px;font-weight:650;cursor:pointer}
+  button.primary:disabled{background:var(--bg);color:var(--faint);border:1px solid var(--line);cursor:default}
+  #pop{position:absolute;z-index:100;width:328px;background:var(--panel);
+    border:1px solid var(--line);border-radius:var(--r);padding:var(--s4);
+    box-shadow:0 10px 34px rgba(0,0,0,.18);display:none}
+  #pop .pa{font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;
+    color:var(--accent);font-weight:700;margin-bottom:var(--s2)}
+  #pop .kind{display:flex;gap:var(--s2);margin-bottom:var(--s2)}
+  #pop .pophint{font-size:11px;color:var(--faint);margin:3px 0 0}
+  #pop .kind label{flex:1;display:flex;gap:6px;align-items:center;font-size:12.5px;
+    padding:5px var(--s2);border:1px solid var(--line);border-radius:var(--s2);cursor:pointer;color:var(--muted)}
+  #pop .kind label.sel{border-color:var(--accent);background:var(--soft);color:var(--accent)}
+  #pop .kind input{margin:0;accent-color:var(--accent)}
+  #pop textarea{width:100%;min-height:88px;border:1px solid var(--line);border-radius:var(--s2);
+    padding:9px;font:inherit;font-size:13.5px;background:var(--bg);color:var(--ink)}
+  #pop .row{display:flex;gap:var(--s2);margin-top:var(--s3)}
+  #pop button{flex:1;padding:var(--s2);border-radius:var(--s2);font:inherit;font-size:13px;
+    cursor:pointer;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+  #pop button.add{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:650}
+  /* "Claude is working" strip: shown after a round is sent, until the page is revised */
+  #working{display:none!important;position:sticky;top:53px;z-index:55;background:var(--warnsoft);color:var(--warn);
+    border-bottom:1px solid var(--line);padding:9px var(--s6);font-size:13.5px;align-items:center;gap:var(--s3)}
+  #working.on{display:flex}
+  #working.ready{background:var(--soft);color:var(--accent)}
+  #working .spin{width:14px;height:14px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;
+    animation:wspin .8s linear infinite;flex:none}
+  #working.ready .spin,#working.stale .spin{display:none}
+  #working button{margin-left:auto;background:var(--accent);color:#fff;border:0;border-radius:var(--s2);
+    padding:5px 12px;font:inherit;font-size:13px;font-weight:650;cursor:pointer;display:none}
+  #working.ready button{display:inline-block}
+  @keyframes wspin{to{transform:rotate(360deg)}}
+  #toast{position:fixed;bottom:var(--s6);left:50%;transform:translateX(-50%);
+    background:var(--ink);color:var(--bg);padding:var(--s3) 18px;border-radius:var(--s2);
+    font-size:13.5px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:200}
+  #toast.on{opacity:1}
+  .flash{animation:fl 1.1s ease-out}
+  @keyframes fl{0%{background:var(--soft)}100%{background:transparent}}
+  [data-changed]{box-shadow:inset 3px 0 0 var(--warn)}
+  [data-changed]::before{content:"changed · round " attr(data-changed);position:absolute;top:-9px;left:12px;
+    font-size:10px;letter-spacing:.06em;text-transform:uppercase;font-weight:700;color:var(--warn);
+    background:var(--warnsoft);padding:2px 7px;border-radius:5px;z-index:1}
+  nav.toc .chg a{color:var(--warn)} nav.toc .chg a.on{color:var(--warn);border-left-color:var(--warn);background:var(--warnsoft)}
+  nav.toc .chg .grp{color:var(--warn)}
+</style>
+<script id="theme">
+try{if(window.top!==window)document.documentElement.classList.add('embedded')}catch(e){document.documentElement.classList.add('embedded')}
+(()=>{const K='theme',R=document.documentElement,L={'':'Auto',light:'Light',dark:'Dark'};
+const set=v=>{v?R.dataset.theme=v:delete R.dataset.theme;try{v?localStorage.setItem(K,v):localStorage.removeItem(K)}catch(e){}};
+try{set(localStorage.getItem(K)||'')}catch(e){}
+addEventListener('DOMContentLoaded',()=>{const h=document.querySelector('header');if(!h)return;
+  const b=document.createElement('button');b.className='theme';b.title='Auto → Light → Dark';
+  const show=()=>b.textContent=L[R.dataset.theme||''];
+  b.onclick=()=>{const c=['','light','dark'];set(c[(c.indexOf(R.dataset.theme||'')+1)%3]);show()};
+  show();h.appendChild(b)})})();
+</script>
+</head>
+<body>
+<header>
+  <h1>Ideation · Run 3</h1>
+  <span class="tag" id="round">Round 1</span>
+  <div class="spacer"></div>
+  <span class="count" id="dcount">—</span>
+</header>
+
+<div id="working"><span class="spin"></span><span id="wtext"></span><button id="wreload">Reload</button></div>
+<div class="layout">
+<nav class="toc" id="toc"></nav>
+<main>
+<style>
+  .lines{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:var(--s2)}
+  .lines li{padding-left:22px;position:relative}
+  .lines li::before{content:"→";position:absolute;left:0;color:var(--accent);font-weight:700}
+  .blk{position:relative;padding:var(--s4) 0;border-top:1px solid var(--line)}
+  .blk.first{border-top:0;padding-top:0}
+  .blk:hover > .cbtn{opacity:1}
+  .ok{color:#22a55a;font-weight:700;white-space:nowrap}
+  .no{color:var(--warn);font-weight:700;white-space:nowrap}
+  .mid{color:var(--muted);font-weight:700;white-space:nowrap}
+  .t td:first-child{white-space:nowrap}
+  [data-check="b1"] .niche{display:none;margin:2px 0 var(--s3) 30px;padding-left:var(--s3);border-left:2px solid var(--accent)}
+  [data-check="b1"] .niche .nlab{font-size:12px;color:var(--muted);margin:2px 0 4px}
+  [data-check="b1"] label.opt.sub{padding:5px var(--s3);font-size:13.5px}
+  [data-check="b1"]:has(input[value="students"]:checked) .niche[data-for="students"]{display:block}
+  [data-check="b1"]:has(input[value="smallbiz"]:checked) .niche[data-for="smallbiz"]{display:block}
+  [data-check="b1"]:has(input[value="creators"]:checked) .niche[data-for="creators"]{display:block}
+  [data-check="b1"]:has(input[value="freelancers"]:checked) .niche[data-for="freelancers"]{display:block}
+  [data-check="b1"]:has(input[value="parents"]:checked) .niche[data-for="parents"]{display:block}
+  .flow{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:var(--s3);margin:var(--s4) 0;counter-reset:st}
+  .flow .box{position:relative;border:1.5px solid var(--line);border-radius:var(--r);padding:var(--s3) var(--s4);background:var(--panel);min-width:0}
+  .flow .box.you{border-color:var(--accent);background:var(--soft)}
+  .flow .box .who{display:block;font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+  .flow .box.you .who{color:var(--accent)}
+  .flow .box b{display:block;font-size:15px;margin:2px 0}
+  .flow .box span.ds{font-size:12.5px;color:var(--muted);line-height:1.45;display:block}
+  .flow .box .n{position:absolute;top:-10px;left:10px;background:var(--bg);color:var(--faint);font-size:11px;font-weight:800;padding:0 6px;border-radius:6px}
+  .loop{display:flex;align-items:center;gap:var(--s2);font-size:13px;color:var(--muted);border:1.5px dashed var(--line);border-radius:var(--r);padding:var(--s2) var(--s4)}
+  .loop b{color:var(--ink)}
+  .legend{display:flex;gap:var(--s4);font-size:12.5px;color:var(--muted);margin-top:var(--s2)}
+  .legend i{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-2px;margin-right:5px;border:1.5px solid var(--line)}
+  .legend i.you{border-color:var(--accent);background:var(--soft)}
+  .ask{border:1px dashed var(--accent);border-radius:var(--r);padding:var(--s4) 18px;margin:var(--s4) 0;position:relative;background:var(--soft)}
+  .ask:hover > .cbtn{opacity:1}
+  .ask .how{font-size:13px;color:var(--muted)}
+  .done{border-style:solid;border-color:var(--line);background:var(--panel)}
+  .empty-run{text-align:center;padding:var(--s7) var(--s5);color:var(--muted)}
+  .empty-run h3{color:var(--ink);font-size:18px;margin:0 0 var(--s2)}
+  .kinds{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:var(--s3);margin-top:var(--s3)}
+  .kind{border:1px solid var(--line);border-radius:var(--r);padding:var(--s3) var(--s4);background:var(--bg);min-width:0}
+  .kind b{display:block;font-size:14px}
+  .kind span{font-size:13px;color:var(--muted)}
+</style>
+
+<style>
+  .lines{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:var(--s2)}
+  .lines li{padding-left:22px;position:relative}
+  .lines li::before{content:"→";position:absolute;left:0;color:var(--accent);font-weight:700}
+  .tag{display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;padding:1px 8px;border-radius:999px;background:var(--quote);color:var(--muted);white-space:nowrap}
+  .t td.c,.t th.c{text-align:center;white-space:nowrap;font-variant-numeric:tabular-nums}
+  .t tr.win td{background:var(--soft)}
+  .idea{border:1px solid var(--line);border-radius:var(--r);padding:var(--s5) 18px;margin:var(--s5) 0;position:relative;background:var(--panel)}
+  .idea:hover > .cbtn{opacity:1}
+  .idea h3{font-size:18px;margin:0 0 2px;padding-right:80px;text-wrap:balance}
+  .idea .hook{font-size:15px;color:var(--muted);margin:0 0 var(--s3);font-style:italic}
+  .idea .rank{display:flex;gap:var(--s2);align-items:center;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);margin-bottom:4px}
+  .idea .score{float:right;font-weight:800;font-size:20px;color:var(--accent);font-variant-numeric:tabular-nums;margin-left:var(--s3)}
+  .idea .score small{font-size:12px;color:var(--muted);font-weight:600}
+  .idea dl{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:6px var(--s4);margin:0 0 var(--s3);font-size:14px}
+  .idea dt{font-weight:650;color:var(--muted)}
+  .idea dd{margin:0;min-width:0}
+  .idea .t{font-size:13px;margin:var(--s2) 0}
+  .idea .t td:first-child{white-space:nowrap;font-weight:650}
+  .beyond{display:inline-block;font-size:12px;font-weight:700;color:#22a55a;border:1px solid color-mix(in srgb,#22a55a 40%,transparent);border-radius:999px;padding:1px 9px;margin-bottom:var(--s3)}
+  .comp{font-size:13px;margin:var(--s2) 0}
+  .comp b{color:var(--ink)}
+  .keep{margin-top:var(--s3);border-top:1px dashed var(--line);padding-top:var(--s3)}
+  .keep .kq{font-size:13px;color:var(--muted);margin-bottom:4px}
+</style>
+
+<section id="s-results" data-anchor="results" data-label="Run 3 results" data-group="Run 3" data-title="Results">
+  <button class="cbtn">comment</button>
+  <h2><span class="num">1</span>Run 3: 10 ideas</h2>
+  <p class="sub">Oct 1, 2026 · small business owners (real estate agents, gyms and studios, clinics, photographers) · saving money and time · 106 signals from 14 sources → 22 ideas → 10 passed rubric v3. Each one was checked on TikTok for existing tools.</p>
+  <div style="overflow-x:auto">
+  <table class="t">
+    <tr><th>#</th><th>Idea</th><th>For</th><th>Build</th><th class="c">Score</th></tr>
+    <tr class="win"><td>1</td><td><b>ClassPass Converter</b>: find your ClassPass regulars and win them as members</td><td><span class="tag">Gyms</span></td><td>Web app + texts</td><td class="c">11</td></tr>
+    <tr class="win"><td>2</td><td><b>Gallery Countdown</b>: couples see their gallery being edited, live</td><td><span class="tag">Photo</span></td><td>Automation</td><td class="c">11</td></tr>
+    <tr class="win"><td>3</td><td><b>Last-Minute Slot Filler</b>: a cancellation becomes a filled slot by text</td><td><span class="tag">Clinics</span></td><td>Automation</td><td class="c">11</td></tr>
+    <tr><td>4</td><td><b>Gym Secret Shopper</b>: an AI pretends to be a lead and times your follow-up</td><td><span class="tag">Gyms</span></td><td>Browser agent</td><td class="c">10</td></tr>
+    <tr><td>5</td><td><b>Showing Gatekeeper</b>: showing requests sorted by the seller's rules</td><td><span class="tag">Real estate</span></td><td>Automation</td><td class="c">10</td></tr>
+    <tr><td>6</td><td><b>Deal Timeline</b>: contract in, every deadline on the calendar, clients updated weekly</td><td><span class="tag">Real estate</span></td><td>Skill + automation</td><td class="c">10</td></tr>
+    <tr><td>7</td><td><b>Past Client Radar</b>: home anniversaries and check-ins that send themselves</td><td><span class="tag">Real estate</span></td><td>Automation</td><td class="c">10</td></tr>
+    <tr><td>8</td><td><b>Empty Class Filler</b>: under-booked classes fill themselves 2 hours before</td><td><span class="tag">Gyms</span></td><td>Automation</td><td class="c">10</td></tr>
+    <tr><td>9</td><td><b>Search My Shoot</b>: type "first dance" and find the photo, privately, on your Mac</td><td><span class="tag">Photo</span></td><td>Web app (local)</td><td class="c">10</td></tr>
+    <tr><td>10</td><td><b>Revision Gate</b>: turns ChatGPT-written client feedback into a clear, counted revision list</td><td><span class="tag">Video</span></td><td>Web app</td><td class="c">9</td></tr>
+  </table>
+  </div>
+  <div class="plain"><b>What stood out:</b> the loudest pain this month was <b>studios leaving ClassPass</b> (a Threads post with 2.6K likes and 355K views), and the most crowded space was <b>AI receptionists</b>. Every niche already has several, so I killed those. Score = Relatable + Value + Shareable + Visual, out of 12. Ties are ordered by Value.</div>
+</section>
+
+<section id="s-ideas" data-anchor="ideas" data-label="Idea cards" data-group="Run 3" data-title="The 10 idea cards">
+  <button class="cbtn">comment</button>
+  <h2><span class="num">2</span>The 10 idea cards</h2>
+  <p class="sub">Keep or Kill each one, with one line on why in a comment. Kept ideas move to Selected Ideas. Clicking a chosen option again clears it.</p>
+
+  <div class="idea" data-anchor="i1" data-label="Idea 1 ClassPass Converter">
+    <button class="cbtn">comment</button>
+    <div class="score">11<small>/12</small></div>
+    <div class="rank">1 <span class="tag">Gyms and studios</span></div>
+    <h3>ClassPass Converter</h3>
+    <p class="hook">"Only 2% of ClassPass clients ever become members. I built an AI that finds the ones who will."</p>
+    <span class="beyond">Beyond ChatGPT: reads your booking export and sends the offers</span>
+    <dl>
+      <dt>The build</dt><dd>Upload your booking export (Mindbody, Glofox, Momence). It finds ClassPass regulars, ranks them by how often they come, shows what they're worth as members, and sends each a personal intro-offer text or email sequence.</dd>
+      <dt>Magic moment</dt><dd>"You have 23 ClassPass regulars. As members they'd be worth $4,140 a month." Then the offers go out.</dd>
+      <dt>Evidence</dt><dd>Threads: studios leaving ClassPass ("the lower payout… trains customers not to commit"): 2.6K+ likes, 139 replies, 355K views (Sep). A yoga owner says ClassPass is 50–60% of their bookings. TikTok: owners share <i>tips</i> on converting, and one says only 2% convert.</dd>
+    </dl>
+    <table class="t">
+      <tr><td>Relatable 3</td><td>Every boutique studio on ClassPass, and it's the hot topic right now</td></tr>
+      <tr><td>Value 3</td><td>Direct members pay 2–3× what ClassPass pays out</td></tr>
+      <tr><td>Shareable 3</td><td>Studio owners are already sharing this exact conversation</td></tr>
+      <tr><td>Visual 2</td><td>A ranked list with a $ total. Clear, but a spreadsheet at heart.</td></tr>
+    </table>
+    <div class="comp"><b>Competition check:</b> TikTok has advice videos only. No tool found.</div>
+    <div class="keep" data-radio="k1"><div class="kq">Keep or Kill?</div>
+      <label class="opt"><input type="radio" name="k1" value="keep"><span><span class="oh">Keep<span class="rec">recommended</span></span><span class="od">The loudest pain in this run, and nobody has built the tool.</span></span></label>
+      <label class="opt"><input type="radio" name="k1" value="kill"><span><span class="oh">Kill</span></span></label>
+    </div>
+  </div>
+
+  <div class="idea" data-anchor="i2" data-label="Idea 2 Gallery Countdown">
+    <button class="cbtn">comment</button>
+    <div class="score">11<small>/12</small></div>
+    <div class="rank">2 <span class="tag">Photographers</span></div>
+    <h3>Gallery Countdown</h3>
+    <p class="hook">"Every couple texts 'can't wait to see the rest!' So I built them a live countdown to their gallery."</p>
+    <span class="beyond">Beyond ChatGPT: watches your editing folder and updates the couple by itself</span>
+    <dl>
+      <dt>The build</dt><dd>It watches the wedding's export folder (or Lightroom catalog). As edited photos pile up, the couple's private page shows "312 of 600 edited · ready about Oct 14", with a new favourite each day. Emails go out at 25/50/75/100%.</dd>
+      <dt>Magic moment</dt><dd>You export 50 photos, and the couple's progress bar jumps on their phone.</dd>
+      <dt>Evidence</dt><dd>r/WeddingPhotography "'Can't wait to see the rest' response": 120+ comments (Sep). Clients chasing galleries is a constant theme. TikTok shows delivery tips, no tool.</dd>
+    </dl>
+    <table class="t">
+      <tr><td>Relatable 3</td><td>Every wedding photographer gets chased</td></tr>
+      <tr><td>Value 2</td><td>Fewer "when?" emails, and happier couples who refer you</td></tr>
+      <tr><td>Shareable 3</td><td>Photographers share workflow wins, and couples share the page</td></tr>
+      <tr><td>Visual 3</td><td>A progress bar filling with real photos</td></tr>
+    </table>
+    <div class="comp"><b>Competition check:</b> TikTok shows gallery delivery tools (Pixieset, Pic-Time), but no live editing progress.</div>
+    <div class="keep" data-radio="k2"><div class="kq">Keep or Kill?</div>
+      <label class="opt"><input type="radio" name="k2" value="keep"><span><span class="oh">Keep<span class="rec">recommended</span></span><span class="od">Fresh, very visual, and a one-day build.</span></span></label>
+      <label class="opt"><input type="radio" name="k2" value="kill"><span><span class="oh">Kill</span></span></label>
+    </div>
+  </div>
+
+  <div class="idea" data-anchor="i3" data-label="Idea 3 Last-Minute Slot Filler">
+    <button class="cbtn">comment</button>
+    <div class="score">11<small>/12</small></div>
+    <div class="rank">3 <span class="tag">Clinics</span></div>
+    <h3>Last-Minute Slot Filler</h3>
+    <p class="hook">"A patient cancelled 2 hours before. 4 minutes later the slot was full, and nobody picked up a phone."</p>
+    <span class="beyond">Beyond ChatGPT: watches the calendar and texts the waitlist by itself</span>
+    <dl>
+      <dt>The build</dt><dd>Connect the clinic's Google Calendar (no practice software needed). When an appointment is cancelled, it texts the short-notice waitlist. The first "YES" gets booked, and everyone else gets "it's taken". Works for dental, physio and vet.</dd>
+      <dt>Magic moment</dt><dd>On screen: three phones get the text, one replies YES, the calendar fills.</dd>
+      <dt>Evidence</dt><dd>r/Dentistry "Sucktember": no-shows and cancellations (40+). r/physicaltherapy double-booking because of no-shows (50+). Vet clients leaving over unanswered phones (10+). MedPilot (TrustMRR, $45.8k in 30 days) proves clinics pay for this.</dd>
+    </dl>
+    <table class="t">
+      <tr><td>Relatable 3</td><td>Every appointment-based clinic</td></tr>
+      <tr><td>Value 3</td><td>An empty chair costs $150–$1,000+</td></tr>
+      <tr><td>Shareable 2</td><td>Office managers share with other office managers</td></tr>
+      <tr><td>Visual 3</td><td>The race to claim the slot</td></tr>
+    </table>
+    <div class="comp"><b>Competition check:</b> Filld.io advertises AI slot-filling on TikTok, and dental software has reminders. Your angle: no practice software, just a Google Calendar and texts, set up in minutes.</div>
+    <div class="keep" data-radio="k3"><div class="kq">Keep or Kill?</div>
+      <label class="opt"><input type="radio" name="k3" value="keep"><span><span class="oh">Keep<span class="rec">recommended</span></span><span class="od">Proven willingness to pay, and a great on-screen race.</span></span></label>
+      <label class="opt"><input type="radio" name="k3" value="kill"><span><span class="oh">Kill</span></span></label>
+    </div>
+  </div>
+
+  <div class="idea" data-anchor="i4" data-label="Idea 4 Gym Secret Shopper">
+    <button class="cbtn">comment</button>
+    <div class="score">10<small>/12</small></div>
+    <div class="rank">4 <span class="tag">Gyms and studios</span></div>
+    <h3>Gym Secret Shopper</h3>
+    <p class="hook">"I sent an AI to sign up at 10 gyms. 8 never got back to it."</p>
+    <span class="beyond">Beyond ChatGPT: a browser agent fills in real forms and watches the inbox</span>
+    <dl>
+      <dt>The build</dt><dd>Give it a gym's website. The agent fills in the free-trial or contact form as a believable lead (with a test inbox), then times the reply and scores it: speed, booking link, follow-up. The owner gets a scorecard. Only for your own gym, or with the owner's permission.</dd>
+      <dt>Magic moment</dt><dd>The agent typing into the form, then a clock ticking: "No reply after 48 hours."</dd>
+      <dt>Evidence</dt><dd>Replify's study of 105 gyms: only 31% of calls answered live, 88% of leads got no follow-up within 72 hours. TikTok: "your gym never followed up with a lead" (Sep 21). Lead-follow-up bots exist, but no tester.</dd>
+    </dl>
+    <table class="t">
+      <tr><td>Relatable 2</td><td>Gym owners, and the agencies that sell to them</td></tr>
+      <tr><td>Value 2</td><td>A wake-up call that shows exactly where leads leak</td></tr>
+      <tr><td>Shareable 3</td><td>Owners send it to their front desk and their competitors</td></tr>
+      <tr><td>Visual 3</td><td>Watching an AI shop, then the silence</td></tr>
+    </table>
+    <div class="comp"><b>Competition check:</b> nothing like it on TikTok. Gymtopia.ai and others sell the fix, not the test.</div>
+    <div class="keep" data-radio="k4"><div class="kq">Keep or Kill?</div>
+      <label class="opt"><input type="radio" name="k4" value="keep"><span><span class="oh">Keep<span class="rec">recommended</span></span><span class="od">The best video hook in this run.</span></span></label>
+      <label class="opt"><input type="radio" name="k4" value="kill"><span><span class="oh">Kill</span></span></label>
+    </div>
+  </div>
+
+  <div class="idea" data-anchor="i5" data-label="Idea 5 Showing Gatekeeper">
+    <button class="cbtn">comment</button>
+    <div class="score">10<small>/12</small></div>
+    <div class="rank">5 <span class="tag">Real estate agents</span></div>
+    <h3>Showing Gatekeeper</h3>
+    <p class="hook">"Buyer agents were slamming my sellers with showing requests. Now an AI checks every one against the seller's rules."</p>
+    <span class="beyond">Beyond ChatGPT: reads showing-request emails, checks the calendar, replies</span>
+    <dl>
+      <dt>The build</dt><dd>The seller sets rules: no overlaps, a 2-hour notice, pre-approval letter required. It reads incoming showing requests from Gmail, checks them against the rules and the calendar, asks for the pre-approval when it's missing, then accepts or proposes a better time.</dd>
+      <dt>Magic moment</dt><dd>Five messy requests in. Three booked cleanly, one counter-offered, one asked for pre-approval.</dd>
+      <dt>Evidence</dt><dd>r/realtors "slammed with buyer agents demanding unreasonable showing times" (60+, Sep 20). "Seller wants qualified viewings only" (350+). Realtors using Claude is an active TikTok niche ("connect Claude to the MLS", skill packs), but no showing tool.</dd>
+    </dl>
+    <table class="t">
+      <tr><td>Relatable 3</td><td>Every listing agent, every week</td></tr>
+      <tr><td>Value 3</td><td>Hours a week, and happier sellers</td></tr>
+      <tr><td>Shareable 2</td><td>Agents share with their team</td></tr>
+      <tr><td>Visual 2</td><td>An inbox sorting itself</td></tr>
+    </table>
+    <div class="comp"><b>Competition check:</b> ShowingTime-style schedulers exist, but nobody applies seller rules or checks pre-approval.</div>
+    <div class="keep" data-radio="k5"><div class="kq">Keep or Kill?</div>
+      <label class="opt"><input type="radio" name="k5" value="keep"><span><span class="oh">Keep<span class="rec">recommended</span></span><span class="od">The biggest real-estate pain thread this month.</span></span></label>
+      <label class="opt"><input type="radio" name="k5" value="kill"><span><span class="oh">Kill</span></span></label>
+    </div>
+  </div>
+
+  <div class="idea" data-anchor="i6" data-label="Idea 6 Deal Timeline">
+    <button class="cbtn">comment</button>
+    <div class="score">10<small>/12</small></div>
+    <div class="rank">6 <span class="tag">Real estate agents</span></div>
+    <h3>Deal Timeline</h3>
+    <p class="hook">"I dropped a purchase contract into Claude. Every deadline went into my calendar, and my clients now get a weekly update by themselves."</p>
+    <span class="beyond">Beyond ChatGPT: writes the deadlines into your calendar and emails clients on a schedule</span>
+    <dl>
+      <dt>The build</dt><dd>A Claude skill. Drop the contract PDF, and it pulls every deadline (inspection, appraisal, financing, closing), adds them to Google Calendar with reminders, and sends the client a plain-English "where we are" email every week.</dd>
+      <dt>Magic moment</dt><dd>A 30-page contract in, and 9 calendar events appear.</dd>
+      <dt>Evidence</dt><dd>Threads: "I'm so tired of explaining… they don't pay attention" (318 likes, Sep 8). r/realtors: top agents' first hire is admin help (20+). Realty Ops AI (contract intelligence) earns on TrustMRR.</dd>
+    </dl>
+    <table class="t">
+      <tr><td>Relatable 3</td><td>Every agent with a deal under contract</td></tr>
+      <tr><td>Value 3</td><td>No missed deadlines, and fewer "what's next?" calls</td></tr>
+      <tr><td>Shareable 2</td><td>Agents and transaction coordinators</td></tr>
+      <tr><td>Visual 2</td><td>The calendar filling up</td></tr>
+    </table>
+    <div class="comp"><b>Competition check:</b> brokerage tools do this for big teams (Inside Real Estate, Rechat). Nothing simple for solo agents.</div>
+    <div class="keep" data-radio="k6"><div class="kq">Keep or Kill?</div>
+      <label class="opt"><input type="radio" name="k6" value="keep"><span><span class="oh">Keep<span class="rec">recommended</span></span><span class="od">Uses Claude where agents already are.</span></span></label>
+      <label class="opt"><input type="radio" name="k6" value="kill"><span><span class="oh">Kill</span></span></label>
+    </div>
+  </div>
+
+  <div class="idea" data-anchor="i7" data-label="Idea 7 Past Client Radar">
+    <button class="cbtn">comment</button>
+    <div class="score">10<small>/12</small></div>
+    <div class="rank">7 <span class="tag">Real estate agents</span></div>
+    <h3>Past Client Radar</h3>
+    <p class="hook">"My past client listed with another agent. So I built an AI that never lets one forget me."</p>
+    <span class="beyond">Beyond ChatGPT: runs by itself from your client list and sends on schedule</span>
+    <dl>
+      <dt>The build</dt><dd>Point it at a Google Sheet of past clients. It tracks home anniversaries, rough value changes and life moments, then drafts a personal check-in for each one at the right time. You approve with one tap, and it sends from Gmail.</dd>
+      <dt>Magic moment</dt><dd>"3 check-ins due this week": each one personal, approved in one tap.</dd>
+      <dt>Evidence</dt><dd>r/realtors "Past client listed with another agent… revenue bleed is pretty high" (110+, Sep). "How realistic is repeat business?" (30+). An introvert thread: "lean into text and email follow-ups" (18 answers).</dd>
+    </dl>
+    <table class="t">
+      <tr><td>Relatable 3</td><td>Every agent has lost a past client</td></tr>
+      <tr><td>Value 3</td><td>One saved listing is worth thousands</td></tr>
+      <tr><td>Shareable 2</td><td>Shared within agent circles</td></tr>
+      <tr><td>Visual 2</td><td>A queue of ready-to-send messages</td></tr>
+    </table>
+    <div class="comp"><b>Competition check:</b> CRMs have drip campaigns, but agents call their CRMs bad ("Their CRM also SUCKS"). The angle is no CRM: just a sheet and Gmail.</div>
+    <div class="keep" data-radio="k7"><div class="kq">Keep or Kill?</div>
+      <label class="opt"><input type="radio" name="k7" value="keep"><span><span class="oh">Keep<span class="rec">recommended</span></span></span></label>
+      <label class="opt"><input type="radio" name="k7" value="kill"><span><span class="oh">Kill</span></span></label>
+    </div>
+  </div>
+
+  <div class="idea" data-anchor="i8" data-label="Idea 8 Empty Class Filler">
+    <button class="cbtn">comment</button>
+    <div class="score">10<small>/12</small></div>
+    <div class="rank">8 <span class="tag">Gyms and studios</span></div>
+    <h3>Empty Class Filler</h3>
+    <p class="hook">"My 6pm class had 4 people booked. Two hours later it had 11, and I didn't do anything."</p>
+    <span class="beyond">Beyond ChatGPT: checks the schedule and texts members by itself</span>
+    <dl>
+      <dt>The build</dt><dd>Two hours before each class, it checks bookings. If a class is under half full, it texts lapsed members and the waitlist a one-tap booking link, worded differently each time.</dd>
+      <dt>Magic moment</dt><dd>The class roster filling up in real time.</dd>
+      <dt>Evidence</dt><dd>Playlist (Mindbody's parent): studios fill only 37% of class spots. "A 6am Tuesday spot has no value, is $0 at 6:01." r/gymowner "members becoming inactive without anyone noticing" (Sep 20).</dd>
+    </dl>
+    <table class="t">
+      <tr><td>Relatable 3</td><td>Every class-based studio</td></tr>
+      <tr><td>Value 3</td><td>Revenue from spots that would be wasted</td></tr>
+      <tr><td>Shareable 2</td><td>Owner to owner</td></tr>
+      <tr><td>Visual 2</td><td>A roster filling up</td></tr>
+    </table>
+    <div class="comp"><b>Competition check:</b> Playlist's AI Concierge is only for its own customers. Studios on other software have nothing.</div>
+    <div class="keep" data-radio="k8"><div class="kq">Keep or Kill?</div>
+      <label class="opt"><input type="radio" name="k8" value="keep"><span><span class="oh">Keep<span class="rec">recommended</span></span><span class="od">Pairs well with the ClassPass Converter.</span></span></label>
+      <label class="opt"><input type="radio" name="k8" value="kill"><span><span class="oh">Kill</span></span></label>
+    </div>
+  </div>
+
+  <div class="idea" data-anchor="i9" data-label="Idea 9 Search My Shoot">
+    <button class="cbtn">comment</button>
+    <div class="score">10<small>/12</small></div>
+    <div class="rank">9 <span class="tag">Photographers</span></div>
+    <h3>Search My Shoot</h3>
+    <p class="hook">"Find 'the ring shot' in 4,000 wedding photos in one second, privately, without uploading anything."</p>
+    <span class="beyond">Beyond ChatGPT: runs an image model on your own folder of photos, in the browser</span>
+    <dl>
+      <dt>The build</dt><dd>Open a folder of JPEGs in the browser. An open image model (trending on Hugging Face this month) indexes them on your Mac, then you type "first dance", "kids laughing" or "rings on the bouquet" and the matches appear. Nothing leaves your computer.</dd>
+      <dt>Magic moment</dt><dd>Type "grandma crying", and there she is.</dd>
+      <dt>Evidence</dt><dd>Hugging Face "Semantic Image Field" (in-browser image search, Sep 22). r/WeddingPhotography culling threads (90+): photographers still check every photo by hand. TikTok: no photographer-specific tool found.</dd>
+    </dl>
+    <table class="t">
+      <tr><td>Relatable 3</td><td>Every photographer hunts for photos</td></tr>
+      <tr><td>Value 2</td><td>Minutes saved on every client request</td></tr>
+      <tr><td>Shareable 2</td><td>Photographer circles</td></tr>
+      <tr><td>Visual 3</td><td>Type a phrase and the photo appears</td></tr>
+    </table>
+    <div class="comp"><b>Competition check:</b> Pic-Time has search inside client galleries. Nothing for the photographer's own archive that runs locally.</div>
+    <div class="keep" data-radio="k9"><div class="kq">Keep or Kill?</div>
+      <label class="opt"><input type="radio" name="k9" value="keep"><span><span class="oh">Keep<span class="rec">recommended</span></span><span class="od">The most "wait, I can build that?" of the run.</span></span></label>
+      <label class="opt"><input type="radio" name="k9" value="kill"><span><span class="oh">Kill</span></span></label>
+    </div>
+  </div>
+
+  <div class="idea" data-anchor="i10" data-label="Idea 10 Revision Gate">
+    <button class="cbtn">comment</button>
+    <div class="score">9<small>/12</small></div>
+    <div class="rank">10 <span class="tag">Videographers</span></div>
+    <h3>Revision Gate</h3>
+    <p class="hook">"My client pasted a ChatGPT critique of my wedding film. So I built a revision form ChatGPT can't hijack."</p>
+    <span class="beyond">Beyond ChatGPT: a timestamped review page tied to the video, which counts revisions against the contract</span>
+    <dl>
+      <dt>The build</dt><dd>The client watches the film on a review page and can only leave feedback pinned to a timestamp. A pasted essay is turned into specific, timestamped requests for the client to confirm. Every round counts against the contract ("revision 2 of 2").</dd>
+      <dt>Magic moment</dt><dd>A 2-page ChatGPT critique becomes 4 clear timestamped notes.</dd>
+      <dt>Evidence</dt><dd>r/videography "Close to adding an 'AI Feedback' clause to my contract" (80+, Sep). Quotes are eaten by "days around the actual edit".</dd>
+    </dl>
+    <table class="t">
+      <tr><td>Relatable 2</td><td>Videographers and editors</td></tr>
+      <tr><td>Value 2</td><td>Fewer, clearer revision rounds</td></tr>
+      <tr><td>Shareable 3</td><td>The "AI feedback" story is very shareable</td></tr>
+      <tr><td>Visual 2</td><td>Essay to tidy list</td></tr>
+    </table>
+    <div class="comp"><b>Competition check:</b> Frame.io does timestamped review, but nothing that handles AI-written feedback or counts revisions against the contract.</div>
+    <div class="keep" data-radio="k10"><div class="kq">Keep or Kill?</div>
+      <label class="opt"><input type="radio" name="k10" value="keep"><span><span class="oh">Keep<span class="rec">recommended</span></span><span class="od">The weakest score here, but the funniest story.</span></span></label>
+      <label class="opt"><input type="radio" name="k10" value="kill"><span><span class="oh">Kill</span></span></label>
+    </div>
+  </div>
+</section>
+
+<section id="s-killed" data-anchor="killed" data-label="Killed ideas" data-group="Run 3" data-title="12 ideas killed">
+  <button class="cbtn">comment</button>
+  <h2><span class="num">3</span>12 ideas that didn't make it</h2>
+  <div style="overflow-x:auto">
+  <table class="t">
+    <tr><th>Idea</th><th>Why</th></tr>
+    <tr><td>AI receptionist or missed-call text-back (any niche)</td><td>The most crowded space found: ABC Fitness, VetRec, Kariao, Patientdesk (YC), Adit and more launched this year</td></tr>
+    <tr><td>Listing description and flyer generator</td><td>AI listing tools are everywhere on realtor TikTok</td></tr>
+    <tr><td>Clinic "are you in ChatGPT answers?" checker</td><td>CitePrism, Findrix and Trendos all launched this week</td></tr>
+    <tr><td>PT or vet voice-to-notes scribe</td><td>Jane has a free AI scribe, and IDEXX bought CoVet</td></tr>
+    <tr><td>Dental insurance appeal letter</td><td>Fails Beyond ChatGPT: it's a prompt</td></tr>
+    <tr><td>Patient complaint reply drafter</td><td>Fails Beyond ChatGPT</td></tr>
+    <tr><td>Insurance eligibility browser agent</td><td>Failed One day: every insurer's portal is different. YC startups are on it.</td></tr>
+    <tr><td>Vet controlled-drug log reconciler</td><td>Real pain (10–16 h a month) but narrow, and hard to show on camera. Runner-up.</td></tr>
+    <tr><td>Gym software true-cost calculator</td><td>Useful, but mostly a calculator. Runner-up.</td></tr>
+    <tr><td>Clinic website accessibility scanner</td><td>General scanners already exist</td></tr>
+    <tr><td>Click-to-cancel compliance checker</td><td>Timely (NYC rule from Oct 1), but Shareable 1</td></tr>
+    <tr><td>Batch LUT and share for videographers</td><td>Narrow audience. Runner-up.</td></tr>
+  </table>
+  </div>
+</section>
+
+<section id="s-howwent" data-anchor="howwent" data-label="How run 3 went" data-group="Run 3" data-title="How the run went">
+  <button class="cbtn">comment</button>
+  <h2><span class="num">4</span>How the run went</h2>
+  <ul class="lines">
+    <li><b>106 signals:</b> 53 from the web helper (revenue, launches, news) and 53 from the Chrome helper (Reddit and Threads through Google, IdeaBrowser, There's An AI For That, Toolify, YC).</li>
+    <li><b>Best sources:</b> Reddit through Google (the audiences' own subreddits), Threads (it surfaced the ClassPass wave), and TrustMRR (who's actually paying).</li>
+    <li><b>Weak this time:</b> X (it only shows one post per page read), Toolify and Future Tools (nothing for these niches). IdeaBrowser's older reports and Trends Library turned out to be locked on your free plan.</li>
+    <li><b>Low-competition finding:</b> YC has no recent companies for vets, gyms, physio or photographers. Those niches are less crowded than dental and real estate.</li>
+  </ul>
+</section>
+
+
+<section id="s-run3" data-anchor="run3" data-label="Run 3 brief" data-group="Run 3" data-title="The brief (confirmed)">
+  <button class="cbtn">comment</button>
+  <h2><span class="num">5</span>The brief (confirmed)</h2>
+  <div class="plain"><b>Confirmed and run</b> (Oct 1). Results are above. Brief: small business owners, specifically real estate agents, gyms and fitness studios, clinics, and photographers · saving money and time · web, extension, skill, automation or browser agent · 10 ideas · 14 sources (FoundersDB skipped, S1 = later). </div>
+  <p class="sub">A fresh run. Every question for this run is here, and nothing is pre-picked except your earlier answers to B3–B6. It skips anything already in Selected Ideas (0 so far). When B8 says Confirmed and you press Send, I start.</p>
+
+  <div class="d open" data-anchor="b1" data-label="B1 audiences">
+    <button class="cbtn">comment</button>
+    <div class="q">B1: Who is this run for?</div>
+    <div class="why">Pick 1–2 audiences. Ticking one opens its specific groups, and narrow beats broad: "salon owners" gives sharper ideas than "small business owners". For small business I'd tick <b>restaurants and cafés, salons, and trades</b>. They're huge, poorly served by software, very visual on camera, and active on Instagram and TikTok.</div>
+    <div data-check="b1">
+      <label class="opt"><input type="checkbox" name="b1" value="students"><span><span class="oh">Students</span></span></label>
+        <div class="niche" data-for="students"><div class="nlab">Which ones? Optional. Leave blank for all of them.</div>
+          <label class="opt sub"><input type="checkbox" name="b1" value="students:highschool"><span><span class="oh">High school students</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="students:college"><span><span class="oh">College and university students</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="students:grad"><span><span class="oh">Grad students</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="students:intl"><span><span class="oh">International students</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="students:nursing"><span><span class="oh">Nursing and med students</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="students:stem"><span><span class="oh">Engineering and CS students</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="students:examprep"><span><span class="oh">Big-exam prep (SAT, MCAT, bar…)</span></span></label>
+        </div>
+      <label class="opt"><input type="checkbox" name="b1" value="smallbiz"><span><span class="oh">Small business owners</span></span></label>
+        <div class="niche" data-for="smallbiz"><div class="nlab">Which ones? Optional. Leave blank for all of them.</div>
+          <label class="opt sub"><input type="checkbox" name="b1" value="smallbiz:restaurants"><span><span class="oh">Restaurants and cafés</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="smallbiz:salons"><span><span class="oh">Salons, barbers and spas</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="smallbiz:realestate"><span><span class="oh">Real estate agents</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="smallbiz:trades"><span><span class="oh">Trades: plumbers, electricians, HVAC</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="smallbiz:cleaning"><span><span class="oh">Cleaning and home services</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="smallbiz:retail"><span><span class="oh">Local shops and boutiques</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="smallbiz:ecom"><span><span class="oh">Online sellers (Etsy, Shopify, Amazon)</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="smallbiz:fitness"><span><span class="oh">Gyms and fitness studios</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="smallbiz:clinics"><span><span class="oh">Clinics: dental, physio, vet</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="smallbiz:photographers"><span><span class="oh">Photographers and videographers</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="smallbiz:coaches"><span><span class="oh">Coaches and consultants</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="smallbiz:accountants"><span><span class="oh">Accountants and bookkeepers</span></span></label>
+        </div>
+      <label class="opt"><input type="checkbox" name="b1" value="creators"><span><span class="oh">Content creators</span></span></label>
+        <div class="niche" data-for="creators"><div class="nlab">Which ones? Optional. Leave blank for all of them.</div>
+          <label class="opt sub"><input type="checkbox" name="b1" value="creators:youtube"><span><span class="oh">YouTubers</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="creators:shortform"><span><span class="oh">TikTok and Instagram creators</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="creators:podcast"><span><span class="oh">Podcasters</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="creators:newsletter"><span><span class="oh">Newsletter writers</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="creators:streamers"><span><span class="oh">Streamers</span></span></label>
+        </div>
+      <label class="opt"><input type="checkbox" name="b1" value="adhd"><span><span class="oh">People with ADHD and procrastinators</span></span></label>
+      <label class="opt"><input type="checkbox" name="b1" value="freelancers"><span><span class="oh">Freelancers and solopreneurs</span></span></label>
+        <div class="niche" data-for="freelancers"><div class="nlab">Which ones? Optional. Leave blank for all of them.</div>
+          <label class="opt sub"><input type="checkbox" name="b1" value="freelancers:designers"><span><span class="oh">Designers</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="freelancers:devs"><span><span class="oh">Developers</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="freelancers:writers"><span><span class="oh">Writers and editors</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="freelancers:marketers"><span><span class="oh">Marketers and social media managers</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="freelancers:va"><span><span class="oh">Virtual assistants</span></span></label>
+        </div>
+      <label class="opt"><input type="checkbox" name="b1" value="parents"><span><span class="oh">Busy parents</span></span></label>
+        <div class="niche" data-for="parents"><div class="nlab">Which ones? Optional. Leave blank for all of them.</div>
+          <label class="opt sub"><input type="checkbox" name="b1" value="parents:newborn"><span><span class="oh">Parents of babies and toddlers</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="parents:school"><span><span class="oh">Parents of school-age kids</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="parents:teens"><span><span class="oh">Parents of teens</span></span></label>
+          <label class="opt sub"><input type="checkbox" name="b1" value="parents:single"><span><span class="oh">Single parents</span></span></label>
+        </div>
+      <label class="opt"><input type="checkbox" name="b1" value="jobseekers"><span><span class="oh">Job seekers</span></span></label>
+      <label class="opt"><input type="checkbox" name="b1" value="pets"><span><span class="oh">Pet owners</span></span></label>
+      <label class="opt"><input type="checkbox" name="b1" value="cooks"><span><span class="oh">Home cooks</span></span></label>
+      <label class="opt"><input type="checkbox" name="b1" value="fitness"><span><span class="oh">Fitness people</span></span></label>
+      <label class="opt"><input type="checkbox" name="b1" value="travelers"><span><span class="oh">Travelers</span></span></label>
+      <label class="opt"><input type="checkbox" name="b1" value="teachers"><span><span class="oh">Teachers</span></span></label>
+      <label class="opt"><input type="checkbox" name="b1" value="devs"><span><span class="oh">Developers and builders</span></span></label>
+    </div>
+  </div>
+
+  <div class="d open" data-anchor="b2" data-label="B2 theme">
+    <button class="cbtn">comment</button>
+    <div class="q">B2: Themes for this run? (pick one or more)</div>
+    <div class="why">A theme focuses the research. "What's happening this month" works best. In October that's midterms for students and holiday/Black Friday prep for businesses.</div>
+    <div data-check="b2">
+      <label class="opt"><input type="checkbox" name="b2" value="season"><span><span class="oh">What's happening this month for them<span class="rec">recommended</span></span><span class="od">Timely problems feel most relatable right now.</span></span></label>
+      <label class="opt"><input type="checkbox" name="b2" value="money"><span><span class="oh">Saving them money</span></span></label>
+      <label class="opt"><input type="checkbox" name="b2" value="time"><span><span class="oh">Saving them time</span></span></label>
+      <label class="opt"><input type="checkbox" name="b2" value="none"><span><span class="oh">No theme: whatever's hottest</span></span></label>
+    </div>
+  </div>
+
+  <div class="d open" data-anchor="b3" data-label="B3 build types">
+    <button class="cbtn">comment</button>
+    <div class="q">B3: What kinds of builds?</div>
+    <div class="why">Your earlier answer is carried over. Every idea is shaped to fit these.</div>
+    <div data-check="b3">
+      <label class="opt"><input type="checkbox" name="b3" value="web"><span><span class="oh">Web app</span></span></label>
+      <label class="opt"><input type="checkbox" name="b3" value="extension"><span><span class="oh">Chrome extension</span></span></label>
+      <label class="opt"><input type="checkbox" name="b3" value="skill"><span><span class="oh">Claude skill or plugin</span></span></label>
+      <label class="opt"><input type="checkbox" name="b3" value="automation"><span><span class="oh">Automation (email, calendar, Docs…)</span></span></label>
+      <label class="opt"><input type="checkbox" name="b3" value="agent"><span><span class="oh">Browser agent</span></span></label>
+      <label class="opt"><input type="checkbox" name="b3" value="ios"><span><span class="oh">iOS app</span></span></label>
+      <label class="opt"><input type="checkbox" name="b3" value="desktop"><span><span class="oh">Mac app or menu-bar tool</span></span></label>
+    </div>
+  </div>
+
+  <div class="d open" data-anchor="b4" data-label="B4 how many ideas">
+    <button class="cbtn">comment</button>
+    <div class="q">B4: How many ideas?</div>
+    <div class="why">You review them all, so more isn't better.</div>
+    <div data-radio="b4">
+      <label class="opt"><input type="radio" name="b4" value="10"><span><span class="oh">10<span class="rec">recommended</span></span></span></label>
+      <label class="opt"><input type="radio" name="b4" value="5"><span><span class="oh">5, only the best</span></span></label>
+      <label class="opt"><input type="radio" name="b4" value="20"><span><span class="oh">20, a wide net</span></span></label>
+    </div>
+  </div>
+
+  <div class="d open" data-anchor="b5" data-label="B5 startup remix">
+    <button class="cbtn">comment</button>
+    <div class="q">B5: Allow "this startup charges $X, I built it in a day" ideas?</div>
+    <div class="why">Your earlier answer was No. It's here in case you want it for this run.</div>
+    <div data-radio="b5">
+      <label class="opt"><input type="radio" name="b5" value="no"><span><span class="oh">No<span class="rec">recommended</span></span><span class="od">Your call from before.</span></span></label>
+      <label class="opt"><input type="radio" name="b5" value="some"><span><span class="oh">Yes, a few</span></span></label>
+    </div>
+  </div>
+
+  <div class="d open" data-anchor="b6" data-label="B6 research style">
+    <button class="cbtn">comment</button>
+    <div class="q">B6: How should I research?</div>
+    <div class="why">Sources come from the Sources tab (15 ticked).</div>
+    <div data-radio="b6">
+      <label class="opt"><input type="radio" name="b6" value="parallel"><span><span class="oh">Parallel helpers, one per source group<span class="rec">recommended</span></span><span class="od">Faster and wider. Uses more of your plan.</span></span></label>
+      <label class="opt"><input type="radio" name="b6" value="me"><span><span class="oh">Me, one source at a time</span></span></label>
+    </div>
+  </div>
+
+  <div class="ask" data-anchor="b7" data-label="B7 anything else">
+    <button class="cbtn">comment</button>
+    <div class="q">B7: Anything else for this run? (optional)</div>
+    <div class="how">An idea of yours to include, something to avoid, a source to lean on. Comment here.</div>
+  </div>
+
+  <div class="d open" data-anchor="b8" data-label="B8 confirm">
+    <button class="cbtn">comment</button>
+    <div class="q">B8: Confirm the brief</div>
+    <div class="why">Nothing runs until this says Confirmed and you press Send.</div>
+    <div data-radio="b8">
+      <label class="opt"><input type="radio" name="b8" value="go"><span><span class="oh">Confirmed, start Run 3<span class="rec">recommended</span></span><span class="od">Once B1–B6 look right.</span></span></label>
+      <label class="opt"><input type="radio" name="b8" value="wait"><span><span class="oh">Not yet</span></span></label>
+    </div>
+  </div>
+</section>
+<script>
+// B1: unticking an audience also unticks its specific groups (capture phase, so the save sees it).
+document.addEventListener('change',e=>{const i=e.target; if(i.name!=='b1'||i.checked||i.value.includes(':'))return;
+  document.querySelectorAll(`input[name="b1"][value^="${i.value}:"]:checked`).forEach(k=>k.checked=false)},true);
+</script>
+</main>
+
+<aside class="right">
+  <h2>Chat center</h2>
+  <div class="dsum"><span id="dprog">—</span><a id="dtoggle">show all</a></div>
+  <div class="bar"><i id="dbar" style="width:0"></i></div>
+  <div id="dchg"></div>
+  <div class="dlist" id="dlist" hidden></div>
+  <div class="topact">
+    <div class="cprog" id="cprog"></div>
+    <button class="primary" id="send">Send</button>
+    <div class="sendto" id="sendto"></div>
+    <div class="wstat" id="wstat"></div>
+    <button class="pagec" id="pagec">💬 General comment</button>
+  </div>
+  <div id="queue"></div>
+</aside>
+<div id="wideview"></div>
+<button id="cpfab">💬 Chat center</button>
+
+</div>
+
+<div id="pop">
+  <div class="pa" id="popanchor"></div>
+  <div class="kind">
+    <label class="sel"><input type="radio" name="kind" value="question" checked> Ask a question</label>
+    <label><input type="radio" name="kind" value="change"> Change this</label>
+    <label><input type="radio" name="kind" value="note"> Comment</label>
+  </div>
+  <textarea id="poptext" placeholder="What do you want to know? Answered right here, in the panel."></textarea>
+  <div class="row"><button id="popcancel">Cancel</button><button id="popadd" class="add">Send now</button></div>
+</div>
+<div id="toast"></div>
+
+<!-- optional: <script src="vendor/mermaid.min.js"></script> for <pre class="mermaid"> diagrams -->
+<script>
+const S={decisions:{},comments:[],batches:[]}; let ROUND=1;
+const $=s=>document.querySelector(s);
+const esc=t=>String(t).replace(/[<>&]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
+const toast=m=>{const t=$('#toast');t.textContent=m;t.classList.add('on');
+  setTimeout(()=>t.classList.remove('on'),1700)};
+const post=(u,b)=>fetch(u,{method:'POST',headers:{'Content-Type':'application/json'},
+  body:JSON.stringify(b)}).then(r=>r.json());
+const D=k=>S.decisions[k];
+function groups(){return [...document.querySelectorAll('[data-radio],[data-check]')]}
+
+function buildChanged(){
+  // Blocks the author marked data-changed="N" (N = the round they were revised in).
+  // The rail lists the latest round's blocks so the reviewer can find what moved.
+  const els=[...document.querySelectorAll('[data-changed]')]; if(!els.length) return;
+  const latest=Math.max(...els.map(e=>+e.dataset.changed));
+  const mine=els.filter(e=>+e.dataset.changed===latest);
+  $('#toc').insertAdjacentHTML('afterbegin',`<div class="chg"><div class="grp">Changed in round ${latest} (${mine.length})</div>`+
+    mine.map((e,i)=>{ if(!e.id) e.id='chg-'+latest+'-'+i;
+      return `<a href="#${e.id}" data-id="${e.id}">${esc(e.dataset.label||e.dataset.title||e.id)}</a>`}).join('')+
+    `<div class="grp" style="margin-top:10px">Contents</div></div>`);
+  document.querySelectorAll('#toc .chg a').forEach(a=>a.onclick=ev=>{ev.preventDefault();
+    const el=document.getElementById(a.dataset.id); el.scrollIntoView({behavior:'smooth',block:'center'});
+    el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash')});
+}
+function buildToc(){
+  let last='';
+  $('#toc').innerHTML=[...document.querySelectorAll('main section')].map(s=>{
+    let out=''; if(s.dataset.group!==last){out+=`<div class="grp">${s.dataset.group}</div>`;last=s.dataset.group}
+    return out+`<a href="#${s.id}" data-id="${s.id}">${s.dataset.title}</a>`}).join('');
+  const links=[...document.querySelectorAll('#toc a')];
+  const io=new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting)
+    links.forEach(l=>l.classList.toggle('on',l.dataset.id===e.target.id)) }),
+    {rootMargin:'-84px 0px -70% 0px'});
+  document.querySelectorAll('main section').forEach(s=>io.observe(s));
+}
+function renderDecisions(){
+  const gs=groups(); let done=0;
+  const label=(id)=>{const g=gs.find(x=>(x.dataset.radio||x.dataset.check)===id);if(!g)return null;
+    const ch=[...g.querySelectorAll('input:checked')];return ch.map(i=>i.closest('label').querySelector('.oh').textContent).join(', ')};
+  $('#dlist').innerHTML=gs.map(g=>{
+    const id=g.dataset.radio||g.dataset.check, blk=g.closest('.d');
+    const ch=[...g.querySelectorAll('input:checked')]; if(ch.length) done++;
+    const val=ch.map(i=>i.closest('label').querySelector('.oh').textContent).join(', ');
+    return `<div class="dr ${ch.length?'done':'todo'}" data-goto="${blk?blk.dataset.anchor:''}">
+      <span class="dot"></span><span class="dn">${id.toUpperCase()}</span>
+      <span class="dv">${esc(val||'not decided')}</span></div>`}).join('');
+  $('#dprog').innerHTML=gs.length?(done===gs.length?`<b style="color:#22a55a">✓ ${done} of ${gs.length} decided</b>`:`${done} of ${gs.length} decided`):'No decisions on this page';
+  $('#dtoggle').style.display=gs.length?'':'none';
+  $('#dbar').style.width=(gs.length?done/gs.length*100:0)+'%';
+  // what changed since the last round was sent
+  // Same rule as Send: compare with the last round (or the baseline before any round); an empty choice is no choice.
+  const last=(S.batches[S.batches.length-1]||{}).decisions||S.base||{};
+  const v=x=>Array.isArray(x)?(x.length?JSON.stringify([...x].sort()):null):(x??null);
+  const chg=gs.map(g=>g.dataset.radio||g.dataset.check).filter(id=>v(S.decisions[id])!==v(last[id])&&v(S.decisions[id])!==null);
+  $('#dchg').innerHTML=chg.length?`<b>CHANGED SINCE LAST ROUND:</b> `+chg.map(id=>`${id.toUpperCase()} → ${esc(label(id)||'')}`).join(' · '):'';
+  $('#dcount').textContent=`${done}/${gs.length} decided · ${S.comments.filter(c=>c.status==='queued').length} queued`;
+  document.querySelectorAll('.dr').forEach(r=>r.onclick=()=>{
+    const el=document.querySelector(`[data-anchor="${r.dataset.goto}"]`); if(!el)return;
+    el.scrollIntoView({behavior:'smooth',block:'center'});
+    el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash')});
+  report();
+}
+// "General comment": the same popup, not pinned to a block
+$('#pagec').onclick=e=>{e.stopPropagation();target={anchor:'page',label:'General',text:''};
+  const p=$('#pop'),r=$('#pagec').getBoundingClientRect();$('#popanchor').textContent='General — not about one block';$('#poptext').value='';setKind('question');
+  p.style.display='block';p.style.top=(window.scrollY+r.bottom+8)+'px';p.style.left=Math.max(12,r.right-328+window.scrollX)+'px';$('#poptext').focus()};
+$('#cpfab').onclick=()=>$('aside.right').classList.toggle('open');
+$('#dtoggle').onclick=()=>{const l=$('#dlist');l.hidden=!l.hidden;$('#dtoggle').textContent=l.hidden?'show all':'hide'};
+// ---- The page's conversation: every comment is a small thread; answers come back here, not to the terminal ----
+let AGENT={agent:null,status:null}, openIds=new Set();
+// Links: any http(s) URL is clickable (user, 2026-09-28); a full stop or bracket after it stays outside the link.
+const md=t=>esc(t).replace(/https?:\/\/[^\s<]+?(?=[.,;:!?)\]]*(?:\s|<|&quot;|&lt;|&gt;|$))/g,u=>`<a href="${u}" target="_blank" rel="noopener">${u}</a>`).replace(/\*\*([^*]+)\*\*/g,'<b>$1</b>').replace(/`([^`]+)`/g,'<code>$1</code>')
+  .replace(/(^|\n)- (.+)/g,'$1<li>$2</li>').replace(/(<li>.*<\/li>)/s,'<ul>$1</ul>').replace(/\n/g,'<br>');
+const KL={question:'Question',change:'Change',note:'Note'};
+const ago=t=>{if(!t)return'';const s=(Date.now()-new Date(t))/1000;return s<60?'now':s<3600?Math.round(s/60)+'m ago':s<86400?Math.round(s/3600)+'h ago':new Date(t).toLocaleDateString()};
+function stateOf(c){const m=c.messages||[], last=m[m.length-1];
+  if(c.status==='queued')return['wait','queued — not sent'];
+  if(c.suggest)return['ok','answered — your call'];
+  if(last&&last.from==='claude')return['ok','✓'];
+  if(c.addressed)return['ok',c.kind==='change'?'✓ done':'✓ taken on board'];
+  return['wait',AGENT.status==='working'?'Claude is busy — you\'re next':'waiting for Claude']}
+function waiting(c){const [cls,txt]=stateOf(c);return c.status==='queued'||c.suggest||cls==='wait'}
+function item(c,wide){
+  const [cls,txt]=stateOf(c), m=c.messages||[], where=c.anchor==='page'?'general':`on <a data-goto="${esc(c.anchor)}">${esc(c.anchorLabel||c.anchor)}</a>`;
+  const fold=!wide&&!waiting(c)&&!openIds.has(c.id);
+  const kind=c.kind||'change';
+  const mm=x=>`<div class="msg ${x.from==='claude'?'claude':'you'}"><span class="who">${x.from==='claude'?'Claude':'You'} · ${ago(x.t)}</span>${md(x.text||'')}</div>`;
+  const older=(!wide&&m.length>1)?m.slice(0,-1):[], shown=(!wide&&m.length>1)?m.slice(-1):m;
+  const body=`<div class="body">`+(older.length?`<div class="earlier" data-earlier="${c.id}">▸ ${older.length} earlier message${older.length>1?'s':''}</div><div class="older">${older.map(mm).join('')}</div>`:'')+shown.map(mm).join('')+
+    (c.status==='queued'?`<div class="act"><button data-del="${c.id}">Delete</button></div>`:
+     (c.suggest?`<div class="act"><button class="pri" data-mkchange="${c.id}">Make it a change request</button><button data-nothanks="${c.id}">No thanks</button></div>`:'')+
+     (!m.length||m[m.length-1].from!=='you'?'':'<div class="typing">'+(AGENT.status==='working'?'Claude is busy — your message is next.':'Claude is answering…')+'</div>')+
+     `<div class="rb"><textarea data-rin="${c.id}" rows="1" placeholder="Reply…"></textarea><button data-rsend="${c.id}">Reply</button></div>`)+`</div>`;
+  const un=isUnread(c);
+  return `<div class="th ${fold?'fold':''}${un?' unread':''}" data-th="${c.id}"><div class="hd">${un?'<span class="ndot" title="New answer"></span>':''}<span class="ktag ${kind}">${KL[kind]||'Change'}</span><span class="where" title="${esc(c.anchorLabel||'')}">${where}</span>
+      <span class="st ${cls}">${txt}${m.length>1?` · ${m.length+1} msgs`:''}</span>${wide?'':`<button class="wide" data-wide="${c.id}" title="Open wide">⤢</button>`}</div>
+    <div class="row1"><span class="q1">${fold?esc(c.text):md(c.text||'')}</span></div>${body}</div>`}
+// ---- Progress meter + unread answers (user, 2026-09-28) ----
+// Unread: a thread whose latest message is Claude's and newer than when this viewer last opened it.
+// "Answered recently" stays until the viewer opens any one unread answer. Per viewer, in localStorage.
+const PK='cprog:'+location.pathname;
+function pget(){try{return JSON.parse(localStorage.getItem(PK)||'null')}catch(e){return null}}
+function pset(v){try{localStorage.setItem(PK,JSON.stringify(v))}catch(e){}}
+const lastClaude=c=>{const m=(c.messages||[]).filter(x=>x.from==='claude');return m.length?m[m.length-1].t:null};
+function progInit(){if(pget())return;const seen={};S.comments.forEach(c=>{const t=lastClaude(c);if(t)seen[c.id]=t});pset({seen,dismissed:new Date().toISOString(),wave:null})}
+function isUnread(c){const p=pget()||{seen:{}},t=lastClaude(c);if(!t)return false;const m=c.messages||[];
+  return m[m.length-1].from==='claude'&&(!p.seen[c.id]||p.seen[c.id]<t)}
+function markRead(id){const c=S.comments.find(x=>x.id===id);if(!c)return;const p=pget()||{seen:{}};const t=lastClaude(c);
+  if(t&&isUnread(c)){p.seen[c.id]=t;p.dismissed=new Date().toISOString();pset(p)}}
+function workingRound(){try{return JSON.parse(localStorage.getItem(WK)||'null')}catch(e){return null}}
+function changedDecisions(round){const b=(S.batches||[])[round-1];if(!b)return 0;const prev=((S.batches||[])[round-2]||{}).decisions||{};
+  const cur=b.decisions||{};return Object.keys(cur).filter(k=>JSON.stringify(cur[k])!==JSON.stringify(prev[k])).length}
+let PLOADED=false;   // the page state has loaded — until then there's nothing true to show (and nothing to reset)
+function renderProgress(){const box=$('#cprog');if(!box||!PLOADED)return;progInit();const p=pget();
+  const pend=S.comments.filter(c=>c.status!=='queued'&&!c.suggest&&stateOf(c)[0]==='wait');
+  const n={question:0,note:0,change:0};pend.forEach(c=>{n[c.kind||'change']=(n[c.kind||'change']||0)+1});
+  const wr=workingRound(), nd=wr?changedDecisions(wr.round):0;
+  const busy=pend.length+nd;
+  if(busy&&!p.wave){p.wave={start:new Date().toISOString()};pset(p)}
+  if(!busy&&p.wave){p.wave=null;pset(p)}
+  const unread=S.comments.filter(isUnread);
+  const pl=(k,w)=>k?`${k} ${w}${k===1?'':'s'}`:'';
+  if(busy){const done=S.comments.filter(c=>!pend.includes(c)&&lastClaude(c)&&lastClaude(c)>=p.wave.start).length;
+    const parts=[pl(n.question,'question'),pl(n.note,'comment'),pl(n.change,'change'),pl(nd,'decision')].filter(Boolean).join(' · ');
+    const pct=Math.round(100*done/Math.max(1,done+pend.length+(nd?1:0)));
+    box.className='cprog working';
+    box.innerHTML=`<div class="l"><span class="spin"></span>Working on ${parts}</div><div class="pb"><i style="width:${Math.max(6,pct)}%"></i></div>`+
+      `<div class="sub">${done?`${done} answered so far`:(AGENT.status==='working'?'Claude is busy — yours are next':'Claude will pick these up shortly')}${unread.length?` · ${unread.length} new answer${unread.length>1?'s':''} below`:''}</div>`;return}
+  const fresh=unread.filter(c=>lastClaude(c)>(p.dismissed||''));
+  if(fresh.length){box.className='cprog recent';
+    box.innerHTML=`<div class="l">✓ Answered recently — check the answers below</div><div class="sub">${fresh.length} new answer${fresh.length>1?'s':''} · marked with a dot</div>`;return}
+  box.className='cprog idle';box.innerHTML=S.comments.length?'<div class="l">✓ All caught up</div>':''}
+function renderQueue(){
+  const q=S.comments.filter(c=>c.status==='queued');
+  const nd=Object.keys(S.decisions).length;
+  // Send says exactly what it will send (user, 2026-09-30: "Send 1 decision, 2 comments, 4 changes",
+  // and "Nothing to send" when the user hasn't done anything). An empty choice counts as no choice.
+  const val=v=>Array.isArray(v)?(v.length?JSON.stringify([...v].sort()):null):(v??null);
+  const lastDec=(S.batches[S.batches.length-1]||{}).decisions||S.base||{};
+  const nDec=[...new Set([...Object.keys(S.decisions),...Object.keys(lastDec)])].filter(k=>val(S.decisions[k])!==val(lastDec[k])).length;
+  const nNote=q.filter(c=>c.kind==='note').length, nChg=q.length-nNote;
+  const pl=(n,w)=>`${n} ${w}${n===1?'':'s'}`;
+  const parts=[nDec&&pl(nDec,'decision'),nNote&&pl(nNote,'comment'),nChg&&pl(nChg,'change')].filter(Boolean);
+  $('#send').disabled=!parts.length;
+  $('#send').textContent=parts.length?'Send '+parts.join(', '):'Nothing to send';
+  $('#sendto').innerHTML=AGENT.agent?`→ <b>${esc(AGENT.agent)}</b>${AGENT.status?` · ${esc(AGENT.status)}`:''}`:'→ the Claude session in the terminal';
+  $('#sendto').className='sendto'+(AGENT.status==='working'?' busy':'');
+  const all=[...S.comments].reverse(), wait=all.filter(waiting), done=all.filter(c=>!waiting(c));
+  renderWide();
+  const ae=document.activeElement;
+  if(ae&&ae.dataset&&ae.dataset.rin&&!ae.closest('#wideview')){renderProgress();return}   // don't redraw under a reply being typed
+  $('#queue').innerHTML=(all.length?'':'<div class="empty">No messages yet.<br>Hover any block and press <em>comment</em> to ask, suggest a change or leave a note.</div>')+
+    (wait.length?'<div class="sect">Waiting</div>'+wait.map(c=>item(c)).join(''):'')+
+    (done.length?'<div class="sect">Answered — click to open</div>'+done.map(c=>item(c)).join(''):'');
+  wireThread($('#queue'));
+  const nw=wait.length; $('#cpfab').innerHTML='💬 Chat center'+(nw?` <em>${nw}</em>`:'');
+  renderProgress();
+  report();
+}
+function wireThread(root){
+  root.querySelectorAll('[data-th]').forEach(el=>el.onclick=e=>{if(e.target.closest('button,input,a'))return;
+    const id=el.dataset.th; markRead(id); if(el.classList.contains('fold')){openIds.add(id)}else if(!waiting(S.comments.find(c=>c.id===id)||{})){openIds.delete(id)} renderQueue()});
+  root.querySelectorAll('[data-goto]').forEach(a=>a.onclick=()=>{const el=document.querySelector(`[data-anchor="${a.dataset.goto}"]`);
+    if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.classList.remove('flash');void el.offsetWidth;el.classList.add('flash')}});
+  root.querySelectorAll('[data-earlier]').forEach(e=>e.onclick=()=>{const o=e.nextElementSibling;o.classList.toggle('on');
+    e.textContent=o.classList.contains('on')?'▾ hide earlier messages':`▸ ${o.children.length} earlier message${o.children.length>1?'s':''}`});
+  root.querySelectorAll('[data-del]').forEach(b=>b.onclick=async()=>{const r=await post('/api/comment/delete',{id:b.dataset.del});
+    S.comments=r.comments;renderQueue();markAnchors();renderDecisions()});
+  root.querySelectorAll('[data-rsend]').forEach(b=>{const id=b.dataset.rsend, inp=root.querySelector(`[data-rin="${id}"]`);
+    const go=async()=>{const t=inp.value.trim();if(!t||b.disabled)return;b.disabled=true;inp.disabled=true;
+      try{const r=await post('/api/reply',{id,text:t});if(r.comments)S.comments=r.comments;
+        if(DRAFT[id]!=null)delete DRAFT[id];inp.value='';openIds.add(id);toast(AGENT.agent?'Sent to '+AGENT.agent:'Sent')}
+      finally{b.disabled=false;inp.disabled=false;inp.blur();renderQueue();refreshSoon()}};
+    const grow=()=>{inp.style.height='auto';inp.style.height=Math.min(inp.scrollHeight,160)+'px'};
+    inp.oninput=()=>{DRAFT[id]=inp.value;grow()}; if(inp.value)grow();
+    b.onclick=go;inp.onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing){e.preventDefault();go()}}});
+  root.querySelectorAll('[data-mkchange]').forEach(b=>b.onclick=async()=>{const c=S.comments.find(x=>x.id===b.dataset.mkchange);
+    const m=c.messages||[], ans=[...m].reverse().find(x=>x.from==='claude');
+    await post('/api/comment',{id:'c'+Date.now(),anchor:c.anchor,anchorLabel:c.anchorLabel,anchorText:c.anchorText||'',kind:'change',
+      text:`From the conversation “${c.text}”: ${ans?ans.text:''}`});
+    const r=await post('/api/comment/update',{id:c.id,fields:{suggest:false}});S.comments=r.comments;renderQueue();markAnchors();renderDecisions();
+    toast('Added as a change — it goes with Send')});
+  root.querySelectorAll('[data-nothanks]').forEach(b=>b.onclick=async()=>{const r=await post('/api/comment/update',{id:b.dataset.nothanks,fields:{suggest:false}});
+    S.comments=r.comments;renderQueue()});
+  root.querySelectorAll('[data-wide]').forEach(b=>b.onclick=()=>{WIDE=b.dataset.wide;renderWide()});
+}
+// The wide view of one thread (⤢): redrawn on every refresh, so answers and your own replies appear in it.
+let WIDE=null; const DRAFT={};
+function renderWide(){const w=$('#wideview');if(!w)return;
+  const c=WIDE&&S.comments.find(x=>x.id===WIDE);
+  if(!c){w.classList.remove('on');w.innerHTML='';return}
+  const inp=w.querySelector('[data-rin]'), typing=inp&&document.activeElement===inp, pos=inp?inp.selectionStart:0;
+  if(inp&&inp.value)DRAFT[WIDE]=inp.value;
+  const sc=w.scrollTop, atBottom=w.scrollHeight-w.scrollTop-w.clientHeight<40;
+  w.innerHTML='<button class="x" title="Close">×</button>'+item(c,true);w.classList.add('on');
+  w.querySelector('.x').onclick=()=>{WIDE=null;renderWide()};
+  wireThread(w);
+  const ni=w.querySelector('[data-rin]');
+  if(ni&&DRAFT[WIDE]!=null){ni.value=DRAFT[WIDE]}
+  if(ni&&typing){ni.focus();try{ni.setSelectionRange(pos,pos)}catch(e){}}
+  w.scrollTop=atBottom?w.scrollHeight:sc}
+// Tell the App Maker (when this page is inside it) the round and counts it shows in its own header.
+function report(){try{if(window.top===window)return;const gs=groups();
+  const done=gs.filter(g=>g.querySelector('input:checked')).length;
+  window.parent.postMessage({type:'am-page',title:(document.querySelector('header h1')||{}).textContent||document.title,
+    round:ROUND,decided:done,total:gs.length,queued:S.comments.filter(c=>c.status==='queued').length,
+    waiting:S.comments.filter(waiting).length},'*')}catch(e){}}
+function markAnchors(){
+  document.querySelectorAll('[data-anchor]').forEach(el=>{
+    const has=S.comments.some(c=>c.anchor===el.dataset.anchor&&c.status==='queued');
+    const b=el.querySelector(':scope > .cbtn');
+    if(b){b.classList.toggle('has',has); b.textContent=has?'commented':'comment'}});
+}
+const PH={change:'What is wrong, missing, or should change here? Waits for Send.',
+          question:'What do you want to know? Answered right here, in the panel.',
+          note:'A thought, context or reaction. Waits for Send; the page only changes if you ask.'};
+const kind=()=>$('#pop input[name=kind]:checked').value;
+function setKind(k){$(`#pop input[name=kind][value="${k}"]`).checked=true;
+  document.querySelectorAll('#pop .kind label').forEach(l=>l.classList.toggle('sel',l.querySelector('input').value===k));
+  $('#poptext').placeholder=PH[k]; $('#popadd').textContent=k==='question'?'Send now':'Add to queue'}
+let target=null;
+document.addEventListener('click',e=>{
+  const btn=e.target.closest('.cbtn');
+  if(!btn){ if(!e.target.closest('#pop')&&!e.target.closest('#pagec')) $('#pop').style.display='none'; return }
+  const el=btn.closest('[data-anchor]');
+  target={anchor:el.dataset.anchor,label:el.dataset.label,
+          text:(el.querySelector('h2,.q')||{}).textContent||''};
+  const p=$('#pop'),r=btn.getBoundingClientRect();
+  $('#popanchor').textContent=target.label; $('#poptext').value=''; setKind('question');
+  p.style.display='block'; p.style.top=(window.scrollY+r.bottom+8)+'px';
+  p.style.left=Math.max(12,Math.min(r.right-328+window.scrollX,document.body.clientWidth-340))+'px';
+  $('#poptext').focus();
+});
+$('#poptext').onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing){e.preventDefault();$('#popadd').click()}};
+$('#popcancel').onclick=()=>$('#pop').style.display='none';
+$('#popadd').onclick=async()=>{
+  const t=$('#poptext').value.trim(); if(!t||!target)return;
+  const k=kind(), now=k==='question';
+  const r=await post('/api/comment',{id:'c'+Date.now(),anchor:target.anchor,
+    anchorLabel:target.label,anchorText:target.text,text:t,kind:k,now});
+  S.comments=r.comments; $('#pop').style.display='none';
+  renderQueue(); markAnchors(); renderDecisions(); toast(now?(AGENT.agent?'Sent to '+AGENT.agent:'Sent'):'Queued — goes with Send')};
+
+// ---- "Claude is working" indicator ----
+// After a send, poll until the page file changes (Claude rebuilt it) or every comment in that
+// round is marked addressed. Survives a reload (localStorage), so a page that reloads itself
+// after sending (e.g. a stage gate) still shows it.
+const WK='working:'+location.pathname;
+const lastMod=()=>fetch(location.pathname,{method:'HEAD',cache:'no-store'}).then(r=>r.headers.get('Last-Modified')||'').catch(()=>'');
+// The round's status is one small line in the Chat center (the old bar above the page pushed it around).
+function wset(cls,text){const w=$('#wstat');if(!w)return;const k=cls||'working';
+  const msg={working:'Round sent — Claude is working on it',ready:'Page updated',stale:'Still waiting — if nothing comes, say “sent” in the terminal'}[k]||'';
+  w.className='wstat '+k;w.innerHTML=(k==='working'?'<span class="spin"></span>':k==='ready'?'✓ ':'')+msg+(k==='ready'?' <button id="wreload2">Reload</button>':'');
+  const b=document.getElementById('wreload2');if(b)b.onclick=()=>location.reload()}
+async function markWorking(round){const lm=await lastMod();
+  try{localStorage.setItem(WK,JSON.stringify({round,lm,t:Date.now()}))}catch(e){}
+  wset('',`<b>Claude is working on round ${round}…</b> Your comments and decisions are sent. This bar changes when the revision is ready.`);pollWorking()}
+window.markWorking=markWorking;
+let wtimer=null;
+function pollWorking(){clearTimeout(wtimer);let w;try{w=JSON.parse(localStorage.getItem(WK)||'null')}catch(e){w=null}
+  if(!w)return;
+  wtimer=setTimeout(async()=>{const lm=await lastMod();
+    const st=await fetch('/api/state',{cache:'no-store'}).then(r=>r.json()).catch(()=>null);
+    // this round's comments only: the batch records their ids
+    const b=st?(st.batches||[])[w.round-1]:null;const ids=new Set((b&&b.commentIds)||[]);
+    const mine=st?(st.comments||[]).filter(c=>ids.has(c.id)):[];
+    const allDone=mine.length>0&&mine.every(c=>c.addressed);
+    if((lm&&w.lm&&lm!==w.lm)||allDone){try{localStorage.removeItem(WK)}catch(e){};setTimeout(renderProgress,0)
+      wset('ready',`<b>Round ${w.round} revision is ready.</b> Reload to see what changed — it's listed at the top of the left rail.`);return}
+    if(Date.now()-w.t>4*60*1000){wset('stale',`<b>Still waiting on round ${w.round}.</b> If nothing arrives, type “sent” in the terminal — the automatic wake-up may have missed it.`)}
+    pollWorking()},4000)}
+$('#wreload').onclick=()=>location.reload();
+// Discard: close the review and throw it away (user, 2026-09-30). The server moves the folder to the
+// Trash, tells Claude, and stops. Not offered inside the App Maker, whose header is hidden anyway.
+(()=>{const h=document.querySelector('header'); if(!h||document.documentElement.classList.contains('embedded'))return;
+  const b=document.createElement('button'); b.className='theme danger'; b.textContent='Discard'; b.title='Close this review and move it to the Trash';
+  const ask=document.createElement('span'); ask.className='discardask'; ask.hidden=true;
+  ask.innerHTML='Move this review to the Trash and stop it? <button class="yes">Discard</button><button class="no">Cancel</button>';
+  b.onclick=()=>{b.hidden=true; ask.hidden=false};
+  ask.querySelector('.no').onclick=()=>{ask.hidden=true; b.hidden=false};
+  ask.querySelector('.yes').onclick=async()=>{
+    try{await fetch('/api/discard',{method:'POST',body:'{}'})}catch(e){}
+    document.body.innerHTML='<div class="discarded"><h1>Review discarded</h1><p>It\'s in the Trash if you need it back. You can close this tab.</p></div>'};
+  h.insertBefore(ask,h.querySelector('#dcount').nextSibling); h.insertBefore(b,ask)})();
+
+$('#send').onclick=async()=>{
+  const r=await post('/api/send',{});
+  S.comments.forEach(c=>{if(c.status==='queued')c.status='sent'});
+  S.batches.push({decisions:{...S.decisions}});
+  ROUND+=1; $('#round').textContent=`Round ${ROUND}`;
+  renderQueue(); markAnchors(); renderDecisions();
+  toast(`Round ${ROUND-1} sent — ${r.sent} comment${r.sent===1?'':'s'} + decisions`);
+  markWorking(ROUND-1)};
+document.addEventListener('change',async e=>{
+  const i=e.target;
+  if(i.closest('#pop')){ if(i.name==='kind') setKind(i.value); return }
+  if(i.type==='radio'){S.decisions[i.name]=i.value; await post('/api/decision',{id:i.name,value:i.value})}
+  else if(i.type==='checkbox'){
+    const v=[...document.querySelectorAll(`input[name="${i.name}"]:checked`)].map(x=>x.value);
+    S.decisions[i.name]=v; await post('/api/decision',{id:i.name,value:v})}
+  else return;
+  document.querySelectorAll('label.opt').forEach(l=>l.classList.toggle('sel',l.querySelector('input').checked));
+  renderDecisions(); renderQueue(); toast('Saved')});
+// Clicking the chosen radio again clears it (user, 2026-09-30: "how to unselect").
+let wasOn=null;
+document.addEventListener('pointerdown',e=>{
+  const i=e.target.closest('label.opt')?.querySelector('input[type=radio]'); wasOn=i&&i.checked?i:null},true);
+document.addEventListener('click',e=>{
+  const i=e.target.closest('label.opt')?.querySelector('input[type=radio]');
+  if(!i||i!==wasOn)return;
+  e.preventDefault(); wasOn=null;
+  setTimeout(async()=>{
+    i.checked=false; delete S.decisions[i.name];
+    await post('/api/decision',{id:i.name,value:null});
+    document.querySelectorAll('label.opt').forEach(l=>l.classList.toggle('sel',l.querySelector('input').checked));
+    renderDecisions(); renderQueue(); toast('Cleared')},0)});
+
+async function refresh(){try{
+  const [st,ag]=await Promise.all([fetch('/api/state',{cache:'no-store'}).then(r=>r.json()),fetch('/api/agent',{cache:'no-store'}).then(r=>r.json()).catch(()=>({}))]);
+  AGENT=ag||{}; const before=JSON.stringify(S.comments); S.comments=st.comments||[]; S.batches=st.batches||[]; S.base=st.baseline||{};
+  if(JSON.stringify(S.comments)!==before||true)renderQueue();}catch(e){}}
+// every 6 s; every 2.5 s while Claude owes an answer
+function owed(){return S.comments.some(c=>c.status==='sent'&&!c.addressed&&(c.kind==='question'||c.kind==='note'||(c.messages||[]).length))}
+let rtimer=null;
+function refreshSoon(){clearTimeout(rtimer);rtimer=setTimeout(async()=>{await refresh();refreshSoon()},owed()?2500:6000)}
+refreshSoon();
+fetch('/api/agent').then(r=>r.json()).then(a=>{AGENT=a||{};renderQueue()}).catch(()=>{});
+fetch('/api/state').then(r=>r.json()).then(async st=>{
+  S.decisions=st.decisions||{}; S.comments=st.comments||[]; S.batches=st.batches||[]; S.base=st.baseline||{}; PLOADED=true;
+  ROUND=S.batches.length+1; $('#round').textContent=`Round ${ROUND}`;
+  for(const [k,v] of Object.entries(S.decisions))
+    (Array.isArray(v)?v:[v]).forEach(val=>{
+      const i=document.querySelector(`input[name="${k}"][value="${val}"]`); if(i)i.checked=true});
+  document.querySelectorAll('label.opt').forEach(l=>l.classList.toggle('sel',l.querySelector('input').checked));
+  post('/api/groups',{groups:groups().map(g=>g.dataset.radio||g.dataset.check)});
+  buildToc(); buildChanged(); renderQueue(); markAnchors(); renderDecisions();
+  pollWorking();  // a round sent before a reload keeps its "working" bar
+  if(window.mermaid){mermaid.initialize({startOnLoad:false,
+    theme:matchMedia('(prefers-color-scheme: dark)').matches?'dark':'neutral',securityLevel:'loose'});
+    try{await mermaid.run({nodes:[...document.querySelectorAll('pre.mermaid')]})}catch(e){}}
+});
+</script>
+</body>
+</html>
