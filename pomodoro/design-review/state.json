@@ -1,0 +1,65 @@
+{
+  "decisions": {
+    "d1": "split",
+    "d3": "type",
+    "d4": "clamp",
+    "d5": [
+      "manifest",
+      "sound",
+      "tasklog",
+      "reorder"
+    ]
+  },
+  "comments": [
+    {
+      "id": "c1790058516027",
+      "anchor": "d1",
+      "anchorLabel": "D1 layout",
+      "anchorText": "D1 \u2014 Which layout?",
+      "text": "I want both B and C please. \n\nAlso I want a option that works as a stop watch similar to timer. \nSo a switch between to choose a timer or a switch.",
+      "kind": "change",
+      "status": "sent",
+      "ts": "2026-09-22T06:28:36.035514+00:00",
+      "addressed": true
+    },
+    {
+      "id": "c1790058539942",
+      "anchor": "theme",
+      "anchorLabel": "Looks",
+      "anchorText": "4Looks \u2014 five, all on the Split layout so only the skin changes",
+      "text": "Button to change theme any time, I like all of them.",
+      "kind": "change",
+      "status": "sent",
+      "ts": "2026-09-22T06:28:59.950367+00:00",
+      "addressed": true
+    }
+  ],
+  "batches": [
+    {
+      "round": 1,
+      "ts": "2026-09-22T06:30:10.840072+00:00",
+      "commentIds": [
+        "c1790058516027",
+        "c1790058539942"
+      ],
+      "decisions": {
+        "d1": "split",
+        "d3": "type",
+        "d4": "clamp",
+        "d5": [
+          "manifest",
+          "sound",
+          "tasklog",
+          "reorder"
+        ]
+      }
+    }
+  ],
+  "groups": [
+    "d1",
+    "d2",
+    "d3",
+    "d4",
+    "d5"
+  ]
+}

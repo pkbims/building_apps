@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Daily Content</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<style>
+  :root{--bg:#f4eee2;--panel:#fdf9f1;--ink:#2a2521;--muted:#6a6157;--faint:#978d82;--line:#e3d9c7;
+    --accent:#b0523a;--soft:#f5e4dc;--warn:#7a5a1e;--warnsoft:#f3ead3;--quote:#efe7d6;--ok:#3a9a5b;color-scheme:light}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#1b1916;--panel:#242019;
+    --ink:#ede4d6;--muted:#a89e8f;--faint:#766d60;--line:#38322a;--accent:#e28f72;--soft:#3b2a24;--warn:#dcb66e;
+    --warnsoft:#302a1c;--quote:#2a2620;--ok:#5cc07f}}
+  :root[data-theme="dark"]{color-scheme:dark;--bg:#1b1916;--panel:#242019;--ink:#ede4d6;--muted:#a89e8f;--faint:#766d60;
+    --line:#38322a;--accent:#e28f72;--soft:#3b2a24;--warn:#dcb66e;--warnsoft:#302a1c;--quote:#2a2620;--ok:#5cc07f}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 "IBM Plex Sans",-apple-system,sans-serif}
+  header{position:sticky;top:0;z-index:10;background:var(--panel);border-bottom:1px solid var(--line);
+    padding:10px 24px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  header h1{font-size:15px;margin:0;font-weight:650}
+  .spacer{flex:1}
+  select,button{font:inherit;font-size:13.5px}
+  select{padding:5px 8px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+  .btn{padding:6px 12px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
+  .btn:hover{border-color:var(--accent);color:var(--accent)}
+  .btn.go{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:650}
+  .layout{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:24px;max-width:1240px;margin:0 auto;padding:24px 16px 120px}
+  @media(max-width:1000px){.layout{grid-template-columns:1fr}}
+  main{min-width:0}
+  aside.rail{position:sticky;top:70px;align-self:start;background:var(--panel);border:1px solid var(--line);
+    border-radius:14px;padding:18px 18px 12px;max-height:calc(100vh - 90px);overflow-y:auto}
+  @media(max-width:1000px){aside.rail{position:static;max-height:none}}
+  .rail h3{margin:0;font-size:15px}
+  .rail .pct{color:var(--muted);font-size:12.5px;margin:2px 0 0}
+  .rail .pbar{height:5px;background:var(--line);border-radius:3px;overflow:hidden;margin:8px 0 6px}
+  .rail .pbar i{display:block;height:100%;background:var(--accent);transition:width .3s}
+  .rail .grp{color:var(--faint);text-transform:uppercase;letter-spacing:.07em;font-size:10.5px;font-weight:700;margin:14px 0 4px}
+  .st{display:flex;gap:10px;padding:7px 8px;border-radius:9px;margin:0 -8px;align-items:flex-start}
+  .st .mk{width:18px;height:18px;border-radius:50%;border:2px solid var(--line);flex:none;margin-top:2px;
+    display:grid;place-items:center;font-size:11px;color:#fff;font-weight:700}
+  .st.done .mk{background:var(--ok);border-color:var(--ok)}
+  .st.now{background:var(--soft)} .st.now .mk{border-color:var(--accent);box-shadow:0 0 0 3px var(--soft)}
+  .st .lb{font-size:14px;line-height:1.35;font-weight:550}
+  .st.done .lb{color:var(--muted)}
+  .st .dt{font-size:12.5px;color:var(--muted);line-height:1.35;margin-top:1px}
+  .st.now .dt{color:var(--accent)}
+  .st .mk.clk{cursor:pointer} .st .mk.clk:hover{border-color:var(--accent)}
+  .chans{display:flex;flex-wrap:wrap;gap:5px;margin-top:5px}
+  .chan{font-size:11.5px;padding:2px 8px;border-radius:99px;border:1px solid var(--line);cursor:pointer;background:var(--bg);color:var(--muted)}
+  .chan.on{background:var(--ok);border-color:var(--ok);color:#fff}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px 24px;margin-bottom:20px}
+  h2{margin:0;font-size:22px;letter-spacing:-.01em}
+  .editable{outline:none;border-radius:6px;padding:0 4px;margin:0 -4px}
+  .editable:hover{background:var(--bg)} .editable:focus{background:var(--bg);box-shadow:0 0 0 1px var(--accent)}
+  .sub{color:var(--muted);font-size:14px;margin:4px 0 0}
+  .dayhead{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+  .datewrap{position:relative;cursor:pointer;border-radius:6px;padding:0 4px}
+  .datewrap:hover{background:var(--bg);color:var(--accent)}
+  .datewrap input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%}
+  .btn.del{font-size:12.5px;color:var(--muted)} .btn.del:hover{color:#c0392b;border-color:#c0392b}
+  .btn.danger{background:#c0392b;border-color:#c0392b;color:#fff;font-weight:650}
+  .confirm{font-size:13.5px;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+  .lastrun{font-size:14px;color:var(--muted);margin:0 0 12px}
+  .nudge{margin-left:8px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;
+    color:var(--warn);background:var(--warnsoft);padding:2px 8px;border-radius:5px}
+  .tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+  .tab{border:1px solid var(--line);border-bottom:0;background:var(--bg);color:var(--muted);padding:7px 14px;
+    border-radius:8px 8px 0 0;cursor:pointer;display:flex;gap:7px;align-items:center}
+  .tab.on{background:var(--panel);color:var(--ink);font-weight:650;position:relative;top:1px}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--line);flex:none}
+  .dot.rec{background:var(--ok)} .dot.writing{background:var(--warn);animation:blink 1s infinite} .dot.error{background:#c0392b}
+  @keyframes blink{50%{opacity:.3}}
+  .tab.add{color:var(--accent);font-weight:700;font-size:17px;padding:4px 16px}
+  .tab.add.due{animation:pulse 1.6s ease-in-out infinite}
+  @keyframes pulse{50%{background:var(--warnsoft);color:var(--warn)}}
+  .plus{border:1px solid var(--accent);border-radius:10px;padding:14px 16px;margin:14px 0 0;font-size:14.5px}
+  .plus label{display:block;margin-top:4px}
+  .kinds{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+  @media(max-width:760px){.kinds{grid-template-columns:repeat(2,1fr)}}
+  .kind{border:1px solid var(--line);border-radius:10px;padding:8px 12px;cursor:pointer;margin:0 !important}
+  .kind input{display:none} .kind b{display:block;font-size:14.5px} .kind span{font-size:12.5px;color:var(--muted)}
+  .kind.on{border-color:var(--accent);background:var(--soft)}
+  .btn:disabled{opacity:.5;cursor:not-allowed}
+  .row{display:flex;gap:8px;margin-top:12px}
+  .pane{padding:18px 2px 0}
+  .recbar{display:flex;gap:14px;flex-wrap:wrap;align-items:center;background:var(--bg);border:1px solid var(--line);
+    border-radius:10px;padding:10px 14px;font-size:13.5px}
+  .recbar .ok{color:var(--ok);font-weight:650}
+  code{background:var(--quote);padding:1px 6px;border-radius:5px;font-size:12.5px}
+  .pane h3{font-size:15px;margin:20px 0 6px}
+  .hint{font-weight:400;color:var(--muted);font-size:12.5px;margin-left:6px}
+  p.story{font-size:16px;line-height:1.7;margin:0;background:var(--bg);border-left:3px solid var(--accent);
+    padding:12px 16px;border-radius:0 10px 10px 0}
+  ul.open{list-style:none;padding:0;margin:0}
+  .down{font-size:12px;font-weight:650;color:#c0392b;background:rgba(192,57,43,.1);padding:1px 8px;border-radius:5px;white-space:nowrap}
+  ul.open li{display:flex;gap:10px;align-items:baseline;padding:4px 0;font-size:15px}
+  ul.open input{accent-color:var(--accent);width:16px;height:16px;flex:none;position:relative;top:2px}
+  ol.script{padding-left:28px;margin:8px 0 0}
+  textarea.focus{width:100%;min-height:64px;margin-top:6px;border:1px solid var(--line);border-radius:10px;padding:9px 11px;
+    font:inherit;font-size:14.5px;background:var(--bg);color:var(--ink);resize:vertical}
+  .status{display:flex;gap:10px;align-items:center;flex-wrap:wrap;border-radius:10px;padding:10px 14px;margin-bottom:12px;font-size:14px}
+  .status span{flex:1;min-width:220px} .status.draft{background:var(--soft)} .status.ok{background:color-mix(in srgb,var(--ok) 14%,transparent)}
+  .status.busy{background:var(--warnsoft);color:var(--warn)}
+  .focusline{margin:10px 0 0;font-size:14px;color:var(--muted)}
+  ol.beats{padding-left:26px;margin:8px 0 0} ol.beats li{margin:0 0 14px} ol.beats li::marker{color:var(--accent);font-weight:700}
+  .show{display:inline-block;font-size:12.5px;font-weight:650;color:var(--accent);background:var(--soft);padding:1px 9px;border-radius:6px}
+  .say{font-size:17px;line-height:1.6;margin:5px 0 0}
+  ol.outline li{margin:0 0 12px;font-size:15px}
+  .itemdel{display:flex;justify-content:flex-end;margin:-6px 0 8px}
+  ol.script li{font-size:17px;line-height:1.55;margin:0 0 13px;padding-left:4px}
+  ol.script li::marker{color:var(--accent);font-weight:700}
+  .act{display:inline-block;font-size:13px;font-weight:650;color:var(--accent);background:var(--soft);
+    padding:1px 8px;border-radius:6px;margin-right:4px}
+  details{border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin-top:14px;background:var(--bg)}
+  summary{cursor:pointer;font-weight:600;font-size:14px;color:var(--accent)}
+  pre{white-space:pre-wrap;font-size:12.5px;margin:10px 0 0;max-height:360px;overflow:auto}
+  .waiting{color:var(--muted);font-style:italic;padding:18px 0}
+  .err{color:#c0392b;font-size:14px}
+  .empty{color:var(--muted);text-align:center;padding:30px 0}
+  #toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);
+    padding:9px 16px;border-radius:8px;font-size:13.5px;opacity:0;transition:opacity .25s;pointer-events:none}
+  #toast.on{opacity:1}
+</style>
+</head>
+<body>
+<header>
+  <h1>🎬 Daily Content</h1>
+  <select id="daysel" aria-label="Day"></select>
+  <button class="btn" id="newday">+ New day</button>
+  <div class="spacer"></div>
+  <button class="btn" id="theme" title="Auto → Light → Dark">Auto</button>
+</header>
+<div class="layout">
+<main id="main"><p class="empty">Loading…</p></main>
+<aside class="rail" id="rail"></aside>
+</div>
+<div id="toast"></div>
+
+<script>
+const $=s=>document.querySelector(s), esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let S=null, tab=null, plusOpen=false, plusKind='recap', timer=null;
+const draftFocus={recap:'',past:''}; // what you've typed in the + panel survives a redraw
+const kindOf=r=>r.kind||'recap';
+// Tab order is the video's order: intro, then recaps / outlines / chunks as they were made, then outro.
+const ordered=R=>[...R.filter(r=>kindOf(r)==='intro'),...R.filter(r=>!['intro','outro'].includes(kindOf(r))),...R.filter(r=>kindOf(r)==='outro')];
+const BUSY=['writing','revising'];
+const openReview=r=>window.open(`/review?day=${S.day.day}&n=${r.n}`,`review-${S.day.day}-${r.n}`,'width=1180,height=940');
+const api=async(path,body)=>{const r=await fetch(path,body?{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}:{});
+  const j=await r.json(); if(!r.ok) throw new Error(j.error||r.status); return j};
+const toast=m=>{const t=$('#toast');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),2600)};
+const hm=iso=>new Date(iso).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+const dur=ms=>{const m=Math.round(ms/60000);return m<60?`${m} min`:`${Math.floor(m/60)} h ${m%60} min`};
+
+// theme toggle — same three states as the html-worker pages
+(()=>{const R=document.documentElement,L={'':'Auto',light:'Light',dark:'Dark'},b=$('#theme');
+  const set=v=>{v?R.dataset.theme=v:delete R.dataset.theme;try{v?localStorage.setItem('theme',v):localStorage.removeItem('theme')}catch(e){}b.textContent=L[v]};
+  let v='';try{v=localStorage.getItem('theme')||''}catch(e){} set(v);
+  b.onclick=()=>{const c=['','light','dark'];set(c[(c.indexOf(R.dataset.theme||'')+1)%3])}})();
+
+const hashDay=()=>(location.hash.match(/day-\d+/)||[])[0];
+async function load(day){S=await api('/api/state'+(day?`?day=${day}`:''));
+  if(S.day) history.replaceState(null,'','#'+S.day.day); render();schedule()}
+function schedule(){clearTimeout(timer);const busy=S.day&&S.day.recaps.some(r=>BUSY.includes(r.status));
+  // Don't redraw under the user: an open + panel or a title being typed would be wiped.
+  timer=setTimeout(()=>{const a=document.activeElement, typing=a&&(a.isContentEditable||a.tagName==='TEXTAREA');
+    if(plusOpen||typing) return schedule(); load(S.day&&S.day.day)},busy?3000:30000)}
+
+function render(){
+  $('#daysel').innerHTML=S.days.map(d=>`<option ${S.day&&d===S.day.day?'selected':''}>${d}</option>`).join('');
+  if(!S.day){$('#main').innerHTML='<p class="empty">No days yet. Press <b>+ New day</b> to start.</p>';$('#rail').innerHTML='';return}
+  const d=S.day, R=ordered(d.recaps), RC=R.filter(r=>kindOf(r)==='recap'),
+    last=RC.length?RC[RC.length-1].to:d.start, since=Date.now()-new Date(last);
+  if(!tab||!R.some(r=>r.n===tab)) tab=RC.length?RC[RC.length-1].n:(R[0]||{}).n??null;
+  const cur=R.find(r=>r.n===tab);
+  $('#main').innerHTML=`
+  <div class="card">
+    <div class="dayhead"><h2><span class="editable" contenteditable data-k="title">${esc(d.title)}</span> ·
+      <label class="datewrap" title="Change the date">${new Date(d.date+'T12:00').toLocaleDateString([],{weekday:'short',day:'numeric',month:'short'})}
+      <input type="date" id="dateinp" value="${d.date}"></label></h2>
+      <span id="delwrap"><button class="btn del" id="del">🗑 Delete day</button></span></div>
+    <p class="sub"><span class="editable" contenteditable data-k="subtitle" data-ph="Click to add today's focus">${esc(d.subtitle)||'Click to add today\'s focus'}</span></p>
+  </div>
+  <div class="card">
+    <h2 style="font-size:19px;margin-bottom:6px">🎬 Chunks to record</h2>
+    <p class="lastrun">${RC.length?`Last recap covered up to <b>${hm(last)}</b>, which was <b>${dur(since)}</b> ago.`
+      :`No recaps yet. The first one starts from when you began working.`}
+      ${RC.length&&since>60*60000?'<span class="nudge">Time for a recap</span>':''}</p>
+    <div class="tabs">${R.map(r=>`<button class="tab ${r.n===tab?'on':''}" data-n="${r.n}">
+        <span class="dot ${BUSY.includes(r.status)?'writing':r.status==='error'?'error':r.recorded?'rec':''}"></span>
+        ${tabLabel(r,R)}${r.title?' · '+esc(r.title):''}${r.status==='approved'&&kindOf(r)!=='outline'?' ✅':r.status==='draft'?' ✏️':''}</button>`).join('')}
+      <button class="tab add ${RC.length&&since>60*60000?'due':''}" id="plus" title="New recap, past-work chunks, intro or outro">+</button></div>
+    ${plusOpen?plusPanel(last,R,RC):''}
+    ${cur?pane(cur):'<p class="empty">Press <b>+</b> after your first hour of work.</p>'}
+  </div>`;
+  renderRail();
+  wire(last);
+}
+
+function renderRail(){
+  const P=S.progress||[], done=P.filter(s=>s.done).length, now=P.find(s=>!s.done);
+  let g='', html=`<h3>📍 Where you are</h3><p class="pct">${done} of ${P.length} steps done${now?' · next: '+esc(now.label):' · day complete 🎉'}</p>
+    <div class="pbar"><i style="width:${P.length?100*done/P.length:0}%"></i></div>`;
+  for(const s of P){
+    if(s.group!==g){g=s.group;html+=`<div class="grp">${esc(g)}</div>`}
+    const clk=s.how==='tick'?` clk" data-ck="${s.tick}" title="Tick when done`:'';
+    html+=`<div class="st ${s.done?'done':''} ${s===now?'now':''}"><span class="mk${clk}">${s.done?'✓':''}</span>
+      <div><div class="lb">${esc(s.label)}</div>${s.detail?`<div class="dt">${esc(s.detail)}</div>`:''}
+      ${s.how==='ticks'?`<div class="chans">${s.tick.map(c=>`<span class="chan ${c.done?'on':''}" data-ck="${c.key}" data-v="${c.done?0:1}">${esc(c.label)}</span>`).join('')}</div>`:''}
+      </div></div>`}
+  $('#rail').innerHTML=html;
+  document.querySelectorAll('#rail [data-ck]').forEach(el=>el.onclick=async()=>{
+    const v=el.dataset.v!==undefined?el.dataset.v==='1':!el.closest('.st').classList.contains('done');
+    try{S=await api('/api/check',{day:S.day.day,key:el.dataset.ck,value:v});render()}catch(e){toast(e.message)}});
+}
+
+function tabLabel(r,R){
+  const k=kindOf(r), nth=R.filter(x=>kindOf(x)===k).indexOf(r)+1;
+  return k==='intro'?'🎬 Intro':k==='outro'?'🏁 Outro':k==='outline'?'🗂️ Outline':k==='chunk'?`📦 ${nth}`:`⏱️ ${nth} · ${hm(r.from)}–${hm(r.to)}`}
+
+function plusPanel(last,R,RC){
+  const has=k=>R.some(r=>kindOf(r)===k);
+  const pick=`<div class="kinds">${[['recap','⏱️ Recap','the work since the last recap'],
+      ['past','📦 Past work','chunks about work from before'],
+      ['intro','🎬 Intro','end of day; plays first'],
+      ['outro','🏁 Outro','end of day; plays last']].map(([k,l,h])=>
+    `<label class="kind ${plusKind===k?'on':''}"><input type="radio" name="pk" value="${k}" ${plusKind===k?'checked':''}>
+      <b>${l}</b><span>${h}</span></label>`).join('')}</div>`;
+  if(plusKind==='past') return `<div class="plus">${pick}
+      <div style="margin-top:10px"><b>What past work should the chunks show?</b></div>
+      <textarea id="focus" class="focus" placeholder="e.g. make chunks showing how I built the shopping prototype in DesignMyRoom">${esc(draftFocus.past)}</textarea>
+      <p class="sub" style="margin:4px 0 0">Claude digs through old agent logs, git history and the app's files (read-only), then proposes an outline of chunks for you to review. Digging takes 1–3 minutes.</p>
+      <div class="row"><button class="btn go" id="plusgo">Find the work</button><button class="btn" id="pluscancel">Cancel</button></div></div>`;
+  if(plusKind!=='recap'){
+    const again=has(plusKind), none=!R.some(r=>['recap','chunk'].includes(kindOf(r))&&r.status==='approved');
+    return `<div class="plus">${pick}
+      <p style="margin:10px 0 0">${none?`Approve at least one chunk first: the ${plusKind} is written from them.`
+        :`Written from today's approved chunks. ${plusKind==='intro'?'A hook, what today was about, and what the video shows.'
+        :'The day\'s lesson, where things stand, tomorrow, and the community link.'}
+        Save the recording as <code>content/${S.day.day}/hours/${plusKind}.mp4</code>.${again?` <b>This rewrites your current ${plusKind}.</b>`:''}`}</p>
+      <div class="row"><button class="btn go" id="plusgo" ${none?'disabled':''}>${again?'Rewrite':'Write'} ${plusKind}</button><button class="btn" id="pluscancel">Cancel</button></div></div>`}
+  const from=new Date(last), now=new Date(), opts=[['','now ('+hm(now.toISOString())+')']];
+  // 15-minute marks back toward the start, so you can end the recap at a natural break
+  let t=new Date(now); t.setMinutes(Math.floor(t.getMinutes()/15)*15,0,0);
+  while(t>from&&opts.length<12){ if(now-t>60000) opts.push([t.toISOString(),hm(t.toISOString())]); t=new Date(t-15*60000)}
+  const long=now-from>75*60000;
+  return `<div class="plus">${pick}
+    <div style="margin-top:10px">Covers <b>${hm(last)}</b> (where the last one ended) → until
+      <select id="until">${opts.map(([v,l])=>`<option value="${v}">${l}</option>`).join('')}</select></div>
+    ${long?`<div id="splitq" style="margin-top:8px">That's <b>${dur(now-from)}</b>. One recap, or one per hour?
+      <label><input type="radio" name="split" value="0" checked> One recap (1–2 min to record)</label>
+      <label><input type="radio" name="split" value="1"> Split into hourly recaps</label></div>`:''}
+    <div style="margin-top:10px"><b>What should this cover?</b> <span class="sub">optional</span></div>
+    <textarea id="focus" class="focus" placeholder="e.g. only the DesignMyRoom work, skip the content system. Leave empty for everything.">${esc(draftFocus.recap)}</textarea>
+    <div class="row"><button class="btn go" id="plusgo">Write draft</button><button class="btn" id="pluscancel">Cancel</button></div></div>`}
+
+function pane(r){
+  const k=kindOf(r), filmed=k!=='outline';
+  const bar=filmed?`<div class="recbar"><span>🎬 Screen Studio, camera + mic, ${['intro','outro'].includes(k)?'about 1 min, face to camera':'about 2 min'}</span>
+    <span>Save as <code>${esc(r.video)}</code></span>${r.recorded?'<span class="ok">● Recorded</span>':'<span>Not recorded yet</span>'}</div>`:'';
+  const review=`<button class="btn go" data-review="${r.n}">${r.status==='approved'?'Open review':'✏️ Review draft'}</button>`;
+  const noun={recap:'recap',chunk:'chunk',outline:'outline',intro:'intro',outro:'outro'}[k];
+  const del=`<div class="itemdel" id="itemdel"><button class="btn del" data-delitem="${r.n}">🗑 Delete ${noun}</button></div>`;
+  const status=r.status==='draft'?`<div class="status draft"><span>✏️ <b>Draft${r.round>1?` · round ${r.round}`:''}.</b> Review it, comment, then approve before recording.</span>${review}</div>`
+    :r.status==='approved'?`<div class="status ok"><span>✅ <b>Approved.</b> ${k==='outline'?`Made ${(r.made||[]).length} chunks: see the 📦 tabs.`:'Ready to record.'}</span>
+       ${k==='outline'?'':`<button class="btn" data-reopen="${r.n}">Reopen</button>`}${review}</div>`
+    :r.status==='revising'?`<div class="status busy"><span>Revising from your comments… usually under a minute.</span>${review}</div>`:'';
+  const focus=r.focus?`<p class="focusline">${k==='recap'?'Focus':'You asked for'}: <i>${esc(r.focus)}</i></p>`:'';
+  if(r.status==='writing') return `<div class="pane">${del}${bar}${focus}<p class="waiting">${k==='recap'
+    ?`Reading every agent's log from ${hm(r.from)} to ${hm(r.to)} and writing the draft… usually under a minute.`
+    :k==='outline'?'Digging through your past work: old logs, git history and files… usually 1–3 minutes.'
+    :k==='chunk'?'Checking the sources and writing this chunk… usually 1–2 minutes.'
+    :`Reading today's approved chunks and writing the ${k}… usually under a minute.`}</p></div>`;
+  if(r.status==='error') return `<div class="pane">${del}${bar}${focus}<p class="err">Couldn't write this: ${esc(r.error)}</p>
+    <button class="btn" id="retry" data-n="${r.n}">Try again</button></div>`;
+  const err=r.error?`<p class="err">${esc(r.error)}</p>`:'';
+  if(k==='outline') return `<div class="pane">${del}${status}${err}${focus}
+    ${r.summary?`<h3>📖 What was found</h3><p class="story">${esc(r.summary)}</p>`:''}
+    <h3>🗂️ Proposed chunks</h3><ol class="outline">${(r.chunks||[]).map(c=>`<li><b>${esc(c.title)}</b><div>${esc(c.covers)}</div>
+      <div class="sub">🖱️ ${esc(c.show)}</div></li>`).join('')}</ol>
+    <details><summary>What Claude looked at</summary><pre>${esc(r.digest)}</pre></details></div>`;
+  return `<div class="pane">${del}${status}${err}${bar}${focus}
+    ${r.summary?`<h3>📖 What happened</h3><p class="story">${esc(r.summary)}</p>`:''}
+    ${(r.open||[]).length?`<h3>🧰 Open these first</h3><ul class="open">${r.open.map(o=>`<li><input type="checkbox"><span><b>${esc(o.what)}</b> <code>${esc(o.where)}</code>${o.live===false?' <span class="down">not running: start it before recording</span>':''}</span></li>`).join('')}</ul>`:''}
+    <h3>🎬 Script <span class="hint">${r.words||0} words · about ${Math.max(1,Math.round((r.words||0)/140*10)/10)} min</span></h3>
+    <ol class="beats">${(r.lines||[]).map(l=>`<li><span class="show">SHOW · ${esc(l.act||'camera')}</span><p class="say">“${esc(l.say)}”</p></li>`).join('')}</ol>
+    <details><summary>What Claude saw (${k==='recap'?`the agents' logs, ${hm(r.from)}–${hm(r.to)}`:k==='chunk'?'the outline plan':"today's approved chunks"})</summary><pre>${esc(r.digest)}</pre></details></div>`}
+
+const d0=()=>S.day.day;
+function wire(last){
+  document.querySelectorAll('.tab[data-n]').forEach(b=>b.onclick=()=>{tab=+b.dataset.n;render()});
+  $('#plus').onclick=()=>{plusOpen=!plusOpen;render()};
+  document.querySelectorAll('[data-review]').forEach(b=>b.onclick=()=>openReview({n:+b.dataset.review}));
+  document.querySelectorAll('[data-reopen]').forEach(b=>b.onclick=async()=>{try{S=await api('/api/review/reopen',{day:d0(),n:+b.dataset.reopen});render()}catch(e){toast(e.message)}});
+  // Same inline confirm as Delete day; a recording, if any, moves to content/.trash.
+  document.querySelectorAll('[data-delitem]').forEach(b=>b.onclick=()=>{
+    const n=+b.dataset.delitem, r=S.day.recaps.find(x=>x.n===n);
+    $('#itemdel').innerHTML=`<span class="confirm">Delete this ${esc(kindOf(r))}${r.title?` “${esc(r.title)}”`:''}?${r.recorded?' Its recording moves to content/.trash.':''}${kindOf(r)==='outline'&&(r.made||[]).length?' Its chunks stay.':''}
+      <button class="btn danger" id="itemyes">Delete</button><button class="btn" id="itemno">Cancel</button></span>`;
+    $('#itemno').onclick=render;
+    $('#itemyes').onclick=async()=>{try{S=await api('/api/recap/delete',{day:d0(),n});tab=null;render();toast('Deleted')}catch(e){toast(e.message)}}});
+  if(plusOpen){
+    $('#pluscancel').onclick=()=>{plusOpen=false;render()};
+    const fb=$('#focus'); if(fb) fb.oninput=()=>{draftFocus[plusKind]=fb.value};
+    document.querySelectorAll('input[name=pk]').forEach(i=>i.onchange=()=>{plusKind=i.value;render()});
+    $('#plusgo').onclick=async()=>{
+      const focus=($('#focus')||{}).value||'';
+      const body=plusKind==='recap'?(()=>{const sp=document.querySelector('input[name=split]:checked');
+        return {kind:'recap',until:$('#until').value||null,split:sp?sp.value==='1':false,focus}})()
+        :plusKind==='past'?{kind:'past',focus}:{kind:plusKind};
+      try{S=await api('/api/recap',{day:S.day.day,...body});plusOpen=false;draftFocus[plusKind]='';
+        const R=S.day.recaps; tab=(['recap','past'].includes(plusKind)?R[R.length-1]:R.find(r=>kindOf(r)===plusKind)).n;
+        plusKind='recap';render();schedule()}catch(e){toast(e.message)}};
+    const u=$('#until'), q=$('#splitq'); // absent when writing an intro or outro
+    if(u&&q) u.onchange=()=>{const end=u.value?new Date(u.value):new Date();q.style.display=end-new Date(last)>75*60000?'':'none'};
+  }
+  const di=$('#dateinp'); $('.datewrap').onclick=e=>{if(e.target!==di)try{di.showPicker()}catch(x){}};
+  // (showPicker: a transparent date input only opens on its own icon in some browsers)
+  di.onchange=async()=>{try{await api('/api/day-meta',{day:d0(),date:di.value});await load(d0());toast('Date changed')}catch(e){toast(e.message)}};
+  $('#del').onclick=()=>{$('#delwrap').innerHTML=`<span class="confirm">Delete ${esc(S.day.title)}? Recordings are kept in content/.trash.
+      <button class="btn danger" id="delyes">Delete</button><button class="btn" id="delno">Cancel</button></span>`;
+    $('#delno').onclick=render;
+    $('#delyes').onclick=async()=>{S=await api('/api/delete-day',{day:d0()});tab=null;
+      history.replaceState(null,'',S.day?'#'+S.day.day:location.pathname);render();schedule();toast('Day deleted')}};
+  const rt=$('#retry'); if(rt) rt.onclick=async()=>{S=await api('/api/recap/retry',{day:S.day.day,n:+rt.dataset.n});render();schedule()};
+  document.querySelectorAll('.editable').forEach(el=>{
+    el.onfocus=()=>{if(el.textContent===el.dataset.ph) el.textContent=''};
+    el.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();el.blur()}};
+    el.onblur=async()=>{const v=el.textContent.trim(); await api('/api/day-meta',{day:S.day.day,[el.dataset.k]:v}); S.day[el.dataset.k]=v; toast('Saved')}});
+}
+
+$('#daysel').onchange=e=>{tab=null;plusOpen=false;load(e.target.value)};
+$('#newday').onclick=async()=>{S=await api('/api/new-day',{});tab=null;history.replaceState(null,'','#'+S.day.day);render();toast('New day created')};
+addEventListener('hashchange',()=>{const h=hashDay();if(h&&S&&S.day&&h!==S.day.day){tab=null;load(h)}});
+load(hashDay());
+</script>
+</body>
+</html>

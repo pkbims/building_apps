@@ -1,0 +1,192 @@
+{
+  "day": "day-01",
+  "date": "2026-09-22",
+  "title": "Practice Day 1",
+  "subtitle": "Building and testing the content pipeline · series starts Fri 25 Sep",
+  "start": "2026-09-22T14:30:00-04:00",
+  "recaps": [
+    {
+      "n": 1,
+      "from": "2026-09-22T14:30:00-04:00",
+      "to": "2026-09-22T16:15:00-04:00",
+      "title": "Pipeline",
+      "status": "approved",
+      "error": "",
+      "digest": "(written by hand in the chat session before the + button existed)",
+      "lines": [
+        {
+          "act": "",
+          "say": "Practice day 1. I'm building 10 apps in 30 days, and today I'm building how I'll film it."
+        },
+        {
+          "act": "",
+          "say": "Hey folks, here's what I did in the past hour."
+        },
+        {
+          "act": "open localhost:7781",
+          "say": "First, I turned a messy brainstorm into one page. 10 apps, 30 days, a long video and a short every day."
+        },
+        {
+          "act": "point at the right rail",
+          "say": "Every decision is answered here. Three practice days, and Day 1 is this Friday."
+        },
+        {
+          "act": "open the daily-loop diagram",
+          "say": "My first plan was to talk over clips later. I tried it, and it didn't feel natural."
+        },
+        {
+          "act": "same diagram",
+          "say": "So now I do a quick recap like this one every hour."
+        },
+        {
+          "act": "terminal → python3 .claude/skills/daily-content-system/hour.py",
+          "say": "Here's how Claude knows what my agents did. It reads the last hour of every agent's log."
+        },
+        {
+          "act": "",
+          "say": "Lesson: the first plan didn't survive one real try. Test before you commit."
+        },
+        {
+          "act": "",
+          "say": "Next hour: building the page that writes these recaps for me. See you then."
+        }
+      ],
+      "summary": "I started the day with a rambling voice brainstorm about filming this 10-apps-in-30-days challenge and turned it into one review page, where I answered every decision by clicking: three practice days first, series Day 1 on Friday 25 September, one 20-minute video a day for my free Skool community and one 40-second short on five channels. My first plan was to record my screen silently while working and talk over the clips in the evening. I actually tried it, and it felt unnatural, because I'm used to clicking through my work while I explain it. So I switched to a 1–2 minute recap every hour, clicked through live in Screen Studio, which needs no trimming. The open question was how Claude would know what ten different agents did in an hour, and the answer is that every Claude Code session keeps a timestamped log, so a small script reads the last hour of all of them. By the end of the hour the whole pipeline was decided and written down.",
+      "open": [
+        {
+          "what": "The pipeline review page",
+          "where": "http://localhost:7781/"
+        },
+        {
+          "what": "The daily-loop diagram",
+          "where": "localhost:7781 → section 3"
+        },
+        {
+          "what": "Terminal in building_apps",
+          "where": "python3 .claude/skills/daily-content-system/hour.py"
+        }
+      ],
+      "file": "hour-01.mp4"
+    },
+    {
+      "n": 2,
+      "from": "2026-09-22T16:15:00-04:00",
+      "to": "2026-09-22T16:58:29-04:00",
+      "title": "Splitting the Content Skills",
+      "lines": [
+        {
+          "act": "",
+          "say": "Hey folks, here's what I did in the past 45 minutes."
+        },
+        {
+          "act": "Open the Claude chat thread",
+          "say": "I asked if I should move task tracking into Notion, but decided html-worker was already working fine, so I stuck with it."
+        },
+        {
+          "act": "Show localhost:7783 mockup",
+          "say": "I previewed a day-1 tasks page with tabs per hour and a plus button for a new hour summary, then reworked the list into what I'm showing, how to show it, and the details."
+        },
+        {
+          "act": "Open daily-content-system/server.py",
+          "say": "Partway through I realized the task checklist and the hourly recap are two different jobs, so I split what was going to be one skill into two."
+        },
+        {
+          "act": "Show daily-content-system/hour.py and page.html",
+          "say": "Built daily-content-system with hour.py, page.html and server.py, this one runs the real one-off Claude call for each hour's recap."
+        },
+        {
+          "act": "Show daily-tasks/page.html and server.py",
+          "say": "Built daily-tasks separately with its own server and page, just for tracking today's checklist."
+        },
+        {
+          "act": "Open content/day-01 folder",
+          "say": "Moved today's real data into the new formats and deleted the old mock files, so both pages open on real content now."
+        },
+        {
+          "act": "",
+          "say": "Lesson: things that look like one feature, like a task list and a content recap, can actually be two separate jobs, worth splitting before you build instead of after."
+        },
+        {
+          "act": "",
+          "say": "Next: finish the end-to-end test of the hourly recap and the plus button, then start on the Remotion edit."
+        }
+      ],
+      "digest": "# 16:15–16:58 — 1 agent sessions\n\n## Agent 1 — /Users/bimalsaran/Documents/building_apps\n- asked: I like this content pipeline for now. Lets start the testing for day 1 today.\n- asked: Does claude have access to my notion. Why I am saying is that items like day 1 tasks goals and everything I can use notion for users to visualize no? or should I just html like I am doing right now where we can see day1 tasks and all?\n- asked: For now lets just use the html-worker to visualize and all. Create like a day1 tasks page, with tabs for each hour, and also a + button for a new tab for a new 1 hour summary. Does that make sense? You can call this daily-content-system skill. Does that make sense. Before you create this skill showcase me how it will look like using html-worker and I will leave comments and all\n- asked: yes, merge them into one list. But I want a parent bullet list of What I am showing? -> How to show? -> Details of what I am showing.\n- asked: Sure make the change and show me\n- asked: Yes build the real page and make sure this is a skill.\n- asked: Sorry to interrupt. I think the todo list of daily tasks and all should be separate skill and the daily content system should be separate as I will use daily content system to do my content work and the Daily tasks lists to just keep track of what I want to do today. Does that make sense? If yes then build them separate?\n- wrote: /Users/bimalsaran/Documents/building_apps/.claude/skills/daily-content-system/hour.py\n- wrote: /Users/bimalsaran/Documents/building_apps/.claude/skills/daily-content-system/page.html\n- wrote: /Users/bimalsaran/Documents/building_apps/.claude/skills/daily-content-system/server.py\n- wrote: /Users/bimalsaran/Documents/building_apps/.claude/skills/daily-tasks/page.html\n- wrote: /Users/bimalsaran/Documents/building_apps/.claude/skills/daily-tasks/server.py\n- wrote: /Users/bimalsaran/Documents/building_apps/content/day-01/day-01.md (since deleted)\n- wrote: /Users/bimalsaran/Documents/building_apps/content/day-01/hours/hour-01.md (since deleted)\n- wrote: /Users/bimalsaran/Documents/building_apps/daily-content-mock/main.html (since deleted)\n- served page: http://localhost:7783\n- said: Now the separate `daily-tasks` skill: its own server, page and data.\n- said: Now I'll move today's data into the new formats, so both pages open on real content instead of an empty screen.\n- said: Both servers are up. Now an end-to-end test of the + recap (the real one-off Claude call) and the task generator:\n\n## Commits",
+      "status": "approved",
+      "error": "",
+      "summary": "I set out to start testing day 1 of the content pipeline, and the session turned into a design and build pass on how I track my work on camera. I first asked whether to use Notion for day 1 tasks and goals, but decided to stick with the html-worker approach I already had running. I asked for a day-1 tasks page with per-hour tabs and a plus button to add a new hour summary, previewed a mockup on localhost:7783, and reworked the list into a parent bullet structure: what I'm showing, how to show it, then the details. Partway through I realized the daily task checklist and the hourly content recap were two different jobs, so instead of one skill I split them into two: daily-content-system and daily-tasks. I built daily-content-system with hour.py, page.html and server.py to run the real one-off Claude call per hour, and a separate daily-tasks skill with its own server.py and page.html. I moved today's real data into the new formats so both pages open on actual content, and threw away the early mock files (day-01.md, hour-01.md, daily-content-mock/main.html) once the real skill replaced them. I started an end-to-end test of the plus-button recap and the task generator, but that test wasn't finished by the end of the session.",
+      "open": [
+        {
+          "what": "Daily tasks mockup page",
+          "where": "http://localhost:7783"
+        },
+        {
+          "what": "daily-content-system skill files",
+          "where": "/Users/bimalsaran/Documents/building_apps/.claude/skills/daily-content-system/server.py"
+        },
+        {
+          "what": "daily-tasks skill files",
+          "where": "/Users/bimalsaran/Documents/building_apps/.claude/skills/daily-tasks/server.py"
+        },
+        {
+          "what": "Today's real content folder",
+          "where": "/Users/bimalsaran/Documents/building_apps/content/day-01"
+        }
+      ],
+      "file": "hour-02.mp4"
+    },
+    {
+      "n": 3,
+      "kind": "intro",
+      "from": "2026-09-22T14:30:00-04:00",
+      "to": "2026-09-22T16:58:29-04:00",
+      "title": "Practice Day 1 Recap",
+      "summary": "Today was the first of three practice days before the real 10-apps-in-30-days series starts this Friday. I started by turning a rambling brainstorm into one decision page, locking the format: one 20-minute video a day plus a 40-second short on five channels. My first plan was to record my screen silently and narrate it later, but that felt unnatural, so I switched to filming a short recap live every hour instead. I built the first version of that pipeline, including a script that reads the last hour of every agent's logs so Claude knows what happened. In the second half of the day I sat down to test that pipeline, but instead realized the daily task checklist and the hourly content recap were actually two separate jobs. So I split one planned skill into two, daily-content-system and daily-tasks, each with its own server and page, moved today's real data into them, and threw out the early mockups. By the end of the day the pipeline was locked and the tools were rebuilt around real content, but the end-to-end test and the Remotion edit are still ahead.",
+      "open": [
+        {
+          "what": "Pipeline decision page",
+          "where": "http://localhost:7781/"
+        },
+        {
+          "what": "Daily tasks mockup page",
+          "where": "http://localhost:7783"
+        }
+      ],
+      "lines": [
+        {
+          "act": "",
+          "say": "My first plan for filming this whole challenge didn't survive one real try, so I ditched it after an hour."
+        },
+        {
+          "act": "",
+          "say": "This is Practice Day 1 of building 10 apps in 30 days, three practice days before the real series starts this Friday."
+        },
+        {
+          "act": "open the pipeline review page",
+          "say": "Today I locked the filming pipeline, then started on the daily content pages, and ended up splitting one skill into two once I realized tasks and recaps were different jobs."
+        },
+        {
+          "act": "show the two skill folders side by side",
+          "say": "You'll see why I dropped silent recording for hourly recaps, and how daily-content-system and daily-tasks came apart from one plan."
+        },
+        {
+          "act": "",
+          "say": "Stick around, because by the end of the day one design pass turned into two actual working tools."
+        }
+      ],
+      "digest": "## Recap 1 · 14:30–16:15 · Pipeline\nI started the day with a rambling voice brainstorm about filming this 10-apps-in-30-days challenge and turned it into one review page, where I answered every decision by clicking: three practice days first, series Day 1 on Friday 25 September, one 20-minute video a day for my free Skool community and one 40-second short on five channels. My first plan was to record my screen silently while working and talk over the clips in the evening. I actually tried it, and it felt unnatural, because I'm used to clicking through my work while I explain it. So I switched to a 1–2 minute recap every hour, clicked through live in Screen Studio, which needs no trimming. The open question was how Claude would know what ten different agents did in an hour, and the answer is that every Claude Code session keeps a timestamped log, so a small script reads the last hour of all of them. By the end of the hour the whole pipeline was decided and written down.\nScript:\n  1. Practice day 1. I'm building 10 apps in 30 days, and today I'm building how I'll film it.\n  2. Hey folks, here's what I did in the past hour.\n  3. [open localhost:7781] First, I turned a messy brainstorm into one page. 10 apps, 30 days, a long video and a short every day.\n  4. [point at the right rail] Every decision is answered here. Three practice days, and Day 1 is this Friday.\n  5. [open the daily-loop diagram] My first plan was to talk over clips later. I tried it, and it didn't feel natural.\n  6. [same diagram] So now I do a quick recap like this one every hour.\n  7. [terminal → python3 .claude/skills/daily-content-system/hour.py] Here's how Claude knows what my agents did. It reads the last hour of every agent's log.\n  8. Lesson: the first plan didn't survive one real try. Test before you commit.\n  9. Next hour: building the page that writes these recaps for me. See you then.\nShown (exact locations):\n  - The pipeline review page: http://localhost:7781/\n  - The daily-loop diagram: localhost:7781 → section 3\n  - Terminal in building_apps: python3 .claude/skills/daily-content-system/hour.py\n\n## Recap 2 · 16:15–16:58 · Splitting the Content Skills\nI set out to start testing day 1 of the content pipeline, and the session turned into a design and build pass on how I track my work on camera. I first asked whether to use Notion for day 1 tasks and goals, but decided to stick with the html-worker approach I already had running. I asked for a day-1 tasks page with per-hour tabs and a plus button to add a new hour summary, previewed a mockup on localhost:7783, and reworked the list into a parent bullet structure: what I'm showing, how to show it, then the details. Partway through I realized the daily task checklist and the hourly content recap were two different jobs, so instead of one skill I split them into two: daily-content-system and daily-tasks. I built daily-content-system with hour.py, page.html and server.py to run the real one-off Claude call per hour, and a separate daily-tasks skill with its own server.py and page.html. I moved today's real data into the new formats so both pages open on actual content, and threw away the early mock files (day-01.md, hour-01.md, daily-content-mock/main.html) once the real skill replaced them. I started an end-to-end test of the plus-button recap and the task generator, but that test wasn't finished by the end of the session.\nScript:\n  1. Hey folks, here's what I did in the past 45 minutes.\n  2. [Open the Claude chat thread] I asked if I should move task tracking into Notion, but decided html-worker was already working fine, so I stuck with it.\n  3. [Show localhost:7783 mockup] I previewed a day-1 tasks page with tabs per hour and a plus button for a new hour summary, then reworked the list into what I'm showing, how to show it, and the details.\n  4. [Open daily-content-system/server.py] Partway through I realized the task checklist and the hourly recap are two different jobs, so I split what was going to be one skill into two.\n  5. [Show daily-content-system/hour.py and page.html] Built daily-content-system with hour.py, page.html and server.py, this one runs the real one-off Claude call for each hour's recap.\n  6. [Show daily-tasks/page.html and server.py] Built daily-tasks separately with its own server and page, just for tracking today's checklist.\n  7. [Open content/day-01 folder] Moved today's real data into the new formats and deleted the old mock files, so both pages open on real content now.\n  8. Lesson: things that look like one feature, like a task list and a content recap, can actually be two separate jobs, worth splitting before you build instead of after.\n  9. Next: finish the end-to-end test of the hourly recap and the plus button, then start on the Remotion edit.\nShown (exact locations):\n  - Daily tasks mockup page: http://localhost:7783\n  - daily-content-system skill files: /Users/bimalsaran/Documents/building_apps/.claude/skills/daily-content-system/server.py\n  - daily-tasks skill files: /Users/bimalsaran/Documents/building_apps/.claude/skills/daily-tasks/server.py\n  - Today's real content folder: /Users/bimalsaran/Documents/building_apps/content/day-01",
+      "status": "approved",
+      "error": "",
+      "file": "intro.mp4"
+    }
+  ],
+  "checks": {
+    "gear": true,
+    "short_x": false,
+    "short_instagram": true,
+    "short_tiktok": true,
+    "short_youtube": true,
+    "short_threads": true,
+    "plan": false
+  }
+}

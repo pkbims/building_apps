@@ -1,0 +1,35 @@
+{
+  "date": "2026-09-24",
+  "tasks": [
+    {
+      "icon": "🧑‍🦱",
+      "title": "Make Yourself Presentable",
+      "why": "Get ready to look good",
+      "steps": [
+        {
+          "text": "Wash up",
+          "done": true
+        },
+        {
+          "text": "Fix hair",
+          "done": true
+        },
+        {
+          "text": "Wear clean clothes",
+          "done": true
+        },
+        {
+          "text": "Check mirror",
+          "done": true
+        }
+      ]
+    }
+  ],
+  "spoken": "okay so what i really want to focus on is when i wake up tomorrow i want to clean up myself like make myself presentable then what i will do is just 100 focus on building the decor ai app using the pipeline that i have and i will keep recording myself using the content system\n i can become i can never become perfect in this so i have to just post what i can post right so i will go through this process of creating the decor ai app like the decor my room app using the pipeline that i have and then i will keep on like making the content so that by the end of the day i will have a long video of what i have done so far my goal is to make sure that i have the working\n build ready and i post it on test flight as well because now i have the account and everything so that should be fine and i will also have the content lastly yeah that is my main goal to be really honest and i will keep on improving the pipeline throughout the way and fixing it it doesn't really matter if it takes me one hour two hour three hours to even do one single\n but i will keep on improving the content but i will keep on improving the content but i will keep on improving the content but i will keep on improving the content but i will make sure that i complete the version one build by tomorrow so that i can post that and then day after tomorrow i will work on adding more features and start on another episode but that is for day after tomorrow you don't need to worry about that yeah so let's create those tasks today",
+  "goals": [
+    {
+      "text": "Create v1 build of DecorApp. And make sure I record  all the way: Important Note: Use simple knowledge to explain and all.",
+      "done": false
+    }
+  ]
+}

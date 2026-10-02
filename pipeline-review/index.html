@@ -1,0 +1,821 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pipeline review</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<style>
+  :root{--bg:#f4eee2;--panel:#fdf9f1;--ink:#2a2521;--muted:#6a6157;--faint:#978d82;
+    --line:#e3d9c7;--accent:#b0523a;--soft:#f5e4dc;--warn:#7a5a1e;--warnsoft:#f3ead3;
+    --quote:#efe7d6;--s1:6px;--s2:8px;--s3:10px;--s4:12px;--s5:16px;--s6:24px;--s7:32px;
+    --r:10px;--r2:14px}
+  :root{color-scheme:light}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;
+    --bg:#1b1916;--panel:#242019;--ink:#ede4d6;--muted:#a89e8f;--faint:#766d60;
+    --line:#38322a;--accent:#e28f72;--soft:#3b2a24;--warn:#dcb66e;--warnsoft:#302a1c;
+    --quote:#2a2620}}
+  :root[data-theme="dark"]{color-scheme:dark;
+    --bg:#1b1916;--panel:#242019;--ink:#ede4d6;--muted:#a89e8f;--faint:#766d60;
+    --line:#38322a;--accent:#e28f72;--soft:#3b2a24;--warn:#dcb66e;--warnsoft:#302a1c;
+    --quote:#2a2620}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:18px/1.7 "IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+  h1,h2,h3{letter-spacing:-.015em}
+  header{position:sticky;top:0;z-index:60;background:var(--panel);
+    border-bottom:1px solid var(--line);padding:var(--s4) var(--s6);
+    display:flex;align-items:center;gap:var(--s5)}
+  header h1{font-size:15px;margin:0;font-weight:650}
+  .tag{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);
+    background:var(--soft);padding:3px var(--s2);border-radius:var(--s1);font-weight:650}
+  .spacer{flex:1}.count{font-size:13px;color:var(--muted)}
+  button.theme{background:var(--bg);border:1px solid var(--line);color:var(--muted);font:inherit;
+    font-size:12px;padding:4px var(--s3);border-radius:var(--s2);cursor:pointer}
+  button.theme:hover{color:var(--accent);border-color:var(--accent)}
+  .layout{display:grid;grid-template-columns:206px minmax(0,1fr) 316px;gap:var(--s7);
+    max-width:1400px;margin:0 auto;padding:var(--s6) var(--s6) 140px}
+  @media(max-width:1200px){.layout{grid-template-columns:186px minmax(0,1fr)}aside.right{display:none}}
+  @media(max-width:820px){.layout{grid-template-columns:1fr}nav.toc{display:none}}
+  nav.toc{position:sticky;top:78px;align-self:start;max-height:calc(100vh - 110px);
+    overflow-y:auto;font-size:13px}
+  nav.toc .grp{color:var(--faint);text-transform:uppercase;letter-spacing:.07em;
+    font-size:10.5px;font-weight:700;margin:var(--s5) 0 var(--s2)}
+  nav.toc .grp:first-child{margin-top:0}
+  nav.toc a{display:block;color:var(--muted);text-decoration:none;padding:5px var(--s3);
+    border-left:2px solid transparent;border-radius:0 var(--s1) var(--s1) 0}
+  nav.toc a.on{color:var(--accent);border-left-color:var(--accent);background:var(--soft);font-weight:600}
+  section{background:var(--panel);border:1px solid var(--line);border-radius:var(--r2);
+    padding:var(--s6) 28px;margin-bottom:var(--s6);position:relative;scroll-margin-top:84px}
+  section:hover > .cbtn{opacity:1}
+  section > h2{font-size:21px;margin:0 0 var(--s1)}
+  .num{color:var(--faint);font-weight:600;font-size:14px;margin-right:var(--s2)}
+  .sub{color:var(--muted);font-size:13.5px;margin:0 0 var(--s5)}
+  blockquote{margin:var(--s3) 0;padding:var(--s3) var(--s5);background:var(--quote);
+    border-left:2px solid var(--line);border-radius:0 var(--s2) var(--s2) 0;font-size:13.5px}
+  .plain{background:var(--soft);border-left:3px solid var(--accent);padding:var(--s3) var(--s5);
+    border-radius:0 var(--s2) var(--s2) 0;margin:var(--s4) 0;font-size:13.5px}
+  .plain b{color:var(--accent)}
+  .risk{background:var(--warnsoft);border-left:3px solid var(--warn);padding:var(--s3) var(--s5);
+    border-radius:0 var(--s2) var(--s2) 0;margin:var(--s4) 0;font-size:13.5px}
+  .risk b{color:var(--warn)}
+  .cbtn{position:absolute;top:var(--s5);right:var(--s5);opacity:0;transition:opacity .15s;
+    background:var(--bg);border:1px solid var(--line);color:var(--muted);font:inherit;
+    font-size:12px;padding:4px var(--s3);border-radius:var(--s2);cursor:pointer}
+  .cbtn:hover{color:var(--accent);border-color:var(--accent)}
+  .cbtn.has{opacity:1;color:var(--accent);border-color:var(--accent);background:var(--soft)}
+  .d{border:1px solid var(--line);border-radius:var(--r);padding:var(--s5) 18px;
+    margin:var(--s5) 0;position:relative}
+  .d:hover .cbtn{opacity:1}
+  .d.open{border-left:3px solid var(--accent)}
+  .q{font-weight:650;font-size:14.5px;margin-bottom:3px}
+  .why{color:var(--muted);font-size:13px;margin-bottom:var(--s4)}
+  label.opt{display:flex;gap:var(--s3);align-items:flex-start;padding:9px var(--s4);
+    border:1px solid transparent;border-radius:var(--s2);cursor:pointer;font-size:14px}
+  label.opt:hover{background:var(--bg)}
+  label.opt.sel{border-color:var(--accent);background:var(--soft)}
+  label.opt input{margin-top:3px;accent-color:var(--accent);flex:none}
+  .oh{font-weight:550}.od{color:var(--muted);font-size:12.5px;display:block;margin-top:1px}
+  .mm{background:var(--bg);border:1px solid var(--line);border-radius:var(--r);
+    padding:18px;margin:var(--s4) 0;overflow-x:auto;text-align:center}
+  table.t{width:100%;border-collapse:collapse;font-size:13px;margin:var(--s4) 0}
+  table.t th,table.t td{border:1px solid var(--line);padding:var(--s2) var(--s3);
+    text-align:left;vertical-align:top}
+  table.t th{background:var(--bg);font-weight:650}
+  code{background:var(--quote);padding:1px 5px;border-radius:5px;font-size:12.5px}
+  pre.code{background:var(--quote);padding:var(--s5);border-radius:var(--r);
+    overflow-x:auto;font-size:12.5px;margin:var(--s4) 0}
+  details.ref{border:1px solid var(--line);border-radius:var(--r);padding:var(--s4) 18px;
+    margin:var(--s4) 0;background:var(--bg)}
+  details.ref summary{cursor:pointer;font-weight:650;font-size:14px;color:var(--accent)}
+  aside.right{position:sticky;top:78px;align-self:start;background:var(--panel);
+    border:1px solid var(--line);border-radius:var(--r2);padding:var(--s5) 18px;
+    max-height:calc(100vh - 110px);display:flex;flex-direction:column}
+  aside.right h2{font-size:15px;margin:0}
+  .bar{height:4px;background:var(--line);border-radius:2px;overflow:hidden;margin-top:9px}
+  .bar i{display:block;height:100%;background:var(--accent);transition:width .3s}
+  .dlist{overflow-y:auto;max-height:30vh;margin:var(--s3) -4px 0;padding:0 4px}
+  .dr{display:flex;gap:9px;align-items:center;padding:5px var(--s2);border-radius:var(--s1);
+    cursor:pointer;font-size:12.5px}
+  .dr:hover{background:var(--bg)}
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--line);flex:none}
+  .dr.done .dot{background:var(--accent)}
+  .dn{color:var(--muted);font-weight:700;flex:none}
+  .dr.todo .dv{color:var(--muted);font-style:italic}
+  #queue{flex:1;overflow-y:auto;margin:var(--s4) -4px;padding:0 4px;min-height:60px}
+  .qi{border:1px solid var(--line);border-radius:var(--s2);padding:var(--s3) var(--s4);
+    margin-bottom:9px;font-size:13px;background:var(--bg)}
+  .qa{color:var(--accent);font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;
+    font-weight:700;margin-bottom:5px}
+  .qx{float:right;cursor:pointer;color:var(--muted);border:0;background:none;font-size:15px}
+  .empty{color:var(--muted);font-size:13px;text-align:center;padding:var(--s6) var(--s3)}
+  button.primary{width:100%;background:var(--accent);color:#fff;border:0;padding:11px;
+    border-radius:var(--r);font:inherit;font-size:13.5px;font-weight:650;cursor:pointer}
+  #pop{position:absolute;z-index:100;width:328px;background:var(--panel);
+    border:1px solid var(--line);border-radius:var(--r);padding:var(--s4);
+    box-shadow:0 10px 34px rgba(0,0,0,.18);display:none}
+  #pop .pa{font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;
+    color:var(--accent);font-weight:700;margin-bottom:var(--s2)}
+  #pop .kind{display:flex;gap:var(--s2);margin-bottom:var(--s2)}
+  #pop .kind label{flex:1;display:flex;gap:6px;align-items:center;font-size:12.5px;
+    padding:5px var(--s2);border:1px solid var(--line);border-radius:var(--s2);cursor:pointer;color:var(--muted)}
+  #pop .kind label.sel{border-color:var(--accent);background:var(--soft);color:var(--accent)}
+  #pop .kind input{margin:0;accent-color:var(--accent)}
+  #pop textarea{width:100%;min-height:88px;border:1px solid var(--line);border-radius:var(--s2);
+    padding:9px;font:inherit;font-size:13.5px;background:var(--bg);color:var(--ink)}
+  #pop .row{display:flex;gap:var(--s2);margin-top:var(--s3)}
+  #pop button{flex:1;padding:var(--s2);border-radius:var(--s2);font:inherit;font-size:13px;
+    cursor:pointer;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+  #pop button.add{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:650}
+  #toast{position:fixed;bottom:var(--s6);left:50%;transform:translateX(-50%);
+    background:var(--ink);color:var(--bg);padding:var(--s3) 18px;border-radius:var(--s2);
+    font-size:13.5px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:200}
+  #toast.on{opacity:1}
+  .flash{animation:fl 1.1s ease-out}
+  @keyframes fl{0%{background:var(--soft)}100%{background:transparent}}
+  [data-changed]{box-shadow:inset 3px 0 0 var(--warn)}
+  [data-changed]::before{content:"changed · round " attr(data-changed);position:absolute;top:-9px;left:12px;
+    font-size:10px;letter-spacing:.06em;text-transform:uppercase;font-weight:700;color:var(--warn);
+    background:var(--warnsoft);padding:2px 7px;border-radius:5px;z-index:1}
+  nav.toc .chg a{color:var(--warn)} nav.toc .chg a.on{color:var(--warn);border-left-color:var(--warn);background:var(--warnsoft)}
+  nav.toc .chg .grp{color:var(--warn)}
+</style>
+<script id="theme">
+(()=>{const K='theme',R=document.documentElement,L={'':'Auto',light:'Light',dark:'Dark'};
+const set=v=>{v?R.dataset.theme=v:delete R.dataset.theme;try{v?localStorage.setItem(K,v):localStorage.removeItem(K)}catch(e){}};
+try{set(localStorage.getItem(K)||'')}catch(e){}
+addEventListener('DOMContentLoaded',()=>{const h=document.querySelector('header');if(!h)return;
+  const b=document.createElement('button');b.className='theme';b.title='Auto → Light → Dark';
+  const show=()=>b.textContent=L[R.dataset.theme||''];
+  b.onclick=()=>{const c=['','light','dark'];set(c[(c.indexOf(R.dataset.theme||'')+1)%3]);show()};
+  show();h.appendChild(b)})})();
+</script>
+</head>
+<body>
+<header>
+  <h1>Pipeline review</h1>
+  <span class="tag" id="round">Round 1</span>
+  <div class="spacer"></div>
+  <span class="count" id="dcount">—</span>
+</header>
+
+<div class="layout">
+<nav class="toc" id="toc"></nav>
+<main>
+<style id="local">
+  .flow{position:relative;display:flex;align-items:stretch;gap:0;overflow-x:auto;padding:6px 0 10px}
+  .node{flex:1 1 0;min-width:148px;border:1px solid var(--line);border-top:3px solid var(--accent);
+    border-radius:var(--r);padding:10px 12px;background:var(--bg);text-decoration:none;color:inherit;
+    display:block;font-size:13px;line-height:1.45}
+  .node:hover{border-color:var(--accent)}
+  .node.prose{border-top-color:var(--warn)}
+  .node.undef{border-top-style:dashed;border-top-color:var(--faint)}
+  .node .n{font-size:10.5px;color:var(--faint);font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+  .node .t{font-weight:650;font-size:15px;margin:1px 0 6px;color:var(--ink)}
+  .node .lands{font-size:12px;color:var(--muted);margin-top:6px}
+  .node .lands code{font-size:11px}
+  .chip{display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.03em;padding:2px 7px;
+    border-radius:5px;margin:2px 4px 2px 0;line-height:1.5;white-space:nowrap}
+  .chip.skill{background:var(--soft);color:var(--accent)}
+  .chip.none{background:var(--quote);color:var(--muted);border:1px dashed var(--line)}
+  .chip.cand{background:var(--warnsoft);color:var(--warn)}
+  .chip.hw{background:var(--ink);color:var(--bg)}
+  .arr{flex:0 0 26px;display:flex;align-items:center;justify-content:center;color:var(--faint);font-size:20px}
+  .lane{position:relative;display:flex;align-items:center;gap:0;overflow-x:auto;padding:4px 0;font-size:12.5px}
+  .lane .f{flex:1 1 0;min-width:148px;text-align:center;color:var(--muted)}
+  .lane .f code{font-size:11.5px}
+  .lane .arr{font-size:14px}
+  @media(max-width:820px){.flow,.lane{flex-direction:column}.arr{transform:rotate(90deg);height:26px}}
+  .legend{display:flex;flex-wrap:wrap;gap:14px;font-size:12.5px;color:var(--muted);margin:8px 0 0}
+  .legend i{display:inline-block;width:14px;height:3px;vertical-align:middle;margin-right:6px}
+  .io4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:12px 0;position:relative}
+  .io4>div{border:1px solid var(--line);border-radius:var(--r);padding:10px 12px;font-size:13px;background:var(--bg)}
+  .io4 .k{font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--faint);font-weight:700;margin-bottom:4px}
+  .io4 ul{margin:0;padding-left:16px}
+  @media(max-width:1200px){.io4{grid-template-columns:1fr 1fr}}
+  .steps{list-style:none;margin:8px 0 4px;padding:0}
+  .steps li{position:relative;padding:7px 0 9px 30px;border-left:2px solid var(--line);margin-left:12px;font-size:13.5px}
+  .steps li:last-child{border-left-color:transparent}
+  .steps li::before{content:attr(data-n);position:absolute;left:-13px;top:7px;width:24px;height:24px;border-radius:50%;
+    background:var(--panel);border:2px solid var(--accent);color:var(--accent);font-size:10.5px;font-weight:700;
+    display:flex;align-items:center;justify-content:center}
+  .steps li.hw::before{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+  .steps li.gate::before{background:var(--accent);color:#fff}
+  .steps .st{font-weight:600}
+  .steps .io{font-size:12.5px;color:var(--muted);display:block}
+  .steps .io b{color:var(--ink);font-weight:600}
+  details.ref{position:relative}
+  details.ref .cbtn{top:10px;right:12px}
+  details.ref[open]{background:var(--panel)}
+  .anc{position:relative}
+  .flow .cbtn,.lane .cbtn,.loop .cbtn{top:-4px;right:0}
+  .io4 .cbtn{top:-30px;right:0}
+  .goal{border-left:3px solid var(--accent);background:var(--soft);padding:8px 14px;border-radius:0 var(--s2) var(--s2) 0;margin:10px 0 4px;font-size:14px;position:relative}
+  .goal b{color:var(--accent)}
+  .node .g{font-size:12px;color:var(--muted);margin:-2px 0 6px;line-height:1.4}
+  .meta{font-size:13px;color:var(--muted);margin:0 0 12px}
+  .meta .chip{vertical-align:middle}
+  .ok{color:var(--accent);font-weight:600}
+  .loop{position:relative;display:flex;align-items:stretch;overflow-x:auto;padding:6px 0}
+  .loop .node{min-width:120px;border-top-color:var(--ink)}
+  section p{font-size:15px}
+  section li{font-size:14.5px}
+  .d .opt .od{white-space:normal}
+</style>
+
+<!-- ============================================================ OVERVIEW -->
+<section id="s-flow" data-anchor="flow" data-label="The flow" data-group="Overview" data-title="The flow">
+  <button class="cbtn">comment</button>
+  <h2>The pipeline as it stands today</h2>
+  <p class="sub">Six stages. Click a stage to jump to its detail. Top edge: <b>terracotta</b> = has a skill and has been run · <b>amber</b> = procedure in prose only · <b>dashed</b> = undefined. The black chip marks where the html-worker page is the review surface.</p>
+
+  <div class="flow" data-anchor="flow-nodes" data-label="Flow diagram nodes — goals added" data-changed="1">
+    <button class="cbtn">comment</button>
+    <a class="node" href="#s-1">
+      <div class="n">Stage 1</div><div class="t">Research</div><div class="g">know what exists and what people hate about it, before deciding anything</div>
+      <span class="chip skill">/research</span><span class="chip hw">html-worker</span>
+      <div class="lands">lands: <code>research/&lt;niche&gt;.md</code></div>
+    </a>
+    <div class="arr">→</div>
+    <a class="node prose" href="#s-2">
+      <div class="n">Stage 2</div><div class="t">Positioning</div><div class="g">decide what we build and why anyone would pick it, in one paragraph</div>
+      <span class="chip none">no skill</span><span class="chip hw">html-worker*</span>
+      <div class="lands">lands: <code>positioning.md</code></div>
+    </a>
+    <div class="arr">→</div>
+    <a class="node" href="#s-3">
+      <div class="n">Stage 3</div><div class="t">Spec</div><div class="g">turn the paragraph into a PRD someone could build from, felt on a phone first</div>
+      <span class="chip skill">/create-prd</span><span class="chip hw">html-worker</span>
+      <div class="lands">lands: <code>PRD.md</code> + <code>prototype.html</code></div>
+    </a>
+    <div class="arr">→</div>
+    <a class="node prose" href="#s-4">
+      <div class="n">Stage 4</div><div class="t">Contract freeze</div><div class="g">lock the API so two workers can build without changing the thing between them</div>
+      <span class="chip none">no skill</span>
+      <div class="lands">lands: <code>contract/openapi.json</code></div>
+    </a>
+    <div class="arr">→</div>
+    <a class="node prose" href="#s-5">
+      <div class="n">Stage 5</div><div class="t">Build</div><div class="g">both halves built in parallel against the frozen contract, verified before merge</div>
+      <span class="chip cand">skill candidate</span>
+      <div class="lands">lands: <code>main</code> with both halves merged</div>
+    </a>
+    <div class="arr">→</div>
+    <a class="node undef" href="#s-6">
+      <div class="n">Stage 6</div><div class="t">Ship</div><div class="g">a real host, the full baseline, and the showcase</div>
+      <span class="chip none">undefined</span>
+      <div class="lands">lands: deployed app + showcase</div>
+    </a>
+  </div>
+
+  <div class="legend">
+    <span><i style="background:var(--accent)"></i>skill exists, run at least once</span>
+    <span><i style="background:var(--warn)"></i>prose in PIPELINE.md only</span>
+    <span><i style="border-top:3px dashed var(--faint);height:0"></i>undefined</span>
+    <span>* app_3 did positioning on the research page; app_4 did not</span>
+  </div>
+
+  <h3 style="font-size:15px;margin:22px 0 4px">What you do at each boundary</h3>
+  <p class="sub">The rule underneath: Claude never moves you to the next stage. Every transition is a file on disk you have looked at plus a decision you have made. The next stage reads only that file, never chat history.</p>
+  <div class="lane" data-anchor="flow-gates" data-label="Stage gates lane">
+    <button class="cbtn">comment</button>
+    <div class="f"><b>pick</b> the strongest option on the page</div><div class="arr">→</div>
+    <div class="f"><b>converge</b> on one paragraph; Anchored-to present</div><div class="arr">→</div>
+    <div class="f"><b>"done"</b> after 3–6 rounds; export</div><div class="arr">→</div>
+    <div class="f"><b>read</b> the endpoint list vs. the screens; commit</div><div class="arr">→</div>
+    <div class="f"><b>approve</b> each verified merge; e2e runs</div><div class="arr">→</div>
+    <div class="f"><i>no gate defined</i></div>
+  </div>
+</section>
+
+<section id="s-map" data-anchor="map" data-label="Coverage map" data-group="Overview" data-title="Coverage map">
+  <button class="cbtn">comment</button>
+  <h2>Coverage map — which stages have a skill, a review surface, and a track record</h2>
+  <table class="t">
+    <tr><th>Stage</th><th>Skill</th><th>Procedure lives in</th><th>Review surface</th><th>Run so far</th><th>Hands off</th></tr>
+    <tr><td>1 Research</td><td><span class="chip skill">/research</span></td><td>SKILL.md + <code>scripts/</code></td><td><span class="chip hw">html-worker</span> <code>research/reviewer/</code></td><td>app_2, app_3, app_4</td><td><code>research/&lt;niche&gt;.md</code></td></tr>
+    <tr><td>2 Positioning</td><td><span class="chip none">none</span></td><td>PIPELINE.md §2</td><td>conversation (spec) / html-worker page (app_3, actual)</td><td>app_3, app_4 (file exists)</td><td><code>positioning.md</code> with Anchored-to</td></tr>
+    <tr><td>3 Spec</td><td><span class="chip skill">/create-prd</span></td><td>SKILL.md, HTML mode delegates mechanics to html-worker</td><td><span class="chip hw">html-worker</span> <code>spec/</code> + <code>prototype.html</code></td><td>app_4 (closed 2026-09-20, 10 rounds)</td><td><code>PRD.md</code> exported from the page</td></tr>
+    <tr><td>4 Contract freeze</td><td><span class="chip none">none</span></td><td>PIPELINE.md §4</td><td>none — you read the endpoint list</td><td>app_1; app_4 next</td><td><code>contract/openapi.json</code></td></tr>
+    <tr><td>5 Build</td><td><span class="chip cand">candidate</span></td><td>PIPELINE.md §5 + app_1's HANDOFF.md / AGENT.md</td><td>none — orchestrator summaries + <code>ORCH-QUESTIONS.md</code></td><td>app_1 (in progress)</td><td><code>main</code>, client e2e against local API</td></tr>
+    <tr><td>6 Ship</td><td><span class="chip none">undefined</span></td><td>PIPELINE.md §6 (two lines) + open questions</td><td>none</td><td>never</td><td>—</td></tr>
+  </table>
+  <p class="sub" style="margin-top:8px">html-worker is used in stages 1–3 and nowhere after. Stages 4–6 have neither a skill nor a review surface; their gates happen in the terminal.</p>
+</section>
+
+<!-- ============================================================ STAGE 1 -->
+<section id="s-1" data-anchor="s1" data-label="Stage 1 Research" data-group="Stages" data-title="1 · Research">
+  <button class="cbtn">comment</button>
+  <h2><span class="num">1</span>Research</h2>
+  <p class="meta"><span class="chip skill">/research</span> <span class="chip hw">html-worker review page</span> · status: <span class="ok">real</span>, run for app_2, app_3, app_4 · you type <code>/research &lt;niche + problem&gt;</code></p>
+
+  <div class="goal" data-anchor="s1-goal" data-label="Stage 1 goal" data-changed="1"><button class="cbtn">comment</button><b>Why this stage exists:</b> So nothing is built on a guess. Every later decision — the wedge, the requirements, the screens — has to point back at a real complaint from a real person. Research is where those complaints are collected, verbatim, with links.</div>
+  <div class="io4" data-anchor="s1-io" data-label="Stage 1 inputs / outputs / gate">
+    <button class="cbtn">comment</button>
+    <div><div class="k">Inputs</div><ul><li>The problem, one line</li><li>Any hard limit (phone, series stack)</li></ul>Asks for either if missing.</div>
+    <div><div class="k">Does</div>Finds every existing solution, how each works, who it is for, revenue with a source, verbatim complaints, then 1–3 new ideas each fixing a real complaint.</div>
+    <div><div class="k">Produces</div><code>&lt;app&gt;/research/&lt;niche&gt;.md</code> in a fixed shape, then a review page in <code>research/reviewer/</code>.</div>
+    <div><div class="k">Gate → Stage 2</div>File ends "Strongest option: X. Why: one line." and stops. You pick — on the page, as a radio. Stage 2 reads the file.</div>
+  </div>
+
+  <details class="ref" data-anchor="s1-steps" data-label="Inside /research — goals + in/out on every step" data-changed="1">
+    <button class="cbtn">comment</button>
+    <summary>Inside /research — six steps, then write, then review</summary>
+    <ol class="steps">
+      <li data-n="1"><span class="st">Write down the problem</span><span class="io"><b>goal:</b> one fixed target every solution is measured against · <b>out:</b> one plain line every solution below is trying to fix</span></li>
+      <li data-n="2"><span class="st">Find every solution that exists</span><span class="io"><b>goal:</b> nothing we build already exists unnoticed · <b>in:</b> the problem line · <b>where:</b> App Store / Google Play search, "best X apps" articles (names only, not proof), forums · <b>out:</b> the full list, not two or three</span></li>
+      <li data-n="3"><span class="st">Find the pattern across them</span><span class="io"><b>goal:</b> see what they all agree on and who nobody serves · <b>in:</b> the solution list · <b>per solution:</b> how it works in 3–6 steps (first, before anything), who it is for, why that group, money with a real source or "no public number" · <b>then:</b> what they agree on, who nobody serves, where they all charge the same</span></li>
+      <li data-n="4"><span class="st">Find what real users complain about</span><span class="io"><b>goal:</b> the real failures, in users' own words, that a new idea must fix · <b>in:</b> each solution's store IDs · <b>tools:</b> <code>play_reviews.py</code> first (300 reviews/app, per-review links) → <code>appstore_reviews.py</code> (works for some) → Trustpilot via browser · <b>rule:</b> 3+ different people = pattern, one = a bad day · <b>out:</b> per solution, "actually helping? yes / kind of / no"</span></li>
+      <li data-n="5"><span class="st">Brainstorm 1–3 new solutions</span><span class="io"><b>goal:</b> candidates that answer a named complaint, not a vague idea · <b>in:</b> Step 4 complaints + platform limit · <b>out:</b> 1–3 ideas, each tagged "fixes: …" · <b>each must:</b> fix a specific Step 4 complaint, be buildable on the platform, be findable · fails both → cut</span></li>
+      <li data-n="6" class="gate"><span class="st">Decide — then stop</span><span class="io"><b>goal:</b> hand the choice to you with the options laid side by side · <b>in:</b> existing + new · <b>out:</b> "Strongest option: X. Why: one line." · lay out existing + new, name the strongest in one line. <b>The user picks.</b></span></li>
+      <li data-n="W"><span class="st">Write the file</span><span class="io"><b>goal:</b> one verified artefact a fresh session can pick up · <b>out:</b> <code>research/&lt;niche&gt;.md</code> · <b>shape:</b> problem → solutions (what / steps / who / money / quotes / helping?) → pattern → new ideas → mermaid picture → decision · run <code>verify_quotes.py</code> — every quote must exist verbatim in the pulled JSON</span></li>
+      <li data-n="R" class="hw"><span class="st">Show it as an html-worker review page</span><span class="io"><b>goal:</b> your pick recorded as state, not chat · <b>in:</b> the file · <b>out:</b> <code>state.json</code> with the decisions · Step 6 choice as radio/checkbox blocks. Terminal reply = URL + list of decisions, nothing more. Standard decisions in practice: which failure is the wedge, which idea moves to Stage 2, which 2–3 quotes become the Anchored-to block.</span></li>
+    </ol>
+    <div class="plain"><b>The one rule that never bends:</b> never write a quote you did not read this session. WebFetch summaries paraphrase, so every quote is checked against raw pulled text.</div>
+    <p class="sub">Not allowed in the file: hype words, invented money numbers, long paragraphs, a summary that repeats the above, any line that would still be true for a different niche.</p>
+  </details>
+
+  <div class="d open" data-anchor="d1" data-label="D1 Reddit as a source">
+    <button class="cbtn">comment</button>
+    <div class="q">D1 — Reddit: PIPELINE §1 names it as a source; the skill says it is blocked</div>
+    <div class="why">PIPELINE.md §1: "Find a real pain point (Reddit, forums, reviews, search)". research/SKILL.md Step 4: "Reddit is blocked for us — if the user wants Reddit voices, they have to paste the links or text themselves." scripts/README.md: "Reddit is blocked in the browser too." One of these should give.</div>
+    <div data-radio="d1">
+      <label class="opt"><input type="radio" name="d1" value="drop"><span><span class="oh">Drop Reddit from PIPELINE §1</span><span class="od">Sources are store reviews, Trustpilot, forums. PIPELINE matches what the skill actually does.</span></span></label>
+      <label class="opt"><input type="radio" name="d1" value="paste"><span><span class="oh">Keep it; make "paste Reddit threads" an explicit user step in the skill</span><span class="od">Step 4 gets a sub-step: Claude asks for pasted threads before it goes to the stores. Costs you a few minutes per app.</span></span></label>
+      <label class="opt"><input type="radio" name="d1" value="tool"><span><span class="oh">Find a route that works and add a script</span><span class="od">e.g. old.reddit JSON endpoints or a search API. Unknown effort; may not exist.</span></span></label>
+    </div>
+  </div>
+
+  <div class="d open" data-anchor="d7" data-label="D7 research: file-first or page-first">
+    <button class="cbtn">comment</button>
+    <div class="q">D7 — Which is the source in Stage 1: the markdown file or the page?</div>
+    <div class="why">research/SKILL.md: write the <code>.md</code> first, "then show it as a review page". create-prd: "the page is the document; the markdown is a rendering of it", exported with <code>export-md.py</code>. html-worker: "never hand-write a second narrative alongside the page." PROGRESS.md says app_4's research was "exported from the html-worker page" — the create-prd direction, not the research skill's. Two skills, opposite directions, and the record says the research one was not followed.</div>
+    <div data-radio="d7">
+      <label class="opt"><input type="radio" name="d7" value="page"><span><span class="oh">Page is the source for both — update the research skill</span><span class="od">Research builds the page, decisions are recorded, <code>export-md.py</code> writes the .md. <code>verify_quotes.py</code> then runs on the export. One rule for the whole series.</span></span></label>
+      <label class="opt"><input type="radio" name="d7" value="file"><span><span class="oh">Research stays file-first; the page is read-only review + decisions</span><span class="od">The .md is verified and final; the page only collects the pick and the anchor quotes, and is never edited or exported. Say so in the skill and fix the PROGRESS wording.</span></span></label>
+      <label class="opt"><input type="radio" name="d7" value="both"><span><span class="oh">File-first, but revisions after review re-export from the page</span><span class="od">Rounds edit the page; the .md is regenerated. Two sources for a while, which is what html-worker warns about.</span></span></label>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ STAGE 2 -->
+<section id="s-2" data-anchor="s2" data-label="Stage 2 Positioning" data-group="Stages" data-title="2 · Positioning">
+  <button class="cbtn">comment</button>
+  <h2><span class="num">2</span>Positioning</h2>
+  <p class="meta"><span class="chip none">no skill — PIPELINE §2 is the spec</span> <span class="chip hw">html-worker (app_3 only)</span> · status: <span style="color:var(--warn);font-weight:600">prose</span>, done for app_3 and app_4 (<code>positioning.md</code> exists in both) · you type <i>"Positioning for app_N, from the research."</i></p>
+
+  <div class="goal" data-anchor="s2-goal" data-label="Stage 2 goal" data-changed="1"><button class="cbtn">comment</button><b>Why this stage exists:</b> A PRD that serves everyone specifies nothing. Positioning forces one sentence — "basically X, but Y" — that names the user, the product we sit next to, and the twist. It is a constraint the PRD must obey, and it carries the evidence forward in the Anchored-to block.</div>
+  <div class="io4" data-anchor="s2-io" data-label="Stage 2 inputs / outputs / gate">
+    <button class="cbtn">comment</button>
+    <div><div class="k">Inputs</div>The research file only. Not chat history.</div>
+    <div><div class="k">Does</div>Claude proposes 2–3 candidates, one paragraph each, every one writable as <b>"it's basically X, but Y"</b> (X a real shipping product). Too novel to fit that sentence → cut. You react; converge on one.</div>
+    <div><div class="k">Produces</div><code>&lt;app&gt;/positioning.md</code>: one paragraph naming the user, the closest product and the wedge — plus an <b>Anchored to</b> block of 2–3 verbatim complaints with a link to the research file.</div>
+    <div><div class="k">Gate → Stage 3</div>One paragraph survives. The Anchored-to block is what unlocks Stage 3: create-prd refuses without evidence.</div>
+  </div>
+
+  <details class="ref" data-anchor="s2-example" data-label="Stage 2 worked example">
+    <button class="cbtn">comment</button>
+    <summary>How PIPELINE_EXAMPLE says it goes (app_2)</summary>
+    <blockquote>A. Basically <b>Opal</b>, but it never nags — zero notifications, ever.<br>B. Basically <b>Jolt</b>, but the key-holder is a scheduled rule, not a friend you have to bother.<br>C. Basically <b>one sec</b>, but the pause gets longer each time you push through it.</blockquote>
+    <p class="sub">You react — "B, but I don't like calling it a rule" — back and forth until one paragraph survives. Claude saves the file with the Anchored-to block.</p>
+  </details>
+
+  <div class="d open" data-anchor="d2" data-label="D2 research/positioning overlap">
+    <button class="cbtn">comment</button>
+    <div class="q">D2 — Stage 1's Steps 5–6 already do half of Stage 2. Merge or separate?</div>
+    <div class="why">The research skill brainstorms new solutions (Step 5) and asks you to pick one (Step 6); in practice the research page also collects the 2–3 anchor quotes — which is Stage 2's Anchored-to block. app_3 closed "research + positioning on one html-worker page, 3 rounds". app_4 closed research separately and PROGRESS lists positioning as a separate next step. PIPELINE_EXAMPLE describes two separate sessions. The files describe two different pipelines.</div>
+    <div data-radio="d2">
+      <label class="opt"><input type="radio" name="d2" value="merge"><span><span class="oh">Merge: the research page ends with positioning candidates and writes positioning.md</span><span class="od">One skill, one page, one session. Stage 2 becomes the last section of Stage 1's page. PIPELINE gets five stages or "1+2" as one. Cheaper per app; loses the deliberate pause between "what exists" and "what we build".</span></span></label>
+      <label class="opt"><input name="d2" type="radio" value="separate"><span><span class="oh">Keep separate: research stops at "strongest option"; positioning is its own step</span><span class="od">Research page collects only the pick. Anchor quotes are chosen in Stage 2. app_3's merged run was the exception. Costs a second session; keeps the boundary that PIPELINE_EXAMPLE argues for.</span></span></label>
+      <label class="opt"><input type="radio" name="d2" value="two-skills"><span><span class="oh">Separate stages, and give Stage 2 its own skill now</span><span class="od">A <code>/positioning</code> skill that reads the research file, proposes X-but-Y candidates on a page, and writes positioning.md. See D3/D4 for format and timing.</span></span></label>
+    </div>
+  </div>
+
+  <div class="d open" data-anchor="d3" data-label="D3 positioning format">
+    <button class="cbtn">comment</button>
+    <div class="q">D3 — Conversation loop or page? PIPELINE §2 says one thing, app_3 did the other</div>
+    <div class="why">PIPELINE.md §2: "A conversation loop, not a generated document." PROGRESS.md app_3: positioning closed "on one html-worker page". html-worker's own rule: do not use it for a single question — "a page should earn its weight". Three candidates plus 2–3 quote picks is borderline.</div>
+    <div data-radio="d3">
+      <label class="opt"><input type="radio" name="d3" value="page"><span><span class="oh">html-worker page is the standard — update PIPELINE §2</span><span class="od">Candidates as a radio group, anchor quotes as checkboxes; the answer persists in state.json instead of chat.</span></span></label>
+      <label class="opt"><input type="radio" name="d3" value="terminal"><span><span class="oh">Terminal conversation is the standard — app_3 was an exception</span><span class="od">Matches PIPELINE as written; the artefact is small enough to converge in prose.</span></span></label>
+      <label class="opt"><input type="radio" name="d3" value="either"><span><span class="oh">Either, chosen per app</span><span class="od">Say so in PIPELINE. Least consistent for viewers building muscle memory.</span></span></label>
+    </div>
+  </div>
+
+  <div class="d open" data-anchor="d4" data-label="D4 when Stage 2 earns a skill">
+    <button class="cbtn">comment</button>
+    <div class="q">D4 — Stage 2 has now been done twice. Extract a skill, or wait for the third?</div>
+    <div class="why">CLAUDE.md: "Extract on the third occurrence, not the first — anything extracted earlier is a guess about the workflow." <code>positioning.md</code> exists for app_3 and app_4; app_2 is next. If D2 = merge, this question disappears into the research skill.</div>
+    <div data-radio="d4">
+      <label class="opt"><input type="radio" name="d4" value="third"><span><span class="oh">Wait — extract after app_2's positioning (third time)</span><span class="od">Doctrine as written. Stage 2 stays prose until then.</span></span></label>
+      <label class="opt"><input type="radio" name="d4" value="now"><span><span class="oh">Extract now from app_3 + app_4</span><span class="od">Two runs with a written spec (PIPELINE §2) is more than most skills started with. State the exception.</span></span></label>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ STAGE 3 -->
+<section id="s-3" data-anchor="s3" data-label="Stage 3 Spec" data-group="Stages" data-title="3 · Spec">
+  <button class="cbtn">comment</button>
+  <h2><span class="num">3</span>Spec — the PRD, and the prototype in the middle of it</h2>
+  <p class="meta"><span class="chip skill">/create-prd</span> <span class="chip hw">html-worker page + prototype.html</span> · status: <span class="ok">real</span> — "settled in app_4": PRD closed 2026-09-20 after 10 rounds and 17 decisions, prototype at <code>app_4/spec/prototype.html</code> · you type <code>/create-prd</code> and say "HTML mode"</p>
+
+  <div class="goal" data-anchor="s3-goal" data-label="Stage 3 goal" data-changed="1"><button class="cbtn">comment</button><b>Why this stage exists:</b> So the build has something to check against. The PRD argues <i>this problem is real → these requirements → this experience → this system</i>, records every technical choice as yours (with what was rejected), and the prototype catches the step that reads fine and plays wrong before the system serving it is designed.</div>
+  <div class="io4" data-anchor="s3-io" data-label="Stage 3 inputs / outputs / gate">
+    <button class="cbtn">comment</button>
+    <div><div class="k">Inputs</div><ul><li><code>positioning.md</code> with its Anchored-to block — refuses without evidence</li><li>the research file, for verbatim quotes</li><li>CLAUDE.md baseline, for §11 and §17</li></ul></div>
+    <div><div class="k">Does</div>One page, fixed order: <b>the case → the experience → [prototype] → the build</b>. Every technical choice is a radio group, nothing pre-selected. 3–6 review rounds through html-worker.</div>
+    <div><div class="k">Produces</div><code>PRD.md</code> exported from the page (records what was chosen <i>and</i> rejected), <code>prototype.html</code>, <code>state.json</code>, and the exporter kept in the project.</div>
+    <div><div class="k">Gate → Stage 4</div>You say "done". Stage 4 reads PRD §15 (data model) and §16 (API contract) only.</div>
+  </div>
+
+  <details class="ref" data-anchor="s3-steps" data-label="Inside /create-prd — goals + in/out on every step" data-changed="1">
+    <button class="cbtn">comment</button>
+    <summary>Inside /create-prd — the 19 sections, the prototype between them, and the checks after every round</summary>
+    <ol class="steps">
+      <li data-n="0" class="gate"><span class="st">Gate: chosen problem with evidence behind it</span><span class="io"><b>goal:</b> refuse to invent Part 1 · <b>in:</b> positioning.md (see D5) · "If there is only an idea, say so and stop." The skill does not name which file it checks — see D5.</span></li>
+      <li data-n="1"><span class="st">Part 1 — The case (§1–6)</span><span class="io"><b>goal:</b> a reader who stops here still knows whether it is worth making · <b>in:</b> positioning.md + research quotes · <b>out:</b> R1…Rn · Summary · Problem with verbatim quotes · <b>R1, R2… design requirements each with the evidence that forces it</b> (the hinge) · Positioning · One audience · Scope with an explicit not-building list</span></li>
+      <li data-n="2"><span class="st">Part 2 — The experience (§7–10)</span><span class="io"><b>goal:</b> the flow and screens R1…Rn force, with one metric that measures the promise · <b>in:</b> R1…Rn · <b>out:</b> flow, screens, metric, risks · User flow (diagram) · Screens, clickable, layout choices as decisions · One headline success metric with the percentile · Accepted risks written properly (failure, requirement broken, who accepted, when, mitigation)</span></li>
+      <li data-n="R" class="hw"><span class="st">Review rounds on the html-worker page</span><span class="io"><b>goal:</b> the case and experience hold before anything is built on them · <b>in:</b> INBOX.md each round · <b>out:</b> revised page, data-changed marks · until the case and the experience have held through a round. Change requests revise the page; questions are answered in the terminal.</span></li>
+      <li data-n="P" class="hw"><span class="st">Prototype — before a line of Part 3</span><span class="io"><b>goal:</b> find the step that reads fine and plays wrong · <b>in:</b> §7 flow, §8 screens, decisions so far · <b>out:</b> <code>prototype.html</code> + what to notice · <b>what:</b> one <code>prototype.html</code> served from the same html-worker directory (<code>localhost:7777/prototype.html</code>), <code>HOST=0.0.0.0</code> so it works on the phone; every screen from §8, every path from §7, with decisions so far baked in; platform-native styling; real sensors with a "simulate" fallback; compressed time printed on screen; state in browser storage with a reset. <b>Terminal:</b> the two or three places the experience could still be wrong. app_4 found "if I have minutes, why am I seeing tasks?" here.</span></li>
+      <li data-n="3"><span class="st">Part 3 — The build (§11–19), written from what the prototype taught</span><span class="io"><b>goal:</b> every technical choice yours, both halves to the same depth · <b>in:</b> R1…Rn, baseline, prototype findings · <b>out:</b> TR1…, §15 data model, §16 API (Stage 4 reads these) · TR1… from R1… + baseline · Architecture covering every half · Model/vendor choices with rejected options · The client (framework, hardest screen, tests, ship path — a platform is not a stack) · Data model · API contract · Operations · Build order, riskiest first · Open decisions</span></li>
+      <li data-n="✓"><span class="st">After every round: five checks</span><span class="io"><b>goal:</b> catch the unsound whole that sensible answers add up to · conflicts between individually sensible decisions (raise as its own decision) · count decisions per half — ten vs. one means half-written · ask what the hardest screen requires · follow shipping requirements into every component (signing, store review, device tests) · struck-through superseded decisions</span></li>
+      <li data-n="E" class="hw gate"><span class="st">Export</span><span class="io"><b>goal:</b> one source, not two · <b>in:</b> the page + state.json · <b>out:</b> <code>PRD.md</code> · <code>export-md.py</code> → <code>PRD.md</code>. Generated from the page, never a second narrative. Keep the exporter in the project.</span></li>
+    </ol>
+    <div class="plain"><b>Every technical decision is the user's.</b> Each option carries three plain lines — what it is / what you get and what it costs / when you'd pick it. One may be marked <i>recommended</i> with a reason; none is pre-selected. Plain words for a reader who builds nothing themselves; every term glossed inline the first time.</div>
+  </details>
+
+  <div class="d open" data-anchor="d5" data-label="D5 create-prd gate names no file">
+    <button class="cbtn">comment</button>
+    <div class="q">D5 — The create-prd gate is described in three places and only one names the file</div>
+    <div class="why">create-prd/SKILL.md: "Do not start until there is a chosen problem with evidence behind it." No file named. PIPELINE.md §2: "Stage 3 refuses to start without evidence… this block is what carries that evidence forward." PIPELINE_EXAMPLE: "Claude first checks positioning.md has evidence behind it (the Anchored-to block). If not, it refuses." A fresh session running <code>/create-prd</code> reads only the skill, so today it does not know to open <code>positioning.md</code>.</div>
+    <div data-radio="d5">
+      <label class="opt"><input type="radio" name="d5" value="name"><span><span class="oh">Name the file in the skill: read <code>&lt;app&gt;/positioning.md</code>, require the Anchored-to block</span><span class="od">The gate becomes mechanical. Ties the skill to this series' layout.</span></span></label>
+      <label class="opt"><input type="radio" name="d5" value="generic"><span><span class="oh">Keep the skill generic; the file check lives in PIPELINE.md only</span><span class="od">Skill stays reusable outside the series. Relies on the session having read PIPELINE.md, which it may not have.</span></span></label>
+      <label class="opt"><input type="radio" name="d5" value="param"><span><span class="oh">Skill takes an "evidence file" argument; PIPELINE says which file to pass</span><span class="od"><code>/create-prd app_3/positioning.md</code>. Generic and mechanical, one more thing to type.</span></span></label>
+    </div>
+  </div>
+
+  <div class="d open" data-anchor="d6" data-label="D6 prototype as a sub-stage">
+    <button class="cbtn">comment</button>
+    <div class="q">D6 — Is the prototype its own stage boundary, or part of Stage 3?</div>
+    <div class="why">PIPELINE.md §3 and create-prd both put "a clickable prototype between the second and the third part". PIPELINE_EXAMPLE's Stage 3 does not mention it at all (3–6 rounds, then export). The prototype has its own precondition ("case and experience held through a round"), its own artefact, and its own review (an hour on the phone) — which is the shape of a stage in the table at the bottom of PIPELINE_EXAMPLE.</div>
+    <div data-radio="d6">
+      <label class="opt"><input type="radio" name="d6" value="sub"><span><span class="oh">Show it as a sub-stage 3a → 3b → 3c with its own gate</span><span class="od">Flow diagram and PIPELINE.md get "3b Prototype: gate = you have used it on the phone and named what is wrong". PIPELINE_EXAMPLE updated to match.</span></span></label>
+      <label class="opt"><input type="radio" name="d6" value="inside"><span><span class="oh">Part of Stage 3, no separate gate — just fix PIPELINE_EXAMPLE</span><span class="od">Fewer boxes; the skill carries the detail as PIPELINE already says.</span></span></label>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ STAGE 4 -->
+<section id="s-4" data-anchor="s4" data-label="Stage 4 Contract freeze" data-group="Stages" data-title="4 · Contract freeze">
+  <button class="cbtn">comment</button>
+  <h2><span class="num">4</span>Contract freeze</h2>
+  <p class="meta"><span class="chip none">no skill — PIPELINE §4 is the spec</span> · no review surface: the gate is you reading the endpoint list in the terminal · status: <span style="color:var(--warn);font-weight:600">prose</span>, run once (app_1); app_4 is at this stage now · you type <i>"Freeze the contract from PRD §15-16."</i></p>
+
+  <div class="goal" data-anchor="s4-goal" data-label="Stage 4 goal" data-changed="1"><button class="cbtn">comment</button><b>Why this stage exists:</b> Two sessions can build in parallel only if neither can change the thing between them. Freezing the API as generated code — enforced by CI, tooling and ownership — is what makes Stage 5 possible.</div>
+  <div class="io4" data-anchor="s4-io" data-label="Stage 4 inputs / outputs / gate">
+    <button class="cbtn">comment</button>
+    <div><div class="k">Inputs</div>PRD §15 data model and §16 API contract. Claude now acts as <b>orchestrator</b>.</div>
+    <div><div class="k">Does</div>Writes <code>backend/app/schemas.py</code> and empty route signatures in <code>backend/app/main.py</code>; <code>export_openapi.py</code> generates <code>contract/openapi.json</code>. The contract is code, not a document — never hand-edited.</div>
+    <div><div class="k">Produces</div><code>openapi.json</code> committed; CI step that regenerates and <code>git diff --exit-code</code>; ruff/mypy exclude the frozen files; ownership rule: workers may not edit them.</div>
+    <div><div class="k">Gate → Stage 5</div>You read the endpoint list — not the code — against the Stage 3 screens. Match → commit. From then on the only change path is a numbered entry in <code>ORCH-QUESTIONS.md</code>. Done when both worker briefs point at the JSON.</div>
+  </div>
+
+  <details class="ref" data-anchor="s4-steps" data-label="Stage 4 procedure — goals + in/out" data-changed="1">
+    <button class="cbtn">comment</button>
+    <summary>The procedure as PIPELINE §4 gives it</summary>
+    <ol class="steps">
+      <li data-n="1"><span class="st">Schemas and route signatures from the PRD</span><span class="io"><b>goal:</b> the contract exists only as code · <b>in:</b> §15–16 · <b>out:</b> <code>schemas.py</code>, <code>main.py</code> with empty bodies</span></li>
+      <li data-n="2"><span class="st">Generate</span><span class="io"><b>goal:</b> a JSON nobody hand-edits · <b>in:</b> schemas.py + main.py · <b>out:</b> <code>backend/export_openapi.py</code> → <code>contract/openapi.json</code></span></li>
+      <li data-n="3"><span class="st">Enforce three ways</span><span class="io"><b>goal:</b> drift cannot happen silently · <b>out:</b> CI drift check · tooling excludes · ownership (workers ask, never edit)</span></li>
+      <li data-n="4" class="gate"><span class="st">You read the endpoint list</span><span class="io"><b>goal:</b> you approve the shape without reading code · <b>in:</b> endpoint list vs. §8 screens · <b>out:</b> committed openapi.json · does <i>POST /blocks, GET /blocks/{id}/status…</i> match the screens? → commit → frozen</span></li>
+    </ol>
+    <p class="sub">Stated tradeoff: the backend framework becomes the schema language, tying the contract to FastAPI/Pydantic pins — accepted because a hand-written spec drifts within a week and a generated one cannot.</p>
+  </details>
+  <p class="sub">Nothing contradictory found here. The PRD section numbers (§15, §16, §17) line up with create-prd's numbering.</p>
+</section>
+
+<!-- ============================================================ STAGE 5 -->
+<section id="s-5" data-anchor="s5" data-label="Stage 5 Build" data-group="Stages" data-title="5 · Build">
+  <button class="cbtn">comment</button>
+  <h2><span class="num">5</span>Build — one orchestrator, two workers</h2>
+  <p class="meta"><span class="chip cand">skill candidate — PIPELINE §5 is the spec</span> · no review surface: orchestrator status summaries + <code>ORCH-QUESTIONS.md</code> · status: <span style="color:var(--warn);font-weight:600">prose</span>, run once (app_1, in progress: backend merged, iOS building) · three sessions, not one</p>
+
+  <div class="goal" data-anchor="s5-goal" data-label="Stage 5 goal" data-changed="1"><button class="cbtn">comment</button><b>Why this stage exists:</b> To get both halves built against the contract, with every claim verified by someone who did not write the code. The orchestrator stays pure so it keeps checking instead of trusting.</div>
+  <div class="io4" data-anchor="s5-io" data-label="Stage 5 inputs / outputs / gate">
+    <button class="cbtn">comment</button>
+    <div><div class="k">Inputs</div>Frozen <code>openapi.json</code>, the PRD, and one <code>AGENT.md</code> brief per half. Workers are told: <i>"Read AGENT.md and start."</i></div>
+    <div><div class="k">Does</div><b>Orchestrator writes no app code.</b> It writes <code>HANDOFF.md</code>, the briefs, creates worktrees on branches <code>backend</code> and <code>ios</code>, answers questions, verifies claims, merges at checkpoints. Workers build TDD-first in their own folder; the backend one builds the whole baseline as it goes.</div>
+    <div><div class="k">Produces</div><code>main</code> with both branches merged; the client running end to end against the real local backend; baseline items per half (PRD §17) in.</div>
+    <div><div class="k">Gate → Stage 6</div>Each merge only after the orchestrator has run the tests and hit the endpoint itself — never relays "backend says done". You decide contract questions when pinged.</div>
+  </div>
+
+  <details class="ref" data-anchor="s5-steps" data-label="Stage 5 files and loop — goals + in/out" data-changed="1">
+    <button class="cbtn">comment</button>
+    <summary>The files that make it work, and the question loop</summary>
+    <ul>
+      <li><code>HANDOFF.md</code> — orchestrator context for a fresh session: roster, in flight, gotchas. Rewritten as things change; this is what lets the role survive a context reset.</li>
+      <li><code>&lt;half&gt;/AGENT.md</code> — read order, what it owns, what it must not touch, the one rule (never edit the contract; ask in ORCH-QUESTIONS.md), TDD mandatory, commit discipline.</li>
+      <li><code>ORCH-QUESTIONS.md</code> — append-only, numbered, answered inline. A worker that hits a contract problem appends and keeps working on something else; it never blocks and never patches around it.</li>
+      <li>Worktrees — one per worker branch. Design/research agents that write no code share the orchestrator's checkout: check <code>git branch --show-current</code> before every commit there.</li>
+    </ul>
+    <ol class="steps">
+      <li data-n="1"><span class="st">Worker hits a contract gap</span><span class="io"><b>goal:</b> never patch around the contract · <b>out:</b> a numbered question · appends <i>Q3 — Unlock request needs a reason field · From: ios · Blocks: the request screen</i>, moves on</span></li>
+      <li data-n="2"><span class="st">Orchestrator pings you</span><span class="io"><b>goal:</b> the contract only changes by your decision · you decide: "yes, optional string, max 200 chars"</span></li>
+      <li data-n="3"><span class="st">Orchestrator edits schemas.py, regenerates, answers inline</span><span class="io"><b>goal:</b> one change path, recorded where it was asked · <b>out:</b> new openapi.json + inline answer · both workers pull</span></li>
+      <li data-n="4" class="gate"><span class="st">Checkpoint merge after verification</span><span class="io"><b>goal:</b> main only ever holds what someone other than the author has run · <b>out:</b> a merged branch · tests run by the orchestrator, endpoint hit by the orchestrator</span></li>
+    </ol>
+    <p class="sub">Stated tradeoff: an orchestrator that also codes stops verifying — it trusts its own work — so the role is kept pure.</p>
+  </details>
+
+  <div class="d open" data-anchor="d8" data-label="D8 when to extract the Stage 5 skill">
+    <button class="cbtn">comment</button>
+    <div class="q">D8 — Three files give three different times to extract the orchestration skill</div>
+    <div class="why">CLAUDE.md: "Extract on the third occurrence." PIPELINE.md open questions: "Revisit as a skill… once a second app reuses it." PIPELINE_EXAMPLE: "skill candidate for app_3" and "a fresh session re-derives it from PIPELINE.md until app_3 turns it into a skill." app_1 is the first and only run so far.</div>
+    <div data-radio="d8">
+      <label class="opt"><input type="radio" name="d8" value="third"><span><span class="oh">Third occurrence — doctrine wins; fix PIPELINE and the example</span><span class="od">Stage 5 stays prose through app_3. Consistent with how every other skill was earned.</span></span></label>
+      <label class="opt"><input type="radio" name="d8" value="second"><span><span class="oh">Second occurrence (app_3) — state the exception in PIPELINE</span><span class="od">Stage 5 is the heaviest procedure and the one a fresh session most often gets wrong; the cost of re-deriving it is higher than a guessed skill.</span></span></label>
+      <label class="opt"><input type="radio" name="d8" value="draft-now"><span><span class="oh">Write a provisional skill now from app_1's files, mark it draft</span><span class="od">HANDOFF.md, AGENT.md and ORCH-QUESTIONS.md already exist as templates. Revised after app_3 confirms the shape.</span></span></label>
+    </div>
+  </div>
+
+  <div class="d open" data-anchor="d9" data-label="D9 skill or agent definitions">
+    <button class="cbtn">comment</button>
+    <div class="q">D9 — Skill, agent definitions, or both? PIPELINE says "skill/<code>.claude/agents/</code> entry" and <code>.claude/agents/</code> is empty</div>
+    <div class="why">The orchestrator's procedure (write briefs, create worktrees, verify, merge) is skill-shaped: a sequence one session follows. The two workers are agent-shaped: a role, a brief, a set of rules. CLAUDE.md lists <code>.claude/agents/</code> as "reusable agent definitions" but nothing has ever been put there.</div>
+    <div data-radio="d9">
+      <label class="opt"><input type="radio" name="d9" value="skill"><span><span class="oh">One skill for the orchestrator; AGENT.md stays a per-app file it writes</span><span class="od">Workers are plain Claude sessions reading a file, as today. Nothing in .claude/agents/.</span></span></label>
+      <label class="opt"><input type="radio" name="d9" value="agents"><span><span class="oh">Agent definitions for backend-worker and client-worker; orchestrator procedure in PIPELINE</span><span class="od">The AGENT.md rules move into .claude/agents/*.md and are the same across apps; only the app-specific part is written per app.</span></span></label>
+      <label class="opt"><input type="radio" name="d9" value="both"><span><span class="oh">Both — skill drives the session, agents define the workers</span><span class="od">Most structure, most to maintain.</span></span></label>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ STAGE 6 -->
+<section id="s-6" data-anchor="s6" data-label="Stage 6 Ship" data-group="Stages" data-title="6 · Ship">
+  <button class="cbtn">comment</button>
+  <h2><span class="num">6</span>Ship</h2>
+  <p class="meta"><span class="chip none">undefined</span> · hosting decision parked · no review surface · status: never run · PIPELINE §6 is two lines: "The full baseline from CLAUDE.md, then the showcase site."</p>
+
+  <div class="goal" data-anchor="s6-goal" data-label="Stage 6 goal" data-changed="1"><button class="cbtn">comment</button><b>Why this stage exists:</b> The series' claim is that nothing is faked. Ship is where the baseline — real host, health-gated deploy, rollback, store review — is proven rather than listed.</div>
+  <div class="io4" data-anchor="s6-io" data-label="Stage 6 as sketched">
+    <button class="cbtn">comment</button>
+    <div><div class="k">Inputs</div>Merged <code>main</code>; the baseline list in CLAUDE.md.</div>
+    <div><div class="k">Would do (per PIPELINE_EXAMPLE)</div>A deploy skill: build image → push to registry → host pulls → health check gates → rollback if red — and you film the "bad deploy" on purpose. Then TestFlight / store review for iOS, or a static build for web.</div>
+    <div><div class="k">Would produce</div>A running app on a real host, plus the showcase site.</div>
+    <div><div class="k">Gate</div>None defined. "The first deploy to a real host settles this" (CLAUDE.md).</div>
+  </div>
+
+  <div class="plain" data-anchor="d10-settled" data-label="Client CI — settled since round 1" data-changed="1"><button class="cbtn">comment</button><b>Client CI — settled while this page was open.</b> PIPELINE.md now reads: the iOS client has CI — GitHub Actions on a macOS runner, build + core-package unit tests on every PR, UI tests nightly; device-only paths are a hand-run checklist before TestFlight (app_4 PRD D17). app_1's F3 was the exception. Decision D10 removed.</div>
+
+  <div class="d open" data-anchor="d11" data-label="D11 where the waitlist goes">
+    <button class="cbtn">comment</button>
+    <div class="q">D11 — Waitlist: PIPELINE says "likely both" but never places it in the flow</div>
+    <div class="why">Open question in PIPELINE.md: "Waitlist as early validation (before stage 5) vs. showcase after ship — likely both, as two separate things." The flow diagram above has nowhere to put it.</div>
+    <div data-radio="d11">
+      <label class="opt"><input type="radio" name="d11" value="after-2"><span><span class="oh">After Stage 2 — validate the positioning before writing a spec</span><span class="od">One paragraph and a page is all you have; cheapest point to learn nobody wants it.</span></span></label>
+      <label class="opt"><input type="radio" name="d11" value="after-3"><span><span class="oh">After Stage 3 — the prototype exists, so the waitlist page can show it</span><span class="od">More to show; spec effort already spent.</span></span></label>
+      <label class="opt"><input type="radio" name="d11" value="ship"><span><span class="oh">Part of Stage 6 alongside the showcase; not a validation step</span><span class="od">Keeps six stages. Drops the "early validation" idea.</span></span></label>
+      <label class="opt"><input type="radio" name="d11" value="park"><span><span class="oh">Leave parked until Stage 6 is defined</span><span class="od">No change now.</span></span></label>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ HTML-WORKER -->
+<section id="s-hw" data-anchor="hw" data-label="html-worker" data-group="The review surface" data-title="html-worker">
+  <button class="cbtn">comment</button>
+  <h2>html-worker — the review surface inside Stages 1–3</h2>
+  <p class="sub">Not a stage. Mechanics only: "what goes in the page is not its concern." Other skills invoke it when the user must react to many things and pointing beats describing. This page is itself an instance of it.</p>
+
+  <div class="loop" data-anchor="hw-loop" data-label="html-worker round loop">
+    <button class="cbtn">comment</button>
+    <div class="node"><div class="n">you</div><div class="t">click &amp; comment</div>decisions save instantly to <code>state.json</code>; comments queue, editable, unsent</div>
+    <div class="arr">→</div>
+    <div class="node"><div class="n">you</div><div class="t">Confirm &amp; send</div>server snapshots decisions into a round, marks comments sent, writes <code>INBOX.md</code></div>
+    <div class="arr">→</div>
+    <div class="node"><div class="n">claude</div><div class="t">reads INBOX.md</div>comments, what changed, what is unanswered, every decision as of now</div>
+    <div class="arr">→</div>
+    <div class="node"><div class="n">claude</div><div class="t">two kinds</div><b>change request</b> → revise the page, mark <code>data-changed="N"</code> · <b>question</b> → answer in the terminal, never on the page</div>
+    <div class="arr">→</div>
+    <div class="node"><div class="n">claude</div><div class="t">mark addressed</div><code>POST /api/comment/addressed</code> through the server, never by editing the file · tell you what changed and what is open</div>
+    <div class="arr">↺</div>
+  </div>
+
+  <details class="ref" data-anchor="hw-files" data-label="html-worker files and contract">
+    <button class="cbtn">comment</button>
+    <summary>Files, the page contract, and the rules learned the hard way</summary>
+    <table class="t">
+      <tr><th>File</th><th>Role</th></tr>
+      <tr><td><code>page-template.html</code></td><td>JavaScript already wired; three attributes do everything — <code>data-anchor</code> (commentable block + <code>.cbtn</code>), <code>data-radio</code> (single choice), <code>data-check</code> (multi choice). <code>data-changed="N"</code> marks what moved in round N.</td></tr>
+      <tr><td><code>server.py</code></td><td>Copied beside each page. Port 7777 (<code>PORT=</code>), localhost (<code>HOST=0.0.0.0</code> for the phone). Only it writes <code>state.json</code>. In herdr, run it in a pane, not a background task.</td></tr>
+      <tr><td><code>export-md.py</code></td><td>Page → Markdown so there is one source. Decisions render with → on the chosen option and rejected options beneath.</td></tr>
+      <tr><td><code>sync.py</code></td><td>Brings an existing page directory up to the current template mechanics without touching content or state.</td></tr>
+      <tr><td><code>theme-lab/</code></td><td>Preview page for trying palettes and fonts against real markup before changing the template.</td></tr>
+    </table>
+    <ul>
+      <li>State lives on disk, not in server memory. Servers die; nothing else should.</li>
+      <li>Never orphan an answer: replacing a decision's options means migrating the value.</li>
+      <li>One page, not tabs. Sticky contents rail; <code>&lt;details&gt;</code> for reference material.</li>
+      <li>Fine-grained anchors: a comment on one decision is unambiguous, one on a section is not.</li>
+      <li>Waking up: a background file-watcher can re-invoke the session but is unreliable — if you confirm and hear nothing within a minute, say "sent".</li>
+    </ul>
+  </details>
+
+  <div class="anc" data-anchor="hw-usage" data-label="Where html-worker is used">
+    <button class="cbtn">comment</button>
+  <table class="t">
+    <tr><th>Where</th><th>Directory</th><th>What the page holds</th><th>Direction</th></tr>
+    <tr><td>Stage 1 · /research</td><td><code>&lt;app&gt;/research/reviewer/</code></td><td>the research, with Step 6 as radios/checkboxes: strongest option, anchor quotes, Reddit paste-or-skip, skill fixes</td><td>file first, then page (skill) — or page then export (app_4, per PROGRESS). See D7.</td></tr>
+    <tr><td>Stage 2 · positioning (app_3 only)</td><td>same page as research</td><td>X-but-Y candidates and the Anchored-to picks</td><td>see D2 / D3</td></tr>
+    <tr><td>Stage 3 · /create-prd HTML mode</td><td><code>&lt;app&gt;/spec/</code></td><td>the whole PRD; every technical choice a radio group; screens clickable; risks and superseded decisions</td><td>page is the source; <code>PRD.md</code> exported</td></tr>
+    <tr><td>Stage 3 · prototype</td><td><code>&lt;app&gt;/spec/prototype.html</code></td><td>a second page served by the same server — not a review page, a thing to poke at on the phone</td><td>informs Part 3</td></tr>
+    <tr><td>Stages 4–6</td><td>—</td><td>not used</td><td>—</td></tr>
+  </table>
+  </div>
+
+  <div class="d open" data-anchor="d12" data-label="D12 wake-up path">
+    <button class="cbtn">comment</button>
+    <div class="q">D12 — The wake-up path: the skill says the automatic way is unreliable and to "not promise it works"</div>
+    <div class="why">html-worker/SKILL.md: a background watcher blocks on <code>INBOX.md</code> and re-invokes the session, "but those get reaped… if they confirm and hear nothing within a minute, they should say 'sent'." The same skill now says to run the server in a herdr pane because harness background tasks die. The watcher has the same problem and no herdr fallback is written down.</div>
+    <div data-radio="d12">
+      <label class="opt"><input type="radio" name="d12" value="say-sent"><span><span class="oh">Keep "say sent" as the only promised path; drop the watcher from the skill</span><span class="od">Honest and simple. Costs you one word per round.</span></span></label>
+      <label class="opt"><input type="radio" name="d12" value="herdr"><span><span class="oh">Run the watcher in a herdr pane and have it prompt the session (<code>herdr agent prompt</code>)</span><span class="od">Survives reaping. Needs a small script in the skill and a test that it works.</span></span></label>
+      <label class="opt"><input type="radio" name="d12" value="keep"><span><span class="oh">Keep both as written</span><span class="od">Automatic when it works, "sent" when it does not.</span></span></label>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ HOUSEKEEPING -->
+<section id="s-house" data-anchor="house" data-label="Housekeeping" data-group="Wrap-up" data-title="Stale lines">
+  <button class="cbtn">comment</button>
+  <h2>Stale or inconsistent lines that need no debate, just a fix</h2>
+  <p class="sub">Tick the ones to fix. Anything unticked stays as is.</p>
+  <div class="d open" data-anchor="d13" data-label="D13 housekeeping — app_4 row dropped (fixed on disk)" data-changed="1">
+    <button class="cbtn">comment</button>
+    <div class="q">D13 — Fix these?</div>
+    <div class="why">Each is a single line in one file that disagrees with what is on disk or in another file.</div>
+    <div data-check="d13">
+            <label class="opt"><input type="checkbox" name="d13" value="pipeline-header"><span><span class="oh">PIPELINE.md opens with "Deliberately not fleshed out yet — the detail gets written from app_1"</span><span class="od">Stages 2–5 are now fleshed out from app_1, app_3 and app_4.</span></span></label>
+      <label class="opt"><input type="checkbox" name="d13" value="example-prototype"><span><span class="oh">PIPELINE_EXAMPLE Stage 3 omits the prototype</span><span class="od">Depends on D6 for how it is described, but it is missing either way.</span></span></label>
+      <label class="opt"><input type="checkbox" name="d13" value="example-sessions"><span><span class="oh">PIPELINE_EXAMPLE says "six stages, roughly six sessions"</span><span class="od">Stage 5 alone is three sessions by its own description.</span></span></label>
+      <label class="opt"><input type="checkbox" name="d13" value="server-wording"><span><span class="oh">html-worker's <code>server.py</code> still says "spec review" / "interactive PRD"</span><span class="od">The skill is "not tied to any document type"; INBOX.md's title and the docstring say otherwise.</span></span></label>
+      <label class="opt"><input type="checkbox" name="d13" value="claude-md-agents"><span><span class="oh">CLAUDE.md layout lists <code>.claude/agents/</code> as "reusable agent definitions"</span><span class="od">It holds only <code>.gitkeep</code>. Fine if D9 puts something there; otherwise the line describes nothing.</span></span></label>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<aside class="right">
+  <h2>Decisions</h2>
+  <p class="sub" style="margin:2px 0 0" id="dprog">—</p>
+  <div class="bar"><i id="dbar" style="width:0"></i></div>
+  <div class="dlist" id="dlist"></div>
+  <h2 style="margin-top:16px">Feedback queue</h2>
+  <p class="sub" style="margin:2px 0 0">Nothing is sent until you confirm.</p>
+  <div id="queue"></div>
+  <button class="primary" id="send">Confirm &amp; send</button>
+</aside>
+</div>
+
+<div id="pop">
+  <div class="pa" id="popanchor"></div>
+  <div class="kind">
+    <label class="sel"><input type="radio" name="kind" value="question" checked> Ask a question</label>
+    <label><input type="radio" name="kind" value="change"> Change this</label>
+  </div>
+  <textarea id="poptext" placeholder="What do you want to know? Answered in the terminal, not on the page."></textarea>
+  <div class="row"><button id="popcancel">Cancel</button><button id="popadd" class="add">Add to queue</button></div>
+</div>
+<div id="toast"></div>
+
+<!-- optional: <script src="vendor/mermaid.min.js"></script> for <pre class="mermaid"> diagrams -->
+<script>
+const S={decisions:{},comments:[],batches:[]}; let ROUND=1;
+const $=s=>document.querySelector(s);
+const esc=t=>String(t).replace(/[<>&]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
+const toast=m=>{const t=$('#toast');t.textContent=m;t.classList.add('on');
+  setTimeout(()=>t.classList.remove('on'),1700)};
+const post=(u,b)=>fetch(u,{method:'POST',headers:{'Content-Type':'application/json'},
+  body:JSON.stringify(b)}).then(r=>r.json());
+const D=k=>S.decisions[k];
+function groups(){return [...document.querySelectorAll('[data-radio],[data-check]')]}
+
+function buildChanged(){
+  // Blocks the author marked data-changed="N" (N = the round they were revised in).
+  // The rail lists the latest round's blocks so the reviewer can find what moved.
+  const els=[...document.querySelectorAll('[data-changed]')]; if(!els.length) return;
+  const latest=Math.max(...els.map(e=>+e.dataset.changed));
+  const mine=els.filter(e=>+e.dataset.changed===latest);
+  $('#toc').insertAdjacentHTML('afterbegin',`<div class="chg"><div class="grp">Changed in round ${latest} (${mine.length})</div>`+
+    mine.map((e,i)=>{ if(!e.id) e.id='chg-'+latest+'-'+i;
+      return `<a href="#${e.id}" data-id="${e.id}">${esc(e.dataset.label||e.dataset.title||e.id)}</a>`}).join('')+
+    `<div class="grp" style="margin-top:10px">Contents</div></div>`);
+  document.querySelectorAll('#toc .chg a').forEach(a=>a.onclick=ev=>{ev.preventDefault();
+    const el=document.getElementById(a.dataset.id); el.scrollIntoView({behavior:'smooth',block:'center'});
+    el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash')});
+}
+function buildToc(){
+  let last='';
+  $('#toc').innerHTML=[...document.querySelectorAll('main section')].map(s=>{
+    let out=''; if(s.dataset.group!==last){out+=`<div class="grp">${s.dataset.group}</div>`;last=s.dataset.group}
+    return out+`<a href="#${s.id}" data-id="${s.id}">${s.dataset.title}</a>`}).join('');
+  const links=[...document.querySelectorAll('#toc a')];
+  const io=new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting)
+    links.forEach(l=>l.classList.toggle('on',l.dataset.id===e.target.id)) }),
+    {rootMargin:'-84px 0px -70% 0px'});
+  document.querySelectorAll('main section').forEach(s=>io.observe(s));
+}
+function renderDecisions(){
+  const gs=groups(); let done=0;
+  $('#dlist').innerHTML=gs.map(g=>{
+    const id=g.dataset.radio||g.dataset.check, blk=g.closest('.d');
+    const ch=[...g.querySelectorAll('input:checked')]; if(ch.length) done++;
+    const val=ch.map(i=>i.closest('label').querySelector('.oh').textContent).join(', ');
+    return `<div class="dr ${ch.length?'done':'todo'}" data-goto="${blk.dataset.anchor}">
+      <span class="dot"></span><span class="dn">${id.toUpperCase()}</span>
+      <span class="dv">${esc(val||'not decided')}</span></div>`}).join('');
+  $('#dprog').textContent=`${done} of ${gs.length} decided`;
+  $('#dbar').style.width=(gs.length?done/gs.length*100:0)+'%';
+  $('#dcount').textContent=`${done}/${gs.length} decided · ${S.comments.filter(c=>c.status==='queued').length} queued`;
+  document.querySelectorAll('.dr').forEach(r=>r.onclick=()=>{
+    const el=document.querySelector(`[data-anchor="${r.dataset.goto}"]`); if(!el)return;
+    el.scrollIntoView({behavior:'smooth',block:'center'});
+    el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash')});
+}
+function renderQueue(){
+  const q=S.comments.filter(c=>c.status==='queued');
+  $('#send').textContent=`Confirm & send round ${ROUND}`+(q.length?` — ${q.length} comment${q.length===1?'':'s'}`:'');
+  $('#queue').innerHTML=q.length?q.map(c=>
+    `<div class="qi"><button class="qx" data-id="${c.id}">×</button>
+     <div class="qa">${c.kind==='question'?'Question':'Change'} · ${esc(c.anchorLabel)}</div>${esc(c.text)}</div>`).join('')
+    :'<div class="empty">No comments.<br>Hover any block and hit <em>comment</em>.</div>';
+  document.querySelectorAll('.qx').forEach(b=>b.onclick=async()=>{
+    const r=await post('/api/comment/delete',{id:b.dataset.id});
+    S.comments=r.comments; renderQueue(); markAnchors(); renderDecisions()});
+}
+function markAnchors(){
+  document.querySelectorAll('[data-anchor]').forEach(el=>{
+    const has=S.comments.some(c=>c.anchor===el.dataset.anchor&&c.status==='queued');
+    const b=el.querySelector(':scope > .cbtn');
+    if(b){b.classList.toggle('has',has); b.textContent=has?'commented':'comment'}});
+}
+const PH={change:'What is wrong, missing, or should change here?',
+          question:'What do you want to know? Answered in the terminal, not on the page.'};
+const kind=()=>$('#pop input[name=kind]:checked').value;
+function setKind(k){$(`#pop input[name=kind][value="${k}"]`).checked=true;
+  document.querySelectorAll('#pop .kind label').forEach(l=>l.classList.toggle('sel',l.querySelector('input').value===k));
+  $('#poptext').placeholder=PH[k]}
+let target=null;
+document.addEventListener('click',e=>{
+  const btn=e.target.closest('.cbtn');
+  if(!btn){ if(!e.target.closest('#pop')) $('#pop').style.display='none'; return }
+  const el=btn.closest('[data-anchor]');
+  target={anchor:el.dataset.anchor,label:el.dataset.label,
+          text:(el.querySelector('h2,.q')||{}).textContent||''};
+  const p=$('#pop'),r=btn.getBoundingClientRect();
+  $('#popanchor').textContent=target.label; $('#poptext').value=''; setKind('question');
+  p.style.display='block'; p.style.top=(window.scrollY+r.bottom+8)+'px';
+  p.style.left=Math.max(12,Math.min(r.right-328+window.scrollX,document.body.clientWidth-340))+'px';
+  $('#poptext').focus();
+});
+$('#popcancel').onclick=()=>$('#pop').style.display='none';
+$('#popadd').onclick=async()=>{
+  const t=$('#poptext').value.trim(); if(!t||!target)return;
+  const r=await post('/api/comment',{id:'c'+Date.now(),anchor:target.anchor,
+    anchorLabel:target.label,anchorText:target.text,text:t,kind:kind()});
+  S.comments=r.comments; $('#pop').style.display='none';
+  renderQueue(); markAnchors(); renderDecisions(); toast('Queued — not sent yet')};
+$('#send').onclick=async()=>{
+  const r=await post('/api/send',{});
+  S.comments.forEach(c=>{if(c.status==='queued')c.status='sent'});
+  ROUND+=1; $('#round').textContent=`Round ${ROUND}`;
+  renderQueue(); markAnchors(); renderDecisions();
+  toast(`Round ${ROUND-1} sent — ${r.sent} comment${r.sent===1?'':'s'} + decisions`)};
+document.addEventListener('change',async e=>{
+  const i=e.target;
+  if(i.closest('#pop')){ if(i.name==='kind') setKind(i.value); return }
+  if(i.type==='radio'){S.decisions[i.name]=i.value; await post('/api/decision',{id:i.name,value:i.value})}
+  else if(i.type==='checkbox'){
+    const v=[...document.querySelectorAll(`input[name="${i.name}"]:checked`)].map(x=>x.value);
+    S.decisions[i.name]=v; await post('/api/decision',{id:i.name,value:v})}
+  else return;
+  document.querySelectorAll('label.opt').forEach(l=>l.classList.toggle('sel',l.querySelector('input').checked));
+  renderDecisions(); toast('Saved')});
+
+fetch('/api/state').then(r=>r.json()).then(async st=>{
+  S.decisions=st.decisions||{}; S.comments=st.comments||[]; S.batches=st.batches||[];
+  ROUND=S.batches.length+1; $('#round').textContent=`Round ${ROUND}`;
+  for(const [k,v] of Object.entries(S.decisions))
+    (Array.isArray(v)?v:[v]).forEach(val=>{
+      const i=document.querySelector(`input[name="${k}"][value="${val}"]`); if(i)i.checked=true});
+  document.querySelectorAll('label.opt').forEach(l=>l.classList.toggle('sel',l.querySelector('input').checked));
+  post('/api/groups',{groups:groups().map(g=>g.dataset.radio||g.dataset.check)});
+  buildToc(); buildChanged(); renderQueue(); markAnchors(); renderDecisions();
+  if(window.mermaid){mermaid.initialize({startOnLoad:false,
+    theme:matchMedia('(prefers-color-scheme: dark)').matches?'dark':'neutral',securityLevel:'loose'});
+    try{await mermaid.run({nodes:[...document.querySelectorAll('pre.mermaid')]})}catch(e){}}
+});
+</script>
+</body>
+</html>

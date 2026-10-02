@@ -1,0 +1,612 @@
+<!doctype html>
+<html lang="en" data-theme="cube">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>25:00</title>
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" href="/icon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Fraunces:opsz,wght@9..144,500&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+  /* ============ looks: one token block each, nothing else changes ============ */
+  :root { --font: "Inter", system-ui, sans-serif; --dfont: "Inter", system-ui, sans-serif; --dweight: 600; }
+  [data-theme="cube"]  { --bg:#e9ebef; --shell:#fbfbfc; --edge:#d4d7dd; --face:#101114; --digits:#fff; --face-muted:#8b90a0; --text:#1b1d22; --muted:#7a7f8c; --line:#e3e5ea; --accent:#3ba0e8; --accent-ink:#fff; --done:#b3b7c2; }
+  [data-theme="mono"]  { --bg:#0b0c0f; --shell:#15171c; --edge:#23262d; --face:#15171c; --digits:#f4f5f7; --face-muted:#6f7482; --text:#e6e7ea; --muted:#7d8290; --line:#23262d; --accent:#ff6a3d; --accent-ink:#fff; --done:#4a4e59; }
+  [data-theme="paper"] { --dfont:"Fraunces", Georgia, serif; --dweight:500; --bg:#efe9df; --shell:#faf6ee; --edge:#e0d8c8; --face:#faf6ee; --digits:#2b2620; --face-muted:#9a8f7e; --text:#2b2620; --muted:#8a8172; --line:#e8e1d3; --accent:#b5462d; --accent-ink:#fff; --done:#c4bba9; }
+  [data-theme="lcd"]   { --dfont:"Share Tech Mono", monospace; --dweight:400; --bg:#07090a; --shell:#0e1210; --edge:#1b2320; --face:#050706; --digits:#a8ff5e; --face-muted:#4f7a45; --text:#c9d8c2; --muted:#6f8a66; --line:#1b2320; --accent:#a8ff5e; --accent-ink:#07090a; --done:#3a4a36; }
+  [data-theme="glass"] { --bg:linear-gradient(135deg,#ffd3e0 0%,#c9d6ff 45%,#c8f4e6 100%); --shell:rgba(255,255,255,.62); --edge:rgba(255,255,255,.9); --face:rgba(255,255,255,.55); --digits:#1d1b2e; --face-muted:#7c7a93; --text:#1d1b2e; --muted:#6f6d86; --line:rgba(0,0,0,.08); --accent:#6d5df5; --accent-ink:#fff; --done:#b9b7cc; }
+  [data-theme="lcd"] .time { text-shadow: 0 0 14px rgba(168,255,94,.55); }
+  [data-theme="lcd"] .seg { filter: drop-shadow(0 0 2px rgba(168,255,94,.6)); }
+  [data-theme="paper"] .face { border: 1px solid var(--line); }
+  [data-theme="glass"] .app { backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+  [data-theme="glass"] .face { border: 1px solid rgba(255,255,255,.8); }
+  .seg { fill: var(--accent); transition: opacity .3s; }
+  .seg.off { opacity: .14; }
+  [data-theme="cube"] .seg { fill: var(--sc); }
+
+  /* ============ base ============ */
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body { background: var(--bg); color: var(--text); font: 13px/1.3 var(--font); padding: 8px; overflow: hidden; -webkit-font-smoothing: antialiased; }
+  button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; padding: 0; }
+  input { font: inherit; color: inherit; }
+
+  /* face size: whatever the window's short edge allows, never more than ~55% of width */
+  :root { --fs: min(calc(100vh - 34px), 55vw); }
+
+  .app {
+    position: relative; height: 100%;
+    display: grid; grid-template-columns: var(--fs) minmax(0, 1fr); gap: 8px 12px;
+    padding: 8px; background: var(--shell); border: 1px solid var(--edge); border-radius: 16px;
+    box-shadow: 0 8px 28px rgba(0,0,0,.12);
+  }
+
+  /* ---- clock ---- */
+  .clock { position: relative; width: var(--fs); height: var(--fs); align-self: center; }
+  .face { position: absolute; inset: 0; background: var(--face); border-radius: 16px; overflow: hidden; }
+  .face svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: calc(var(--fs) * .025); }
+  .kind { display: flex; gap: 2px; font-size: calc(var(--fs) * .045); font-weight: 600; letter-spacing: .05em; text-transform: uppercase; }
+  .kind button { color: var(--face-muted); padding: 2px 7px; border-radius: 99px; }
+  .kind button.on { color: var(--digits); background: color-mix(in srgb, var(--digits) 14%, transparent); }
+  .time {
+    font-family: var(--dfont); font-weight: var(--dweight); font-size: calc(var(--fs) * .27);
+    color: var(--digits); letter-spacing: -.02em; line-height: 1; font-variant-numeric: tabular-nums;
+    cursor: text; border-radius: 8px; padding: 0 4px;
+  }
+  .time.locked { cursor: default; }
+  .time:not(.locked):hover { background: color-mix(in srgb, var(--digits) 8%, transparent); }
+  .time input { width: 4.2ch; text-align: center; background: transparent; border: 0; border-bottom: 2px solid var(--accent); outline: 0; font: inherit; color: inherit; letter-spacing: inherit; padding: 0; }
+  .modes { display: flex; gap: 2px; font-size: calc(var(--fs) * .048); font-weight: 600; letter-spacing: .05em; text-transform: uppercase; }
+  .modes button { color: var(--face-muted); padding: 2px 6px; border-radius: 99px; border: 1px solid transparent; white-space: nowrap; }
+  .modes button.on { color: var(--digits); border-color: var(--face-muted); }
+  .app[data-kind="watch"] .modes { visibility: hidden; }
+
+  /* ---- side ---- */
+  .side { display: flex; flex-direction: column; gap: 8px; min-height: 0; min-width: 0; }
+  .taskbar { display: flex; gap: 7px; align-items: flex-start; min-width: 0; cursor: default; }
+  .taskbar .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex: none; margin-top: 5px; }
+  .taskbar .name { font-weight: 600; font-size: 14px; line-height: 1.25; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; word-break: break-word; }
+  @media (min-height: 480px) { .taskbar .name { -webkit-line-clamp: 3; } }
+  .taskbar .name.empty { color: var(--muted); font-weight: 500; }
+  .taskbar .tally { margin-left: auto; color: var(--muted); font-size: 12px; white-space: nowrap; flex: none; font-variant-numeric: tabular-nums; }
+  .controls { display: flex; gap: 6px; }
+  .controls button { flex: 1; padding: 8px; border-radius: 10px; border: 1px solid var(--line); font-weight: 600; }
+  .controls .primary { background: var(--accent); color: var(--accent-ink); border-color: transparent; }
+  .controls button:active { transform: translateY(1px); }
+  #moreBtn, .stripExtras { display: none; }
+  #moreBtn { flex: none; padding: 8px 10px; }
+
+  .todos { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 4px; }
+  .todos input { width: 100%; padding: 7px 9px; border-radius: 9px; border: 1px solid var(--line); background: transparent; outline: 0; }
+  .todos input:focus { border-color: var(--accent); }
+  .todos ul { list-style: none; margin: 0; padding: 0; overflow: auto; flex: 1; min-height: 0; }
+  .todos li { display: flex; gap: 7px; align-items: flex-start; padding: 6px 5px; border-radius: 9px; cursor: pointer; }
+  .todos li:hover { background: color-mix(in srgb, var(--text) 5%, transparent); }
+  .todos li.selected { background: color-mix(in srgb, var(--accent) 13%, transparent); }
+  .todos li.dragging { opacity: .4; }
+  .todos li.over { box-shadow: 0 -2px 0 var(--accent); }
+  .todos li .check { width: 15px; height: 15px; border-radius: 5px; border: 1.5px solid var(--muted); flex: none; margin-top: 1px; display: grid; place-items: center; font-size: 10px; color: var(--accent-ink); }
+  .todos li.done .check { background: var(--done); border-color: var(--done); }
+  .todos li .label { flex: 1; min-width: 0; word-break: break-word; }
+  .todos li.done .label { color: var(--done); text-decoration: line-through; }
+  .todos li .count { color: var(--muted); font-size: 11px; white-space: nowrap; flex: none; }
+  .todos li .del { color: var(--muted); font-size: 15px; line-height: 1; padding: 0 2px; opacity: 0; flex: none; }
+  .todos li:hover .del { opacity: 1; }
+
+  /* ---- tabs + reminders ---- */
+  .tabs { display: flex; gap: 2px; font-size: 11px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; }
+  .tabs button { color: var(--muted); padding: 3px 8px; border-radius: 99px; }
+  .tabs button.on { color: var(--text); background: color-mix(in srgb, var(--text) 8%, transparent); }
+  .tabs .badge { margin-left: auto; color: var(--accent); font-size: 11px; align-self: center; }
+  .todos li .when { color: var(--muted); font-size: 11px; white-space: nowrap; flex: none; font-variant-numeric: tabular-nums; }
+  .todos li.due .when { color: var(--accent); font-weight: 600; }
+  .todos li.past { opacity: .5; }
+
+  /* the alert takes over the widget so it is unmissable at any window size */
+  .alert { position: absolute; inset: 8px; z-index: 9; background: var(--accent); color: var(--accent-ink);
+    border-radius: 12px; padding: 14px; display: none; flex-direction: column; justify-content: center; gap: 10px; text-align: center; }
+  .alert.open { display: flex; animation: pulse 1.2s ease-in-out infinite; }
+  @keyframes pulse { 50% { filter: brightness(1.12); } }
+  .alert .at { font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; opacity: .8; }
+  .alert .what { font-size: 17px; font-weight: 600; line-height: 1.25; word-break: break-word; }
+  .alert .row { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; }
+  .alert button { background: var(--accent-ink); color: var(--accent); font-weight: 600; padding: 8px 14px; border-radius: 9px; }
+  .alert button.snooze { background: color-mix(in srgb, var(--accent-ink) 22%, transparent); color: var(--accent-ink); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent-ink) 45%, transparent); }
+  /* the strip is too short for a stacked alert — lay it out in one line */
+  @media (max-height: 150px) {
+    .alert { flex-direction: row; align-items: center; gap: 8px; text-align: left; padding: 8px 10px; }
+    .alert .at { display: none; }
+    .alert .what { flex: 1; font-size: 14px; }
+    .alert .row { flex-wrap: nowrap; }
+    .alert button { padding: 6px 10px; font-size: 12px; }
+  }
+
+  footer { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 12px; }
+  footer button { color: var(--muted); }
+  footer button:hover { color: var(--text); }
+  footer .sp { flex: 1; }
+
+  .toast { position: absolute; left: 50%; bottom: 14px; transform: translateX(-50%); z-index: 12;
+    background: var(--text); color: var(--shell); padding: 6px 12px; border-radius: 8px; font-size: 12px;
+    white-space: nowrap; opacity: 0; transition: opacity .25s; pointer-events: none; }
+  .toast.on { opacity: .95; }
+
+  /* ---- log panel ---- */
+  .panel { position: absolute; inset: 8px; background: var(--shell); border: 1px solid var(--edge); border-radius: 12px; padding: 12px; display: none; flex-direction: column; gap: 8px; z-index: 5; overflow: auto; font-size: 13px; }
+  .panel.open { display: flex; }
+  .panel h3 { margin: 0; font-size: 13px; display: flex; }
+  .panel h3 button { margin-left: auto; color: var(--muted); }
+  .panel table { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; }
+  .panel td { padding: 3px 0; border-bottom: 1px solid var(--line); }
+  .panel td:last-child { text-align: right; color: var(--muted); }
+
+  /* ============ narrow + tall: split wraps into a column ============ */
+  @media (max-width: 379px) and (min-height: 151px) {
+    :root { --fs: min(calc(100vw - 34px), 48vh); }
+    .app { grid-template-columns: 1fr; grid-template-rows: auto minmax(0, 1fr); }
+    .clock { justify-self: center; }
+  }
+
+  /* ============ short window: strip ============ */
+  @media (max-height: 150px) {
+    body { overflow: auto; }
+    :root { --fs: 34px; }
+    .app { display: flex; flex-wrap: wrap; align-items: center; align-content: flex-start; gap: 6px 10px; height: auto; min-height: calc(100vh - 16px); padding: 6px 10px; border-radius: 12px; }
+    .clock { display: flex; align-items: center; gap: 8px; width: auto; height: auto; flex: none; }
+    .face { position: static; width: 34px; height: 34px; border-radius: 50%; background: transparent; flex: none; }
+    .center { position: static; flex-direction: row; gap: 8px; }
+    .kind, .modes { display: none; }
+    .time { font-size: 22px; color: var(--text); padding: 0; }
+    .side { display: contents; }
+    .taskbar { flex: 1; min-width: 120px; cursor: pointer; align-items: center; }
+    .taskbar .name { -webkit-line-clamp: 1; font-size: 13px; }
+    .taskbar .tally { display: none; }
+    .controls { flex: none; gap: 4px; }
+    .controls button { padding: 6px 12px; flex: none; }
+    #resetBtn { display: none; }
+    #moreBtn { display: block; }
+    .todos, footer, .stripExtras { display: none; width: 100%; }
+    .app.open .todos { display: flex; max-height: none; }
+    .app.open .todos ul { overflow: visible; }
+    .app.open footer, .app.open .stripExtras { display: flex; }
+    .stripExtras { gap: 10px; align-items: center; }
+    .stripExtras .kind, .stripExtras .modes { display: flex; font-size: 11px; }
+    .stripExtras .kind button, .stripExtras .modes button { color: var(--muted); }
+    .stripExtras .kind button.on, .stripExtras .modes button.on { color: var(--text); border-color: var(--muted); background: none; }
+    .panel { position: fixed; inset: 8px; }
+  }
+</style>
+</head>
+<body>
+<div class="app" id="app" data-kind="timer">
+  <div class="clock">
+    <div class="face"><svg viewBox="0 0 100 100" id="ring" aria-hidden="true"></svg></div>
+    <div class="center">
+      <div class="kind" id="kind"><button data-kind="timer" class="on">Timer</button><button data-kind="watch">Stopwatch</button></div>
+      <div class="time" id="time" title="Click to set">25:00</div>
+      <div class="modes" id="modes"><button data-mode="focus">Focus</button><button data-mode="short">Short</button><button data-mode="long">Long</button></div>
+    </div>
+  </div>
+
+  <div class="side">
+    <div class="taskbar" id="taskbar">
+      <span class="dot"></span>
+      <span class="name empty" id="taskName">Pick a task below</span>
+      <span class="tally" id="taskTally"></span>
+    </div>
+    <div class="controls">
+      <button class="primary" id="startBtn">Start</button>
+      <button id="resetBtn">Reset</button>
+      <button id="moreBtn" title="Tasks">▾</button>
+    </div>
+    <div class="stripExtras" id="stripExtras"><button id="stripReset">Reset</button></div>
+    <div class="tabs" id="tabs">
+      <button data-tab="tasks" class="on">Tasks</button>
+      <button data-tab="rem">Reminders</button>
+      <span class="badge" id="remBadge"></span>
+    </div>
+    <section class="todos">
+      <form id="addForm"><input id="addInput" placeholder="Add a task, press Enter" autocomplete="off"></form>
+      <ul id="list"></ul>
+    </section>
+    <footer>
+      <button id="logBtn" title="History">0 today</button>
+      <span class="sp"></span>
+      <button id="soundBtn" title="Sound">🔔</button>
+      <button id="themeBtn" title="Switch look">cube</button>
+    </footer>
+  </div>
+
+  <div class="alert" id="alert">
+    <div class="at" id="alertAt">Reminder</div>
+    <div class="what" id="alertWhat"></div>
+    <div class="row">
+      <button class="snooze" data-snooze="60">+1 hour</button>
+      <button class="snooze" data-snooze="120">+2 hours</button>
+      <button id="alertOk">Got it</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <div class="panel" id="logPanel">
+    <h3>History <button id="logClose">✕</button></h3>
+    <div id="logBody"></div>
+  </div>
+</div>
+
+<script>
+  const THEMES = ["cube", "mono", "paper", "lcd", "glass"];
+  const SEGS = 32, WATCH_LAP = 60 * 60000;   // stopwatch ring = one hour per lap
+  const CUBE = ["#3fb7f0","#38c6d6","#4fd08a","#8fd843","#d2d838","#f4c531","#f59a2b","#f3702a","#e8452f","#e0302e"];
+  const $ = (s) => document.querySelector(s);
+  const el = {
+    app: $("#app"), ring: $("#ring"), time: $("#time"), kind: $("#kind"), modes: $("#modes"),
+    taskbar: $("#taskbar"), taskName: $("#taskName"), taskTally: $("#taskTally"),
+    start: $("#startBtn"), reset: $("#resetBtn"), more: $("#moreBtn"), stripExtras: $("#stripExtras"), stripReset: $("#stripReset"),
+    form: $("#addForm"), input: $("#addInput"), list: $("#list"),
+    log: $("#logBtn"), logPanel: $("#logPanel"), logBody: $("#logBody"), logClose: $("#logClose"),
+    sound: $("#soundBtn"), theme: $("#themeBtn"),
+    tabs: $("#tabs"), remBadge: $("#remBadge"),
+    alert: $("#alert"), alertAt: $("#alertAt"), alertWhat: $("#alertWhat"), alertOk: $("#alertOk"), toast: $("#toast"),
+  };
+
+  let S = {
+    tasks: [], selectedId: null,
+    kind: "timer", mode: "focus",
+    durations: { focus: 1500, short: 300, long: 900 },   // seconds; editable by clicking the digits
+    endsAt: null, remainingMs: null,                       // timer
+    watchStartAt: null, watchElapsedMs: 0,                 // stopwatch
+    theme: "cube", sound: true,
+    log: [],                                               // {at, taskId, ms, kind: "focus"|"watch"}
+    reminders: [], tab: "tasks",                           // {id, text, at, fired}
+  };
+
+  // ---------- persistence ----------
+  let saveT;
+  function save() { clearTimeout(saveT); saveT = setTimeout(() => fetch("/api/state", { method: "PUT", body: JSON.stringify(S) }).catch(() => {}), 150); }
+  async function load() {
+    try { const s = await (await fetch("/api/state")).json(); if (s) S = { ...S, ...s }; } catch {}
+    // v1 state stored log entries as bare timestamps; lift them
+    S.log = S.log.map(e => typeof e === "number" ? { at: e, taskId: null, ms: 1500000, kind: "focus" } : e);
+    S.tasks.forEach(t => { t.pomos ??= 0; t.ms ??= 0; });
+    S.reminders ??= []; S.tab ??= "tasks";
+  }
+
+  // ---------- ring ----------
+  function buildRing() {
+    const r1 = 41, r2 = 47, gap = 1.6; let h = "";
+    for (let i = 0; i < SEGS; i++) {
+      const a0 = i / SEGS * 360 + gap, a1 = (i + 1) / SEGS * 360 - gap;
+      const p = (r, a) => { const t = (a - 90) * Math.PI / 180; return [50 + r * Math.cos(t), 50 + r * Math.sin(t)]; };
+      const [x0,y0] = p(r2,a0), [x1,y1] = p(r2,a1), [x2,y2] = p(r1,a1), [x3,y3] = p(r1,a0);
+      h += `<path class="seg" style="--sc:${CUBE[Math.floor(i / SEGS * CUBE.length)]}" d="M${x0} ${y0}A${r2} ${r2} 0 0 1 ${x1} ${y1}L${x2} ${y2}A${r1} ${r1} 0 0 0 ${x3} ${y3}Z"/>`;
+    }
+    el.ring.innerHTML = h;
+  }
+
+  // ---------- timer + stopwatch ----------
+  const isWatch = () => S.kind === "watch";
+  const totalMs = () => S.durations[S.mode] * 1000;
+  const running = () => isWatch() ? S.watchStartAt != null : S.endsAt != null;
+  function remaining() { return S.endsAt != null ? Math.max(0, S.endsAt - Date.now()) : (S.remainingMs ?? totalMs()); }
+  function elapsed() { return S.watchElapsedMs + (S.watchStartAt != null ? Date.now() - S.watchStartAt : 0); }
+  const task = () => S.tasks.find(t => t.id === S.selectedId);
+
+  function start() {
+    if (isWatch()) S.watchStartAt = Date.now();
+    else { S.endsAt = Date.now() + remaining(); S.remainingMs = null; }
+    save(); render();
+  }
+  function pause() {
+    if (isWatch()) creditWatch();
+    else { S.remainingMs = remaining(); S.endsAt = null; }
+    save(); render();
+  }
+  function reset() {
+    if (isWatch()) { creditWatch(); S.watchElapsedMs = 0; }
+    else { S.endsAt = null; S.remainingMs = null; }
+    save(); render();
+  }
+  // stopwatch time goes to the selected task the moment it stops, so a pause/resume never double-counts
+  function creditWatch() {
+    if (S.watchStartAt == null) return;
+    const ms = Date.now() - S.watchStartAt;
+    S.watchElapsedMs += ms; S.watchStartAt = null;
+    const t = task(); if (t) t.ms += ms;
+    if (ms > 30000) S.log.push({ at: Date.now(), taskId: t?.id ?? null, ms, kind: "watch" });
+  }
+  function setKind(k) { if (running()) pause(); S.kind = k; save(); render(); }
+  function setMode(m) { S.mode = m; S.endsAt = null; S.remainingMs = null; save(); render(); }
+
+  function complete() {
+    const wasFocus = S.mode === "focus", ms = totalMs();
+    S.endsAt = null; S.remainingMs = null;
+    if (wasFocus) {
+      const t = task(); if (t) { t.pomos += 1; t.ms += ms; }
+      S.log.push({ at: Date.now(), taskId: t?.id ?? null, ms, kind: "focus" });
+      S.mode = todayFocus() % 4 === 0 ? "long" : "short";
+    } else S.mode = "focus";
+    chime(); notify(wasFocus ? "Focus done — take a break" : "Break over — back to it");
+    save(); render();
+  }
+  setInterval(() => { if (!running()) return; if (!isWatch() && remaining() <= 0) complete(); else renderTime(); }, 250);
+
+  // ---------- custom time: click the digits, type "45" or "45:30", Enter ----------
+  function editTime() {
+    if (isWatch() || running() || el.time.querySelector("input")) return;
+    const cur = S.durations[S.mode], inp = document.createElement("input");
+    inp.value = cur % 60 ? fmt(cur * 1000) : String(cur / 60);
+    el.time.textContent = ""; el.time.appendChild(inp); inp.focus(); inp.select();
+    const done = (commit) => {
+      inp.onblur = null; inp.remove();
+      if (commit) {
+        const m = inp.value.trim().match(/^(\d{1,3})(?::(\d{1,2}))?$/);
+        if (m) { const secs = (+m[1]) * 60 + (+(m[2] || 0)); if (secs > 0) { S.durations[S.mode] = secs; S.remainingMs = null; save(); } }
+      }
+      render();
+    };
+    inp.onkeydown = (e) => { if (e.key === "Enter") done(true); if (e.key === "Escape") done(false); e.stopPropagation(); };
+    inp.onblur = () => done(true);
+  }
+
+  // ---------- feedback ----------
+  function chime() {
+    if (!S.sound) return;
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      [0, .18, .36].forEach(t => {
+        const o = ctx.createOscillator(), g = ctx.createGain();
+        o.frequency.value = 880; o.connect(g); g.connect(ctx.destination);
+        g.gain.setValueAtTime(.0001, ctx.currentTime + t);
+        g.gain.exponentialRampToValueAtTime(.3, ctx.currentTime + t + .01);
+        g.gain.exponentialRampToValueAtTime(.0001, ctx.currentTime + t + .15);
+        o.start(ctx.currentTime + t); o.stop(ctx.currentTime + t + .16);
+      });
+    } catch {}
+  }
+  function notify(msg) { if ("Notification" in window && Notification.permission === "granted") new Notification("Pomodoro", { body: msg }); }
+
+  // ---------- tasks ----------
+  const dayStart = (d = new Date()) => { d = new Date(d); d.setHours(0,0,0,0); return d.getTime(); };
+  const todayLog = () => S.log.filter(e => e.at >= dayStart());
+  const todayFocus = () => todayLog().filter(e => e.kind === "focus").length;
+  const todayMs = () => todayLog().reduce((a, e) => a + e.ms, 0);
+  function addTask(text) {
+    const t = { id: Date.now().toString(36), text, done: false, pomos: 0, ms: 0 };
+    S.tasks.push(t); if (!S.selectedId) S.selectedId = t.id; save(); render();
+  }
+  function toggleDone(id) {
+    const t = S.tasks.find(t => t.id === id); t.done = !t.done;
+    if (t.done && S.selectedId === id) S.selectedId = S.tasks.find(t => !t.done)?.id ?? null;
+    save(); render();
+  }
+  function removeTask(id) {
+    S.tasks = S.tasks.filter(t => t.id !== id);
+    if (S.selectedId === id) S.selectedId = S.tasks.find(t => !t.done)?.id ?? null;
+    save(); render();
+  }
+  function select(id) { S.selectedId = id; save(); render(); if (isStrip()) el.app.classList.remove("open"); }
+  function moveTask(fromId, toId) {
+    const a = S.tasks.findIndex(t => t.id === fromId), b = S.tasks.findIndex(t => t.id === toId);
+    if (a < 0 || b < 0 || a === b) return;
+    const [t] = S.tasks.splice(a, 1); S.tasks.splice(b, 0, t); save(); render();
+  }
+
+  // ---------- reminders ----------
+  // "Call mum 14:30" · "standup 9am" · "+20 stretch" · "stretch in 20". Today only.
+  function parseReminder(raw) {
+    let text = raw.trim(), at = null;
+    let m = text.match(/^\+(\d{1,3})\s+(.+)$/) || text.match(/^(.+?)\s+in\s+(\d{1,3})m?$/i);
+    if (m) {
+      const mins = +(m[1].match(/^\d+$/) ? m[1] : m[2]);
+      text = (m[1].match(/^\d+$/) ? m[2] : m[1]).trim();
+      at = Date.now() + mins * 60000;
+      return { text, at };
+    }
+    m = text.match(/^(.*?)\s*(?:@\s*)?(\d{1,2})(?::(\d{2}))?\s*(am|pm)?$/i);
+    if (!m || !m[1].trim()) return null;
+    let h = +m[2]; const mi = +(m[3] || 0), ap = (m[4] || "").toLowerCase();
+    if (ap === "pm" && h < 12) h += 12;
+    if (ap === "am" && h === 12) h = 0;
+    if (h > 23 || mi > 59) return null;
+    const d = new Date(); d.setHours(h, mi, 0, 0);
+    // a bare time already past today means the next one round the clock
+    if (d.getTime() < Date.now() - 60000) { if (!ap && h < 12) d.setHours(h + 12); else d.setDate(d.getDate() + 1); }
+    return { text: m[1].trim(), at: d.getTime() };
+  }
+  function addReminder(raw) {
+    const r = parseReminder(raw);
+    if (!r) { el.input.placeholder = 'Try "Call mum 14:30" or "+20 stretch"'; el.input.value = raw; return false; }
+    S.reminders.push({ id: Date.now().toString(36), text: r.text, at: r.at, fired: false });
+    save(); render(); return true;
+  }
+  const pending = () => S.reminders.filter(r => !r.fired);
+
+  let alertQueue = [];
+  function checkReminders() {
+    const now = Date.now(); let hit = false;
+    for (const r of S.reminders) if (!r.fired && r.at <= now) { r.fired = true; alertQueue.push(r); hit = true; }
+    if (hit) { save(); showAlert(); render(); }
+  }
+  function showAlert() {
+    if (!alertQueue.length || el.alert.classList.contains("open")) return;
+    const r = alertQueue[0], late = Date.now() - r.at > 90000;
+    el.alertAt.textContent = late ? `Was due ${clock(r.at)}` : `Reminder · ${clock(r.at)}`;
+    el.alertWhat.textContent = r.text;
+    el.alert.classList.add("open");
+    chime(); notify(r.text);
+    document.title = "⏰ " + r.text;
+  }
+  function dismissAlert() {
+    alertQueue.shift(); el.alert.classList.remove("open"); renderTime();
+    render(); if (alertQueue.length) setTimeout(showAlert, 300);
+  }
+  // Push the reminder out from now, not from its original time, so a late dismissal
+  // still gives a full hour. The reminder itself is reused, keeping one row in the list.
+  function snoozeAlert(mins) {
+    const r = alertQueue[0]; if (!r) return;
+    const live = S.reminders.find(x => x.id === r.id) || r;
+    live.at = Date.now() + mins * 60000; live.fired = false;
+    if (!S.reminders.includes(live)) S.reminders.push(live);
+    save(); dismissAlert(); toast(`Snoozed to ${clock(live.at)}`);
+  }
+  let toastT;
+  function toast(msg) {
+    el.toast.textContent = msg; el.toast.classList.add("on");
+    clearTimeout(toastT); toastT = setTimeout(() => el.toast.classList.remove("on"), 2200);
+  }
+  const clock = (ms) => new Date(ms).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+  const untilText = (ms) => {
+    const m = Math.round((ms - Date.now()) / 60000);
+    if (m < 0) return "now"; if (m === 0) return "<1m";
+    if (m < 60) return m + "m"; return `${Math.floor(m / 60)}h ${m % 60}m`;
+  };
+  setInterval(checkReminders, 1000);
+
+  // ---------- render ----------
+  const pad = (n) => String(n).padStart(2, "0");
+  const fmt = (ms) => { const s = Math.ceil(ms / 1000); return `${pad(Math.floor(s / 60))}:${pad(s % 60)}`; };
+  const fmtWatch = (ms) => { const s = Math.floor(ms / 1000), h = Math.floor(s / 3600); return (h ? h + ":" : "") + `${pad(Math.floor(s / 60) % 60)}:${pad(s % 60)}`; };
+  const mins = (ms) => { const m = Math.round(ms / 60000); return m >= 60 ? `${Math.floor(m / 60)}h ${pad(m % 60)}m` : `${m}m`; };
+  const isStrip = () => matchMedia("(max-height: 150px)").matches;
+
+  function renderTime() {
+    if (el.time.querySelector("input")) return;
+    let txt, lit;
+    if (isWatch()) { const e = elapsed(); txt = fmtWatch(e); lit = Math.floor((e % WATCH_LAP) / WATCH_LAP * SEGS) + (e > 0 ? 1 : 0); }
+    else { const r = remaining(); txt = fmt(r); lit = Math.ceil(r / totalMs() * SEGS); }
+    el.time.textContent = txt;
+    if (!el.alert.classList.contains("open")) document.title = running() ? `${txt} · Pomodoro` : `${txt} paused · Pomodoro`;
+    el.ring.querySelectorAll(".seg").forEach((p, i) => p.classList.toggle("off", i >= lit));
+  }
+  function render() {
+    document.documentElement.dataset.theme = S.theme;
+    el.app.dataset.kind = S.kind;
+    el.theme.textContent = S.theme;
+    el.sound.textContent = S.sound ? "🔔" : "🔕";
+    el.time.classList.toggle("locked", isWatch() || running());
+    el.time.title = isWatch() ? "" : running() ? "" : "Click to set minutes";
+    renderTime();
+    el.start.textContent = running() ? "Pause" : ((isWatch() ? S.watchElapsedMs > 0 : S.remainingMs != null) ? "Resume" : "Start");
+    el.kind.querySelectorAll("button").forEach(b => b.classList.toggle("on", b.dataset.kind === S.kind));
+    el.modes.querySelectorAll("button").forEach(b => b.classList.toggle("on", b.dataset.mode === S.mode));
+
+    const t = task();
+    el.taskName.textContent = t ? t.text : "Pick a task below";
+    el.taskName.title = t ? t.text : "";
+    el.taskName.classList.toggle("empty", !t);
+    el.taskTally.textContent = t ? [t.pomos ? `${t.pomos}🍅` : "", t.ms >= 60000 ? mins(t.ms) : ""].filter(Boolean).join(" · ") : "";
+    el.log.textContent = `${todayFocus()} today · ${mins(todayMs())}`;
+
+    el.tabs.querySelectorAll("button").forEach(b => b.classList.toggle("on", b.dataset.tab === S.tab));
+    const soon = pending().length;
+    el.remBadge.textContent = soon ? `${soon} due` : "";
+    el.input.placeholder = S.tab === "rem" ? 'e.g. "Call mum 14:30" or "+20 stretch"' : "Add a task, press Enter";
+
+    el.list.innerHTML = "";
+    if (S.tab === "rem") { renderReminders(); placeControls(); return; }
+    for (const task of [...S.tasks.filter(t => !t.done), ...S.tasks.filter(t => t.done)]) {
+      const li = document.createElement("li");
+      li.className = (task.done ? "done " : "") + (task.id === S.selectedId ? "selected" : "");
+      li.draggable = true; li.dataset.id = task.id;
+      li.innerHTML = `<span class="check">${task.done ? "✓" : ""}</span><span class="label"></span><span class="count"></span><button class="del" title="Delete">×</button>`;
+      li.querySelector(".label").textContent = task.text;
+      li.querySelector(".count").textContent = [task.pomos ? `${task.pomos}×` : "", task.ms >= 60000 ? mins(task.ms) : ""].filter(Boolean).join(" ");
+      li.querySelector(".check").onclick = (e) => { e.stopPropagation(); toggleDone(task.id); };
+      li.querySelector(".del").onclick = (e) => { e.stopPropagation(); removeTask(task.id); };
+      li.onclick = () => { if (!task.done) select(task.id); };
+      li.ondragstart = (e) => { e.dataTransfer.setData("text/plain", task.id); li.classList.add("dragging"); };
+      li.ondragend = () => li.classList.remove("dragging");
+      li.ondragover = (e) => { e.preventDefault(); li.classList.add("over"); };
+      li.ondragleave = () => li.classList.remove("over");
+      li.ondrop = (e) => { e.preventDefault(); li.classList.remove("over"); moveTask(e.dataTransfer.getData("text/plain"), task.id); };
+      el.list.appendChild(li);
+    }
+    placeControls();
+  }
+
+  // the strip has no room in the face for these; they live in the dropdown instead
+  function placeControls() {
+    const strip = isStrip(), center = $(".center");
+    if (strip && el.kind.parentElement !== el.stripExtras) { el.stripExtras.prepend(el.modes); el.stripExtras.prepend(el.kind); }
+    if (!strip && el.kind.parentElement === el.stripExtras) { center.prepend(el.kind); center.append(el.modes); el.app.classList.remove("open"); }
+  }
+
+  function renderReminders() {
+    const rs = [...S.reminders].sort((a, b) => a.at - b.at);
+    if (!rs.length) { el.list.innerHTML = '<li style="color:var(--muted);cursor:default">Nothing set. Type a task and a time.</li>'; return; }
+    for (const r of rs) {
+      const li = document.createElement("li");
+      const due = !r.fired && r.at - Date.now() < 15 * 60000;
+      li.className = (r.fired ? "past " : "") + (due ? "due" : "");
+      li.style.cursor = "default";
+      li.innerHTML = `<span class="check">${r.fired ? "✓" : "⏰"}</span><span class="label"></span><span class="when"></span><button class="del" title="Delete">×</button>`;
+      li.querySelector(".label").textContent = r.text;
+      li.querySelector(".when").textContent = r.fired ? clock(r.at) : `${clock(r.at)} · ${untilText(r.at)}`;
+      li.querySelector(".del").onclick = (e) => { e.stopPropagation(); S.reminders = S.reminders.filter(x => x.id !== r.id); save(); render(); };
+      el.list.appendChild(li);
+    }
+  }
+
+  function renderLog() {
+    const days = [];
+    for (let i = 0; i < 7; i++) { const d = new Date(); d.setDate(d.getDate() - i); days.push(dayStart(d)); }
+    const byDay = days.map(ds => { const es = S.log.filter(e => e.at >= ds && e.at < ds + 86400000); return { ds, n: es.filter(e => e.kind === "focus").length, ms: es.reduce((a, e) => a + e.ms, 0) }; });
+    const perTask = {};
+    todayLog().forEach(e => { const k = e.taskId ?? "_"; perTask[k] = (perTask[k] || 0) + e.ms; });
+    const name = (id) => S.tasks.find(t => t.id === id)?.text ?? (id === "_" ? "(no task)" : "(deleted task)");
+    el.logBody.innerHTML = `<table>${byDay.map(d => `<tr><td>${new Date(d.ds).toLocaleDateString(undefined, { weekday: "short", day: "numeric" })}</td><td>${d.n ? d.n + " 🍅 · " : ""}${mins(d.ms)}</td></tr>`).join("")}</table>` +
+      (Object.keys(perTask).length ? `<div style="margin-top:8px;font-weight:600">Today by task</div><table>${Object.entries(perTask).sort((a, b) => b[1] - a[1]).map(([id, ms]) => `<tr><td>${esc(name(id))}</td><td>${mins(ms)}</td></tr>`).join("")}</table>` : "");
+  }
+  const esc = (s) => s.replace(/[<>&]/g, c => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;" }[c]));
+
+  // ---------- wiring ----------
+  el.start.onclick = () => {
+    if ("Notification" in window && Notification.permission === "default") Notification.requestPermission();
+    running() ? pause() : start();
+  };
+  el.reset.onclick = reset; el.stripReset.onclick = reset;
+  el.time.onclick = editTime;
+  el.kind.onclick = (e) => { const k = e.target.dataset.kind; if (k) setKind(k); };
+  el.modes.onclick = (e) => { const m = e.target.dataset.mode; if (m) setMode(m); };
+  el.form.onsubmit = (e) => {
+    e.preventDefault(); const v = el.input.value.trim(); if (!v) return;
+    if (S.tab === "rem") { if (addReminder(v)) el.input.value = ""; }
+    else { addTask(v); el.input.value = ""; }
+  };
+  el.tabs.onclick = (e) => {
+    const t = e.target.dataset.tab; if (!t) return;
+    S.tab = t; save(); render();
+    if (t === "rem" && "Notification" in window && Notification.permission === "default") Notification.requestPermission();
+  };
+  el.alertOk.onclick = dismissAlert;
+  el.alert.onclick = (e) => { const m = e.target.dataset.snooze; if (m) snoozeAlert(+m); };
+  el.theme.onclick = () => { S.theme = THEMES[(THEMES.indexOf(S.theme) + 1) % THEMES.length]; save(); render(); };
+  el.sound.onclick = () => { S.sound = !S.sound; save(); render(); };
+  el.log.onclick = () => { renderLog(); el.logPanel.classList.add("open"); };
+  el.logClose.onclick = () => el.logPanel.classList.remove("open");
+  const toggleStrip = () => { if (isStrip()) el.app.classList.toggle("open"); };
+  el.more.onclick = toggleStrip; el.taskbar.onclick = toggleStrip;
+  matchMedia("(max-height: 150px)").addEventListener("change", placeControls);
+  document.addEventListener("keydown", (e) => {
+    if (e.target.tagName === "INPUT") return;
+    // the alert owns the keyboard while it is up, so Space dismisses instead of starting the timer
+    if (el.alert.classList.contains("open")) {
+      if (e.key === "1") return snoozeAlert(60);
+      if (e.key === "2") return snoozeAlert(120);
+      if (e.key === "Escape" || e.code === "Space") { e.preventDefault(); return dismissAlert(); }
+      return;
+    }
+    if (e.code === "Space") { e.preventDefault(); el.start.click(); }
+    if (e.key === "r") reset();
+    if (e.key === "Escape") { el.logPanel.classList.remove("open"); el.app.classList.remove("open"); }
+  });
+
+  buildRing();
+  load().then(() => { render(); checkReminders(); setInterval(() => { if (S.tab === "rem") render(); }, 30000); });
+</script>
+</body>
+</html>

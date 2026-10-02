@@ -1,0 +1,30 @@
+{
+  "date": "2026-09-28",
+  "tasks": [
+    {
+      "icon": "🎯",
+      "title": "Decide Next Task",
+      "why": "Pick what to work on next",
+      "steps": [
+        {
+          "text": "Review current progress and options",
+          "done": true
+        },
+        {
+          "text": "Weigh priorities and tradeoffs",
+          "done": true
+        },
+        {
+          "text": "Choose and commit to task",
+          "done": true
+        }
+      ]
+    }
+  ],
+  "goals": [
+    {
+      "text": "Choose a goal and just commit to it, this is the last time you are thinking about it.",
+      "done": false
+    }
+  ]
+}

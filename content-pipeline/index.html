@@ -1,0 +1,610 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Content pipeline — 10 apps in 30 days</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<style>
+  :root{--bg:#f4eee2;--panel:#fdf9f1;--ink:#2a2521;--muted:#6a6157;--faint:#978d82;
+    --line:#e3d9c7;--accent:#b0523a;--soft:#f5e4dc;--warn:#7a5a1e;--warnsoft:#f3ead3;
+    --quote:#efe7d6;--s1:6px;--s2:8px;--s3:10px;--s4:12px;--s5:16px;--s6:24px;--s7:32px;
+    --r:10px;--r2:14px}
+  :root{color-scheme:light}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;
+    --bg:#1b1916;--panel:#242019;--ink:#ede4d6;--muted:#a89e8f;--faint:#766d60;
+    --line:#38322a;--accent:#e28f72;--soft:#3b2a24;--warn:#dcb66e;--warnsoft:#302a1c;
+    --quote:#2a2620}}
+  :root[data-theme="dark"]{color-scheme:dark;
+    --bg:#1b1916;--panel:#242019;--ink:#ede4d6;--muted:#a89e8f;--faint:#766d60;
+    --line:#38322a;--accent:#e28f72;--soft:#3b2a24;--warn:#dcb66e;--warnsoft:#302a1c;
+    --quote:#2a2620}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:18px/1.7 "IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+  h1,h2,h3{letter-spacing:-.015em}
+  header{position:sticky;top:0;z-index:60;background:var(--panel);
+    border-bottom:1px solid var(--line);padding:var(--s4) var(--s6);
+    display:flex;align-items:center;gap:var(--s5)}
+  header h1{font-size:15px;margin:0;font-weight:650}
+  .tag{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);
+    background:var(--soft);padding:3px var(--s2);border-radius:var(--s1);font-weight:650}
+  .spacer{flex:1}.count{font-size:13px;color:var(--muted)}
+  button.theme{background:var(--bg);border:1px solid var(--line);color:var(--muted);font:inherit;
+    font-size:12px;padding:4px var(--s3);border-radius:var(--s2);cursor:pointer}
+  button.theme:hover{color:var(--accent);border-color:var(--accent)}
+  .layout{display:grid;grid-template-columns:206px minmax(0,1fr) 316px;gap:var(--s7);
+    max-width:1400px;margin:0 auto;padding:var(--s6) var(--s6) 140px}
+  @media(max-width:1200px){.layout{grid-template-columns:186px minmax(0,1fr)}aside.right{display:none}}
+  @media(max-width:820px){.layout{grid-template-columns:1fr}nav.toc{display:none}}
+  nav.toc{position:sticky;top:78px;align-self:start;max-height:calc(100vh - 110px);
+    overflow-y:auto;font-size:13px}
+  nav.toc .grp{color:var(--faint);text-transform:uppercase;letter-spacing:.07em;
+    font-size:10.5px;font-weight:700;margin:var(--s5) 0 var(--s2)}
+  nav.toc .grp:first-child{margin-top:0}
+  nav.toc a{display:block;color:var(--muted);text-decoration:none;padding:5px var(--s3);
+    border-left:2px solid transparent;border-radius:0 var(--s1) var(--s1) 0}
+  nav.toc a.on{color:var(--accent);border-left-color:var(--accent);background:var(--soft);font-weight:600}
+  section{background:var(--panel);border:1px solid var(--line);border-radius:var(--r2);
+    padding:var(--s6) 28px;margin-bottom:var(--s6);position:relative;scroll-margin-top:84px}
+  section:hover > .cbtn{opacity:1}
+  section > h2{font-size:21px;margin:0 0 var(--s1)}
+  .num{color:var(--faint);font-weight:600;font-size:14px;margin-right:var(--s2)}
+  .sub{color:var(--muted);font-size:13.5px;margin:0 0 var(--s5)}
+  blockquote{margin:var(--s3) 0;padding:var(--s3) var(--s5);background:var(--quote);
+    border-left:2px solid var(--line);border-radius:0 var(--s2) var(--s2) 0;font-size:13.5px}
+  .plain{background:var(--soft);border-left:3px solid var(--accent);padding:var(--s3) var(--s5);
+    border-radius:0 var(--s2) var(--s2) 0;margin:var(--s4) 0;font-size:13.5px}
+  .plain b{color:var(--accent)}
+  .risk{background:var(--warnsoft);border-left:3px solid var(--warn);padding:var(--s3) var(--s5);
+    border-radius:0 var(--s2) var(--s2) 0;margin:var(--s4) 0;font-size:13.5px}
+  .risk b{color:var(--warn)}
+  .cbtn{position:absolute;top:var(--s5);right:var(--s5);opacity:0;transition:opacity .15s;
+    background:var(--bg);border:1px solid var(--line);color:var(--muted);font:inherit;
+    font-size:12px;padding:4px var(--s3);border-radius:var(--s2);cursor:pointer}
+  .cbtn:hover{color:var(--accent);border-color:var(--accent)}
+  .cbtn.has{opacity:1;color:var(--accent);border-color:var(--accent);background:var(--soft)}
+  .d{border:1px solid var(--line);border-radius:var(--r);padding:var(--s5) 18px;
+    margin:var(--s5) 0;position:relative}
+  .d:hover .cbtn{opacity:1}
+  .d.open{border-left:3px solid var(--accent)}
+  .q{font-weight:650;font-size:14.5px;margin-bottom:3px}
+  .why{color:var(--muted);font-size:13px;margin-bottom:var(--s4)}
+  label.opt{display:flex;gap:var(--s3);align-items:flex-start;padding:9px var(--s4);
+    border:1px solid transparent;border-radius:var(--s2);cursor:pointer;font-size:14px}
+  label.opt:hover{background:var(--bg)}
+  label.opt.sel{border-color:var(--accent);background:var(--soft)}
+  label.opt input{margin-top:3px;accent-color:var(--accent);flex:none}
+  .oh{font-weight:550}.od{color:var(--muted);font-size:12.5px;display:block;margin-top:1px}
+  .mm{background:var(--bg);border:1px solid var(--line);border-radius:var(--r);
+    padding:18px;margin:var(--s4) 0;overflow-x:auto;text-align:center}
+  table.t{width:100%;border-collapse:collapse;font-size:13px;margin:var(--s4) 0}
+  table.t th,table.t td{border:1px solid var(--line);padding:var(--s2) var(--s3);
+    text-align:left;vertical-align:top}
+  table.t th{background:var(--bg);font-weight:650}
+  code{background:var(--quote);padding:1px 5px;border-radius:5px;font-size:12.5px}
+  pre.code{background:var(--quote);padding:var(--s5);border-radius:var(--r);
+    overflow-x:auto;font-size:12.5px;margin:var(--s4) 0}
+  details.ref{border:1px solid var(--line);border-radius:var(--r);padding:var(--s4) 18px;
+    margin:var(--s4) 0;background:var(--bg)}
+  details.ref summary{cursor:pointer;font-weight:650;font-size:14px;color:var(--accent)}
+  aside.right{position:sticky;top:78px;align-self:start;background:var(--panel);
+    border:1px solid var(--line);border-radius:var(--r2);padding:var(--s5) 18px;
+    max-height:calc(100vh - 110px);display:flex;flex-direction:column}
+  aside.right h2{font-size:15px;margin:0}
+  .bar{height:4px;background:var(--line);border-radius:2px;overflow:hidden;margin-top:9px}
+  .bar i{display:block;height:100%;background:var(--accent);transition:width .3s}
+  .dlist{overflow-y:auto;max-height:30vh;margin:var(--s3) -4px 0;padding:0 4px}
+  .dr{display:flex;gap:9px;align-items:center;padding:5px var(--s2);border-radius:var(--s1);
+    cursor:pointer;font-size:12.5px}
+  .dr:hover{background:var(--bg)}
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--line);flex:none}
+  .dr.done .dot{background:var(--accent)}
+  .dn{color:var(--muted);font-weight:700;flex:none}
+  .dr.todo .dv{color:var(--muted);font-style:italic}
+  #queue{flex:1;overflow-y:auto;margin:var(--s4) -4px;padding:0 4px;min-height:60px}
+  .qi{border:1px solid var(--line);border-radius:var(--s2);padding:var(--s3) var(--s4);
+    margin-bottom:9px;font-size:13px;background:var(--bg)}
+  .qa{color:var(--accent);font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;
+    font-weight:700;margin-bottom:5px}
+  .qx{float:right;cursor:pointer;color:var(--muted);border:0;background:none;font-size:15px}
+  .empty{color:var(--muted);font-size:13px;text-align:center;padding:var(--s6) var(--s3)}
+  button.primary{width:100%;background:var(--accent);color:#fff;border:0;padding:11px;
+    border-radius:var(--r);font:inherit;font-size:13.5px;font-weight:650;cursor:pointer}
+  #pop{position:absolute;z-index:100;width:328px;background:var(--panel);
+    border:1px solid var(--line);border-radius:var(--r);padding:var(--s4);
+    box-shadow:0 10px 34px rgba(0,0,0,.18);display:none}
+  #pop .pa{font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;
+    color:var(--accent);font-weight:700;margin-bottom:var(--s2)}
+  #pop .kind{display:flex;gap:var(--s2);margin-bottom:var(--s2)}
+  #pop .kind label{flex:1;display:flex;gap:6px;align-items:center;font-size:12.5px;
+    padding:5px var(--s2);border:1px solid var(--line);border-radius:var(--s2);cursor:pointer;color:var(--muted)}
+  #pop .kind label.sel{border-color:var(--accent);background:var(--soft);color:var(--accent)}
+  #pop .kind input{margin:0;accent-color:var(--accent)}
+  #pop textarea{width:100%;min-height:88px;border:1px solid var(--line);border-radius:var(--s2);
+    padding:9px;font:inherit;font-size:13.5px;background:var(--bg);color:var(--ink)}
+  #pop .row{display:flex;gap:var(--s2);margin-top:var(--s3)}
+  #pop button{flex:1;padding:var(--s2);border-radius:var(--s2);font:inherit;font-size:13px;
+    cursor:pointer;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+  #pop button.add{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:650}
+  #toast{position:fixed;bottom:var(--s6);left:50%;transform:translateX(-50%);
+    background:var(--ink);color:var(--bg);padding:var(--s3) 18px;border-radius:var(--s2);
+    font-size:13.5px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:200}
+  #toast.on{opacity:1}
+  .flash{animation:fl 1.1s ease-out}
+  @keyframes fl{0%{background:var(--soft)}100%{background:transparent}}
+  [data-changed]{box-shadow:inset 3px 0 0 var(--warn)}
+  [data-changed]::before{content:"changed · round " attr(data-changed);position:absolute;top:-9px;left:12px;
+    font-size:10px;letter-spacing:.06em;text-transform:uppercase;font-weight:700;color:var(--warn);
+    background:var(--warnsoft);padding:2px 7px;border-radius:5px;z-index:1}
+  nav.toc .chg a{color:var(--warn)} nav.toc .chg a.on{color:var(--warn);border-left-color:var(--warn);background:var(--warnsoft)}
+  nav.toc .chg .grp{color:var(--warn)}
+</style>
+<script id="theme">
+(()=>{const K='theme',R=document.documentElement,L={'':'Auto',light:'Light',dark:'Dark'};
+const set=v=>{v?R.dataset.theme=v:delete R.dataset.theme;try{v?localStorage.setItem(K,v):localStorage.removeItem(K)}catch(e){}};
+try{set(localStorage.getItem(K)||'')}catch(e){}
+addEventListener('DOMContentLoaded',()=>{const h=document.querySelector('header');if(!h)return;
+  const b=document.createElement('button');b.className='theme';b.title='Auto → Light → Dark';
+  const show=()=>b.textContent=L[R.dataset.theme||''];
+  b.onclick=()=>{const c=['','light','dark'];set(c[(c.indexOf(R.dataset.theme||'')+1)%3]);show()};
+  show();h.appendChild(b)})})();
+</script>
+</head>
+<body>
+<header>
+  <h1>Content pipeline — 10 apps in 30 days</h1>
+  <span class="tag" id="round">Round 1</span>
+  <div class="spacer"></div>
+  <span class="count" id="dcount">—</span>
+</header>
+
+<div class="layout">
+<nav class="toc" id="toc"></nav>
+<main>
+<section id="s-goal" data-anchor="goal" data-label="The goal, as I heard it" data-group="What you said" data-title="The goal">
+  <button class="cbtn">comment</button>
+  <h2><span class="num">1</span>The goal, as I heard it</h2>
+  <p class="sub">Correct anything I got wrong. Everything below is built on this.</p>
+  <ul>
+    <li><b>The challenge:</b> build and launch 10 apps in 30 days, and document the whole thing.</li>
+    <li><b>Short videos (~40 sec):</b> for Instagram, TikTok, X and similar. Each one is a daily progress update that points people to the community.</li>
+    <li><b>Long videos (~20 min):</b> for a free Skool community. They show how you built it: the steps, the choices, the lessons.</li>
+    <li><b>What you're really selling:</b> not the apps, but how fast and dependable your process is. You never pitch it; people see it in how you work.</li>
+    <li><b>Low editing:</b> each recap is one take; Claude joins and polishes in Remotion.</li>
+  </ul>
+  <div class="plain" data-anchor="goal-unclear" data-label="Tools settled" data-changed="5">
+    <button class="cbtn">comment</button>
+    <b>Tools</b>
+    <ul>
+      <li><b>Screen Studio:</b> records the hourly recaps (camera + screen, one take each).</li>
+      <li><b>Remotion:</b> joins them, cuts the ums, adds captions. Claude runs it.</li>
+      <li><b><code>content/hour.py</code>:</b> tells Claude what every agent did in the last hour.</li>
+    </ul>
+  </div>
+</section>
+
+<section id="s-days" data-anchor="days" data-label="The calendar" data-group="The pipeline" data-title="The calendar" data-changed="1">
+  <button class="cbtn">comment</button>
+  <h2><span class="num">2</span>The calendar</h2>
+  <p class="sub">Three practice days first, so the process feels routine before anyone watches.</p>
+  <table class="t">
+    <tr><th>Dates</th><th>What happens</th><th>Posted?</th></tr>
+    <tr><td>Tue 22 – Thu 24 Sep</td><td><b>Practice days 1–3.</b> Run the full daily loop for real: plan, record, assemble. Fix whatever feels clumsy.</td><td>No (or only if a clip is good)</td></tr>
+    <tr><td>Fri 25 Sep</td><td><b>Series Day 1.</b> The count starts and posting begins.</td><td>Yes</td></tr>
+    <tr><td>Fri 25 Sep – Sat 24 Oct</td><td>30 days, 10 apps, one app about every 3 days.</td><td>Every day</td></tr>
+  </table>
+  <div class="d open" data-anchor="d-start" data-label="D1 does the clock start today">
+    <button class="cbtn">comment</button>
+    <div class="q">D1: Do the 3 practice days count toward the 30?</div>
+    <div class="why">You said "today is my day one" and also "prepare for 3 days, then start the series". This decides which one the videos say.</div>
+    <div data-radio="d1">
+      <label class="opt"><input type="radio" name="d1" value="after-practice"><span><span class="oh">No. Series Day 1 is Fri 25 Sep</span><span class="od">You still get a full 30 days. The practice footage can become a "how I set this up" video.</span></span></label>
+      <label class="opt"><input type="radio" name="d1" value="today"><span><span class="oh">Yes. Today is Day 1 of 30, and Days 1–3 are setup</span><span class="od">Setting up becomes content too, but it leaves 27 days for the 10 apps.</span></span></label>
+    </div>
+  </div>
+</section>
+
+<section id="s-loop" data-anchor="loop" data-label="The daily loop" data-group="The pipeline" data-title="The daily loop" data-changed="5">
+  <button class="cbtn">comment</button>
+  <h2><span class="num">3</span>The daily loop: an hourly recap</h2>
+  <p class="sub">Work for an hour, stop, click through what you did in 1–2 minutes. At the end of the day, the recaps are joined into the long video.</p>
+
+  <div class="plain" data-anchor="loop-why" data-label="Why hourly" data-changed="5">
+    <button class="cbtn">comment</button>
+    <b>Why this beats talking over clips</b>
+    <ul>
+      <li>It's how you already show work: clicking through it live.</li>
+      <li>Nothing to trim. A 1–2 minute take has no dead time.</li>
+      <li>Everything is still fresh in your mind after an hour.</li>
+      <li><b>The cost:</b> you have to stop every hour, and the video shows results, not the work as it happens.</li>
+    </ul>
+  </div>
+
+  <div class="mm" data-anchor="loop-diagram" data-label="Loop diagram: hourly" data-changed="5">
+    <button class="cbtn">comment</button>
+<pre class="mermaid">
+flowchart TB
+  subgraph M["① Morning · 10 min"]
+    M1["You: today's task list"] --> M2["Claude writes<br/>day-03.md"]
+  end
+  subgraph H["② Every hour · repeat"]
+    H1["Work ~1 hour<br/>as many agents as you like"] --> H2["You: 'recap'"]
+    H2 --> H3["Claude reads every agent's log<br/>+ git from the last hour<br/>writes hour-01.md"]
+    H3 --> H4["Screen Studio: camera + screen<br/>click through, 1–2 min<br/>export hour-01.mp4"]
+    H4 -->|next hour| H1
+  end
+  subgraph R["③ End of day · 10 min"]
+    R1["You: 'edit day-03'"] --> R2["Claude: join hours,<br/>cut ums, captions, titles"] --> R3["Long video → Skool"]
+  end
+  subgraph S["④ Short · 15 min"]
+    S1["Best 40 sec of the day<br/>or one 40-sec take"] --> S2["Short → 5 channels"]
+  end
+  M --> H --> R --> S
+</pre>
+  </div>
+
+  <h3>① Morning (10 min)</h3>
+  <ul data-anchor="loop-morning" data-label="Morning steps" data-changed="5" style="position:relative">
+    <li>Write today's task list, however rough.</li>
+    <li>Claude turns it into <code>content/day-03/day-03.md</code>:
+      <ul><li>the tasks, in order</li><li>what you could show for each one</li><li>the intro bullets for your first recap</li></ul></li>
+  </ul>
+
+  <h3>② Every hour (2–5 min)</h3>
+  <ol data-anchor="loop-hourly" data-label="Hourly steps" data-changed="5" style="position:relative">
+    <li><b>Stop</b> when your hourly timer goes off.</li>
+    <li><b>Say "recap"</b> in any Claude session.</li>
+    <li><b>Claude writes <code>hour-01.md</code></b>:
+      <ul><li>4–5 bullets: what got done</li><li><b>Click-through order:</b> which pages, docs, UI or conversations to open, in what order</li><li>one lesson or surprise, if there was one</li></ul></li>
+    <li><b>Record in Screen Studio</b> with camera and mic on. Follow the click-through order and talk from the bullets. 1–2 minutes.</li>
+    <li><b>Export</b> to <code>content/day-03/hours/hour-01.mp4</code>. No trimming needed.</li>
+    <li>Back to work.</li>
+  </ol>
+  <ul class="plain" data-anchor="loop-intro-outro" data-label="Intro and outro" data-changed="5" style="position:relative;list-style:none">
+    <li><b>First recap of the day</b> opens with the intro: "Day 3 of 30, app 2 of 10, today I'm…"</li>
+    <li><b>Last recap of the day</b> ends with the outro: the lesson, and tomorrow.</li>
+    <li>So there are no separate intro and outro recordings.</li>
+  </ul>
+
+  <h3>③ End of day (10 min)</h3>
+  <ul data-anchor="loop-edit" data-label="Edit steps" data-changed="5" style="position:relative">
+    <li>Say <b>"edit day-03"</b>.</li>
+    <li>Claude joins <code>hour-01…hour-N</code> in order, cuts the ums, adds captions and an "Hour 2: …" title card before each recap.</li>
+    <li>You watch the preview, then say "render".</li>
+    <li>8 hours of work ≈ 8–16 minutes of video.</li>
+  </ul>
+
+  <h3>④ Short (15 min)</h3>
+  <ul data-anchor="loop-short" data-label="Short steps" data-changed="5" style="position:relative">
+    <li>Either Claude picks the best 40 seconds from the day's recaps,</li>
+    <li>or you record one 40-sec take from the short bullets.</li>
+    <li>Posted to Instagram, TikTok, X, YouTube Shorts and Threads.</li>
+  </ul>
+
+  <div class="plain" data-anchor="loop-how-know" data-label="How Claude knows your hour" data-changed="5">
+    <button class="cbtn">comment</button>
+    <b>How Claude knows what you did across 10 agents</b>
+    <ul>
+      <li>Every Claude Code agent keeps a log of its whole conversation in <code>~/.claude/projects/</code>, with a timestamp on every line. That covers every terminal, herdr pane and worktree.</li>
+      <li><code>content/hour.py</code> reads the last hour of every log and pulls out, for each agent:
+        <ul><li>what you asked it</li><li>which files it wrote</li><li>its own summary of where it got to</li><li>what it committed to git</li></ul></li>
+      <li>Claude reads that digest and writes the recap bullets.</li>
+      <li><b>What it can't see:</b> work done outside Claude Code, like tapping through the app on your phone. Add a line for that when you say "recap".</li>
+    </ul>
+  </div>
+
+  <details class="ref" data-anchor="loop-example" data-label="Worked example hour" data-changed="5">
+    <summary>Worked example: what hour-02.md looks like</summary>
+    <pre class="code">## Hour 2 · 11:00–12:00 · app_5
+
+What got done
+- Login route works, with tokens instead of sessions
+- Passwords are hashed, never stored as-is
+- Rate limit: 5 login tries a minute, then blocked
+- 3 agents in parallel: backend, iOS screen, tests
+
+Click through, in order
+1. PRD page → the login requirement
+2. Terminal → the rate-limit test passing
+3. iOS simulator → the login screen
+4. The Claude chat where the test caught a bug
+
+Lesson
+- The test caught a bug the agent was sure wasn't there</pre>
+  </details>
+
+  <div class="d open" data-anchor="d-long" data-label="D3 how the long video is made" data-changed="5">
+    <button class="cbtn">comment</button>
+    <div class="q">D3: How is the 20-minute video made?</div>
+    <div class="why">Updated to your new approach and selected for you, since the talk-over test didn't feel natural.</div>
+    <div data-radio="d3">
+      <label class="opt"><input type="radio" name="d3" value="hourly"><span><span class="oh">A 1–2 min click-through recap every hour, joined at the end of the day</span><span class="od">Natural, no trimming, fresh in your mind. You have to stop every hour.</span></span></label>
+      <label class="opt"><input type="radio" name="d3" value="talk-over"><span><span class="oh">Silent screen clips, talked over in the evening</span><span class="od">Tried on practice day 1. Didn't feel natural.</span></span></label>
+    </div>
+  </div>
+</section>
+
+<section id="s-short" data-anchor="short" data-label="Short-video outline" data-group="The pipeline" data-title="40-sec outline" data-changed="1">
+  <button class="cbtn">comment</button>
+  <h2><span class="num">4</span>The 40-second video: one format, every day</h2>
+  <p class="sub" data-changed="3" data-label="Short made from the long video" style="position:relative">Made <b>after</b> the long video, from the same screen clips: you talk these bullets over 2–3 of them. The long video comes first; the short is its trailer. It never sells the app; the speed of the process does the selling.</p>
+  <table class="t">
+    <tr><th>Seconds</th><th>Beat</th><th>What you say</th></tr>
+    <tr><td>0–3</td><td><b>Day count</b></td><td>"Day 3 of building 10 apps in 30 days."</td></tr>
+    <tr><td>3–15</td><td><b>What got done</b></td><td>2–3 steps from today, said quickly. The speed is the point.</td></tr>
+    <tr><td>15–30</td><td><b>One lesson</b></td><td>The single thing you learned or got wrong today.</td></tr>
+    <tr><td>30–40</td><td><b>Community</b></td><td>"How I did all of it is free in my community, link in bio."</td></tr>
+  </table>
+  <div class="plain">On launch days (roughly every third day), "What got done" becomes a 10-second demo of the finished app.
+    The format stays the same, so there's nothing new to plan.</div>
+</section>
+
+<section id="s-long" data-anchor="long" data-label="Long-video outline" data-group="The pipeline" data-title="Long-video outline" data-changed="5">
+  <button class="cbtn">comment</button>
+  <h2><span class="num">5</span>The long video, start to finish</h2>
+  <ul>
+    <li><b>Hour 1 recap:</b> opens with "Day N of 30, app N of 10, today I'm…", then hour 1.</li>
+    <li><b>Hours 2…N−1:</b> one recap each, with an "Hour 2: login" title card before it.</li>
+    <li><b>Last recap:</b> the last hour, then the lesson and tomorrow.</li>
+    <li><b>Inside every recap:</b> what got done → click through it → the choice you made and what it cost → anything that broke.</li>
+  </ul>
+</section>
+
+<section id="s-decide" data-anchor="decide" data-label="Decisions" data-group="Decide" data-title="Decisions">
+  <button class="cbtn">comment</button>
+  <h2><span class="num">6</span>Still to decide</h2>
+  <p class="sub">The first option is my recommendation.</p>
+
+  <div class="d open" data-anchor="d-launch" data-label="D2 what counts as launched">
+    <button class="cbtn">comment</button>
+    <div class="q">D2: What counts as "launched" in the 10-app count?</div>
+    <div class="why">Already answered. It's here so you can change it.</div>
+    <div data-radio="d2">
+      <label class="opt"><input type="radio" name="d2" value="live"><span><span class="oh">Live and usable by real people (TestFlight or a web URL)</span><span class="od">In your control and honest. Store approval comes later and gets its own video.</span></span></label>
+      <label class="opt"><input type="radio" name="d2" value="store"><span><span class="oh">Approved on the App Store</span><span class="od">Most impressive, but Apple's review timing can break the count.</span></span></label>
+      <label class="opt"><input type="radio" name="d2" value="counts-existing"><span><span class="oh">"Live" as above, and app_1–app_4 count toward the 10</span><span class="od">Gives you a head start. Viewers may feel the clock started early.</span></span></label>
+    </div>
+  </div>
+
+  <div class="d open" data-anchor="d-shorts" data-label="D4 shorts per day">
+    <button class="cbtn">comment</button>
+    <div class="q">D4: How many short videos a day?</div>
+    <div class="why">Posting every day matters more than posting a lot. Pick a number you'll still manage on day 22.</div>
+    <div data-radio="d4">
+      <label class="opt"><input type="radio" name="d4" value="1"><span><span class="oh">1 a day, the same clip on every channel</span><span class="od">Easy to keep up. Reaches fewer people than 2.</span></span></label>
+      <label class="opt"><input type="radio" name="d4" value="2"><span><span class="oh">2 a day (a progress update, plus the lesson on its own)</span><span class="od">Twice the chances to reach people. Adds ~10 min of recording.</span></span></label>
+    </div>
+  </div>
+
+  <div class="d open" data-anchor="d-channels" data-label="D5 channels" data-changed="1">
+    <button class="cbtn">comment</button>
+    <div class="q">D5: Which channels do you start with?</div>
+    <div class="why">The same vertical clip works on all of them. Each extra channel is ~2 min of uploading a day. (If you ticked these last round, they weren't saved because of a bug on my side. Please tick them again.)</div>
+    <div data-check="d5">
+      <label class="opt"><input type="checkbox" name="d5" value="instagram"><span><span class="oh">Instagram Reels</span></span></label>
+      <label class="opt"><input type="checkbox" name="d5" value="tiktok"><span><span class="oh">TikTok</span></span></label>
+      <label class="opt"><input type="checkbox" name="d5" value="x"><span><span class="oh">X</span></span></label>
+      <label class="opt"><input type="checkbox" name="d5" value="yt-shorts"><span><span class="oh">YouTube Shorts</span><span class="od">Free extra reach for a clip you already have.</span></span></label>
+      <label class="opt"><input type="checkbox" name="d5" value="threads"><span><span class="oh">Threads</span></span></label>
+    </div>
+  </div>
+
+  <div class="d open" data-anchor="d-script" data-label="D6 script depth" data-changed="2">
+    <button class="cbtn">comment</button>
+    <div class="q">D6: How detailed should the day card be?</div>
+    <div class="why">You said bullet points for everything. Selected for you.</div>
+    <div data-radio="d6">
+      <label class="opt"><input type="radio" name="d6" value="bullets-all"><span><span class="oh">Bullet points for everything: steps, intro, outro, short. Nothing word for word</span><span class="od">Sounds natural and there's nothing to memorise. You still need a strong first line, so the first bullet is always the day count.</span></span></label>
+    </div>
+  </div>
+  <div class="d open" data-anchor="d-edit" data-label="D10 edit style" data-changed="5">
+    <button class="cbtn">comment</button>
+    <div class="q">D10: Which edits should Remotion do every day?</div>
+    <div class="why">Tick what you want. When you have an example edit, put it in <code>content/edit-example/</code> and I'll add what it does here.</div>
+    <div data-check="d10">
+      <label class="opt"><input type="checkbox" name="d10" value="join"><span><span class="oh">Join hour-01…hour-N in order</span><span class="od">The basic job.</span></span></label>
+      <label class="opt"><input type="checkbox" name="d10" value="fillers"><span><span class="oh">Cut ums, ahs and long pauses</span><span class="od">Each cut makes your face jump slightly. Most creators leave those jumps in.</span></span></label>
+      <label class="opt"><input type="checkbox" name="d10" value="captions"><span><span class="oh">Captions</span><span class="od">Most people watch without sound.</span></span></label>
+      <label class="opt"><input type="checkbox" name="d10" value="titles"><span><span class="oh">An "Hour 2: login" title card before each recap</span><span class="od">Taken from hour-NN.md. Helps viewers jump around.</span></span></label>
+      <label class="opt"><input type="checkbox" name="d10" value="progress"><span><span class="oh">"Day 3 · App 2 of 10" badge in a corner</span><span class="od">Keeps the challenge on screen.</span></span></label>
+    </div>
+  </div>
+</section>
+
+<section id="s-setup" data-anchor="setup" data-label="Today's setup" data-group="Today" data-title="Today's setup">
+  <button class="cbtn">comment</button>
+  <h2><span class="num">7</span>Today's setup</h2>
+  <p class="sub">For Screen Studio, an iPhone camera and a separate mic. About 30 minutes, once.</p>
+  <div data-anchor="setup-list" data-label="Setup checklist: Screen Studio" data-changed="4" style="position:relative">
+    <button class="cbtn">comment</button>
+    <ol>
+      <li><b>iPhone as the webcam (Continuity Camera):</b> put the iPhone on a stand just above the screen, in landscape, at eye level. The Mac and the iPhone need the same Apple ID, with Wi-Fi and Bluetooth on.</li>
+      <li><b>Light:</b> a window or lamp in front of you, never behind you.</li>
+      <li><b>Mic:</b> plug it in and put it about a hand's width from your mouth.</li>
+      <li><b>Clean screen:</b> hide desktop icons, turn on Do Not Disturb, and make the editor and terminal font bigger (people watching on a phone need to read it).</li>
+      <li><b>Screen Studio:</b> install it and grant Screen Recording, Camera and Microphone permissions. In settings, choose the iPhone as the camera and your external mic as the microphone.</li>
+      <li><b>Folders:</b> create <code>content/day-01/hours/</code>.</li>
+      <li><b>Test (10 min):</b> say "recap", open <code>hour-01.md</code>, record a 1–2 min click-through in Screen Studio, export to <code>hours/hour-01.mp4</code>. Then say "edit day-01".</li>
+      <li><b>Check:</b> can you hear yourself, can you read the screen, did it feel natural?</li>
+    </ol>
+  </div>
+
+  <div class="d open" data-anchor="d-camera" data-label="D7 camera">
+    <button class="cbtn">comment</button>
+    <div class="q">D7: What camera do you have?</div>
+    <div data-radio="d7">
+      <label class="opt"><input type="radio" name="d7" value="iphone"><span><span class="oh">iPhone</span><span class="od">Best picture for most people. Continuity Camera lets the Mac use it as a webcam, so the recorder sees it.</span></span></label>
+      <label class="opt"><input type="radio" name="d7" value="mac-webcam"><span><span class="oh">The Mac's built-in camera</span><span class="od">Zero setup. Softer picture, which is fine for a start.</span></span></label>
+      <label class="opt"><input type="radio" name="d7" value="other"><span><span class="oh">A separate webcam or camera</span><span class="od">Tell me which one in a comment.</span></span></label>
+    </div>
+  </div>
+
+  <div class="d open" data-anchor="d-mic" data-label="D8 mic">
+    <button class="cbtn">comment</button>
+    <div class="q">D8: What microphone do you have?</div>
+    <div class="why">People forgive a soft picture much more than bad audio.</div>
+    <div data-radio="d8">
+      <label class="opt"><input type="radio" name="d8" value="external"><span><span class="oh">A separate mic (USB or clip-on)</span></span></label>
+      <label class="opt"><input type="radio" name="d8" value="airpods"><span><span class="oh">AirPods</span><span class="od">Usable, but compressed. Fine to start with.</span></span></label>
+      <label class="opt"><input type="radio" name="d8" value="builtin"><span><span class="oh">The Mac's built-in mic only</span><span class="od">OK in a quiet room. Get a cheap clip-on mic when you can.</span></span></label>
+    </div>
+  </div>
+</section>
+</main>
+
+<aside class="right">
+  <h2>Decisions</h2>
+  <p class="sub" style="margin:2px 0 0" id="dprog">—</p>
+  <div class="bar"><i id="dbar" style="width:0"></i></div>
+  <div class="dlist" id="dlist"></div>
+  <h2 style="margin-top:16px">Feedback queue</h2>
+  <p class="sub" style="margin:2px 0 0">Nothing is sent until you confirm.</p>
+  <div id="queue"></div>
+  <button class="primary" id="send">Confirm &amp; send</button>
+</aside>
+</div>
+
+<div id="pop">
+  <div class="pa" id="popanchor"></div>
+  <div class="kind">
+    <label class="sel"><input type="radio" name="kind" value="question" checked> Ask a question</label>
+    <label><input type="radio" name="kind" value="change"> Change this</label>
+    <label><input type="radio" name="kind" value="note"> Comment</label>
+  </div>
+  <textarea id="poptext" placeholder="What do you want to know? Answered in the terminal, not on the page."></textarea>
+  <div class="row"><button id="popcancel">Cancel</button><button id="popadd" class="add">Add to queue</button></div>
+</div>
+<div id="toast"></div>
+
+<script src="vendor/mermaid.min.js"></script>
+<script>
+const S={decisions:{},comments:[],batches:[]}; let ROUND=1;
+const $=s=>document.querySelector(s);
+const esc=t=>String(t).replace(/[<>&]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
+const toast=m=>{const t=$('#toast');t.textContent=m;t.classList.add('on');
+  setTimeout(()=>t.classList.remove('on'),1700)};
+const post=(u,b)=>fetch(u,{method:'POST',headers:{'Content-Type':'application/json'},
+  body:JSON.stringify(b)}).then(r=>r.json());
+const D=k=>S.decisions[k];
+function groups(){return [...document.querySelectorAll('[data-radio],[data-check]')]}
+
+function buildChanged(){
+  // Blocks the author marked data-changed="N" (N = the round they were revised in).
+  // The rail lists the latest round's blocks so the reviewer can find what moved.
+  const els=[...document.querySelectorAll('[data-changed]')]; if(!els.length) return;
+  const latest=Math.max(...els.map(e=>+e.dataset.changed));
+  const mine=els.filter(e=>+e.dataset.changed===latest);
+  $('#toc').insertAdjacentHTML('afterbegin',`<div class="chg"><div class="grp">Changed in round ${latest} (${mine.length})</div>`+
+    mine.map((e,i)=>{ if(!e.id) e.id='chg-'+latest+'-'+i;
+      return `<a href="#${e.id}" data-id="${e.id}">${esc(e.dataset.label||e.dataset.title||e.id)}</a>`}).join('')+
+    `<div class="grp" style="margin-top:10px">Contents</div></div>`);
+  document.querySelectorAll('#toc .chg a').forEach(a=>a.onclick=ev=>{ev.preventDefault();
+    const el=document.getElementById(a.dataset.id); el.scrollIntoView({behavior:'smooth',block:'center'});
+    el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash')});
+}
+function buildToc(){
+  let last='';
+  $('#toc').innerHTML=[...document.querySelectorAll('main section')].map(s=>{
+    let out=''; if(s.dataset.group!==last){out+=`<div class="grp">${s.dataset.group}</div>`;last=s.dataset.group}
+    return out+`<a href="#${s.id}" data-id="${s.id}">${s.dataset.title}</a>`}).join('');
+  const links=[...document.querySelectorAll('#toc a')];
+  const io=new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting)
+    links.forEach(l=>l.classList.toggle('on',l.dataset.id===e.target.id)) }),
+    {rootMargin:'-84px 0px -70% 0px'});
+  document.querySelectorAll('main section').forEach(s=>io.observe(s));
+}
+function renderDecisions(){
+  const gs=groups(); let done=0;
+  $('#dlist').innerHTML=gs.map(g=>{
+    const id=g.dataset.radio||g.dataset.check, blk=g.closest('.d');
+    const ch=[...g.querySelectorAll('input:checked')]; if(ch.length) done++;
+    const val=ch.map(i=>i.closest('label').querySelector('.oh').textContent).join(', ');
+    return `<div class="dr ${ch.length?'done':'todo'}" data-goto="${blk.dataset.anchor}">
+      <span class="dot"></span><span class="dn">${id.toUpperCase()}</span>
+      <span class="dv">${esc(val||'not decided')}</span></div>`}).join('');
+  $('#dprog').textContent=`${done} of ${gs.length} decided`;
+  $('#dbar').style.width=(gs.length?done/gs.length*100:0)+'%';
+  $('#dcount').textContent=`${done}/${gs.length} decided · ${S.comments.filter(c=>c.status==='queued').length} queued`;
+  document.querySelectorAll('.dr').forEach(r=>r.onclick=()=>{
+    const el=document.querySelector(`[data-anchor="${r.dataset.goto}"]`); if(!el)return;
+    el.scrollIntoView({behavior:'smooth',block:'center'});
+    el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash')});
+}
+function renderQueue(){
+  const q=S.comments.filter(c=>c.status==='queued');
+  $('#send').textContent=`Confirm & send round ${ROUND}`+(q.length?` — ${q.length} comment${q.length===1?'':'s'}`:'');
+  $('#queue').innerHTML=q.length?q.map(c=>
+    `<div class="qi"><button class="qx" data-id="${c.id}">×</button>
+     <div class="qa">${{question:'Question',note:'Comment'}[c.kind]||'Change'} · ${esc(c.anchorLabel)}</div>${esc(c.text)}</div>`).join('')
+    :'<div class="empty">No comments.<br>Hover any block and hit <em>comment</em>.</div>';
+  document.querySelectorAll('.qx').forEach(b=>b.onclick=async()=>{
+    const r=await post('/api/comment/delete',{id:b.dataset.id});
+    S.comments=r.comments; renderQueue(); markAnchors(); renderDecisions()});
+}
+function markAnchors(){
+  document.querySelectorAll('[data-anchor]').forEach(el=>{
+    const has=S.comments.some(c=>c.anchor===el.dataset.anchor&&c.status==='queued');
+    const b=el.querySelector(':scope > .cbtn');
+    if(b){b.classList.toggle('has',has); b.textContent=has?'commented':'comment'}});
+}
+const PH={change:'What is wrong, missing, or should change here?',
+          question:'What do you want to know? Answered in the terminal, not on the page.',
+          note:'A thought, context or reaction. Taken on board; the page only changes if you ask.'};
+const kind=()=>$('#pop input[name=kind]:checked').value;
+function setKind(k){$(`#pop input[name=kind][value="${k}"]`).checked=true;
+  document.querySelectorAll('#pop .kind label').forEach(l=>l.classList.toggle('sel',l.querySelector('input').value===k));
+  $('#poptext').placeholder=PH[k]}
+let target=null;
+document.addEventListener('click',e=>{
+  const btn=e.target.closest('.cbtn');
+  if(!btn){ if(!e.target.closest('#pop')) $('#pop').style.display='none'; return }
+  const el=btn.closest('[data-anchor]');
+  target={anchor:el.dataset.anchor,label:el.dataset.label,
+          text:(el.querySelector('h2,.q')||{}).textContent||''};
+  const p=$('#pop'),r=btn.getBoundingClientRect();
+  $('#popanchor').textContent=target.label; $('#poptext').value=''; setKind('question');
+  p.style.display='block'; p.style.top=(window.scrollY+r.bottom+8)+'px';
+  p.style.left=Math.max(12,Math.min(r.right-328+window.scrollX,document.body.clientWidth-340))+'px';
+  $('#poptext').focus();
+});
+$('#popcancel').onclick=()=>$('#pop').style.display='none';
+$('#popadd').onclick=async()=>{
+  const t=$('#poptext').value.trim(); if(!t||!target)return;
+  const r=await post('/api/comment',{id:'c'+Date.now(),anchor:target.anchor,
+    anchorLabel:target.label,anchorText:target.text,text:t,kind:kind()});
+  S.comments=r.comments; $('#pop').style.display='none';
+  renderQueue(); markAnchors(); renderDecisions(); toast('Queued — not sent yet')};
+$('#send').onclick=async()=>{
+  const r=await post('/api/send',{});
+  S.comments.forEach(c=>{if(c.status==='queued')c.status='sent'});
+  ROUND+=1; $('#round').textContent=`Round ${ROUND}`;
+  renderQueue(); markAnchors(); renderDecisions();
+  toast(`Round ${ROUND-1} sent — ${r.sent} comment${r.sent===1?'':'s'} + decisions`)};
+document.addEventListener('change',async e=>{
+  const i=e.target;
+  if(i.closest('#pop')){ if(i.name==='kind') setKind(i.value); return }
+  if(i.type==='radio'){S.decisions[i.name]=i.value; await post('/api/decision',{id:i.name,value:i.value})}
+  else if(i.type==='checkbox'){
+    const v=[...document.querySelectorAll(`input[name="${i.name}"]:checked`)].map(x=>x.value);
+    S.decisions[i.name]=v; await post('/api/decision',{id:i.name,value:v})}
+  else return;
+  document.querySelectorAll('label.opt').forEach(l=>l.classList.toggle('sel',l.querySelector('input').checked));
+  renderDecisions(); toast('Saved')});
+
+fetch('/api/state').then(r=>r.json()).then(async st=>{
+  S.decisions=st.decisions||{}; S.comments=st.comments||[]; S.batches=st.batches||[];
+  ROUND=S.batches.length+1; $('#round').textContent=`Round ${ROUND}`;
+  for(const [k,v] of Object.entries(S.decisions))
+    (Array.isArray(v)?v:[v]).forEach(val=>{
+      const i=document.querySelector(`input[name="${k}"][value="${val}"]`); if(i)i.checked=true});
+  document.querySelectorAll('label.opt').forEach(l=>l.classList.toggle('sel',l.querySelector('input').checked));
+  post('/api/groups',{groups:groups().map(g=>g.dataset.radio||g.dataset.check)});
+  buildToc(); buildChanged(); renderQueue(); markAnchors(); renderDecisions();
+  if(window.mermaid){mermaid.initialize({startOnLoad:false,
+    theme:matchMedia('(prefers-color-scheme: dark)').matches?'dark':'neutral',securityLevel:'loose'});
+    try{await mermaid.run({nodes:[...document.querySelectorAll('pre.mermaid')]})}catch(e){}}
+});
+</script>
+</body>
+</html>

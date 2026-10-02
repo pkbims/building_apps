@@ -1,0 +1,605 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>app_3 research — Toronto student rentals</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<style>
+  :root{--bg:#f4eee2;--panel:#fdf9f1;--ink:#2a2521;--muted:#6a6157;--faint:#978d82;
+    --line:#e3d9c7;--accent:#b0523a;--soft:#f5e4dc;--warn:#7a5a1e;--warnsoft:#f3ead3;
+    --quote:#efe7d6;--s1:6px;--s2:8px;--s3:10px;--s4:12px;--s5:16px;--s6:24px;--s7:32px;
+    --r:10px;--r2:14px}
+  :root{color-scheme:light}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;
+    --bg:#1b1916;--panel:#242019;--ink:#ede4d6;--muted:#a89e8f;--faint:#766d60;
+    --line:#38322a;--accent:#e28f72;--soft:#3b2a24;--warn:#dcb66e;--warnsoft:#302a1c;
+    --quote:#2a2620}}
+  :root[data-theme="dark"]{color-scheme:dark;
+    --bg:#1b1916;--panel:#242019;--ink:#ede4d6;--muted:#a89e8f;--faint:#766d60;
+    --line:#38322a;--accent:#e28f72;--soft:#3b2a24;--warn:#dcb66e;--warnsoft:#302a1c;
+    --quote:#2a2620}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:18px/1.7 "IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+  h1,h2,h3{letter-spacing:-.015em}
+  header{position:sticky;top:0;z-index:60;background:var(--panel);
+    border-bottom:1px solid var(--line);padding:var(--s4) var(--s6);
+    display:flex;align-items:center;gap:var(--s5)}
+  header h1{font-size:15px;margin:0;font-weight:650}
+  .tag{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);
+    background:var(--soft);padding:3px var(--s2);border-radius:var(--s1);font-weight:650}
+  .spacer{flex:1}.count{font-size:13px;color:var(--muted)}
+  button.theme{background:var(--bg);border:1px solid var(--line);color:var(--muted);font:inherit;
+    font-size:12px;padding:4px var(--s3);border-radius:var(--s2);cursor:pointer}
+  button.theme:hover{color:var(--accent);border-color:var(--accent)}
+  .layout{display:grid;grid-template-columns:206px minmax(0,1fr) 316px;gap:var(--s7);
+    max-width:1400px;margin:0 auto;padding:var(--s6) var(--s6) 140px}
+  @media(max-width:1200px){.layout{grid-template-columns:186px minmax(0,1fr)}aside.right{display:none}}
+  @media(max-width:820px){.layout{grid-template-columns:1fr}nav.toc{display:none}}
+  nav.toc{position:sticky;top:78px;align-self:start;max-height:calc(100vh - 110px);
+    overflow-y:auto;font-size:13px}
+  nav.toc .grp{color:var(--faint);text-transform:uppercase;letter-spacing:.07em;
+    font-size:10.5px;font-weight:700;margin:var(--s5) 0 var(--s2)}
+  nav.toc .grp:first-child{margin-top:0}
+  nav.toc a{display:block;color:var(--muted);text-decoration:none;padding:5px var(--s3);
+    border-left:2px solid transparent;border-radius:0 var(--s1) var(--s1) 0}
+  nav.toc a.on{color:var(--accent);border-left-color:var(--accent);background:var(--soft);font-weight:600}
+  section{background:var(--panel);border:1px solid var(--line);border-radius:var(--r2);
+    padding:var(--s6) 28px;margin-bottom:var(--s6);position:relative;scroll-margin-top:84px}
+  section:hover > .cbtn{opacity:1}
+  section > h2{font-size:21px;margin:0 0 var(--s1)}
+  .num{color:var(--faint);font-weight:600;font-size:14px;margin-right:var(--s2)}
+  .sub{color:var(--muted);font-size:13.5px;margin:0 0 var(--s5)}
+  blockquote{margin:var(--s3) 0;padding:var(--s3) var(--s5);background:var(--quote);
+    border-left:2px solid var(--line);border-radius:0 var(--s2) var(--s2) 0;font-size:13.5px}
+  .plain{background:var(--soft);border-left:3px solid var(--accent);padding:var(--s3) var(--s5);
+    border-radius:0 var(--s2) var(--s2) 0;margin:var(--s4) 0;font-size:13.5px}
+  .plain b{color:var(--accent)}
+  .risk{background:var(--warnsoft);border-left:3px solid var(--warn);padding:var(--s3) var(--s5);
+    border-radius:0 var(--s2) var(--s2) 0;margin:var(--s4) 0;font-size:13.5px}
+  .risk b{color:var(--warn)}
+  .cbtn{position:absolute;top:var(--s5);right:var(--s5);opacity:0;transition:opacity .15s;
+    background:var(--bg);border:1px solid var(--line);color:var(--muted);font:inherit;
+    font-size:12px;padding:4px var(--s3);border-radius:var(--s2);cursor:pointer}
+  .cbtn:hover{color:var(--accent);border-color:var(--accent)}
+  .cbtn.has{opacity:1;color:var(--accent);border-color:var(--accent);background:var(--soft)}
+  .d{border:1px solid var(--line);border-radius:var(--r);padding:var(--s5) 18px;
+    margin:var(--s5) 0;position:relative}
+  .d:hover .cbtn{opacity:1}
+  .d.open{border-left:3px solid var(--accent)}
+  .q{font-weight:650;font-size:14.5px;margin-bottom:3px}
+  .why{color:var(--muted);font-size:13px;margin-bottom:var(--s4)}
+  label.opt{display:flex;gap:var(--s3);align-items:flex-start;padding:9px var(--s4);
+    border:1px solid transparent;border-radius:var(--s2);cursor:pointer;font-size:14px}
+  label.opt:hover{background:var(--bg)}
+  label.opt.sel{border-color:var(--accent);background:var(--soft)}
+  label.opt input{margin-top:3px;accent-color:var(--accent);flex:none}
+  .oh{font-weight:550}.od{color:var(--muted);font-size:12.5px;display:block;margin-top:1px}
+  .mm{background:var(--bg);border:1px solid var(--line);border-radius:var(--r);
+    padding:18px;margin:var(--s4) 0;overflow-x:auto;text-align:center}
+  table.t{width:100%;border-collapse:collapse;font-size:13px;margin:var(--s4) 0}
+  table.t th,table.t td{border:1px solid var(--line);padding:var(--s2) var(--s3);
+    text-align:left;vertical-align:top}
+  table.t th{background:var(--bg);font-weight:650}
+  code{background:var(--quote);padding:1px 5px;border-radius:5px;font-size:12.5px}
+  pre.code{background:var(--quote);padding:var(--s5);border-radius:var(--r);
+    overflow-x:auto;font-size:12.5px;margin:var(--s4) 0}
+  details.ref{border:1px solid var(--line);border-radius:var(--r);padding:var(--s4) 18px;
+    margin:var(--s4) 0;background:var(--bg)}
+  details.ref summary{cursor:pointer;font-weight:650;font-size:14px;color:var(--accent)}
+  aside.right{position:sticky;top:78px;align-self:start;background:var(--panel);
+    border:1px solid var(--line);border-radius:var(--r2);padding:var(--s5) 18px;
+    max-height:calc(100vh - 110px);display:flex;flex-direction:column}
+  aside.right h2{font-size:15px;margin:0}
+  .bar{height:4px;background:var(--line);border-radius:2px;overflow:hidden;margin-top:9px}
+  .bar i{display:block;height:100%;background:var(--accent);transition:width .3s}
+  .dlist{overflow-y:auto;max-height:30vh;margin:var(--s3) -4px 0;padding:0 4px}
+  .dr{display:flex;gap:9px;align-items:center;padding:5px var(--s2);border-radius:var(--s1);
+    cursor:pointer;font-size:12.5px}
+  .dr:hover{background:var(--bg)}
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--line);flex:none}
+  .dr.done .dot{background:var(--accent)}
+  .dn{color:var(--muted);font-weight:700;flex:none}
+  .dr.todo .dv{color:var(--muted);font-style:italic}
+  #queue{flex:1;overflow-y:auto;margin:var(--s4) -4px;padding:0 4px;min-height:60px}
+  .qi{border:1px solid var(--line);border-radius:var(--s2);padding:var(--s3) var(--s4);
+    margin-bottom:9px;font-size:13px;background:var(--bg)}
+  .qa{color:var(--accent);font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;
+    font-weight:700;margin-bottom:5px}
+  .qx{float:right;cursor:pointer;color:var(--muted);border:0;background:none;font-size:15px}
+  .empty{color:var(--muted);font-size:13px;text-align:center;padding:var(--s6) var(--s3)}
+  button.primary{width:100%;background:var(--accent);color:#fff;border:0;padding:11px;
+    border-radius:var(--r);font:inherit;font-size:13.5px;font-weight:650;cursor:pointer}
+  #pop{position:absolute;z-index:100;width:328px;background:var(--panel);
+    border:1px solid var(--line);border-radius:var(--r);padding:var(--s4);
+    box-shadow:0 10px 34px rgba(0,0,0,.18);display:none}
+  #pop .pa{font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;
+    color:var(--accent);font-weight:700;margin-bottom:var(--s2)}
+  #pop textarea{width:100%;min-height:88px;border:1px solid var(--line);border-radius:var(--s2);
+    padding:9px;font:inherit;font-size:13.5px;background:var(--bg);color:var(--ink)}
+  #pop .row{display:flex;gap:var(--s2);margin-top:var(--s3)}
+  #pop button{flex:1;padding:var(--s2);border-radius:var(--s2);font:inherit;font-size:13px;
+    cursor:pointer;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+  #pop button.add{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:650}
+  #toast{position:fixed;bottom:var(--s6);left:50%;transform:translateX(-50%);
+    background:var(--ink);color:var(--bg);padding:var(--s3) 18px;border-radius:var(--s2);
+    font-size:13.5px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:200}
+  #toast.on{opacity:1}
+  .flash{animation:fl 1.1s ease-out}
+  @keyframes fl{0%{background:var(--soft)}100%{background:transparent}}
+</style>
+<script id="theme">
+(()=>{const K='theme',R=document.documentElement,L={'':'Auto',light:'Light',dark:'Dark'};
+const set=v=>{v?R.dataset.theme=v:delete R.dataset.theme;try{v?localStorage.setItem(K,v):localStorage.removeItem(K)}catch(e){}};
+try{set(localStorage.getItem(K)||'')}catch(e){}
+addEventListener('DOMContentLoaded',()=>{const h=document.querySelector('header');if(!h)return;
+  const b=document.createElement('button');b.className='theme';b.title='Auto → Light → Dark';
+  const show=()=>b.textContent=L[R.dataset.theme||''];
+  b.onclick=()=>{const c=['','light','dark'];set(c[(c.indexOf(R.dataset.theme||'')+1)%3]);show()};
+  show();h.appendChild(b)})})();
+</script>
+</head>
+<body>
+<header>
+  <h1>app_3 research — Toronto student rentals</h1>
+  <span class="tag" id="round">Round 1</span>
+  <div class="spacer"></div>
+  <span class="count" id="dcount">—</span>
+</header>
+
+<div class="layout">
+<nav class="toc" id="toc"></nav>
+<main>
+
+
+<section id="s-problem" data-anchor="problem" data-label="The problem" data-group="Start" data-title="The problem">
+  <button class="cbtn">comment</button>
+  <h2><span class="num">0</span>The problem</h2>
+  <p class="plain"><b>Students, new grads and newcomers in Toronto can't find a place to rent without getting lost, ghosted, or scammed — and no app walks them through it.</b></p>
+  <p class="sub">Hard limits: iOS app; series stack (FastAPI + Postgres + JWT). Research date: 2026-09-18.</p>
+  <p>Market facts, for scale only:</p>
+  <ul>
+    <li>GTA purpose-built vacancy rose to 3.0% in 2025; a new tenant pays $2,073 on average for a one-bedroom vs $1,711 for a sitting tenant — <a href="https://www.canadianmortgagetrends.com/2025/12/rent-growth-slowed-in-2025-as-national-vacancy-rate-continued-to-rise-cmhc/" target="_blank">CMHC via Canadian Mortgage Trends</a></li>
+    <li>Toronto Police, June 2026: a suspect “advertised apartments for rent on an online platform, allegedly targeting international students searching for housing. Victims provided deposits for the units before viewing them or meeting the suspect in person.” — <a href="https://www.ctvnews.ca/toronto/article/woman-arrested-in-alleged-rental-fraud-targeting-international-students-in-north-york/" target="_blank">CTV News</a></li>
+  </ul>
+  <details class="ref"><summary>Where the evidence came from</summary>
+    <ul>
+      <li>Google Play (Canada): the 300 most recent reviews for Zumper, PadMapper, Rentals.ca, Kijiji, Realtor.ca, HouseSigma, Zolo, iROOMit, Roomster, Apartments.com — each quote links to the review.</li>
+      <li>Canadian App Store: the 10 reviews embedded in each app page, plus the RSS feed where it worked (PadMapper 101, Kijiji 50). Apple has no per-review links.</li>
+      <li>Trustpilot: Rentals.ca (13), Zumper (54), Places4Students (6).</li>
+      <li>Press: CTV, NOW Toronto, Toronto Life; U of T and OCAD U housing pages; the app stores' own descriptions.</li>
+      <li><b>Not included:</b> Reddit (blocked for me both ways). Paste threads and I'll add them.</li>
+    </ul>
+  </details>
+</section>
+<section id="s-kijiji" data-anchor="kijiji" data-label="Kijiji (Adevinta)" data-group="What exists" data-title="Kijiji (Adevinta)">
+  <button class="cbtn">comment</button>
+  <h2><span class="num">1</span>Kijiji (Adevinta)</h2>
+  <p class="sub">General classifieds; “Long Term Rentals” category with 7,135 Toronto listings on the day checked.</p>
+  <div data-anchor="kijiji-how" data-label="Kijiji (Adevinta) — how it works" style="position:relative">
+    <button class="cbtn">comment</button>
+    <h3 style="font-size:14px;margin:0 0 4px">How it works</h3>
+    <ol style="margin:0 0 10px"><li>Open Real Estate → Long Term Rentals → City of Toronto; scroll a list of 40 per page.</li><li>Filter by price, unit type (apartment / condo / basement / house); rooms &amp; roommates is a separate sub-category.</li><li>Tap a listing: photos, description, sometimes a “Verified” or “Featured” badge.</li><li>Tap Reply → message in Kijiji's inbox; many posters write “PROVIDE YOUR TELEPHONE NUMBER TO COORDINATE A TIME TO VIEW APARTMENT” and move to phone/WhatsApp.</li><li>Everything after first contact — viewing, application, deposit, lease — happens off-platform.</li></ol>
+  </div>
+  <p><b>Who, and why:</b> Anyone, private landlords especially; it wins on volume, not on trust.</p>
+  <p><b>Money:</b> No public number for Kijiji alone; parent Adevinta calls it “the number one in real estate for rentals in Canada” — <a href="https://adevinta.com/brand/kijiji-canada/" target="_blank">adevinta.com</a></p>
+  <div data-anchor="kijiji-complaints" data-label="Kijiji (Adevinta) — complaints" style="position:relative">
+    <button class="cbtn">comment</button>
+    <h3 style="font-size:14px;margin:10px 0 4px">What people complain about</h3>
+    <blockquote>“Scam ADs like "Please Install Newest Version" are popping up too frequently.”<br><small>— <a href="https://play.google.com/store/apps/details?id=com.ebay.kijiji.ca&hl=en&gl=CA&reviewId=48a63777-b3c9-469b-8fa4-16ae3c3e1b8e" target="_blank">Play, Jul 2026</a></small></blockquote><blockquote>“Every update is just a new set of bugs and issues.”<br><small>— <a href="https://play.google.com/store/apps/details?id=com.ebay.kijiji.ca&hl=en&gl=CA" target="_blank">Play, Jun 2026</a></small></blockquote><blockquote>“Honestly every single thing from search to messaging to notifications is worse now.”<br><small>— <a href="https://apps.apple.com/ca/app/id318979520?see-all=reviews" target="_blank">App Store</a></small></blockquote>
+  </div>
+  <p class="plain"><b>Actually helping people?</b> Yes for finding listings — it's where the inventory is. No for anything after first contact. (Most Kijiji reviews are about buy/sell, so rental complaints are thin here.)</p>
+</section>
+<section id="s-facebook" data-anchor="facebook" data-label="Facebook Marketplace + housing groups" data-group="What exists" data-title="Facebook Marketplace + housing groups">
+  <button class="cbtn">comment</button>
+  <h2><span class="num">2</span>Facebook Marketplace + housing groups</h2>
+  <p class="sub">Free posts by anyone; groups like “OCAD U Housing” double as rental boards — <a href="https://admissions.ocadu.ca/afford/housing-partners" target="_blank">OCAD U housing page</a>.</p>
+  <div data-anchor="facebook-how" data-label="Facebook Marketplace + housing groups — how it works" style="position:relative">
+    <button class="cbtn">comment</button>
+    <h3 style="font-size:14px;margin:0 0 4px">How it works</h3>
+    <ol style="margin:0 0 10px"><li>Search Marketplace “Property Rentals” or scroll a housing group.</li><li>Few filters (price, bedrooms, roughly location).</li><li>Tap Message; the conversation lives in Messenger.</li><li>The poster's Facebook profile is the only identity signal.</li><li>Deposit is usually asked for by e-transfer, before or after a viewing, with no platform record.</li></ol>
+  </div>
+  <p><b>Who, and why:</b> Students and newcomers already on Facebook; zero cost, zero friction, zero verification.</p>
+  <p><b>Money:</b> No public number.</p>
+  <div data-anchor="facebook-complaints" data-label="Facebook Marketplace + housing groups — complaints" style="position:relative">
+    <button class="cbtn">comment</button>
+    <h3 style="font-size:14px;margin:10px 0 4px">What people complain about</h3>
+    <blockquote>“advertised apartments for rent using social media”<br><small>— <a href="https://torontolife.com/city/a-gta-woman-is-accused-of-stealing-60000-in-fake-rental-deposits/" target="_blank">Toronto Life — Brampton case, 17 tenants paid first and last, units weren't available on move-in day (May 2025–Feb 2026)</a></small></blockquote><blockquote>“A past client of mine went through the whole process… found a place on Facebook, and then after she lost a deposit, she filed a police report”<br><small>— <a href="https://nowtoronto.com/real-estate/toronto-rental-scams-how-to-avoid-fake-listings/" target="_blank">Realtor Will Doyle, NOW Toronto</a></small></blockquote>
+  </div>
+  <p class="plain"><b>Actually helping people?</b> Kind of — it's where rooms and sublets actually are, and it's where the deposit scams are. No review stream exists for rentals on Facebook; the evidence is police and press.</p>
+</section>
+<section id="s-zumper" data-anchor="zumper" data-label="Zumper (owns PadMapper)" data-group="What exists" data-title="Zumper (owns PadMapper)">
+  <button class="cbtn">comment</button>
+  <h2><span class="num">3</span>Zumper (owns PadMapper)</h2>
+  <p class="sub">US/Canada listing aggregator with alerts, in-app applications, and an AI assistant.</p>
+  <div data-anchor="zumper-how" data-label="Zumper (owns PadMapper) — how it works" style="position:relative">
+    <button class="cbtn">comment</button>
+    <h3 style="font-size:14px;margin:0 0 4px">How it works</h3>
+    <ol style="margin:0 0 10px"><li>Search a city; map + list; “extensive filters” (price, beds, pets, amenities).</li><li>Set alerts → push + email when new listings match.</li><li>Tap Contact → form goes to the lister; Zumper may fan your inquiry out to similar listings.</li><li>“Submit apartment applications—all in one app” (Zumper's words); users report ~$30/person for application + credit check.</li><li>Tour requests and messages in-app; deposit and lease off-platform in Canada.</li></ol>
+  </div>
+  <p><b>Who, and why:</b> Renters in big US metros; Canada is secondary — Canadian listings appear to be mostly syndicated.</p>
+  <p><b>Money:</b> No public revenue; raised roughly $178–181M — <a href="https://www.crunchbase.com/organization/zumper" target="_blank">Crunchbase</a>, <a href="https://pitchbook.com/profiles/company/55336-69" target="_blank">PitchBook</a></p>
+  <div data-anchor="zumper-complaints" data-label="Zumper (owns PadMapper) — complaints" style="position:relative">
+    <button class="cbtn">comment</button>
+    <h3 style="font-size:14px;margin:10px 0 4px">What people complain about</h3>
+    <blockquote>“Be wary, most of the listings on this site are scams. Many are properties that were recently sold and not listed for rent on any other site”<br><small>— <a href="https://play.google.com/store/apps/details?id=com.zumper.rentals&hl=en&gl=CA&reviewId=c935e363-9a6f-4262-95e7-e9502d020b28" target="_blank">Play, Nov 2025 — one of 14+ scam reviews</a></small></blockquote><blockquote>“This app makes it really really easy for scammers to scam you & doesn't do anything to stop it or prevent it. The only options to report someone is to block them?”<br><small>— <a href="https://play.google.com/store/apps/details?id=com.zumper.rentals&hl=en&gl=CA&reviewId=ba336b98-e28f-4351-97e3-84b4b5e32cfa" target="_blank">Play, Feb 2024</a></small></blockquote><blockquote>“This is a scam in Canada. It doesn't allow actual landlords to list anything, and the company just scrapes and steals listings from other services.”<br><small>— <a href="https://play.google.com/store/apps/details?id=com.zumper.rentals&hl=en&gl=CA&reviewId=b364016c-c752-4915-8b7a-1d4f6efde8ad" target="_blank">Play, Aug 2025</a></small></blockquote><blockquote>“what is the point of filters if you're just going to show listings based on vibes? I look up a specific city and get other cities.”<br><small>— <a href="https://play.google.com/store/apps/details?id=com.zumper.rentals&hl=en&gl=CA&reviewId=167fa24b-c85e-45c6-b9bd-5a89e7fe6bbc" target="_blank">Play, Jun 2026 — filters, 6+ reviews</a></small></blockquote><blockquote>“Entered a city in Ontario Canada got a listing in Quebec wrong province”<br><small>— <a href="https://apps.apple.com/ca/app/id678683201?see-all=reviews" target="_blank">App Store, Aug 2025</a></small></blockquote><blockquote>“I sent an inquiry for ONE property and then immediately began receiving email and text after email/text that I had inquired about over 15 other properties that I definitely did not send inquiries on.”<br><small>— <a href="https://play.google.com/store/apps/details?id=com.zumper.rentals&hl=en&gl=CA&reviewId=dffcb756-c5e3-45b3-b4f6-bab2e7292c90" target="_blank">Play, Feb 2025 — spam/fan-out, 6+ reviews</a></small></blockquote><blockquote>“No updates when the property is rented, so I have to click each and unfavorite once I verify on the mgmt website that it isn't available.”<br><small>— <a href="https://play.google.com/store/apps/details?id=com.zumper.rentals&hl=en&gl=CA&reviewId=2aebb9dc-ef48-4275-82fe-d90d206c5a3f" target="_blank">Play, Sep 2022</a></small></blockquote><blockquote>“couldn't even sign up. wanted me to verify my email with a code and every time I have the code the page refreshed”<br><small>— <a href="https://play.google.com/store/apps/details?id=com.zumper.rentals&hl=en&gl=CA&reviewId=132c74e1-0cfa-434e-8309-15687a094e1c" target="_blank">Play, Oct 2025 — login broken, 8+ reviews</a></small></blockquote>
+  </div>
+  <p class="plain"><b>Actually helping people?</b> Kind of — good search UI, but users don't trust the listings and can't turn the firehose off. Play CA: 112 of the last 300 reviews rated ≤2.</p>
+</section>
+<section id="s-padmapper" data-anchor="padmapper" data-label="PadMapper (Zumper)" data-group="What exists" data-title="PadMapper (Zumper)">
+  <button class="cbtn">comment</button>
+  <h2><span class="num">4</span>PadMapper (Zumper)</h2>
+  <p class="sub">Same inventory as Zumper on a map-first UI; “No broker fees”; roommate and sublet listings.</p>
+  <div data-anchor="padmapper-how" data-label="PadMapper (Zumper) — how it works" style="position:relative">
+    <button class="cbtn">comment</button>
+    <h3 style="font-size:14px;margin:0 0 4px">How it works</h3>
+    <ol style="margin:0 0 10px"><li>Map of pins; drag to search; filter price/beds/pets.</li><li>Save favourites.</li><li>“One tap connects you to landlords” — contact form; listers often require a phone number.</li><li>Account creation now needs email validation and, for posting, government ID.</li></ol>
+  </div>
+  <p><b>Who, and why:</b> Renters who think in neighbourhoods, not lists.</p>
+  <p><b>Money:</b> Part of Zumper — see above.</p>
+  <div data-anchor="padmapper-complaints" data-label="PadMapper (Zumper) — complaints" style="position:relative">
+    <button class="cbtn">comment</button>
+    <h3 style="font-size:14px;margin:10px 0 4px">What people complain about</h3>
+    <blockquote>“I've messaged over 40 people, over the span of 3 months and have only gotten one response”<br><small>— <a href="https://apps.apple.com/ca/app/id1083663440?see-all=reviews" target="_blank">App Store, Jul 2022 — ghosted, 5+ reviews</a></small></blockquote><blockquote>“I emailed about four different apartments all in different places to four different names and they all replied with the same exact reply message about it's owned by him and his wife and they want this up front”<br><small>— <a href="https://play.google.com/store/apps/details?id=com.padmapper.search&hl=en&gl=CA&reviewId=ac401af6-13e5-42b6-a562-0c986dd67d53" target="_blank">Play, Jun 2026</a></small></blockquote><blockquote>“Once you contact one company you get emails from this app that aren't from that company telling you that here are some other things you can look at.”<br><small>— <a href="https://apps.apple.com/ca/app/id1083663440?see-all=reviews" target="_blank">App Store, Mar 2026 — spam, 5+ reviews</a></small></blockquote><blockquote>“it doesn't even show up in Ontario Canada it shows only "Ontario,NY USA"”<br><small>— <a href="https://play.google.com/store/apps/details?id=com.padmapper.search&hl=en&gl=CA&reviewId=3e186e1e-f579-4049-86f5-ce298e737ce7" target="_blank">Play, Jan 2026</a></small></blockquote><blockquote>“These guys make you sign up then force you to input government ID looks like information theft.”<br><small>— <a href="https://apps.apple.com/ca/app/id1083663440?see-all=reviews" target="_blank">App Store, Oct 2023 — forced ID / broken signup, 6+ reviews</a></small></blockquote><blockquote>“Their signup process is busted. I was able to create an account but when I clicked on the validate email I got an error and now my account is rejected.”<br><small>— <a href="https://apps.apple.com/ca/app/id1083663440?see-all=reviews" target="_blank">App Store, Apr 2026</a></small></blockquote>
+  </div>
+  <p class="plain"><b>Actually helping people?</b> Kind of — “The apps layout is great… But the app is only as good as the people on it” (same Jul 2022 review). App Store CA: 79 of 101 reviews rated ≤2.</p>
+</section>
+<section id="s-rentalsca" data-anchor="rentalsca" data-label="Rentals.ca (Rentsync)" data-group="What exists" data-title="Rentals.ca (Rentsync)">
+  <button class="cbtn">comment</button>
+  <h2><span class="num">5</span>Rentals.ca (Rentsync)</h2>
+  <p class="sub">Canada-only marketplace, “more than 10,000 long-term rental properties”; claims “Every single property on our marketplace has been personally vetted by rental experts”.</p>
+  <div data-anchor="rentalsca-how" data-label="Rentals.ca (Rentsync) — how it works" style="position:relative">
+    <button class="cbtn">comment</button>
+    <h3 style="font-size:14px;margin:0 0 4px">How it works</h3>
+    <ol style="margin:0 0 10px"><li>Search city → map/list; filter type, budget, beds, baths, pets; “verified listings only” toggle.</li><li>Save favourites (needs an account).</li><li>Tap a listing → contact form to the property manager.</li><li>Reply comes by email/phone from the manager; application and lease off-platform.</li></ol>
+  </div>
+  <p><b>Who, and why:</b> Professionally managed buildings; landlords pay to list, renters are free.</p>
+  <p><b>Money:</b> No public number; owner Rentsync acquired Urbanation for an undisclosed price — <a href="https://www.connectcre.ca/stories/rentalsca-owner-acquires-multi-family-research-firm-urbanation/" target="_blank">Connect CRE</a></p>
+  <div data-anchor="rentalsca-complaints" data-label="Rentals.ca (Rentsync) — complaints" style="position:relative">
+    <button class="cbtn">comment</button>
+    <h3 style="font-size:14px;margin:10px 0 4px">What people complain about</h3>
+    <blockquote>“Buggy. Always buggy. Today I can't use it because the app says "This version is no longer supported" and prompts me to update it on the Play Store. There is no update available.”<br><small>— <a href="https://play.google.com/store/apps/details?id=com.rentalsca&hl=en&gl=CA&reviewId=b5b72782-d72b-416e-aeee-3a9f1d2efeb8" target="_blank">Play, Aug 2026 — 10+ identical reports that month</a></small></blockquote><blockquote>“the filters don't even work, the one thing I need to work. if it doesn't fall within what I'm asking for why are u showing me?”<br><small>— <a href="https://play.google.com/store/apps/details?id=com.rentalsca&hl=en&gl=CA&reviewId=f53871d8-706d-46fc-b77a-61c5101f9df8" target="_blank">Play, Dec 2025</a></small></blockquote><blockquote>“When you tap on a property to view, there is no button or navigation to go back to the list of properties.”<br><small>— <a href="https://apps.apple.com/ca/app/id1475449043?see-all=reviews" target="_blank">App Store, Jul 2025</a></small></blockquote><blockquote>“This site would be great if they actually vetted listing. 9/10 listing on this site are fraudulent, misleading, have inaccurate information”<br><small>— <a href="https://ca.trustpilot.com/reviews/6a7219c317c93fccc742edc3" target="_blank">Trustpilot, Aug 2026</a></small></blockquote><blockquote>“I've messaged multiple properties with absolutely no response and they have ads on their that have been there for close to a year”<br><small>— <a href="https://ca.trustpilot.com/review/rentals.ca" target="_blank">Trustpilot, Jul 2025</a></small></blockquote><blockquote>“everyone who text or emailed was a scammer. I have never had so many scam emails and called until I used this site”<br><small>— <a href="https://ca.trustpilot.com/review/rentals.ca" target="_blank">Trustpilot, May 2024</a></small></blockquote>
+  </div>
+  <p class="plain"><b>Actually helping people?</b> Not really on mobile — users say “better off just using the website”. Play CA 1.6★, 208 of 300 recent reviews rated ≤2; Trustpilot 2.0/5.</p>
+</section>
+<section id="s-livrent" data-anchor="livrent" data-label="liv.rent" data-group="What exists" data-title="liv.rent">
+  <button class="cbtn">comment</button>
+  <h2><span class="num">6</span>liv.rent</h2>
+  <p class="sub">Vancouver-built “safest rental website”; ID-verified landlords and renters, in-app application, digital lease, rent payment.</p>
+  <div data-anchor="livrent-how" data-label="liv.rent — how it works" style="position:relative">
+    <button class="cbtn">comment</button>
+    <h3 style="font-size:14px;margin:0 0 4px">How it works</h3>
+    <ol style="margin:0 0 10px"><li>Download → redirected to the website to build a renter profile (ID, income, references) before browsing.</li><li>Search verified listings; book viewings in-app.</li><li>Apply with the saved profile; chat with the landlord in one thread.</li><li>Sign the lease digitally; pay rent by card.</li></ol>
+  </div>
+  <p><b>Who, and why:</b> Renters who'll trade privacy for safety; landlords who want screening done for them.</p>
+  <p><b>Money:</b> No public number.</p>
+  <div data-anchor="livrent-complaints" data-label="liv.rent — complaints" style="position:relative">
+    <button class="cbtn">comment</button>
+    <h3 style="font-size:14px;margin:10px 0 4px">What people complain about</h3>
+    <blockquote>“it directed me to the website to create my personal profile, requesting lots of personal information before I can see the listings.”<br><small>— <a href="https://apps.apple.com/ca/app/id1321741040?see-all=reviews" target="_blank">App Store, Aug 2026 — profile wall, 3+ reviews</a></small></blockquote><blockquote>“Do you have to sign up to see the listing?! Seriously?!”<br><small>— <a href="https://apps.apple.com/ca/app/id1321741040?see-all=reviews" target="_blank">App Store, Aug 2025</a></small></blockquote><blockquote>“Have not heard back from numerous Landlords for weeks!”<br><small>— <a href="https://apps.apple.com/ca/app/id1321741040?see-all=reviews" target="_blank">Tristan from Toronto, App Store, Jul 2021</a></small></blockquote><blockquote>“I started receiving a bunch of scam calls and emails right after I registered.”<br><small>— <a href="https://apps.apple.com/ca/app/id1321741040?see-all=reviews" target="_blank">App Store, Oct 2021</a></small></blockquote>
+  </div>
+  <p class="plain"><b>Actually helping people?</b> Kind of — the right idea (verification), but Toronto inventory is thin and the wall comes before the value. App Store CA 3.6★ on 74 ratings; Play 3.1★.</p>
+</section>
+<section id="s-mls" data-anchor="mls" data-label="Realtor.ca + HouseSigma / Condos.ca / Zolo" data-group="What exists" data-title="Realtor.ca + HouseSigma / Condos.ca / Zolo">
+  <button class="cbtn">comment</button>
+  <h2><span class="num">7</span>Realtor.ca + HouseSigma / Condos.ca / Zolo</h2>
+  <p class="sub">MLS listings, including condo rentals posted by agents. HouseSigma, Condos.ca and Zolo re-skin the same feed.</p>
+  <div data-anchor="mls-how" data-label="Realtor.ca + HouseSigma / Condos.ca / Zolo — how it works" style="position:relative">
+    <button class="cbtn">comment</button>
+    <h3 style="font-size:14px;margin:0 0 4px">How it works</h3>
+    <ol style="margin:0 0 10px"><li>Search → toggle “For Rent”; map with agent listings.</li><li>Tap → “Contact agent” form; your details go to a realtor.</li><li>Realtor books the showing; you submit an offer-to-lease with credit report, employment letter, references.</li><li>Landlord's agent picks; first and last months' rent by certified cheque/e-transfer.</li></ol>
+  </div>
+  <p><b>Who, and why:</b> Condo renters who can pass a credit check; agents are paid by the landlord, so the renter pays nothing.</p>
+  <p><b>Money:</b> CREA is a non-profit; no public number. HouseSigma/Condos.ca: no public number.</p>
+  <div data-anchor="mls-complaints" data-label="Realtor.ca + HouseSigma / Condos.ca / Zolo — complaints" style="position:relative">
+    <button class="cbtn">comment</button>
+    <h3 style="font-size:14px;margin:10px 0 4px">What people complain about</h3>
+    <blockquote>“This app is loaded with scam rental listings and realtors who don't reply to emails.”<br><small>— <a href="https://play.google.com/store/apps/details?id=ca.crea.app.consumer&hl=en&gl=CA&reviewId=e07f41c3-1f5d-4869-a98f-4228edc5df43" target="_blank">Realtor.ca, Play, Apr 2026</a></small></blockquote><blockquote>“holy all u see when ur tryna rent are basements and lower and ect with no way to turn off basements”<br><small>— <a href="https://play.google.com/store/apps/details?id=ca.crea.app.consumer&hl=en&gl=CA&reviewId=27040ca1-6709-4aac-a4c6-b728ab82efbf" target="_blank">Realtor.ca, Play, Jun 2026</a></small></blockquote><blockquote>“When you click on a property be aware that your email and contact information immediately is forwarded to an agent who will contact you unsolicited.”<br><small>— <a href="https://apps.apple.com/ca/app/id1521561102?see-all=reviews" target="_blank">Condos.ca, App Store, Mar 2026</a></small></blockquote><blockquote>“there's no button to provide feedback around listings that appear misleading or inaccurate.”<br><small>— <a href="https://apps.apple.com/ca/app/id1521561102?see-all=reviews" target="_blank">Condos.ca, App Store, Mar 2026</a></small></blockquote>
+  </div>
+  <p class="plain"><b>Actually helping people?</b> Yes for credit-worthy condo renters; not for a student with no Canadian credit history.</p>
+</section>
+<section id="s-student" data-anchor="student" data-label="Places4Students + U of T Off-Campus Housing" data-group="What exists" data-title="Places4Students + U of T Off-Campus Housing">
+  <button class="cbtn">comment</button>
+  <h2><span class="num">8</span>Places4Students + U of T Off-Campus Housing</h2>
+  <p class="sub">University-endorsed listing boards. Places4Students is free for students, landlords pay per listing. U of T's site is a white-label of Off Campus Partners (a CoStar/Apartments.com company).</p>
+  <div data-anchor="student-how" data-label="Places4Students + U of T Off-Campus Housing — how it works" style="position:relative">
+    <button class="cbtn">comment</button>
+    <h3 style="font-size:14px;margin:0 0 4px">How it works</h3>
+    <ol style="margin:0 0 10px"><li>Student logs in with a school email or browses open.</li><li>Filters; U of T added an “International Student-Friendly Search Filter”.</li><li>Listings are mostly managed buildings (U of T front page: The Quay $2,273–2,997, Daniels on Parliament $2,440–3,880).</li><li>Contact form → landlord; the footer says the university “do[es] not inspect the rental sites or make inquiries about the listings”.</li></ol>
+  </div>
+  <p><b>Who, and why:</b> Students who trust a .utoronto.ca domain; landlords who want a student audience.</p>
+  <p><b>Money:</b> No public revenue. Landlords report paying “about $125” and “$139.99” for a premium spot — <a href="https://ca.trustpilot.com/review/places4students.com" target="_blank">Trustpilot</a></p>
+  <div data-anchor="student-complaints" data-label="Places4Students + U of T Off-Campus Housing — complaints" style="position:relative">
+    <button class="cbtn">comment</button>
+    <h3 style="font-size:14px;margin:10px 0 4px">What people complain about</h3>
+    <blockquote>“If you're looking for U of T, York or Metropolitan University students, forget it... the site is fine and easy to use but it's also expensive compared to Off Campus Housing and other sites but they just don't have any reach.”<br><small>— <a href="https://ca.trustpilot.com/reviews/6776fcb18314943770428920" target="_blank">Landlord, Trustpilot, Jan 2025</a></small></blockquote><blockquote>“the prospective viewers have no way to get my response and miss the communication”<br><small>— <a href="https://ca.trustpilot.com/reviews/6a3a9f602829c0a691cc69a4" target="_blank">Landlord, Trustpilot, Jun 2026</a></small></blockquote>
+  </div>
+  <p class="plain"><b>Actually helping people?</b> Not really in Toronto — landlords say Toronto students aren't there, and the U of T board lists $2,300+ units, not rooms. All 6 Trustpilot reviews are from landlords; no student voice found.</p>
+</section>
+<section id="s-roommates" data-anchor="roommates" data-label="Roommate apps — Roomster, iROOMit, SpareRoom" data-group="What exists" data-title="Roommate apps — Roomster, iROOMit, SpareRoom">
+  <button class="cbtn">comment</button>
+  <h2><span class="num">9</span>Roommate apps — Roomster, iROOMit, SpareRoom</h2>
+  <p class="sub">Profiles for people with a room and people who need one.</p>
+  <div data-anchor="roommates-how" data-label="Roommate apps — Roomster, iROOMit, SpareRoom — how it works" style="position:relative">
+    <button class="cbtn">comment</button>
+    <h3 style="font-size:14px;margin:0 0 4px">How it works</h3>
+    <ol style="margin:0 0 10px"><li>Build a profile (photos, budget, move date).</li><li>Swipe/scroll matches.</li><li>Pay to unlock messaging (Roomster; iROOMit) — SpareRoom is free-first.</li><li>Chat, meet, move in; nothing in-app after that.</li></ol>
+  </div>
+  <p><b>Who, and why:</b> Students and new grads who can only afford a room; the paywall is the business.</p>
+  <p><b>Money:</b> No public number; users report “$12 A WEEK TO VIEW YOUR MESSAGES” (Roomster) — <a href="https://play.google.com/store/apps/details?id=com.roomster&hl=en&gl=CA&reviewId=a2db91e5-904b-4562-871a-4c1347acf2b2" target="_blank">Play, Aug 2026</a></p>
+  <div data-anchor="roommates-complaints" data-label="Roommate apps — Roomster, iROOMit, SpareRoom — complaints" style="position:relative">
+    <button class="cbtn">comment</button>
+    <h3 style="font-size:14px;margin:10px 0 4px">What people complain about</h3>
+    <blockquote>“so in order to even read messages from potential roommates I have to pay a subscription fee? im literally homeless and cant afford your stupid predatory subscription.”<br><small>— <a href="https://play.google.com/store/apps/details?id=com.roomster&hl=en&gl=CA&reviewId=34aa5611-909c-4e5e-9e8c-9047d05f840b" target="_blank">Roomster, Play, Aug 2026</a></small></blockquote><blockquote>“they bait you into paying for premium. but all the hidden comments that paying for premium reveals are bot accounts.”<br><small>— <a href="https://play.google.com/store/apps/details?id=com.roomster&hl=en&gl=CA&reviewId=9cfe2ef7-f430-4273-bffc-d436f722f917" target="_blank">Roomster, Play, Aug 2026</a></small></blockquote><blockquote>“I was contacted by a scammer, asking for a $100 application fee paid through zelle or chime, however every time I try to report them to the app the moment the report page opens the app just closes.”<br><small>— <a href="https://play.google.com/store/apps/details?id=com.iroomit.iroomitapp&hl=en&gl=CA&reviewId=28433340-f802-4080-8c84-ed18a1719313" target="_blank">iROOMit, Play, Sep 2026</a></small></blockquote><blockquote>“u have to pay a bunch upfront and no one replies. probably bot accounts.”<br><small>— <a href="https://play.google.com/store/apps/details?id=com.iroomit.iroomitapp&hl=en&gl=CA&reviewId=9da41441-259a-4030-89a8-4860f1db2070" target="_blank">iROOMit, Play, Jul 2026</a></small></blockquote>
+  </div>
+  <p class="plain"><b>Actually helping people?</b> No — a paywall in front of an empty room. Roomster Play CA 2.8★, 266 of 300 rated ≤2; iROOMit 132 of 251.</p>
+</section>
+<section id="s-pattern" data-anchor="pattern" data-label="The pattern" data-group="Findings" data-title="The pattern">
+  <button class="cbtn">comment</button>
+  <h2><span class="num">10</span>The pattern</h2>
+  <p><b>They all get right:</b> map + filters + save. Search UI is a solved problem; nobody is losing on search.</p>
+  <div data-anchor="pattern-wrong" data-label="Pattern — three failures" style="position:relative"><button class="cbtn">comment</button>
+  <p><b>They all get wrong, in the same three ways:</b></p>
+  <ol>
+    <li><b>Trust.</b> Every platform is a feed of strangers' posts. Scam listings are the top complaint on Zumper, Rentals.ca, Realtor.ca and both roommate apps; the police cases were on “an online platform” and “social media”. Reporting is “block them” or a crashing form.</li>
+    <li><b>After first contact, you're alone.</b> Renters message 4, 15, 40 listings and hear nothing; nobody tells them a unit is gone; the platform's answer is to fan their inquiry to 15 more.</li>
+    <li><b>The wall before the value.</b> liv.rent's profile, PadMapper's government ID, Roomster's $12/week, Zumper's broken email code — all before the renter has seen anything useful.</li>
+  </ol>
+  </div>
+  <p><b>Same business model everywhere:</b> landlords/agents pay, renters are the product, so every feature is a lead-gen feature (Condos.ca forwarding your email “immediately”, Zumper's fan-out).</p>
+  <div data-anchor="pattern-nobody" data-label="Pattern — who nobody serves" style="position:relative"><button class="cbtn">comment</button>
+  <p class="risk"><b>Who nobody is serving:</b> the person doing this for the <b>first time in Ontario</b> — no Canadian credit history, doesn't know that “first and last” is legal but a “holding deposit before viewing” is the scam signature, doesn't know the Ontario Standard Lease exists. Every app assumes the renter already knows the process. The university boards that should teach it list $2,300 condos.</p>
+  </div>
+  <div class="d open" data-anchor="d1" data-label="D1 which failure is the wedge">
+    <button class="cbtn">comment</button>
+    <div class="q">D1 — Which failure do we build against?</div>
+    <div class="why">Stage 2 needs one wedge, not three. Pick the one you believe most; the others become "not building" lines in the PRD.</div>
+    <div data-radio="d1">
+      <label class="opt"><input type="radio" name="d1" value="trust"><span><span class="oh">Trust — scams and fake listings</span><span class="od">Loudest complaint, police-backed, most Toronto-specific. Hardest to prove we fixed it.</span></span></label>
+      <label class="opt"><input type="radio" name="d1" value="alone"><span><span class="oh">After first contact — ghosting, stale listings, no tracking</span><span class="od">Universal, buildable without any inventory. Less emotional; harder to market.</span></span></label>
+      <label class="opt"><input type="radio" name="d1" value="firsttime"><span><span class="oh">First-time-in-Ontario — nobody explains the process</span><span class="od">Clearest unserved user. Closest to content, not product.</span></span></label>
+      <label class="opt"><input type="radio" name="d1" value="wall"><span><span class="oh">The wall — signup/ID/paywall before value</span><span class="od">Real, but it's a UX principle for whatever we build, not a wedge on its own.</span></span></label>
+    </div>
+  </div>
+</section>
+
+<section id="s-ideas" data-anchor="ideas" data-label="New ideas" data-group="Findings" data-title="New ideas">
+  <button class="cbtn">comment</button>
+  <h2><span class="num">11</span>New ideas nobody has built yet</h2>
+  <div data-anchor="idea-d" data-label="Idea D — listing checker + shortlist" style="position:relative"><button class="cbtn">comment</button>
+  <h3 style="font-size:15px;margin:8px 0 4px">D — Listing checker + shortlist</h3>
+  <p>Share any listing (Kijiji, Facebook, Rentals.ca link or screenshot) into the app; it runs the checks a realtor tells you to run — same photos on other sites at a different price, “deposit before viewing” language, price far below the CMHC zone average, poster asking for phone/WhatsApp immediately — and gives a plain red/amber/green with the reasons. Saved listings become one shortlist with status (messaged / viewing booked / gone) and a nudge after 3 days of silence.</p>
+  <p><b>Fixes:</b> “9/10 listing on this site are fraudulent”; “same exact reply message… they want this up front”; “messaged over 40 people… one response”; police “deposits… before viewing”.</p>
+  <p><b>Buildable?</b> Yes on the stack: iOS share extension → FastAPI; the checks are a <code>worker</code> job (reverse-image match, price-vs-zone, text rules). No scraping of Facebook — the user brings the listing in. Risk: Kijiji/FB link previews may be login-walled; screenshot + OCR is the fallback.</p>
+  <p><b>Findable?</b> “is this Toronto rental a scam” is a search people already do (NOW Toronto, Over Here Toronto, Fliku all rank for it); university housing offices already publish scam guides and could link an app.</p>
+  </div>
+  <div data-anchor="idea-e" data-label="Idea E — first-lease walkthrough" style="position:relative"><button class="cbtn">comment</button>
+  <h3 style="font-size:15px;margin:8px 0 4px">E — First-lease walkthrough for Ontario</h3>
+  <p>A checklist-driven flow from “I found a place” to “I have keys”: what documents to prepare with no Canadian credit, what a landlord may and may not ask for, the Standard Lease clause by clause, what to photograph on move-in, and a deposit-payment gate that refuses to let you tick “paid” until you've ticked “viewed in person / met the landlord / saw ID”.</p>
+  <p><b>Fixes:</b> “who nobody is serving”; police “deposits… before viewing them or meeting the suspect”.</p>
+  <p><b>Buildable?</b> Trivially — mostly content and state. Fits as the last third of D. <b>Findable?</b> Only via institutions. On its own it's a pamphlet, not an app.</p>
+  </div>
+  <div data-anchor="idea-f" data-label="Idea F — verified room board" style="position:relative"><button class="cbtn">comment</button>
+  <h3 style="font-size:15px;margin:8px 0 4px">F — Verified-reply room board for Toronto students</h3>
+  <p>A rooms/sublets board where posters verify with a Canadian phone + government ID, replies are free, and a listing auto-expires unless the poster confirms it's still available every 7 days.</p>
+  <p><b>Fixes:</b> “$12 A WEEK TO VIEW YOUR MESSAGES”; “ads… there for close to a year”; “no way to get my response”.</p>
+  <p><b>Buildable?</b> Yes, but it's a two-sided marketplace: worthless until posters show up, and Toronto posters are on Facebook for free. <b>Findable?</b> Only with a campus-by-campus launch.</p>
+  </div>
+  <div class="mm"><pre class="mermaid">
+flowchart TD
+  P[Find a place in Toronto<br/>without getting scammed or ghosted] --> K[Kijiji / Facebook]
+  P --> Z[Zumper / PadMapper]
+  P --> R[Rentals.ca / liv.rent]
+  P --> M[Realtor.ca + MLS clones]
+  P --> S[Places4Students / U of T board]
+  P --> RM[Roomster / iROOMit]
+  K --> KC[Deposits before viewing;<br/>no record, no recourse]
+  Z --> ZC[Scam listings; filters ignored;<br/>inquiry fanned to 15 others]
+  R --> RC[App abandoned; profile wall;<br/>landlords never reply]
+  M --> MC[Needs credit history;<br/>agents don't reply]
+  S --> SC[Toronto students aren't there;<br/>lists $2,300 condos]
+  RM --> RMC[Pay to read messages;<br/>bot accounts]
+  KC --> D[D: Listing checker + shortlist]
+  ZC --> D
+  RC --> D
+  MC --> E[E: First-lease walkthrough]
+  SC --> E
+  RMC --> F[F: Verified room board]
+  D --> DEC{Pick one}
+  E --> DEC
+  F --> DEC
+  </pre></div>
+</section>
+
+<section id="s-decision" data-anchor="decision" data-label="Decision" data-group="Decide" data-title="Decision">
+  <button class="cbtn">comment</button>
+  <h2><span class="num">12</span>Decision</h2>
+  <p class="plain"><b>My pick: D, with E folded in as its final stage.</b> It attacks the complaint that appears on every platform and in the police blotter, needs no inventory (the inventory is on Kijiji and Facebook and will stay there), and the share-sheet entry point means the app is useful on day one with one user — no marketplace chicken-and-egg.</p>
+  <p class="risk"><b>Tradeoff:</b> it doesn't own the listing, so it can never charge landlords; whatever it earns has to come from the renter or an institution. Stage 2 must answer that.</p>
+  <div class="d open" data-anchor="d2" data-label="D2 what to move forward with">
+    <button class="cbtn">comment</button>
+    <div class="q">D2 — What moves forward to Stage 2 (Positioning)?</div>
+    <div class="why">This is the Step 6 call. The skill says I lay it out and stop; you pick.</div>
+    <div data-radio="d2">
+      <label class="opt"><input type="radio" name="d2" value="d_plus_e"><span><span class="oh">D + E — checker, shortlist, then the walkthrough</span><span class="od">My recommendation. Single-player, no inventory needed.</span></span></label>
+      <label class="opt"><input type="radio" name="d2" value="d_only"><span><span class="oh">D only — checker + shortlist</span><span class="od">Tighter scope; the walkthrough becomes a later feature.</span></span></label>
+      <label class="opt"><input type="radio" name="d2" value="e_only"><span><span class="oh">E only — the walkthrough</span><span class="od">Cheapest build; weakest as a standalone product.</span></span></label>
+      <label class="opt"><input type="radio" name="d2" value="f"><span><span class="oh">F — verified room board</span><span class="od">Biggest if it works; needs posters before it's worth anything.</span></span></label>
+      <label class="opt"><input type="radio" name="d2" value="more"><span><span class="oh">None yet — research more first</span><span class="od">Say what's missing in a comment.</span></span></label>
+    </div>
+  </div>
+  <div class="d open" data-anchor="d3" data-label="D3 anchor quotes for Stage 2">
+    <button class="cbtn">comment</button>
+    <div class="q">D3 — Which complaints carry forward as the “Anchored to” block?</div>
+    <div class="why">PIPELINE.md Stage 2 needs 2–3 verbatim complaints behind the chosen problem, or Stage 3 refuses to start. Pick the ones you'd put on camera.</div>
+    <div data-check="d3">
+      <label class="opt"><input type="checkbox" name="d3" value="police"><span><span class="oh">Toronto Police via CTV — “deposits for the units before viewing them or meeting the suspect in person”</span><span class="od">Not a review, but the strongest single line.</span></span></label>
+      <label class="opt"><input type="checkbox" name="d3" value="rentalsca_9of10"><span><span class="oh">Rentals.ca Trustpilot — “9/10 listing on this site are fraudulent, misleading, have inaccurate information”</span></span></label>
+      <label class="opt"><input type="checkbox" name="d3" value="padmapper_40"><span><span class="oh">PadMapper — “I've messaged over 40 people, over the span of 3 months and have only gotten one response”</span></span></label>
+      <label class="opt"><input type="checkbox" name="d3" value="padmapper_same"><span><span class="oh">PadMapper — “they all replied with the same exact reply message… they want this up front”</span></span></label>
+      <label class="opt"><input type="checkbox" name="d3" value="zumper_block"><span><span class="oh">Zumper — “The only options to report someone is to block them?”</span></span></label>
+      <label class="opt"><input type="checkbox" name="d3" value="livrent_wall"><span><span class="oh">liv.rent — “requesting lots of personal information before I can see the listings”</span></span></label>
+      <label class="opt"><input type="checkbox" name="d3" value="p4s_forget"><span><span class="oh">Places4Students landlord — “If you're looking for U of T, York or Metropolitan University students, forget it”</span></span></label>
+    </div>
+  </div>
+  <div class="d open" data-anchor="d4" data-label="D4 Reddit">
+    <button class="cbtn">comment</button>
+    <div class="q">D4 — Reddit voices?</div>
+    <div class="why">Reddit is blocked for me. r/TorontoRenting and r/askTO are where students actually vent.</div>
+    <div data-radio="d4">
+      <label class="opt"><input type="radio" name="d4" value="paste"><span><span class="oh">I'll paste 2–3 threads; add them before Stage 2</span></span></label>
+      <label class="opt"><input type="radio" name="d4" value="skip"><span><span class="oh">Skip — the store reviews and police cases are enough</span></span></label>
+    </div>
+  </div>
+</section>
+
+<section id="s-skill" data-anchor="skill" data-label="Skill fixes" data-group="Decide" data-title="Skill fixes">
+  <button class="cbtn">comment</button>
+  <h2><span class="num">13</span>What the research skill got wrong this run</h2>
+  <p class="sub">Second run of the skill. Per the doctrine: fix what's wrong now, don't abstract until the third run. Tick what goes to the skill-editor tab.</p>
+  <div class="d open" data-anchor="d5" data-label="D5 skill fixes to forward">
+    <button class="cbtn">comment</button>
+    <div class="q">D5 — Forward to skill-editor</div>
+    <div class="why">Each is a concrete edit to SKILL.md. I'll send the ticked ones as one message.</div>
+    <div data-check="d5">
+      <label class="opt"><input type="checkbox" name="d5" value="rss"><span><span class="oh">Apple RSS feed is mostly dead; replace with what worked</span><span class="od">Returned entries for 2 of 11 apps, intermittently; hardcodes <code>us</code>. Worked: google-play-scraper (300/app/country, per-review links), App Store page embedded JSON (10/app), Trustpilot <code>__NEXT_DATA__</code> via the browser (WebFetch gets 403).</span></span></label>
+      <label class="opt"><input type="checkbox" name="d5" value="both"><span><span class="oh">Step 5: “fails both checks” → “fails either check”</span><span class="od">The editor's finding #2. Read as written, F would survive.</span></span></label>
+      <label class="opt"><input type="checkbox" name="d5" value="reddit"><span><span class="oh">Reddit line is correct — fix PIPELINE.md §1 instead</span><span class="od">Blocked in the browser too. Editor's finding #1, resolved the other way.</span></span></label>
+      <label class="opt"><input type="checkbox" name="d5" value="verify"><span><span class="oh">Add: WebFetch paraphrases — verify quotes against raw text</span><span class="od">Every quote here was checked against the JSON, not the summary. Might be a third-run item.</span></span></label>
+      <label class="opt"><input type="checkbox" name="d5" value="anchor"><span><span class="oh">Add an “Anchored to” hand-off to the Decision template</span><span class="od">Editor's finding #3. D3 above is doing this by hand; the template should ask for it.</span></span></label>
+    </div>
+  </div>
+</section>
+
+
+</main>
+
+<aside class="right">
+  <h2>Decisions</h2>
+  <p class="sub" style="margin:2px 0 0" id="dprog">—</p>
+  <div class="bar"><i id="dbar" style="width:0"></i></div>
+  <div class="dlist" id="dlist"></div>
+  <h2 style="margin-top:16px">Feedback queue</h2>
+  <p class="sub" style="margin:2px 0 0">Nothing is sent until you confirm.</p>
+  <div id="queue"></div>
+  <button class="primary" id="send">Confirm &amp; send</button>
+</aside>
+</div>
+
+<div id="pop">
+  <div class="pa" id="popanchor"></div>
+  <textarea id="poptext" placeholder="What is wrong, missing, or should change here?"></textarea>
+  <div class="row"><button id="popcancel">Cancel</button><button id="popadd" class="add">Add to queue</button></div>
+</div>
+<div id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>
+const S={decisions:{},comments:[],batches:[]}; let ROUND=1;
+const $=s=>document.querySelector(s);
+const esc=t=>String(t).replace(/[<>&]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
+const toast=m=>{const t=$('#toast');t.textContent=m;t.classList.add('on');
+  setTimeout(()=>t.classList.remove('on'),1700)};
+const post=(u,b)=>fetch(u,{method:'POST',headers:{'Content-Type':'application/json'},
+  body:JSON.stringify(b)}).then(r=>r.json());
+const D=k=>S.decisions[k];
+function groups(){return [...document.querySelectorAll('[data-radio],[data-check]')]}
+
+function buildToc(){
+  let last='';
+  $('#toc').innerHTML=[...document.querySelectorAll('main section')].map(s=>{
+    let out=''; if(s.dataset.group!==last){out+=`<div class="grp">${s.dataset.group}</div>`;last=s.dataset.group}
+    return out+`<a href="#${s.id}" data-id="${s.id}">${s.dataset.title}</a>`}).join('');
+  const links=[...document.querySelectorAll('#toc a')];
+  const io=new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting)
+    links.forEach(l=>l.classList.toggle('on',l.dataset.id===e.target.id)) }),
+    {rootMargin:'-84px 0px -70% 0px'});
+  document.querySelectorAll('main section').forEach(s=>io.observe(s));
+}
+function renderDecisions(){
+  const gs=groups(); let done=0;
+  $('#dlist').innerHTML=gs.map(g=>{
+    const id=g.dataset.radio||g.dataset.check, blk=g.closest('.d');
+    const ch=[...g.querySelectorAll('input:checked')]; if(ch.length) done++;
+    const val=ch.map(i=>i.closest('label').querySelector('.oh').textContent).join(', ');
+    return `<div class="dr ${ch.length?'done':'todo'}" data-goto="${blk.dataset.anchor}">
+      <span class="dot"></span><span class="dn">${id.toUpperCase()}</span>
+      <span class="dv">${esc(val||'not decided')}</span></div>`}).join('');
+  $('#dprog').textContent=`${done} of ${gs.length} decided`;
+  $('#dbar').style.width=(gs.length?done/gs.length*100:0)+'%';
+  $('#dcount').textContent=`${done}/${gs.length} decided · ${S.comments.filter(c=>c.status==='queued').length} queued`;
+  document.querySelectorAll('.dr').forEach(r=>r.onclick=()=>{
+    const el=document.querySelector(`[data-anchor="${r.dataset.goto}"]`); if(!el)return;
+    el.scrollIntoView({behavior:'smooth',block:'center'});
+    el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash')});
+}
+function renderQueue(){
+  const q=S.comments.filter(c=>c.status==='queued');
+  $('#send').textContent=`Confirm & send round ${ROUND}`+(q.length?` — ${q.length} comment${q.length===1?'':'s'}`:'');
+  $('#queue').innerHTML=q.length?q.map(c=>
+    `<div class="qi"><button class="qx" data-id="${c.id}">×</button>
+     <div class="qa">${esc(c.anchorLabel)}</div>${esc(c.text)}</div>`).join('')
+    :'<div class="empty">No comments.<br>Hover any block and hit <em>comment</em>.</div>';
+  document.querySelectorAll('.qx').forEach(b=>b.onclick=async()=>{
+    const r=await post('/api/comment/delete',{id:b.dataset.id});
+    S.comments=r.comments; renderQueue(); markAnchors(); renderDecisions()});
+}
+function markAnchors(){
+  document.querySelectorAll('[data-anchor]').forEach(el=>{
+    const has=S.comments.some(c=>c.anchor===el.dataset.anchor&&c.status==='queued');
+    const b=el.querySelector(':scope > .cbtn');
+    if(b){b.classList.toggle('has',has); b.textContent=has?'commented':'comment'}});
+}
+let target=null;
+document.addEventListener('click',e=>{
+  const btn=e.target.closest('.cbtn');
+  if(!btn){ if(!e.target.closest('#pop')) $('#pop').style.display='none'; return }
+  const el=btn.closest('[data-anchor]');
+  target={anchor:el.dataset.anchor,label:el.dataset.label,
+          text:(el.querySelector('h2,.q')||{}).textContent||''};
+  const p=$('#pop'),r=btn.getBoundingClientRect();
+  $('#popanchor').textContent=target.label; $('#poptext').value='';
+  p.style.display='block'; p.style.top=(window.scrollY+r.bottom+8)+'px';
+  p.style.left=Math.max(12,Math.min(r.right-328+window.scrollX,document.body.clientWidth-340))+'px';
+  $('#poptext').focus();
+});
+$('#popcancel').onclick=()=>$('#pop').style.display='none';
+$('#popadd').onclick=async()=>{
+  const t=$('#poptext').value.trim(); if(!t||!target)return;
+  const r=await post('/api/comment',{id:'c'+Date.now(),anchor:target.anchor,
+    anchorLabel:target.label,anchorText:target.text,text:t});
+  S.comments=r.comments; $('#pop').style.display='none';
+  renderQueue(); markAnchors(); renderDecisions(); toast('Queued — not sent yet')};
+$('#send').onclick=async()=>{
+  const r=await post('/api/send',{});
+  S.comments.forEach(c=>{if(c.status==='queued')c.status='sent'});
+  ROUND+=1; $('#round').textContent=`Round ${ROUND}`;
+  renderQueue(); markAnchors(); renderDecisions();
+  toast(`Round ${ROUND-1} sent — ${r.sent} comment${r.sent===1?'':'s'} + decisions`)};
+document.addEventListener('change',async e=>{
+  const i=e.target;
+  if(i.type==='radio'){S.decisions[i.name]=i.value; await post('/api/decision',{id:i.name,value:i.value})}
+  else if(i.type==='checkbox'){
+    const v=[...document.querySelectorAll(`input[name="${i.name}"]:checked`)].map(x=>x.value);
+    S.decisions[i.name]=v; await post('/api/decision',{id:i.name,value:v})}
+  else return;
+  document.querySelectorAll('label.opt').forEach(l=>l.classList.toggle('sel',l.querySelector('input').checked));
+  renderDecisions(); toast('Saved')});
+
+fetch('/api/state').then(r=>r.json()).then(async st=>{
+  S.decisions=st.decisions||{}; S.comments=st.comments||[]; S.batches=st.batches||[];
+  ROUND=S.batches.length+1; $('#round').textContent=`Round ${ROUND}`;
+  for(const [k,v] of Object.entries(S.decisions))
+    (Array.isArray(v)?v:[v]).forEach(val=>{
+      const i=document.querySelector(`input[name="${k}"][value="${val}"]`); if(i)i.checked=true});
+  document.querySelectorAll('label.opt').forEach(l=>l.classList.toggle('sel',l.querySelector('input').checked));
+  post('/api/groups',{groups:groups().map(g=>g.dataset.radio||g.dataset.check)});
+  buildToc(); renderQueue(); markAnchors(); renderDecisions();
+  if(window.mermaid){mermaid.initialize({startOnLoad:false,
+    theme:matchMedia('(prefers-color-scheme: dark)').matches?'dark':'neutral',securityLevel:'loose'});
+    try{await mermaid.run({nodes:[...document.querySelectorAll('pre.mermaid')]})}catch(e){}}
+});
+</script>
+</body>
+</html>

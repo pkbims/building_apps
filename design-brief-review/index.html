@@ -1,0 +1,759 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Design brief review</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<style>
+  :root{--bg:#f4eee2;--panel:#fdf9f1;--ink:#2a2521;--muted:#6a6157;--faint:#978d82;
+    --line:#e3d9c7;--accent:#b0523a;--soft:#f5e4dc;--warn:#7a5a1e;--warnsoft:#f3ead3;
+    --quote:#efe7d6;--s1:6px;--s2:8px;--s3:10px;--s4:12px;--s5:16px;--s6:24px;--s7:32px;
+    --r:10px;--r2:14px}
+  :root{color-scheme:light}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;
+    --bg:#1b1916;--panel:#242019;--ink:#ede4d6;--muted:#a89e8f;--faint:#766d60;
+    --line:#38322a;--accent:#e28f72;--soft:#3b2a24;--warn:#dcb66e;--warnsoft:#302a1c;
+    --quote:#2a2620}}
+  :root[data-theme="dark"]{color-scheme:dark;
+    --bg:#1b1916;--panel:#242019;--ink:#ede4d6;--muted:#a89e8f;--faint:#766d60;
+    --line:#38322a;--accent:#e28f72;--soft:#3b2a24;--warn:#dcb66e;--warnsoft:#302a1c;
+    --quote:#2a2620}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:18px/1.7 "IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+  h1,h2,h3{letter-spacing:-.015em}
+  header{position:sticky;top:0;z-index:60;background:var(--panel);
+    border-bottom:1px solid var(--line);padding:var(--s4) var(--s6);
+    display:flex;align-items:center;gap:var(--s5)}
+  header h1{font-size:15px;margin:0;font-weight:650}
+  .tag{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);
+    background:var(--soft);padding:3px var(--s2);border-radius:var(--s1);font-weight:650}
+  .spacer{flex:1}.count{font-size:13px;color:var(--muted)}
+  button.theme{background:var(--bg);border:1px solid var(--line);color:var(--muted);font:inherit;
+    font-size:12px;padding:4px var(--s3);border-radius:var(--s2);cursor:pointer}
+  button.theme:hover{color:var(--accent);border-color:var(--accent)}
+  .layout{display:grid;grid-template-columns:206px minmax(0,1fr) 316px;gap:var(--s7);
+    max-width:1400px;margin:0 auto;padding:var(--s6) var(--s6) 140px}
+  @media(max-width:1200px){.layout{grid-template-columns:186px minmax(0,1fr)}aside.right{display:none}}
+  @media(max-width:820px){.layout{grid-template-columns:1fr}nav.toc{display:none}}
+  nav.toc{position:sticky;top:78px;align-self:start;max-height:calc(100vh - 110px);
+    overflow-y:auto;font-size:13px}
+  nav.toc .grp{color:var(--faint);text-transform:uppercase;letter-spacing:.07em;
+    font-size:10.5px;font-weight:700;margin:var(--s5) 0 var(--s2)}
+  nav.toc .grp:first-child{margin-top:0}
+  nav.toc a{display:block;color:var(--muted);text-decoration:none;padding:5px var(--s3);
+    border-left:2px solid transparent;border-radius:0 var(--s1) var(--s1) 0}
+  nav.toc a.on{color:var(--accent);border-left-color:var(--accent);background:var(--soft);font-weight:600}
+  section{background:var(--panel);border:1px solid var(--line);border-radius:var(--r2);
+    padding:var(--s6) 28px;margin-bottom:var(--s6);position:relative;scroll-margin-top:84px}
+  section:hover > .cbtn{opacity:1}
+  section > h2{font-size:21px;margin:0 0 var(--s1)}
+  .num{color:var(--faint);font-weight:600;font-size:14px;margin-right:var(--s2)}
+  .sub{color:var(--muted);font-size:13.5px;margin:0 0 var(--s5)}
+  blockquote{margin:var(--s3) 0;padding:var(--s3) var(--s5);background:var(--quote);
+    border-left:2px solid var(--line);border-radius:0 var(--s2) var(--s2) 0;font-size:13.5px}
+  .plain{background:var(--soft);border-left:3px solid var(--accent);padding:var(--s3) var(--s5);
+    border-radius:0 var(--s2) var(--s2) 0;margin:var(--s4) 0;font-size:13.5px}
+  .plain b{color:var(--accent)}
+  .risk{background:var(--warnsoft);border-left:3px solid var(--warn);padding:var(--s3) var(--s5);
+    border-radius:0 var(--s2) var(--s2) 0;margin:var(--s4) 0;font-size:13.5px}
+  .risk b{color:var(--warn)}
+  .cbtn{position:absolute;top:var(--s5);right:var(--s5);opacity:0;transition:opacity .15s;
+    background:var(--bg);border:1px solid var(--line);color:var(--muted);font:inherit;
+    font-size:12px;padding:4px var(--s3);border-radius:var(--s2);cursor:pointer}
+  .cbtn:hover{color:var(--accent);border-color:var(--accent)}
+  .cbtn.has{opacity:1;color:var(--accent);border-color:var(--accent);background:var(--soft)}
+  .d{border:1px solid var(--line);border-radius:var(--r);padding:var(--s5) 18px;
+    margin:var(--s5) 0;position:relative}
+  .d:hover .cbtn{opacity:1}
+  .d.open{border-left:3px solid var(--accent)}
+  .q{font-weight:650;font-size:14.5px;margin-bottom:3px}
+  .why{color:var(--muted);font-size:13px;margin-bottom:var(--s4)}
+  label.opt{display:flex;gap:var(--s3);align-items:flex-start;padding:9px var(--s4);
+    border:1px solid transparent;border-radius:var(--s2);cursor:pointer;font-size:14px}
+  label.opt:hover{background:var(--bg)}
+  label.opt.sel{border-color:var(--accent);background:var(--soft)}
+  label.opt input{margin-top:3px;accent-color:var(--accent);flex:none}
+  .oh{font-weight:550}.od{color:var(--muted);font-size:12.5px;display:block;margin-top:1px}
+  .mm{background:var(--bg);border:1px solid var(--line);border-radius:var(--r);
+    padding:18px;margin:var(--s4) 0;overflow-x:auto;text-align:center}
+  table.t{width:100%;border-collapse:collapse;font-size:13px;margin:var(--s4) 0}
+  table.t th,table.t td{border:1px solid var(--line);padding:var(--s2) var(--s3);
+    text-align:left;vertical-align:top}
+  table.t th{background:var(--bg);font-weight:650}
+  code{background:var(--quote);padding:1px 5px;border-radius:5px;font-size:12.5px}
+  pre.code{background:var(--quote);padding:var(--s5);border-radius:var(--r);
+    overflow-x:auto;font-size:12.5px;margin:var(--s4) 0}
+  details.ref{border:1px solid var(--line);border-radius:var(--r);padding:var(--s4) 18px;
+    margin:var(--s4) 0;background:var(--bg)}
+  details.ref summary{cursor:pointer;font-weight:650;font-size:14px;color:var(--accent)}
+  aside.right{position:sticky;top:78px;align-self:start;background:var(--panel);
+    border:1px solid var(--line);border-radius:var(--r2);padding:var(--s5) 18px;
+    max-height:calc(100vh - 110px);display:flex;flex-direction:column}
+  aside.right h2{font-size:15px;margin:0}
+  .bar{height:4px;background:var(--line);border-radius:2px;overflow:hidden;margin-top:9px}
+  .bar i{display:block;height:100%;background:var(--accent);transition:width .3s}
+  .dlist{overflow-y:auto;max-height:30vh;margin:var(--s3) -4px 0;padding:0 4px}
+  .dr{display:flex;gap:9px;align-items:center;padding:5px var(--s2);border-radius:var(--s1);
+    cursor:pointer;font-size:12.5px}
+  .dr:hover{background:var(--bg)}
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--line);flex:none}
+  .dr.done .dot{background:var(--accent)}
+  .dn{color:var(--muted);font-weight:700;flex:none}
+  .dr.todo .dv{color:var(--muted);font-style:italic}
+  #queue{flex:1;overflow-y:auto;margin:var(--s4) -4px;padding:0 4px;min-height:60px}
+  .qi{border:1px solid var(--line);border-radius:var(--s2);padding:var(--s3) var(--s4);
+    margin-bottom:9px;font-size:13px;background:var(--bg)}
+  .qa{color:var(--accent);font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;
+    font-weight:700;margin-bottom:5px}
+  .qx{float:right;cursor:pointer;color:var(--muted);border:0;background:none;font-size:15px}
+  .empty{color:var(--muted);font-size:13px;text-align:center;padding:var(--s6) var(--s3)}
+  button.primary{width:100%;background:var(--accent);color:#fff;border:0;padding:11px;
+    border-radius:var(--r);font:inherit;font-size:13.5px;font-weight:650;cursor:pointer}
+  #pop{position:absolute;z-index:100;width:328px;background:var(--panel);
+    border:1px solid var(--line);border-radius:var(--r);padding:var(--s4);
+    box-shadow:0 10px 34px rgba(0,0,0,.18);display:none}
+  #pop .pa{font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;
+    color:var(--accent);font-weight:700;margin-bottom:var(--s2)}
+  #pop .kind{display:flex;gap:var(--s2);margin-bottom:var(--s2)}
+  #pop .kind label{flex:1;display:flex;gap:6px;align-items:center;font-size:12.5px;
+    padding:5px var(--s2);border:1px solid var(--line);border-radius:var(--s2);cursor:pointer;color:var(--muted)}
+  #pop .kind label.sel{border-color:var(--accent);background:var(--soft);color:var(--accent)}
+  #pop .kind input{margin:0;accent-color:var(--accent)}
+  #pop textarea{width:100%;min-height:88px;border:1px solid var(--line);border-radius:var(--s2);
+    padding:9px;font:inherit;font-size:13.5px;background:var(--bg);color:var(--ink)}
+  #pop .row{display:flex;gap:var(--s2);margin-top:var(--s3)}
+  #pop button{flex:1;padding:var(--s2);border-radius:var(--s2);font:inherit;font-size:13px;
+    cursor:pointer;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+  #pop button.add{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:650}
+  #toast{position:fixed;bottom:var(--s6);left:50%;transform:translateX(-50%);
+    background:var(--ink);color:var(--bg);padding:var(--s3) 18px;border-radius:var(--s2);
+    font-size:13.5px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:200}
+  #toast.on{opacity:1}
+  .flash{animation:fl 1.1s ease-out}
+  @keyframes fl{0%{background:var(--soft)}100%{background:transparent}}
+  [data-changed]{box-shadow:inset 3px 0 0 var(--warn)}
+  [data-changed]::before{content:"changed · round " attr(data-changed);position:absolute;top:-9px;left:12px;
+    font-size:10px;letter-spacing:.06em;text-transform:uppercase;font-weight:700;color:var(--warn);
+    background:var(--warnsoft);padding:2px 7px;border-radius:5px;z-index:1}
+  nav.toc .chg a{color:var(--warn)} nav.toc .chg a.on{color:var(--warn);border-left-color:var(--warn);background:var(--warnsoft)}
+  nav.toc .chg .grp{color:var(--warn)}
+
+  .chip{display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+    padding:2px 7px;border-radius:5px;white-space:nowrap}
+  .chip.yes{background:#dfeedd;color:#2f5f2a}.chip.part{background:var(--warnsoft);color:var(--warn)}
+  .chip.no{background:var(--soft);color:var(--accent)}
+  :root[data-theme="dark"] .chip.yes{background:#22371f;color:#a8d39f}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .chip.yes{background:#22371f;color:#a8d39f}}
+  .gap{border:1px solid var(--line);border-radius:var(--r);padding:var(--s4) 18px;margin:var(--s4) 0;position:relative}
+  .gap:hover .cbtn{opacity:1}
+  .gap h3{font-size:15px;margin:0 0 4px;display:flex;gap:var(--s3);align-items:center;flex-wrap:wrap}
+  .gap p{margin:4px 0;font-size:14px}
+  .ev{font-size:12.5px;color:var(--muted);margin-top:6px}
+  .ev code{font-size:11.5px}
+  .tl{border-left:2px solid var(--line);margin:var(--s4) 0 var(--s4) 8px;padding-left:18px}
+  .tl div{position:relative;margin-bottom:var(--s3);font-size:14px}
+  .tl div::before{content:"";position:absolute;left:-24px;top:8px;width:9px;height:9px;border-radius:50%;background:var(--accent)}
+  .tl b{display:block;font-size:12px;color:var(--muted);letter-spacing:.04em}
+  .dec{font-size:11px;background:var(--ink);color:var(--bg);padding:2px 7px;border-radius:5px;letter-spacing:.06em;font-weight:700;text-transform:uppercase}
+  pre.code{white-space:pre-wrap;line-height:1.5}
+</style>
+<script id="theme">
+(()=>{const K='theme',R=document.documentElement,L={'':'Auto',light:'Light',dark:'Dark'};
+const set=v=>{v?R.dataset.theme=v:delete R.dataset.theme;try{v?localStorage.setItem(K,v):localStorage.removeItem(K)}catch(e){}};
+try{set(localStorage.getItem(K)||'')}catch(e){}
+addEventListener('DOMContentLoaded',()=>{const h=document.querySelector('header');if(!h)return;
+  const b=document.createElement('button');b.className='theme';b.title='Auto → Light → Dark';
+  const show=()=>b.textContent=L[R.dataset.theme||''];
+  b.onclick=()=>{const c=['','light','dark'];set(c[(c.indexOf(R.dataset.theme||'')+1)%3]);show()};
+  show();h.appendChild(b)})})();
+</script>
+</head>
+<body>
+<header>
+  <h1>How we brief Claude Design — what we give, what we don't, what we should</h1>
+  <span class="tag" id="round">Round 1</span>
+  <div class="spacer"></div>
+  <span class="count" id="dcount">—</span>
+</header>
+
+<div class="layout">
+<nav class="toc" id="toc"></nav>
+<main>
+
+<section id="s-intro" data-anchor="intro" data-label="What this page is" data-group="Start here" data-title="What this page is">
+  <button class="cbtn">comment</button>
+  <h2><span class="num">0</span>What this page is</h2>
+  <p class="sub">A review of how we hand our UI work to claude.ai's Design tool (Claude Design), built from what is actually on disk in <code>app_1/</code> and <code>app_4/</code>, not from memory.</p>
+  <p>Three questions, in three parts, then a proposal. Part 1 reconstructs what Claude Design effectively received. Part 2 walks a product designer's checklist against that and marks each item <span class="chip yes">provided</span>, <span class="chip part">partly</span> or <span class="chip no">missing</span>, with the file that proves it. Part 3 proposes a brief template we would reuse for every app, and every place I had to choose between options is a <span class="dec">decision</span> for you.</p>
+  <div class="plain"><b>The headline finding:</b> Claude Design has been used exactly once in the series (app_1, 2026-09-08), and <b>no literal prompt was saved</b>. The "brief" was the GitHub repo itself: Claude Design was connected to <code>pkbims/test_app_1</code> and read <code>PRD.md</code>, <code>positioning.md</code> and <code>research/</code> on its own. Everything it did not find there, it invented — and told us so in its own output header.</div>
+  <p>app_4 has not been through Claude Design at all. Its clickable prototype was built by Claude Code inside the <code>create-prd</code> skill, which is a different tool doing a different job. Part 1 covers both, because app_4 is the app that would go through Claude Design next and its artifacts are what a brief would be built from.</p>
+</section>
+
+<!-- ============================================================ PART 1 -->
+<section id="s-p1-timeline" data-anchor="p1-timeline" data-label="P1 — the one time it happened" data-group="Part 1 · What we provide today" data-title="1. The one time it happened">
+  <button class="cbtn">comment</button>
+  <h2><span class="num">1</span>The one time it happened — app_1, 2026-09-08</h2>
+  <p class="sub">Reconstructed from git timestamps, Claude Design's own sync note, and the output file.</p>
+  <div class="tl">
+    <div><b>2026-09-08 16:53 CDT · commit <code>97db015</code></b>First commit of app_1: <code>research/home-decorating.md</code>, <code>positioning.md</code>, <code>spec/index.html</code> (the PRD page, 19 sections, 24 decision points), and a generated <code>PRD.md</code> at 722 lines — 35 decisions over 9 review rounds already recorded.</div>
+    <div><b>2026-09-08 17:06 CDT · Claude Design sync</b><code>ui_ux/DesignMyRoom iOS screens/github.md</code> records <code>repo: pkbims/test_app_1</code>, <code>branch: main</code>, <code>date: 2026-09-08T22:06:00Z</code>. Thirteen minutes after the commit. Its note: <em>"Read the PRD, positioning and research; the repo contains no app UI (spec tooling only), so screens were designed from the PRD's settled decisions rather than recreated."</em></div>
+    <div><b>2026-09-08 18:19 · export lands on disk</b><code>DesignMyRoom.dc.html</code> (66 KB, a clickable canvas with an iOS device frame), <code>ios-frame.jsx</code>, <code>support.js</code>. Eight flow screens plus six edge states. The four PRD decisions still open at that moment (U2, F2, U3, U4) are switchable in the frame.</div>
+    <div><b>2026-09-09 · contract freeze, then build</b><code>ios/AGENT.md</code> line 16 tells the iOS worker: <em>"The designs: open <code>../ui_ux/DesignMyRoom iOS screens/DesignMyRoom.dc.html</code> in a browser (it is a clickable prototype) and read <code>github.md</code> for the screen map."</em> That is the entire design handoff into the build stage.</div>
+    <div><b>2026-09-10 · the visual pass is redone — without Claude Design</b><code>ui_design_v2/</code> is an html-worker page (Claude Code, two review rounds, decisions <code>accent = clay</code>, <code>home-layout = grid</code>) with a 23 KB <code>HANDOFF.md</code> that defines 14 colour tokens, three type roles, a spacing scale, radii, shadows, and per-screen changes. This — not the Claude Design export — is what the iOS code was actually restyled from (<code>ios/DesignMyRoomApp/Sources/Shared/DesignTokens.swift</code> cites it by name).</div>
+  </div>
+  <div class="risk"><b>What that timeline says.</b> Claude Design got the richest possible <em>product</em> input — a 722-line PRD with numbered, evidenced decisions — and zero <em>design</em> input. It produced a good screen set and its own aesthetic, and two days later we did a second visual pass in a different tool to get the aesthetic we actually wanted, plus the token-level spec the build needed. The brief was missing exactly the things the second pass supplied.</div>
+</section>
+
+<section id="s-p1-provided" data-anchor="p1-provided" data-label="P1 — what was effectively in the brief" data-group="Part 1 · What we provide today" data-title="2. What was effectively provided">
+  <button class="cbtn">comment</button>
+  <h2><span class="num">2</span>What was effectively provided</h2>
+  <p class="sub">There is no prompt to quote. What follows is what existed in the repo at 17:06 on 2026-09-08 and what Claude Design's own screen map says it used.</p>
+  <table class="t">
+    <tr><th style="width:26%">Artifact on disk at that moment</th><th>What it gave the designer</th><th style="width:30%">Proof it was used</th></tr>
+    <tr><td><code>positioning.md</code></td><td>The one-paragraph wedge ("basically DecorAI, but it never invents architecture"), the user in one line, two verbatim complaints.</td><td>Screen map row "Copy + tone: positioning.md, research/home-decorating.md". The sign-in headline it wrote — "Restyle your room, not somebody else's." — is the positioning restated.</td></tr>
+    <tr><td><code>PRD.md</code> §5 Who it's for, §6 Scope</td><td>"Someone who has just moved in… furniture that does not suit the new place." Seven explicit exclusions.</td><td>No shopping, AR or sharing appears in any screen.</td></tr>
+    <tr><td><code>PRD.md</code> §7 Flow, §8 Screens</td><td>A mermaid flow with a decision branch (confident / low confidence), and eight named screens each with 3–5 bullets of intent and the decision IDs they serve.</td><td>Screen map maps every built screen to "PRD.md §8 &lt;name&gt;" plus the decision IDs (D13, U2, T12, F2…).</td></tr>
+    <tr><td><code>PRD.md</code> decision records (D1–D14, U1–U4, F1–F5, C1–C4, T1–T14)</td><td>Which choices were settled and which were still open — the PRD marks the chosen option with <b>→</b>.</td><td>The export header lists "TAKEN AS SETTLED: geometry-only lock (D10b), one photo (U1 silent), account first via Apple (D13)…" and builds U2/F2/U3/U4 as switches because they had no arrow yet.</td></tr>
+    <tr><td><code>PRD.md</code> §9 Success criteria</td><td>Fidelity (preservation rate) is the headline metric and must be shown, not hidden.</td><td>Compare screen shows "94% STRUCTURE KEPT" as the largest element.</td></tr>
+    <tr><td><code>PRD.md</code> §13 The iOS app</td><td>Platform (iOS), stack (Swift + SwiftUI, F1), and "the outline screen is the hard one — it is real drawing work."</td><td>Built in an iOS 26 device frame (<code>ios-frame.jsx</code>), Sign in with Apple, system font for tappable things.</td></tr>
+    <tr><td><code>PRD.md</code> §16 "Every error"</td><td>Eight error codes, each with the exact sentence the user sees.</td><td>Six edge states built; screen map row "Error / edge states: PRD.md §16".</td></tr>
+    <tr><td><code>spec/index.html</code> wireframes</td><td>Low-fi phone mockups drawn in HTML inside the PRD page (the <code>SCREENS</code> array, ~264 px phones with placeholder slots).</td><td>Claude Design says "the repo contains no app UI" — it either did not open the spec page's JavaScript or did not count it. Effectively <b>not</b> used.</td></tr>
+    <tr><td><code>research/home-decorating.md</code></td><td>63 verbatim complaints from 45 people.</td><td>Used for copy tone (per screen map). The "We never move your walls" trust line is a direct answer to the complaints.</td></tr>
+  </table>
+  <p>And the things that were <em>on the machine</em> but not in the repo, so not seen: the real test photo <code>inputs/room.jpg</code> (added in the spike a day later), the six style sample photos (added 2026-09-10 to <code>options_review/images/</code>), and the series constraints in the parent <code>CLAUDE.md</code> ("restyling must stay cheap", "UI changes must not touch business logic") — which live one directory up, outside the app's repo.</p>
+</section>
+
+<section id="s-p1-inferred" data-anchor="p1-inferred" data-label="P1 — what Claude Design said it invented" data-group="Part 1 · What we provide today" data-title="3. What it told us it invented">
+  <button class="cbtn">comment</button>
+  <h2><span class="num">3</span>What Claude Design told us it invented</h2>
+  <p class="sub">The export's own header — the best evidence of the gaps, because the tool wrote it.</p>
+  <blockquote><b>THE AESTHETIC I PICKED</b> — "Editorial and quiet: warm paper, one ink, Instrument Serif for the sentences that carry the promise, system sans for anything you tap, monospace for anything the machine is asserting. Colour appears only in the overlays — so colour <em>means</em> 'protected'."</blockquote>
+  <blockquote><b>THE ALTERNATIVE, IF YOU WANT IT</b> — "A surveyor's aesthetic — mono-first, measurements visible, outlines drawn like a survey rather than a design app… Say the word and I'll build it beside this."</blockquote>
+  <blockquote><b>PLACEHOLDERS</b> — "No photography yet, so every room is a labelled plate with the detected geometry drawn on it at true position. Drop real photos in and the overlays sit on top unchanged."</blockquote>
+  <p>Three admissions: it chose the brand direction itself, it offered an alternative because nothing told it which way to go, and it had no real imagery for a product whose entire promise is about a photograph. It also added a screen the PRD did not list — a "Rooms" list with "0 FREE ROOMS LEFT" — because a flow needs somewhere to land, and nobody had said what Home was. Two days later the v2 pass made Home the flagship screen.</p>
+  <p>Its aesthetic was <em>not</em> carried into the build. v2 chose Fraunces over Instrument Serif and a clay accent over "one ink"; only the headline "It's still your room." survived, borrowed back into v2's sign-in screen (v2 <code>HANDOFF.md</code> §2 says so explicitly).</p>
+</section>
+
+<section id="s-p1-app4" data-anchor="p1-app4" data-label="P1 — app_4 today" data-group="Part 1 · What we provide today" data-title="4. app_4: what a brief would have to draw on">
+  <button class="cbtn">comment</button>
+  <h2><span class="num">4</span>app_4 — what a brief today would be built from</h2>
+  <p class="sub">Not yet through Claude Design. PRD closed 2026-09-20 after ten review rounds and seventeen decisions (per <code>PROGRESS.md</code>); the app is at stage 4, contract freeze. A design run for app_4 would therefore happen the way app_1's did — after the full PRD — whatever D2 below settles for the apps that follow.</p>
+  <ul>
+    <li><b><code>positioning.md</code></b> (2026-09-19) — the wedge, three anchored quotes, and a "Left out on purpose" block. Stronger than app_1's because it names what the paragraph does <em>not</em> promise.</li>
+    <li><b><code>spec/index.html</code> §8</b> — eleven screens in a table with three columns: <em>Screen · What's on it · Requirement it serves</em>. Names the hardest screen (the empty-wallet menu) and says why it shapes the client stack. Three layout decisions (D7, D8, D9) each with three plain-language options.</li>
+    <li><b><code>spec/index.html</code> §14</b> — the client in detail: SwiftUI iOS 17+, a tab bar (Wallet · Earn · Receipt · Settings), three extensions, "the hardest screen is M3, copy the move… 30 fps, without dropping the counter."</li>
+    <li><b><code>spec/prototype.html</code></b> (45 KB) — built by Claude Code per the <code>create-prd</code> prototype step. It has what app_1's brief lacked: a <b>token set</b> (<code>--bg --card --ink --muted --tint --warn --bad --good</code>), a <b>dark theme</b> via <code>prefers-color-scheme</code>, iOS conventions (grouped background, inset lists, real switches, 44 pt rows), an installable Home Screen icon, compressed time printed on screen.</li>
+  </ul>
+  <div class="plain"><b>So app_4 is already ahead of app_1 on three checklist items</b> (screen inventory with the requirement each serves, tokens, dark mode) — but by accident of the prototype step, not because a brief asked for them. Nothing yet says what app_4 should <em>look like</em>, what tone its copy has, or what the designer is allowed to change.</div>
+</section>
+
+<!-- ============================================================ PART 2 -->
+<section id="s-p2" data-anchor="p2" data-label="P2 — the checklist" data-group="Part 2 · What we are not providing" data-title="5. A designer's checklist">
+  <button class="cbtn">comment</button>
+  <h2><span class="num">5</span>A designer's checklist against the app_1 brief</h2>
+  <p class="sub">Each item is what a product designer would expect in the brief. Status is for app_1 on 2026-09-08 — the only real data point — with a note where app_4 would differ today. Every item is its own comment anchor.</p>
+
+  <div class="gap" data-anchor="g-screens" data-label="Gap — screen inventory">
+    <button class="cbtn">comment</button>
+    <h3>Screen inventory <span class="chip part">partly</span></h3>
+    <p>PRD §8 lists eight screens with intent bullets. But the list is the <em>flow</em>, not the app: there is no Home, no room list, no room detail, no settings, no sign-out. Claude Design invented a "Rooms" screen; the build added Home and Room detail; v2 made Home the flagship. Three screens the product shipped with were never in the brief.</p>
+    <div class="ev">Evidence: <code>app_1/PRD.md</code> §8 (eight screens) vs <code>ui_design_v2/HANDOFF.md</code> §2 (seven screens including Home and Room detail). app_4 §8 is better — eleven screens, a tab bar named in §14 — but it still has no Settings screen despite §8 3b saying interests are "changeable in Settings".</div>
+  </div>
+
+  <div class="gap" data-anchor="g-states" data-label="Gap — states per screen">
+    <button class="cbtn">comment</button>
+    <h3>Every state per screen — empty, loading, error, success <span class="chip part">partly</span></h3>
+    <p>Error is the strong one: PRD §16 gives eight error codes with the exact user-facing sentence, and Claude Design built six edge states from it. Loading exists once (the Rendering screen, because it is a product moment). Empty and success are absent: no empty Home, no "first render done" state, no "credits used up" state on Home. The v2 pass had to write the empty-state copy itself ("No rooms yet…").</p>
+    <div class="ev">Evidence: <code>app_1/PRD.md</code> §16 "Every error"; <code>ui_design_v2/HANDOFF.md</code> §3 "Empty state (no rooms yet)" — written 2026-09-10, not in any brief. app_4 §8 has no state column at all.</div>
+  </div>
+
+  <div class="gap" data-anchor="g-user" data-label="Gap — user and job">
+    <button class="cbtn">comment</button>
+    <h3>User and job-to-be-done <span class="chip yes">provided</span></h3>
+    <p>The best-covered item. Positioning names the user in a sentence; PRD §5 gives one audience and says why it matters ("sets what 'keep my furniture' means"); §2 carries verbatim complaints so the designer hears the user's own words.</p>
+    <div class="ev">Evidence: <code>app_1/positioning.md</code>; <code>app_1/PRD.md</code> §2, §5. Claude Design's screen map credits positioning and research for "copy + tone".</div>
+  </div>
+
+  <div class="gap" data-anchor="g-brand" data-label="Gap — brand direction and references">
+    <button class="cbtn">comment</button>
+    <h3>Brand direction and references <span class="chip no">missing</span></h3>
+    <p>Nothing. No adjectives, no reference apps, no "like X, not like Y", no images. Claude Design's header says "THE AESTHETIC I PICKED" and offers a second one unprompted. The direction we actually wanted only surfaced through review reactions in v2 ("Make this more interesting", "Very Cool" on the mosaic) and a side-by-side of two accents — that is brand direction discovered by iteration, which costs a round each time.</p>
+    <div class="ev">Evidence: <code>ui_ux/…/DesignMyRoom.dc.html</code> header; <code>ui_design_v2/state.json</code> comments <code>c1789066884184</code>, <code>c1789067087670</code>; v2 <code>HANDOFF.md</code> §1 "Rejected alternative: moss". The six style-sample photos are the only implicit reference and they arrived two days after the brief.</div>
+  </div>
+
+  <div class="gap" data-anchor="g-tone" data-label="Gap — tone of copy">
+    <button class="cbtn">comment</button>
+    <h3>Tone of copy <span class="chip part">partly</span></h3>
+    <p>Tone is inferable — the PRD is written in plain, short, slightly wry sentences and the positioning has a voice — and Claude Design inferred it well ("One free room, three restyles, no card." / "We never move your walls."). But nothing states it, so it is not checkable, and the two copy changes in v2 ("My Latest Decors", "Decorate a New Room") were the user's taste arriving as comments, not a rule the designer could have applied.</p>
+    <div class="ev">Evidence: <code>ui_design_v2/state.json</code> comments <code>c1789066747583</code>, <code>c1789066780200</code>. No file in app_1 or app_4 contains a voice or tone rule.</div>
+  </div>
+
+  <div class="gap" data-anchor="g-platform" data-label="Gap — platform and device">
+    <button class="cbtn">comment</button>
+    <h3>Platform and device <span class="chip yes">provided</span></h3>
+    <p>iOS, Swift + SwiftUI (F1), and which screen is hard and why (§13). Claude Design used an iOS 26 frame and platform controls. The one hole is device range: nothing says iPhone-only vs iPad, or the smallest screen we care about. The series CLAUDE.md settles the two client types (iOS or web) but that file is outside the app repo.</p>
+    <div class="ev">Evidence: <code>app_1/PRD.md</code> §13 F1; <code>ui_ux/…/ios-frame.jsx</code>. app_4 §14: "SwiftUI, iOS 17+", tab bar named.</div>
+  </div>
+
+  <div class="gap" data-anchor="g-tokens" data-label="Gap — design tokens and the restyle constraint">
+    <button class="cbtn">comment</button>
+    <h3>Design tokens, and the series rule that restyling must stay cheap <span class="chip no">missing</span></h3>
+    <p>The series constraint — "Restyling must stay cheap. UI changes must not require touching business logic" — is in the parent <code>CLAUDE.md</code>, which is not in the app repo and was never passed to the designer. The Claude Design export is styled with inline hex values on every element. Tokens first appear in v2's <code>HANDOFF.md</code> §1 (14 colours, three type roles, a spacing scale, radii, two shadow tiers), and the build turned that into <code>DesignTokens.swift</code> and 14 named colour sets. That is exactly what the brief should have asked for in the first place, and now there is a precedent to hand over as the required output shape.</p>
+    <div class="ev">Evidence: <code>CLAUDE.md</code> "Architectural constraints"; <code>ui_design_v2/HANDOFF.md</code> §1; <code>ios/DesignMyRoomApp/Sources/Shared/DesignTokens.swift</code>; <code>ios/AGENT.md</code> §"Architecture the app must keep cheap". app_4's <code>prototype.html</code> has a token set, but nothing tells a designer to keep or extend it.</div>
+  </div>
+
+  <div class="gap" data-anchor="g-nav" data-label="Gap — navigation model">
+    <button class="cbtn">comment</button>
+    <h3>Navigation model <span class="chip part">partly</span></h3>
+    <p>app_1's PRD gave a linear flow with one branch and the loop style → render → compare. It did not say whether the app has tabs, a stack, a modal flow, or where you land after "Save". Claude Design had to guess ("Rooms" list). app_4 is explicit: "Tab bar: Wallet · Earn · Receipt · Settings (as the prototype)" — but that sentence lives in §14 The iOS app, a build section, not in the experience part a designer reads.</p>
+    <div class="ev">Evidence: <code>app_1/PRD.md</code> §7 mermaid; <code>app_4/spec/index.html</code> §14 "App target" row.</div>
+  </div>
+
+  <div class="gap" data-anchor="g-data" data-label="Gap — real vs placeholder data">
+    <button class="cbtn">comment</button>
+    <h3>Which data is real and which is placeholder <span class="chip no">missing</span></h3>
+    <p>For a product about photographs, the designer had no photograph. "No photography yet, so every room is a labelled plate." A real room photo existed on the machine (<code>inputs/room.jpg</code>, the spike input) and six style samples existed two days later; neither was in the brief. Nothing said which numbers are real (fidelity 94%, credits "2 left", "usually under a minute") or which strings come from the API verbatim (the §16 error messages are contract strings the client must show as-is — the designer should be told they cannot rewrite them).</p>
+    <div class="ev">Evidence: <code>ui_ux/…/DesignMyRoom.dc.html</code> "PLACEHOLDERS"; <code>app_1/inputs/room.jpg</code>; <code>options_review/images/</code> (2026-09-10); <code>ios/AGENT.md</code> line 117 "Show <code>Error.message</code> verbatim when present."</div>
+  </div>
+
+  <div class="gap" data-anchor="g-a11y" data-label="Gap — accessibility">
+    <button class="cbtn">comment</button>
+    <h3>Accessibility <span class="chip no">missing</span></h3>
+    <p>Not one mention anywhere — not in either PRD, not in the v2 handoff, not in the worker briefs. No Dynamic Type, no VoiceOver, no contrast target, no minimum tap size. The confirm screen in app_1 (tap letters on a photo) and the shield screen in app_4 (Apple's, our words) are both places this would bite. The one accidental win: app_4's prototype uses 44 pt rows and <code>focus-visible</code> outlines.</p>
+    <div class="ev">Evidence: grep for "accessib", "voiceover", "dynamic type" across <code>app_1/PRD.md</code>, <code>app_4/spec/index.html</code>, both prototypes and <code>ios/AGENT.md</code> returns nothing.</div>
+  </div>
+
+  <div class="gap" data-anchor="g-dark" data-label="Gap — dark mode">
+    <button class="cbtn">comment</button>
+    <h3>Dark mode <span class="chip part">partly</span></h3>
+    <p>Never asked for in a brief. app_1 v2 explicitly ruled it out ("out of scope for this pass… a deliberate single warm-light system") and the app ships light-only. app_4's prototype has a full dark theme because the html-worker template does. So the series has no position: one app says no, one app's prototype says yes, and no brief has ever said either.</p>
+    <div class="ev">Evidence: <code>ui_design_v2/HANDOFF.md</code> §1 "Dark mode" and §5; <code>app_4/spec/prototype.html</code> lines 34–35.</div>
+  </div>
+
+  <div class="gap" data-anchor="g-fixed" data-label="Gap — what is fixed vs open">
+    <button class="cbtn">comment</button>
+    <h3>What is fixed and what is open for the designer <span class="chip part">partly</span></h3>
+    <p>The PRD's decision records did this job well by accident: a <b>→</b> marks the chosen option, and Claude Design correctly read U2/F2/U3/U4 as open and built them as switches. What was never said: the <em>flow</em> is fixed and the <em>look</em> is entirely open; copy is open except contract strings; the designer may not add a screen without flagging it (it added "Rooms" silently). The v2 handoff shows the right shape — "This covers restyling only. No flow, endpoint, or state-machine logic changes" — but that was written <em>after</em> the design, as a constraint on the build.</p>
+    <div class="ev">Evidence: <code>ui_ux/…/DesignMyRoom.dc.html</code> "TAKEN AS SETTLED" / "4 OPEN DECISIONS"; <code>ui_design_v2/HANDOFF.md</code> preamble.</div>
+  </div>
+
+  <div class="gap" data-anchor="g-output" data-label="Gap — output format we need back">
+    <button class="cbtn">comment</button>
+    <h3>The output format we need back <span class="chip no">missing</span></h3>
+    <p>Nothing was asked for, so we got Claude Design's default: a <code>.dc.html</code> canvas, a <code>.jsx</code> frame, and a sync note. The iOS worker was told to "open it in a browser". Two days later the build needed something else — a per-screen table of exact values against named source files — and got it from v2's <code>HANDOFF.md</code>, which is the de facto handoff format the series has actually built from. A brief should ask for that shape on the way out: tokens as a table, per-screen changes against the screen inventory, states enumerated, and "hold off on" items listed.</p>
+    <div class="ev">Evidence: <code>ios/AGENT.md</code> line 16; <code>ui_design_v2/HANDOFF.md</code> §§1–5 structure; <code>options_review/HANDOFF.md</code> uses the same shape a second time (2026-09-11) — that is the second occurrence the working agreement says to notice.</div>
+  </div>
+
+  <div class="gap" data-anchor="g-hardest" data-label="Gap — hardest screen and success metric">
+    <button class="cbtn">comment</button>
+    <h3>The hardest screen, and the number the product is staking itself on <span class="chip yes">provided</span></h3>
+    <p>Two things the PRD does that most briefs do not: it names the hardest screen and why ("the outline screen is the hard one — it is real drawing work" / app_4: "M3, copy the move… 30 fps"), and it names the headline metric and says it must be visible (fidelity, 5th percentile). Claude Design made 94% the largest thing on the Compare screen. Keep both in the template.</p>
+    <div class="ev">Evidence: <code>app_1/PRD.md</code> §9, §13; <code>app_4/spec/index.html</code> §14.</div>
+  </div>
+
+  <details class="ref"><summary>Scorecard — the checklist in one table</summary>
+    <table class="t">
+      <tr><th>Item</th><th>app_1 brief (2026-09-08)</th><th>app_4 artifacts today</th></tr>
+      <tr><td>Screen inventory</td><td><span class="chip part">partly</span> 8 flow screens, no Home/list/detail</td><td><span class="chip part">partly</span> 11 screens + tab bar, no Settings</td></tr>
+      <tr><td>States per screen</td><td><span class="chip part">partly</span> errors yes, empty/success no</td><td><span class="chip no">missing</span> no state column</td></tr>
+      <tr><td>User and JTBD</td><td><span class="chip yes">provided</span></td><td><span class="chip yes">provided</span></td></tr>
+      <tr><td>Brand direction and references</td><td><span class="chip no">missing</span></td><td><span class="chip no">missing</span></td></tr>
+      <tr><td>Tone of copy</td><td><span class="chip part">partly</span> inferable, unstated</td><td><span class="chip part">partly</span></td></tr>
+      <tr><td>Platform and device</td><td><span class="chip yes">provided</span> (device range no)</td><td><span class="chip yes">provided</span></td></tr>
+      <tr><td>Tokens and restyle-cheap rule</td><td><span class="chip no">missing</span></td><td><span class="chip part">partly</span> prototype has tokens, rule unstated</td></tr>
+      <tr><td>Navigation model</td><td><span class="chip part">partly</span></td><td><span class="chip yes">provided</span> (in §14, not §8)</td></tr>
+      <tr><td>Real vs placeholder data</td><td><span class="chip no">missing</span></td><td><span class="chip no">missing</span></td></tr>
+      <tr><td>Accessibility</td><td><span class="chip no">missing</span></td><td><span class="chip no">missing</span></td></tr>
+      <tr><td>Dark mode</td><td><span class="chip no">missing</span> (later ruled out)</td><td><span class="chip part">partly</span> prototype has it, nobody decided</td></tr>
+      <tr><td>Fixed vs open</td><td><span class="chip part">partly</span> via decision arrows</td><td><span class="chip part">partly</span></td></tr>
+      <tr><td>Output format back</td><td><span class="chip no">missing</span></td><td><span class="chip no">missing</span></td></tr>
+      <tr><td>Hardest screen + headline metric</td><td><span class="chip yes">provided</span></td><td><span class="chip yes">provided</span></td></tr>
+    </table>
+  </details>
+</section>
+
+<!-- ============================================================ PART 3 -->
+<section id="s-p3-principle" data-anchor="p3-principle" data-label="P3 — the principle" data-group="Part 3 · What we should provide" data-title="6. The principle">
+  <button class="cbtn">comment</button>
+  <h2><span class="num">6</span>What we should provide — the principle</h2>
+  <p>The PRD already carries the product half of a design brief better than most design briefs do. What it lacks is the design half, and the design half is short: a direction, a token contract, a state grid, and the shape of the answer. So the proposal is <b>not</b> a new document to maintain. It is a one-page <code>DESIGN_BRIEF.md</code> generated from the PRD page's export plus a small block of design-only facts we write once per app — and the series rules that never change live in the template, not in each app.</p>
+  <div class="plain"><b>Tradeoff, in a sentence:</b> a brief that repeats the PRD drifts from it within one round (the same reason <code>PRD.md</code> is generated, not written). A brief that only <em>points</em> at the PRD leaves the designer to find §5, §8, §9, §13 and §16 on their own — which is what happened, and it mostly worked. The middle: the brief quotes the PRD's screen table and error table by generation, and adds only what the PRD does not hold.</div>
+</section>
+
+<section id="s-p3-decisions" data-anchor="p3-decisions" data-label="P3 — decisions" data-group="Part 3 · What we should provide" data-title="7. Decisions">
+  <button class="cbtn">comment</button>
+  <h2><span class="num">7</span>Decisions — where I had to choose</h2>
+  <p class="sub">Each of these changes the template in §8. Nothing is pre-selected; the recommended option is first and says why.</p>
+
+  <div class="d open" data-anchor="d1" data-label="D1 — where the brief lives">
+    <button class="cbtn">comment</button>
+    <div class="q">D1 — Where does the brief live, and how does Claude Design get it?</div>
+    <div class="why">Claude Design read the repo by GitHub connection last time. Whatever we write has to be where it will look.</div>
+    <div data-radio="d1">
+      <label class="opt"><input type="radio" name="d1" value="file"><span><span class="oh">A file in the app repo, <code>&lt;app&gt;/design/BRIEF.md</code>, committed before the run (recommended)</span><span class="od">What it is: one Markdown file next to the PRD, generated + hand-written block. What you get / costs: Claude Design's GitHub sync finds it; it survives context resets; it is what the iOS worker reads later too. Costs one more generated file to keep in step. When you'd pick it: you want the designer and the builder to read the same thing — which is the series' whole method.</span></span></label>
+      <label class="opt"><input type="radio" name="d1" value="paste"><span><span class="oh">A prompt pasted into Claude Design each time, from the template</span><span class="od">What it is: fill the §8 template, paste it. What you get / costs: fastest; nothing new in the repo. Costs: the exact brief is lost unless someone saves it — which is precisely the gap this page found. When you'd pick it: you treat the design run as disposable.</span></span></label>
+      <label class="opt"><input type="radio" name="d1" value="both"><span><span class="oh">Both — file in the repo, and the paste is one line pointing at it</span><span class="od">What it is: the file is the brief; the pasted prompt says "read design/BRIEF.md first, then the PRD". What you get / costs: the file is durable and the run is reproducible. Costs: two steps. When you'd pick it: you are not sure the GitHub sync reads a new file without being told.</span></span></label>
+    </div>
+  </div>
+
+  <div class="d open" data-anchor="d2" data-label="D2 — when, and who runs it" data-changed="2">
+    <button class="cbtn">comment</button>
+    <div class="q">D2 — When in the pipeline does Claude Design run, and who runs it?</div>
+    <div class="why">app_1 ran it after the whole PRD was done. app_4's <code>create-prd</code> now builds a prototype between Part 2 and Part 3.</div>
+    <div class="plain"><b>Settled in round 2 — the division of labour.</b> You run Claude Design yourself, by hand. Claude Code's job, once Part 2 has held, is to produce the filled-in checklist — <code>design/BRIEF.md</code> (D1) — and hand you the files it names (D7). You paste the brief into Claude Design, run the rounds there, and drop the handoff back into <code>design/</code> for Part 3 to build from. Nothing in the pipeline calls the design tool; the pipeline's output is the prompt.</div>
+    <div data-radio="d2">
+      <label class="opt"><input type="radio" name="d2" value="after-part2"><span><span class="oh">After Part 2 holds, as the visual layer on top of the Part-2 prototype (recommended)</span><span class="od">What it is: Claude Code's prototype settles the flow and states; Claude Design then gets the brief + prototype and does look, tokens and copy. What you get / costs: the designer works on a flow that has already been felt on a phone, so fewer "this step plays wrong" rounds. Costs: two artifacts (prototype, design) that must agree; a flow change after the design run costs a redesign. When you'd pick it: the prototype step in <code>create-prd</code> is staying.</span></span></label>
+      <label class="opt"><input type="radio" name="d2" value="after-prd"><span><span class="oh">After the full PRD, before contract freeze — what app_1 did</span><span class="od">What it is: the designer sees the finished document including the client stack. What you get / costs: maximal context; the build brief can point at the design from day one. Costs: Part 3 is written from a flow diagram, not a felt flow — the thing the prototype step was added to fix. When you'd pick it: you drop the prototype step.</span></span></label>
+      <label class="opt"><input type="radio" name="d2" value="replace-proto"><span><span class="oh">Instead of the Part-2 prototype — Claude Design's clickable output <em>is</em> the prototype</span><span class="od">What it is: one tool, one artifact. What you get / costs: no duplication. Costs: the <code>.dc.html</code> is a canvas in a device frame, not a phone-installable page with sensors and compressed time — the things <code>create-prd</code> asks the prototype for. When you'd pick it: the prototype's sensor/time features turn out not to matter for the next app.</span></span></label>
+    </div>
+  </div>
+
+  <div class="d open" data-anchor="d3" data-label="D3 — who sets the visual direction">
+    <button class="cbtn">comment</button>
+    <div class="q">D3 — Who sets the visual direction?</div>
+    <div class="why">app_1's direction was picked by the tool, then overridden two days later by a side-by-side (moss vs clay) and a comment ("make this more interesting"). Neither is a brief.</div>
+    <div data-radio="d3">
+      <label class="opt"><input type="radio" name="d3" value="two"><span><span class="oh">We write three adjectives + two reference apps + one "not like"; the designer builds two directions side by side; we pick one in round 1 (recommended)</span><span class="od">What it is: a short direction block in the brief, and a required A/B as the first deliverable. What you get / costs: the choice the v2 round made by accident (clay vs moss) becomes the designed first step; cheap to write, one round to settle. Costs: one extra round before screens. When you'd pick it: you want on-camera a moment where the look is chosen for a stated reason.</span></span></label>
+      <label class="opt"><input type="radio" name="d3" value="we"><span><span class="oh">We dictate the palette and type up front, from a series house style</span><span class="od">What it is: one token set for the whole series, per-app accent only. What you get / costs: every app looks like it is from the same studio; zero direction rounds. Costs: the apps stop being distinguishable; a house style has to be designed first. When you'd pick it: the series brand matters more than each app's.</span></span></label>
+      <label class="opt"><input type="radio" name="d3" value="platform"><span><span class="oh">Platform default — Apple HIG look, system font, one accent colour, nothing else</span><span class="od">What it is: what app_4's prototype already is. What you get / costs: fastest, most accessible by default, restyling is trivially cheap. Costs: looks like a demo app — the thing the series exists to not be. When you'd pick it: an app whose value is entirely in the mechanism, not the surface.</span></span></label>
+    </div>
+  </div>
+
+  <div class="d open" data-anchor="d4" data-label="D4 — output format back">
+    <button class="cbtn">comment</button>
+    <div class="q">D4 — What do we ask for back?</div>
+    <div class="why">The build read a handoff table (v2 <code>HANDOFF.md</code>), not the canvas. Whatever we ask for should be the thing a worker brief can point at.</div>
+    <div data-radio="d4">
+      <label class="opt"><input type="radio" name="d4" value="handoff"><span><span class="oh">Canvas + <code>HANDOFF.md</code> in the v2 shape + a <code>tokens.json</code> (recommended)</span><span class="od">What it is: the clickable <code>.dc.html</code> as the picture; a Markdown handoff with §1 visual system, §2 per-screen changes, §3 states grid, §4 hold-off list; tokens as one machine-readable file. What you get / costs: the worker brief points at two files and the build converts tokens by script (<code>DesignTokens.swift</code> or <code>tokens.css</code>). Costs: the designer must write the table, which it will only do if asked. When you'd pick it: you have already built from this shape twice (v2, options round).</span></span></label>
+      <label class="opt"><input type="radio" name="d4" value="canvas"><span><span class="oh">Canvas only — the worker reads the design by opening it</span><span class="od">What it is: what app_1 did. What you get / costs: nothing to ask for. Costs: exact values must be read off the page by the worker; the v2 round shows that is not enough. When you'd pick it: never, given the evidence — listed so the rejection is on record.</span></span></label>
+      <label class="opt"><input name="d4" type="radio" value="code"><span><span class="oh">Code — SwiftUI views or a CSS file, straight from the design tool</span><span class="od">What it is: ask Claude Design for implementation. What you get / costs: no translation step. Costs: it cuts across the stage-5 worker's ownership of <code>ios/</code>, and the restyle-cheap rule needs the views to be dumb layers over a state machine the designer knows nothing about. When you'd pick it: a web app where the design tool's HTML <em>is</em> the deliverable — decide again when the first web app arrives.</span></span></label>
+    </div>
+  </div>
+
+  <div class="d open" data-anchor="d5" data-label="D5 — dark mode as a series rule">
+    <button class="cbtn">comment</button>
+    <div class="q">D5 — Is dark mode a series rule?</div>
+    <div class="why">app_1 said no (deliberately). app_4's prototype has it (accidentally). The template needs one line either way.</div>
+    <div data-radio="d5">
+      <label class="opt"><input type="radio" name="d5" value="required"><span><span class="oh">Required from the first brief — every token has a light and a dark value (recommended)</span><span class="od">What it is: the tokens file carries two columns; the designer shows every screen in both. What you get / costs: iOS users who run dark get a real app, not a white flash; it forces the token discipline that makes restyling cheap. Costs: roughly a third more design work on the first pass; photo-heavy screens need scrim rules twice. When you'd pick it: the baseline says "nothing here is faked".</span></span></label>
+      <label class="opt"><input type="radio" name="d5" value="per-app"><span><span class="oh">Per app — the brief states yes/no and the PRD records why</span><span class="od">What it is: a line in the brief. What you get / costs: app_1's "deliberate single warm-light system" stays legitimate. Costs: a decision to make every time, and a token set that may not be two-column when a later app needs it. When you'd pick it: some apps are genuinely one-mood (a photo product may be).</span></span></label>
+      <label class="opt"><input type="radio" name="d5" value="later"><span><span class="oh">Light only for v1 of every app, dark as a documented v2 item</span><span class="od">What it is: what app_1 did, made the rule. What you get / costs: fastest first pass. Costs: an item the series always promises and never ships — the demo-app smell. When you'd pick it: throughput over completeness.</span></span></label>
+    </div>
+  </div>
+
+  <div class="d open" data-anchor="d6" data-label="D6 — accessibility floor">
+    <button class="cbtn">comment</button>
+    <div class="q">D6 — What is the accessibility floor in every brief?</div>
+    <div class="why">Currently nothing, anywhere. The template needs a floor or it will stay nothing.</div>
+    <div data-radio="d6">
+      <label class="opt"><input type="radio" name="d6" value="floor"><span><span class="oh">A fixed floor in the template: 4.5:1 text contrast, 44 pt tap targets, Dynamic Type up to the accessibility sizes on every list screen, VoiceOver labels on every control (recommended)</span><span class="od">What it is: four lines that never change. What you get / costs: checkable; the designer designs to it; the worker tests to it. Costs: Fraunces-at-34pt-on-a-photo kind of choices get harder. When you'd pick it: it costs almost nothing to state and everything to retrofit.</span></span></label>
+      <label class="opt"><input type="radio" name="d6" value="mention"><span><span class="oh">Mention it, no numbers — "follow Apple's accessibility guidance"</span><span class="od">What it is: one sentence. What you get / costs: something rather than nothing. Costs: unverifiable, so it will be skipped the way "error tracking" is skipped when it is not a line item. When you'd pick it: you trust the tool's defaults.</span></span></label>
+      <label class="opt"><input type="radio" name="d6" value="none"><span><span class="oh">Leave it out of the brief; handle it in the build stage</span><span class="od">What it is: status quo. What you get / costs: no design constraint. Costs: layouts that cannot grow with Dynamic Type get discovered after they are built. When you'd pick it: never recommended — on record as the current state.</span></span></label>
+    </div>
+  </div>
+
+  <div class="d open" data-anchor="d7" data-label="D7 — does the tool see the real repo">
+    <button class="cbtn">comment</button>
+    <div class="q">D7 — Does Claude Design get the repo, or only the brief?</div>
+    <div class="why">Last time it got the whole repo and found what it needed. But the repo also contained a 1,196-line spec page it did not read and, from stage 5 on, will contain the code.</div>
+    <div data-radio="d7">
+      <label class="opt"><input type="radio" name="d7" value="repo"><span><span class="oh">The repo, with the brief telling it the read order (recommended)</span><span class="od">What it is: GitHub connection as before; <code>BRIEF.md</code> §0 says "read this, then PRD §5, §7, §8, §9, §13, §16, then <code>prototype.html</code>; ignore <code>spec/</code> tooling and <code>backend/</code>". What you get / costs: it can quote the PRD directly; the read order stops it re-deriving the product. Costs: on a re-run after build starts it will see Swift files and may design to what exists. When you'd pick it: you re-run the design tool before the build, not during.</span></span></label>
+      <label class="opt"><input type="radio" name="d7" value="brief"><span><span class="oh">Only the brief and the files it names, uploaded — no repo connection</span><span class="od">What it is: paste/upload <code>BRIEF.md</code>, <code>PRD.md</code>, photos. What you get / costs: exactly controlled input; reproducible. Costs: manual; the sync note that served as our only record last time goes away. When you'd pick it: mid-build restyles where the code must not steer the design.</span></span></label>
+    </div>
+  </div>
+</section>
+
+<section id="s-p3-template" data-anchor="p3-template" data-label="P3 — the template" data-group="Part 3 · What we should provide" data-title="8. The brief template">
+  <button class="cbtn">comment</button>
+  <h2><span class="num">8</span>The brief template — <code>&lt;app&gt;/design/BRIEF.md</code></h2>
+  <p class="sub" data-changed="2" data-label="Template — updated to round-2 decisions" style="position:relative;padding-left:12px">Updated to the decisions recorded in round 2: the file lives in the repo (D1), Claude Code generates it after Part 2 and <b>you paste it into Claude Design yourself</b> (D2); two directions first (D3); handoff + tokens back (D4); light only for v1 (D5); accessibility handled at build, not in the brief (D6); the brief plus the files it names, no repo connection (D7). Blocks marked <em>generated</em> come from the PRD page's export; <em>written</em> blocks are the per-app design facts added once; the rest is the series template.</p>
+  <pre class="code"># Design brief — {{app}}                                  ← written
+
+## 0. How this brief is used                              ← D2 · D7
+Generated by Claude Code after Part 2 of the PRD holds. Pasted
+into Claude Design by hand, with these files attached — no repo
+connection: PRD.md · spec/prototype.html · design/references/*.
+Read in that order. Everything you need is in what is attached;
+if something is missing, ask rather than infer it.
+
+## 1. What this is, and for whom                          ← generated
+{{positioning paragraph}}
+{{PRD §5, verbatim}}
+Two things people said, in their words:
+{{two anchored quotes from positioning.md}}
+
+## 2. Platform and device                                 ← written
+iOS · iPhone only · smallest supported: iPhone SE (3rd gen) width
+· iOS {{n}}+ · SwiftUI. (Web apps: browsers, breakpoints, and
+whether the design tool's HTML is the deliverable — decide in the
+first web app.)
+
+## 3. Navigation model                                    ← written
+{{one sentence: tab bar with N tabs named … / single stack /
+modal flow from a home screen}} Where "done" lands: {{screen}}.
+
+## 4. Screen inventory, with every state                  ← generated + written
+| # | Screen | What's on it | Serves | Empty | Loading | Error | Success |
+Every row from PRD §8, plus the screens the flow needs but the
+PRD does not list: Home, Settings, sign-out, account/credits.
+Each state cell: "—" if that state cannot happen, otherwise the
+copy or a pointer to §16. No cell is left blank.
+The hardest screen is {{name}}: {{PRD's sentence on why}}.
+
+## 5. Copy                                                ← written
+Voice: {{three adjectives}}. Sentences short; second person; no
+exclamation marks; say what we do, not what we are.
+Fixed strings — show verbatim, do not rewrite:
+{{PRD §16 "What the user sees" column, generated}}
+Open copy: everything else. Propose; we approve per screen.
+
+## 6. Data: real vs placeholder                           ← written
+Real, use these: {{design/references/room.jpg …}} — a real
+{{thing}} from a real phone. Numbers on screen are the product's
+real range: {{e.g. fidelity 0.85–0.99, credits 0–3}}.
+Placeholder is not acceptable for {{the artifact the promise is
+about}}. Placeholder is fine for {{avatars, dates}}.
+
+## 7. Visual direction                                    ← written · D3
+Three words: {{editorial · warm · quiet}}.
+Like: {{two shipping apps, one screen each in references/}}.
+Not like: {{one app, and the one thing about it we reject}}.
+First deliverable: two directions, side by side, on the two
+screens that matter most ({{hardest screen}}, {{home}}). We pick
+one before any other screen is built.
+
+## 8. Tokens — the contract with the build                ← series rule
+Every colour, type role, spacing step, radius and shadow is a
+named token. No literal values in screens. Deliver tokens as
+tokens.json. Light appearance only for v1; dark mode is a
+documented v2 item, so keep every colour a token now so the
+second column can be added without touching a screen.   ← D5
+The build converts this file by script (app_1 precedent:
+ui_design_v2/HANDOFF.md §1 → DesignTokens.swift). Changing the
+look later must be a change to this file, never to a view, and
+never to business logic (series CLAUDE.md).
+Type: at most three roles (display / UI / meta). A bundled font
+is a real build task — name the exact weights.
+
+## 9. Accessibility                                        ← D6
+Not part of this brief; handled in the build stage. Do not
+design to a floor we have not set.
+
+## 10. What is fixed, what is open                        ← generated + series rule
+Fixed: the flow (§7), the screen list (§4), the decisions marked
+→ in the PRD ({{list of IDs}}), the contract strings (§5).
+Open: everything visual, all unfixed copy, layout within a screen.
+Still undecided in the PRD — build as switches and compare:
+{{decision IDs with no → yet}}
+Adding a screen, a step, or a permission ask is a change request
+to us, not a design choice — flag it, do not build it silently.
+
+## 11. What we need back                                  ← series rule · D4
+1. The clickable canvas, in the device frame, every screen in
+   every state from §4, both themes.
+2. HANDOFF.md in this shape (app_1 precedent, ui_design_v2/):
+   §1 visual system as tables · §2 per-screen changes against
+   §4's numbering · §3 the states grid, filled · §4 hold-off /
+   sequence-carefully list · §5 rejected alternatives, one line
+   each, so they are not re-proposed.
+3. tokens.json.
+4. references/ back with any new imagery, named.
+All of it goes into &lt;app&gt;/design/. The build stage's worker
+brief points at 2 and 3 and opens 1.</pre>
+  <p>Length target: under 200 lines with the generated blocks in. If it is longer, the PRD is being repeated.</p>
+</section>
+
+<section id="s-p3-where" data-anchor="p3-where" data-label="P3 — where this lands in the pipeline" data-group="Part 3 · What we should provide" data-title="9. Where this lands">
+  <button class="cbtn">comment</button>
+  <h2><span class="num">9</span>Where this lands in the pipeline files</h2>
+  <ul>
+    <li data-changed="2" data-label="PIPELINE §3 — the brief is the output" style="position:relative;padding-left:12px"><b><code>PIPELINE.md</code> §3 Spec</b> — one paragraph: after Part 2 holds and the prototype exists, Claude Code generates <code>design/BRIEF.md</code> and stops. <b>You</b> take the brief and the attached files into Claude Design, pick one of two directions, run the screens, and put the handoff and <code>tokens.json</code> into <code>design/</code>. Part 3 is then written with the handoff on disk, so §14 (the client) can name the token file and any bundled font as build tasks.</li>
+    <li><b><code>.claude/skills/create-prd/SKILL.md</code></b> — a new step between the prototype and Part 3: "the design brief", with the template above and the generated-vs-written split. The exporter gains a <code>--brief</code> mode that emits §1, §4, §5-fixed and §10 from the page. The step ends with the file, not with a design — the design tool is run by hand.</li>
+    <li><b><code>CLAUDE.md</code></b> — one line only, because the file is loaded every session: the token contract rule (§8). Accessibility stays out of doctrine per D6.</li>
+    <li><b><code>PROGRESS.md</code></b> — app_4 has passed the point where D2's recommended slot sits (its PRD closed 2026-09-20), so it would run the brief post-PRD like app_1; app_3 (PRD not started) is the first app that can run it in the recommended slot. Note each run so the third occurrence is when the brief step becomes a skill of its own, per the working agreement.</li>
+  </ul>
+  <div class="plain"><b>Second-occurrence notice, per the working agreement:</b> the v2 <code>HANDOFF.md</code> shape (visual system → per-screen → hold-off) has now been used twice in app_1 (<code>ui_design_v2/</code> on 09-10, <code>options_review/</code> on 09-11). This page proposes it as the required output format, which would be the third use. That is the moment to extract it — into the template above, not a separate skill.</div>
+</section>
+
+<section id="s-evidence" data-anchor="evidence" data-label="Evidence index" data-group="Reference" data-title="10. Evidence index">
+  <button class="cbtn">comment</button>
+  <h2><span class="num">10</span>Evidence index</h2>
+  <details class="ref"><summary>Every file cited on this page, and what it proves</summary>
+    <table class="t">
+      <tr><th>File</th><th>Proves</th></tr>
+      <tr><td><code>app_1/ui_ux/DesignMyRoom iOS screens/github.md</code></td><td>The Claude Design run happened, when, against which repo, and what it read. The only record of the "brief".</td></tr>
+      <tr><td><code>app_1/ui_ux/DesignMyRoom iOS screens/DesignMyRoom.dc.html</code></td><td>The output; header admits chosen aesthetic, offered alternative, placeholder imagery; lists open decisions U2/F2/U3/U4.</td></tr>
+      <tr><td><code>app_1</code> git log, commit <code>97db015</code></td><td>What existed on 2026-09-08 16:53: research, positioning, spec page, PRD.md (722 lines, 35 decisions, 9 rounds).</td></tr>
+      <tr><td><code>app_1/PRD.md</code> §5, §7, §8, §9, §13, §16</td><td>The product half of the brief — user, flow, eight screens, metric, client stack, error copy.</td></tr>
+      <tr><td><code>app_1/spec/index.html</code> <code>SCREENS</code> array</td><td>Low-fi wireframes existed inside the spec page and were not counted as "app UI" by the tool.</td></tr>
+      <tr><td><code>app_1/ios/AGENT.md</code> lines 16–18, 117, "Architecture the app must keep cheap"</td><td>How the design reached the build worker; contract strings shown verbatim; restyle-cheap rule restated for the builder but never for the designer.</td></tr>
+      <tr><td><code>app_1/ui_design_v2/HANDOFF.md</code>, <code>state.json</code>, <code>INBOX.md</code></td><td>The second visual pass: tokens, type, spacing, per-screen changes, dark mode ruled out, brand direction settled by side-by-side and comments.</td></tr>
+      <tr><td><code>app_1/ios/DesignMyRoomApp/Sources/Shared/DesignTokens.swift</code> + 14 <code>.colorset</code>s</td><td>The token handoff was consumed by the build exactly as written — the shape works.</td></tr>
+      <tr><td><code>app_1/options_review/HANDOFF.md</code></td><td>Second use of the handoff shape (2026-09-11).</td></tr>
+      <tr><td><code>app_1/inputs/room.jpg</code>, <code>options_review/images/</code></td><td>Real imagery existed and was not in the brief.</td></tr>
+      <tr><td><code>app_4/positioning.md</code></td><td>Stronger positioning shape ("Left out on purpose").</td></tr>
+      <tr><td><code>app_4/spec/index.html</code> §8, §14</td><td>Eleven-screen table with requirement column; tab bar and hardest screen named in the build section.</td></tr>
+      <tr><td><code>app_4/spec/prototype.html</code></td><td>Tokens and dark mode exist by way of the html-worker template; iOS conventions per <code>create-prd</code>.</td></tr>
+      <tr><td><code>CLAUDE.md</code> (series), <code>PIPELINE.md</code> §3, <code>.claude/skills/create-prd/SKILL.md</code></td><td>The restyle-cheap constraint; the prototype step; no design-brief step anywhere.</td></tr>
+    </table>
+  </details>
+</section>
+
+</main>
+
+
+<aside class="right">
+  <h2>Decisions</h2>
+  <p class="sub" style="margin:2px 0 0" id="dprog">—</p>
+  <div class="bar"><i id="dbar" style="width:0"></i></div>
+  <div class="dlist" id="dlist"></div>
+  <h2 style="margin-top:16px">Feedback queue</h2>
+  <p class="sub" style="margin:2px 0 0">Nothing is sent until you confirm.</p>
+  <div id="queue"></div>
+  <button class="primary" id="send">Confirm &amp; send</button>
+</aside>
+</div>
+
+<div id="pop">
+  <div class="pa" id="popanchor"></div>
+  <div class="kind">
+    <label class="sel"><input type="radio" name="kind" value="question" checked> Ask a question</label>
+    <label><input type="radio" name="kind" value="change"> Change this</label>
+  </div>
+  <textarea id="poptext" placeholder="What do you want to know? Answered in the terminal, not on the page."></textarea>
+  <div class="row"><button id="popcancel">Cancel</button><button id="popadd" class="add">Add to queue</button></div>
+</div>
+<div id="toast"></div>
+
+<!-- optional: <script src="vendor/mermaid.min.js"></script> for <pre class="mermaid"> diagrams -->
+<script>
+const S={decisions:{},comments:[],batches:[]}; let ROUND=1;
+const $=s=>document.querySelector(s);
+const esc=t=>String(t).replace(/[<>&]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
+const toast=m=>{const t=$('#toast');t.textContent=m;t.classList.add('on');
+  setTimeout(()=>t.classList.remove('on'),1700)};
+const post=(u,b)=>fetch(u,{method:'POST',headers:{'Content-Type':'application/json'},
+  body:JSON.stringify(b)}).then(r=>r.json());
+const D=k=>S.decisions[k];
+function groups(){return [...document.querySelectorAll('[data-radio],[data-check]')]}
+
+function buildChanged(){
+  // Blocks the author marked data-changed="N" (N = the round they were revised in).
+  // The rail lists the latest round's blocks so the reviewer can find what moved.
+  const els=[...document.querySelectorAll('[data-changed]')]; if(!els.length) return;
+  const latest=Math.max(...els.map(e=>+e.dataset.changed));
+  const mine=els.filter(e=>+e.dataset.changed===latest);
+  $('#toc').insertAdjacentHTML('afterbegin',`<div class="chg"><div class="grp">Changed in round ${latest} (${mine.length})</div>`+
+    mine.map((e,i)=>{ if(!e.id) e.id='chg-'+latest+'-'+i;
+      return `<a href="#${e.id}" data-id="${e.id}">${esc(e.dataset.label||e.dataset.title||e.id)}</a>`}).join('')+
+    `<div class="grp" style="margin-top:10px">Contents</div></div>`);
+  document.querySelectorAll('#toc .chg a').forEach(a=>a.onclick=ev=>{ev.preventDefault();
+    const el=document.getElementById(a.dataset.id); el.scrollIntoView({behavior:'smooth',block:'center'});
+    el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash')});
+}
+function buildToc(){
+  let last='';
+  $('#toc').innerHTML=[...document.querySelectorAll('main section')].map(s=>{
+    let out=''; if(s.dataset.group!==last){out+=`<div class="grp">${s.dataset.group}</div>`;last=s.dataset.group}
+    return out+`<a href="#${s.id}" data-id="${s.id}">${s.dataset.title}</a>`}).join('');
+  const links=[...document.querySelectorAll('#toc a')];
+  const io=new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting)
+    links.forEach(l=>l.classList.toggle('on',l.dataset.id===e.target.id)) }),
+    {rootMargin:'-84px 0px -70% 0px'});
+  document.querySelectorAll('main section').forEach(s=>io.observe(s));
+}
+function renderDecisions(){
+  const gs=groups(); let done=0;
+  $('#dlist').innerHTML=gs.map(g=>{
+    const id=g.dataset.radio||g.dataset.check, blk=g.closest('.d');
+    const ch=[...g.querySelectorAll('input:checked')]; if(ch.length) done++;
+    const val=ch.map(i=>i.closest('label').querySelector('.oh').textContent).join(', ');
+    return `<div class="dr ${ch.length?'done':'todo'}" data-goto="${blk.dataset.anchor}">
+      <span class="dot"></span><span class="dn">${id.toUpperCase()}</span>
+      <span class="dv">${esc(val||'not decided')}</span></div>`}).join('');
+  $('#dprog').textContent=`${done} of ${gs.length} decided`;
+  $('#dbar').style.width=(gs.length?done/gs.length*100:0)+'%';
+  $('#dcount').textContent=`${done}/${gs.length} decided · ${S.comments.filter(c=>c.status==='queued').length} queued`;
+  document.querySelectorAll('.dr').forEach(r=>r.onclick=()=>{
+    const el=document.querySelector(`[data-anchor="${r.dataset.goto}"]`); if(!el)return;
+    el.scrollIntoView({behavior:'smooth',block:'center'});
+    el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash')});
+}
+function renderQueue(){
+  const q=S.comments.filter(c=>c.status==='queued');
+  $('#send').textContent=`Confirm & send round ${ROUND}`+(q.length?` — ${q.length} comment${q.length===1?'':'s'}`:'');
+  $('#queue').innerHTML=q.length?q.map(c=>
+    `<div class="qi"><button class="qx" data-id="${c.id}">×</button>
+     <div class="qa">${c.kind==='question'?'Question':'Change'} · ${esc(c.anchorLabel)}</div>${esc(c.text)}</div>`).join('')
+    :'<div class="empty">No comments.<br>Hover any block and hit <em>comment</em>.</div>';
+  document.querySelectorAll('.qx').forEach(b=>b.onclick=async()=>{
+    const r=await post('/api/comment/delete',{id:b.dataset.id});
+    S.comments=r.comments; renderQueue(); markAnchors(); renderDecisions()});
+}
+function markAnchors(){
+  document.querySelectorAll('[data-anchor]').forEach(el=>{
+    const has=S.comments.some(c=>c.anchor===el.dataset.anchor&&c.status==='queued');
+    const b=el.querySelector(':scope > .cbtn');
+    if(b){b.classList.toggle('has',has); b.textContent=has?'commented':'comment'}});
+}
+const PH={change:'What is wrong, missing, or should change here?',
+          question:'What do you want to know? Answered in the terminal, not on the page.'};
+const kind=()=>$('#pop input[name=kind]:checked').value;
+function setKind(k){$(`#pop input[name=kind][value="${k}"]`).checked=true;
+  document.querySelectorAll('#pop .kind label').forEach(l=>l.classList.toggle('sel',l.querySelector('input').value===k));
+  $('#poptext').placeholder=PH[k]}
+let target=null;
+document.addEventListener('click',e=>{
+  const btn=e.target.closest('.cbtn');
+  if(!btn){ if(!e.target.closest('#pop')) $('#pop').style.display='none'; return }
+  const el=btn.closest('[data-anchor]');
+  target={anchor:el.dataset.anchor,label:el.dataset.label,
+          text:(el.querySelector('h2,.q')||{}).textContent||''};
+  const p=$('#pop'),r=btn.getBoundingClientRect();
+  $('#popanchor').textContent=target.label; $('#poptext').value=''; setKind('question');
+  p.style.display='block'; p.style.top=(window.scrollY+r.bottom+8)+'px';
+  p.style.left=Math.max(12,Math.min(r.right-328+window.scrollX,document.body.clientWidth-340))+'px';
+  $('#poptext').focus();
+});
+$('#popcancel').onclick=()=>$('#pop').style.display='none';
+$('#popadd').onclick=async()=>{
+  const t=$('#poptext').value.trim(); if(!t||!target)return;
+  const r=await post('/api/comment',{id:'c'+Date.now(),anchor:target.anchor,
+    anchorLabel:target.label,anchorText:target.text,text:t,kind:kind()});
+  S.comments=r.comments; $('#pop').style.display='none';
+  renderQueue(); markAnchors(); renderDecisions(); toast('Queued — not sent yet')};
+$('#send').onclick=async()=>{
+  const r=await post('/api/send',{});
+  S.comments.forEach(c=>{if(c.status==='queued')c.status='sent'});
+  ROUND+=1; $('#round').textContent=`Round ${ROUND}`;
+  renderQueue(); markAnchors(); renderDecisions();
+  toast(`Round ${ROUND-1} sent — ${r.sent} comment${r.sent===1?'':'s'} + decisions`)};
+document.addEventListener('change',async e=>{
+  const i=e.target;
+  if(i.closest('#pop')){ if(i.name==='kind') setKind(i.value); return }
+  if(i.type==='radio'){S.decisions[i.name]=i.value; await post('/api/decision',{id:i.name,value:i.value})}
+  else if(i.type==='checkbox'){
+    const v=[...document.querySelectorAll(`input[name="${i.name}"]:checked`)].map(x=>x.value);
+    S.decisions[i.name]=v; await post('/api/decision',{id:i.name,value:v})}
+  else return;
+  document.querySelectorAll('label.opt').forEach(l=>l.classList.toggle('sel',l.querySelector('input').checked));
+  renderDecisions(); toast('Saved')});
+
+fetch('/api/state').then(r=>r.json()).then(async st=>{
+  S.decisions=st.decisions||{}; S.comments=st.comments||[]; S.batches=st.batches||[];
+  ROUND=S.batches.length+1; $('#round').textContent=`Round ${ROUND}`;
+  for(const [k,v] of Object.entries(S.decisions))
+    (Array.isArray(v)?v:[v]).forEach(val=>{
+      const i=document.querySelector(`input[name="${k}"][value="${val}"]`); if(i)i.checked=true});
+  document.querySelectorAll('label.opt').forEach(l=>l.classList.toggle('sel',l.querySelector('input').checked));
+  post('/api/groups',{groups:groups().map(g=>g.dataset.radio||g.dataset.check)});
+  buildToc(); buildChanged(); renderQueue(); markAnchors(); renderDecisions();
+  if(window.mermaid){mermaid.initialize({startOnLoad:false,
+    theme:matchMedia('(prefers-color-scheme: dark)').matches?'dark':'neutral',securityLevel:'loose'});
+    try{await mermaid.run({nodes:[...document.querySelectorAll('pre.mermaid')]})}catch(e){}}
+});
+</script>
+</body>
+</html>

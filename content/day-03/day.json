@@ -1,0 +1,231 @@
+{
+  "day": "day-03",
+  "date": "2026-09-24",
+  "title": "Day 3",
+  "subtitle": "Create v1 build of DecorApp. Go through the steps one by one and build it.",
+  "start": "2026-09-24T00:00:00-04:00",
+  "recaps": [
+    {
+      "n": 20,
+      "kind": "recap",
+      "file": "hour-20.mp4",
+      "title": "DecorApp Research And Positioning",
+      "summary": "This past hour I kicked off research for the decor app, the next app in the series. The script is written for someone who's new to the channel, so it explains each piece in plain terms as it comes up. It starts with why I do research before building anything. Then it covers what Claude is, what a skill is in practice (a research recipe I wrote once that gives every research doc the same shape), and what the HTML worker reviewer page at localhost:7778 is: a local page that turns Claude's write-up into a readable doc I can comment on directly. From there it goes through the research in order. First the problem. Then what already exists: the decor apps and chatbots like ChatGPT and Gemini, and where all of them fall short. Then new idea concepts, each with its USP against the apps, its USP against the chatbots, and a viral feature. Then positioning: the target audience, the build options I weighed, and the chosen idea's USP and viral feature. It ends with a conclusion that brings the audience, the idea and why it wins together in one paragraph. Each part includes one decision I made and why. That finishes the research. Next step is turning it into the v1 build plan for the decor app.",
+      "open": [
+        {
+          "what": "Reviewer research page",
+          "where": "http://localhost:7778"
+        },
+        {
+          "what": "build.py source",
+          "where": "/Users/bimalsaran/Documents/building_apps/research/interior-decor/reviewer/build.py"
+        }
+      ],
+      "lines": [
+        {
+          "act": "camera",
+          "say": "Hey folks, if you're new here, welcome. I'm building a series of real apps, one at a time, and I'm showing you my whole process as I go. The next app is a decor app, something to help people figure out how to decorate their space. Before I write any code for an app, I always do research first. I want to know what problem I'm solving, who's already solving it, and where there's actually room for something new. That's what I did this past hour, so let me walk you through how it works and what came out of it."
+        },
+        {
+          "act": "camera",
+          "say": "First, the tools, because this is probably your first time seeing them. I do a lot of this work with Claude, an AI assistant that I talk to in my terminal. For research I don't just type a random question into it. I use something I've built called a research skill. Think of it as a recipe. I wrote down once what a good research doc for this series looks like: the problem, what already exists, new ideas all judged the same way, who we're building for, and a conclusion. Every time I start research, Claude follows that recipe. That's my first decision, and here's why: if every app's research has the same shape, I can compare them, and I'm not hoping Claude invents a good structure on the fly."
+        },
+        {
+          "act": "localhost:7778, the reviewer page",
+          "say": "This is what came back, and this page is the second tool. I call it the HTML worker reviewer. It's a small page that runs on my own machine. It takes what Claude wrote and shows it as a clean, readable document with a menu on the side, not a wall of raw text. The best part is that I can highlight any section, leave a comment on it, and Claude revises that part. That's the second decision: I review research here instead of reading raw text. It lets me read like an editor, point at the exact thing I want changed, and skip copying text back and forth into the chat."
+        },
+        {
+          "act": "localhost:7778, problem section",
+          "say": "So let's go through the research itself, top to bottom. It opens with the problem: what people actually struggle with when they try to decorate a room. Everything else in the doc gets checked against this section, so if an idea doesn't solve this problem, it doesn't make the cut."
+        },
+        {
+          "act": "localhost:7778, existing solutions section",
+          "say": "Next is what already exists today. This covers the decor apps already out there, and also chatbots like ChatGPT and Gemini. That's the third decision: I count chatbots as real competition, not just other apps. A lot of people now just open ChatGPT and ask 'how should I decorate my living room?' If I ignore that, everything I decide later has a blind spot. The research is honest about it, too. It found that ChatGPT and Gemini can already keep your room in mind and find real products. So I can't just claim we do that and they don't."
+        },
+        {
+          "act": "localhost:7778, what they all miss section",
+          "say": "Then it lays out where all of them fall short, the apps and the chatbots. This is the gap we're aiming at. If there were no gap here, there'd be no reason to build this app."
+        },
+        {
+          "act": "localhost:7778, new ideas section",
+          "say": "Now for the fun part: new idea concepts for what we could build. Look at any one of these idea cards and you'll see the same three things on it. First, its USP against the existing apps. USP just means what makes it different, the reason someone would pick it. Second, its USP against the chatbots. Third, a viral feature, something that makes people want to share it. That's the fourth decision: every idea has to answer the same three questions. That way I'm judging them fairly, side by side, and not just picking whichever one sounds coolest right now."
+        },
+        {
+          "act": "localhost:7778, decide what we build section",
+          "say": "After the ideas, the doc moves to deciding what we actually build. It starts with the target audience, who this is really for, and then lays out the build options I weighed. That's the fifth decision: I kept the options I didn't pick in the doc, not just the winner. Showing what I passed on, and why, proves the choice was thought through and not just a gut call. Then for the idea I chose, its USP and its viral feature are spelled out one more time so they're clear."
+        },
+        {
+          "act": "localhost:7778, conclusion",
+          "say": "And it ends with the conclusion: one paragraph that brings together who it's for, what we're building, and why it wins. That's the sixth decision: the whole thing has to fit in one paragraph. My rule is that if I can't explain the idea in one breath, it isn't sharp enough to build yet."
+        },
+        {
+          "act": "camera",
+          "say": "So that's the research for the decor app, and I'm really happy with it. To recap: I gave Claude a research skill, basically my recipe for a research doc. It came back with a full write-up, and I reviewed it in the HTML worker page, leaving comments until it was right. We went from the problem, to who's solving it today, to the gap, to new ideas, to picking one, to a conclusion that fits in one paragraph. Next up, I'm turning this into the actual v1 build plan for the decor app. See you in the next one."
+        }
+      ],
+      "digest": "# 20:52–21:52 — 1 agent sessions\n\n## Agent 1 — /Users/bimalsaran/Documents/building_apps/research/interior-decor/reviewer\n- asked: I have objection on the overall document structure do you feel its correct? Or can we change the structure so it makes sense that from problem -> existing solutions -> new ideas, we land on the idea we want to build and for that we make the decisions, is that easily understable? I feel the left side which has the nav bar has some headings which the main page doesnt and also I feel it must have a p …\n- asked: Just a question here for you, does this now make sense to you?\n- asked: I feel that after part3. we ready the part4 which has new ideas. and in part5 we decide what we build. its starts from the target audience. then the options you give on what we can build. and then I select those. also the USP should be mentioned in the ideas you present and also the virality feature. Once we do that. In the last we should have something called our Conclusion which should have the  …\n- wrote: /Users/bimalsaran/Documents/building_apps/research/interior-decor/reviewer/build.py\n- wrote: /Users/bimalsaran/Documents/building_apps/research/interior-decor/reviewer/content.py (since deleted)\n- served page: http://localhost:7778\n- said: Mostly yes. The argument now runs in one direction: problem → who solves it today → what they all miss → our idea → shaping it → build or not. Every decision sits right after the evidence it depends on. Three things still don't fully hold together: 1. **Your USP picks don't match the chatbot evidence.** The page's own finding is that ChatGPT and Gemini *can* keep the room and find real products, i …\n- said: Yes, that makes sense, and it's a better shape. The research should end in a clear answer about what we're building, not just a pile of decisions. The new flow: 1. **The problem** 2. **What exists today** 3. **What they all miss** 4. **New ideas**: each idea card shows what it is, its USP against the apps and against ChatGPT, and its viral feature 5. **Decide what we build**: audience first, then  …\n- said: I'm rewriting the page source in one pass: new part order, plain English, and USP plus viral feature on each idea card.\n\n## Commits",
+      "status": "approved",
+      "error": "",
+      "comments": [
+        {
+          "id": "c1-225450",
+          "kind": "change",
+          "target": "general",
+          "label": "General",
+          "text": "What I want to talk about here and showcase to folks is not what I changed in the structure of the research and everything because I want to showcase that the research that we got was so good. So I will obviously show the last revision which has everything we needed. So I don't want to talk about the structure like the changes I made to the structure. What I really want to talk about is the research that it came out and the skill just talk a little bit about the skill that we have and what it produces.\n And I want to showcase this HTML worker document which is really helpful in giving comments and everything. So that's the main part I want to showcase here. And I want to make sure I talk about everything in that research because I feel like the research is the main part. So I want to showcase that to people. Don't mention anything about the changes we are making in the pipeline or the research pipeline or anything.\n So I want to think of that I am showcasing to a user where I just want to talk about the research that was done. So I started with the cloud command right to the research and the prompt and then this document comes and then I talk about the document and the decisions I made and then how we reached and do the final decision and then we can complete this research. So I want to talk about all those in here.",
+          "status": "sent",
+          "answer": "Rewrote summary and lines to drop all mention of structural/pipeline changes (reordering, USP-correction-as-edit, build.py/content.py). New narrative follows the research content itself: the prompt that kicked it off, the skill, the HTML worker reviewer page as a tool worth showcasing, then the doc's actual content in order — problem, existing solutions/chatbots and their gaps, new idea cards with USP-vs-apps/USP-vs-chatbots/viral feature, positioning (audience, build options, chosen idea's USP+viral), and the conclusion.",
+          "round": 1
+        },
+        {
+          "id": "c2-225709",
+          "kind": "change",
+          "target": "general",
+          "label": "General",
+          "text": "I feel I should add more details about the things in the doc. So for example, like a few things we can talk something about those in details so that users like the viewers can feel like, okay, he's talking about the details and the decisions he's making. So let's say there are like five, six decisions we made. Like I would like to have one liner on each decision I made and why I made that decision and why that's important. So add those things here.\n Thank you.",
+          "status": "sent",
+          "answer": "Added six one-line decision-and-reason beats woven into the existing lines (research skill for consistency, reviewer tool for direct-comment revision, including chatbots as real competition, uniform USP/viral-feature judging criteria, showing build options not just the winner, and a single-paragraph conclusion) plus a nod to this in the summary.",
+          "round": 2
+        },
+        {
+          "id": "c3-012515",
+          "kind": "change",
+          "target": "general",
+          "label": "General",
+          "text": "I feel like because I'm showing this for the first time, this script is not like the best script ever because imagine the person who is watching me is seeing the institutional worker for the first time, the research skill for the first time, all the skills for the first time. So it's really important for me to talk about those skills as well and what do they do and what do they come up with.\n So make sure that whatever script that you're generating does that because I don't want to be on the way thinking about this on the go. Does that make sense to you and can you make those specialty changes? It is really not important that it should be within three minutes. It can also exceed. The really important thing is that I capture everything and what you are really focusing on right now is\n capturing the research part that we have done.",
+          "status": "sent",
+          "answer": "Expanded the script so first-time concepts — the research skill and the HTML worker reviewer — get explained (what they are, what they produce), not just referenced. Dropped the implicit 3-minute framing; length now follows completeness of the research walkthrough, not a time target.",
+          "round": 3
+        },
+        {
+          "id": "c4-012657",
+          "kind": "change",
+          "target": "beat 1",
+          "label": "Beat 1",
+          "text": "A skill, if you haven't seen this before, is basically a saved procedure I hand to Claude so it doesn't reinvent how it does something every time\n\n\nRemove this line",
+          "status": "sent",
+          "answer": "Removed the 'a skill is a saved procedure...' explainer sentence from beat 1.",
+          "round": 4
+        },
+        {
+          "id": "c5-013158",
+          "kind": "question",
+          "target": "general",
+          "label": "General",
+          "text": "Now imagine I am reading through this while I am recording is this mentioned in a correct way? \nWhat do you think?",
+          "status": "sent",
+          "answer": "Yes, it reads correctly for recording. It matches your voice sample — plain, first-person, present-tense narration, no jargon dumps. The act cues (camera vs. localhost:7778 + section name) tell you exactly what's on screen when you say each line, so you can move the mouse to match as you talk. The 'first/second/third decision' labels are a bit more numbered-list than your natural style, but they're useful as a spoken anchor so you don't lose track of which decision you're on mid-take — I'd keep them for a first pass and drop the numbers if they feel stiff once you're actually reading it aloud.",
+          "round": 5
+        },
+        {
+          "id": "c6-013314",
+          "kind": "question",
+          "target": "general",
+          "label": "General",
+          "text": "Can this be in a teleprompter style?",
+          "status": "sent",
+          "answer": "Not directly — this is a beat sheet (act + say per line), not a scrolling teleprompter script. But it's easy to read as one: play the lines in order, each `say` is exactly what you speak for that `act`/shot, so you could paste the `say` text alone into a teleprompter tool in sequence. No draft changes made since this is a question.",
+          "round": 6
+        },
+        {
+          "id": "c7-015558",
+          "kind": "change",
+          "target": "general",
+          "label": "General",
+          "text": "generate the script again and focus that I am explaining the process to people who are here on my channcel for the first time. So I have to explain in a digestable way. \n\nNow that you are using opus, make the change thanks.",
+          "status": "sent",
+          "answer": "Rewrote the whole script for first-time viewers. It now opens with context: who I am, what the series is, and why research comes before code. Claude, the research skill and the HTML worker reviewer are each explained in plain terms, and jargon like USP gets defined when it first comes up. The research is covered one section per beat, with the same six decisions and their reasons, and there's a closing recap. I didn't add back the 'a skill is a saved procedure' sentence you cut in round 4. I added one research finding that's in the source log: ChatGPT and Gemini can already keep your room in mind and find real products. I didn't add any other facts beyond the source. The summary is updated to match.",
+          "round": 7
+        }
+      ],
+      "round": 8,
+      "focus": "I want two recaps here. The first recap should be the one where I started working on the new app which is the decor app. I went through the whole research so I want one hourly recap to only focus on that research part and then I want the second hourly recap to only focus on the positioning part that we have completed. The research part can be little bigger than the positioning part so make sure the research part has enough information.\n that I can showcase that.",
+      "from": "2026-09-24T20:52:00-04:00",
+      "to": "2026-09-24T21:52:00-04:00",
+      "changed": [
+        "summary",
+        "beat 1",
+        "beat 2",
+        "beat 3",
+        "beat 4",
+        "beat 5",
+        "beat 6",
+        "beat 7",
+        "beat 8",
+        "beat 9",
+        "beat 10"
+      ]
+    },
+    {
+      "n": 21,
+      "kind": "recap",
+      "file": "hour-21.mp4",
+      "title": "Positioning Skill For App_1",
+      "summary": "This hour I built out positioning as a proper skill for app_1, the interior decor app, so it runs through html-worker the same way research already does and I can review it on a page and leave comments. I kept getting stuck on explaining why positioning even matters, so I pushed until we landed on the real reason: people only understand something new by comparing it to what they already know, so the doc uses other company names to anchor the pitch, and I got that reasoning written into both the skill and the review page. I also gave app_1 its own CLAUDE.md so app-specific facts stop cluttering the series-wide doc. Then I caught a real bug: the app progress visualizer wasn't showing app_1 as in-progress on positioning at all, so I fixed its scan to check for a positioning.md file, a named USP and viral feature, and the anchored-to comparison block. I restarted the visualizer through the monitoring center, and it now correctly shows app_1 at Stage 2, set up plus positioning, in progress. Next step is actually finishing the positioning doc so those checks turn green.",
+      "open": [
+        {
+          "what": "Positioning review page",
+          "where": "http://localhost:7778"
+        },
+        {
+          "what": "Positioning skill file",
+          "where": "/Users/bimalsaran/Documents/building_apps/.claude/skills/positioning/SKILL.md"
+        },
+        {
+          "what": "App_1 CLAUDE.md",
+          "where": "/Users/bimalsaran/Documents/building_apps/app_1/CLAUDE.md"
+        },
+        {
+          "what": "App progress visualizer",
+          "where": "http://localhost:7710"
+        }
+      ],
+      "lines": [
+        {
+          "act": "camera",
+          "say": "Hey folks, so this stretch was all about positioning for app_1, the interior decor app, and turning it into something I can actually reuse."
+        },
+        {
+          "act": "localhost:7778, the positioning review page",
+          "say": "So the first thing I did was turn positioning into its own skill, the same way research already works — it runs through html-worker so I get a page like this, I can leave comments, and it feeds back into how positioning runs next time."
+        },
+        {
+          "act": "positioning SKILL.md file",
+          "say": "But I kept getting stuck on why this step even matters, so I pushed on that — the point is people only understand something new by comparing it to what they already know, so this doc leans on other company names to anchor the pitch, and I added that reasoning right into the skill and the page itself."
+        },
+        {
+          "act": "app_1/CLAUDE.md file",
+          "say": "I also wrote app_1's own CLAUDE.md so the app carries its own facts instead of cluttering the series-wide doc, which is where positioning decisions for this app now live."
+        },
+        {
+          "act": "localhost:7710, the app progress visualizer",
+          "say": "Then I noticed something dumb — the app progress visualizer wasn't showing positioning as in progress for app_1 at all, even though I was clearly mid-way through it."
+        },
+        {
+          "act": "terminal, the visualizer scan",
+          "say": "So I fixed the scan — it now checks for a positioning.md file, a named USP and viral feature, and that anchored-to comparison block, and all three go green once I actually save the doc."
+        },
+        {
+          "act": "localhost:7710, restarted",
+          "say": "Restarted it through the monitoring center like always, and now it correctly shows app_1 sitting at stage two, set up plus positioning, in progress."
+        },
+        {
+          "act": "camera",
+          "say": "Next up is finishing that positioning doc for real so those checks flip green, then it's on to actually building app_1."
+        }
+      ],
+      "digest": "# 21:52–22:50 — 3 agent sessions\n\n## Agent 1 — /Users/bimalsaran/Documents/building_apps\n- asked: can claude capture audio from a video file? can remotion do that?\n- asked: does remotion understand hinglish?\n- asked: can you grab just audio from this using remotion and add captions in like wavy style making it romantic. /Users/bimalsaran/Downloads/IMG_1595.MOV [Intro] Yeah... Raat ke do baje, screen pe tera face Do alag sheher, par dil same place Tu ICU mein, main code ke maze Bas ek hi sawaal — kab khatam honge ye days? [Verse 1] Subah meri laptop, teri rounds se start Main bugs ko debug karun, tu sambhale he …\n- wrote: /Users/bimalsaran/Documents/vanita-song/src/Background.tsx\n- wrote: /Users/bimalsaran/Documents/vanita-song/src/Hearts.tsx\n- wrote: /Users/bimalsaran/Documents/vanita-song/src/LyricVideo.tsx\n- wrote: /Users/bimalsaran/Documents/vanita-song/src/Lyrics.tsx\n- wrote: /Users/bimalsaran/Documents/vanita-song/src/Root.tsx\n- wrote: /Users/bimalsaran/Documents/vanita-song/src/TitleCard.tsx\n- wrote: /Users/bimalsaran/Documents/vanita-song/src/Waves.tsx\n- wrote: /Users/bimalsaran/Documents/vanita-song/src/fonts.ts\n- said: (agent summary) You wanted the audio from your MOV turned into a romantic lyric video with wavy captions for Vanita. The full video is still rendering; once it's done, I'll open `~/Documents/vanita-song/out/vanita-song.mp4` for you to watch. (disable recaps in /config)\n- said: The video is done and open in your player: `~/Documents/vanita-song/out/vanita-song.mp4`. It's 3:48, portrait 1080×1920 (fits phone screens and Instagram or WhatsApp), and 131 MB. **How I got there:** 1. I pulled the audio out of your MOV with Remotion's built-in ffmpeg and saved it as `public/song.m4a`, an exact copy of the original track. 2. Whisper (`large-v3-turbo`) listened to the song and wo …\n- said: (agent summary) Your romantic lyric video for Vanita is rendered and open at ~/Documents/vanita-song/out/vanita-song.mp4. Next, watch it through and tell me any lines that are off, and whether to fill the silent \"Just us\" gap near the end. (disable recaps in /config)\n\n## Agent 2 — /Users/bimalsaran/Documents/building_apps\n- asked: how can we always see usage in claude code in this terminal?\n- said: Nested quoting broke it (and Python 3.9 forbids backslashes in f-string expressions). Writing it as a proper script file instead.\n- said: Done — look at the line under your prompt. It should read something like: ``` Opus 5·high ctx 38%/379k 5h 10%↻3h03m wk 15%↻12h23m $4.76 ``` Left to right: model and effort, context window used (percent and total input tokens), your **5-hour plan window**, your **weekly window** — each with time until it resets — and this session's cost. Percentages go green → amber at 60% → red at 85%, so you noti …\n- said: (agent summary) You wanted usage always visible in Claude Code. I installed a status line showing model, context, your 5-hour and weekly plan limits with reset timers, and session cost. Check the line under your prompt; if it's missing, open /config once or restart. (disable recaps in /config)\n\n## Agent 3 — /Users/bimalsaran/Documents/building_apps\n- asked: dont close the review server yet, I will always close from the monitoring center myself. Have you made changes to the research skill so that we can capture all the new changes that we requested so the next run follows that?\n- asked: Move to next step, dont need to close the review.\n- asked: Positioning for app_ 1\n- asked: can we make positioning a skill as well. so it runs in html-worker wehere I can review and do stuff. Make sure it is easy to understand like the Research doc.\n- asked: I feel we are missing the point that why we need this? Can you we add a paragraph of why this is positioning is important after we know what to build from the research and all\n- asked: is this even true? People only understand new things by comparing them to something they know. we can use other company names and all correct?\n- asked: In one sentence help me understand why is this step important for me as the app creator. Help me explain here\n- asked: What do you mean? What sentences does it give me?\n- asked: add this explanation to the page and skill. Like it is hard for me to explain to others why this is necessary.\n- asked: one question why the app progress visualizer doesnt show that positioning is in progress or not? Just asking.\n- asked: yes fix it\n- asked: restart the visualizer please\n- wrote: /Users/bimalsaran/.claude/projects/-Users-bimalsaran-Documents-building-apps/memory/user-closes-servers.md\n- wrote: /Users/bimalsaran/Documents/building_apps/.claude/skills/app-progress-visualizer/SKILL.md\n- wrote: /Users/bimalsaran/Documents/building_apps/.claude/skills/app-progress-visualizer/scan.py\n- wrote: /Users/bimalsaran/Documents/building_apps/.claude/skills/positioning/SKILL.md\n- wrote: /Users/bimalsaran/Documents/building_apps/app_1/CLAUDE.md\n- wrote: /Users/bimalsaran/Documents/building_apps/app_1/positioning/reviewer/build.py\n- wrote: /Users/bimalsaran/Documents/building_apps/research/interior-decor/reviewer/build.py\n- served page: http://localhost:7710\n- served page: http://localhost:7778\n- served page: http://localhost:7779\n- said: It's fixed. The visualizer now correctly works out that app_1 is in **Stage 2: Set up + Positioning, in progress**. I tested this by running its scan directly: - ✓ repo set up (CLAUDE.md, research moved in) - ✓ reviewed on a page (the positioning page is now linked to Stage 2) - ✗ positioning.md exists, ✗ USP and viral feature named, ✗ Anchored-to block. All three turn green when you say \"save it\" …\n- said: Restarting it through the monitoring center's own stop and start, so its herdr pane is handled the same way as when you do it:\n- said: The visualizer has restarted and now shows **app_1 at Stage 2: Set up + Positioning**. It's at **http://localhost:7710/**; refresh your tab if it's already open. I restarted it through the monitoring center, the same way you would. It's now running in the herdr servers-tab. Its old pane wasn't in the servers-tab, so the monitoring center left that pane open; you can close it whenever you like.\n\n## Commits",
+      "status": "draft",
+      "error": "",
+      "comments": [],
+      "round": 1,
+      "focus": "I want two recaps here. The first recap should be the one where I started working on the new app which is the decor app. I went through the whole research so I want one hourly recap to only focus on that research part and then I want the second hourly recap to only focus on the positioning part that we have completed. The research part can be little bigger than the positioning part so make sure the research part has enough information.\n that I can showcase that.",
+      "from": "2026-09-24T21:52:00-04:00",
+      "to": "2026-09-24T22:50:23-04:00"
+    }
+  ],
+  "checks": {
+    "plan": true,
+    "gear": false
+  }
+}

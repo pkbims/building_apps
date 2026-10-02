@@ -1,0 +1,24 @@
+{
+  "date": "2026-10-01",
+  "tasks": [
+    {
+      "icon": "🎬",
+      "title": "Practice on one build, make content",
+      "why": "Test the process and post it",
+      "steps": [
+        {
+          "text": "Pick one idea from the list",
+          "done": false
+        },
+        {
+          "text": "Build it using the new process",
+          "done": false
+        },
+        {
+          "text": "Record and write the post about it",
+          "done": false
+        }
+      ]
+    }
+  ]
+}

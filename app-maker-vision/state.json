@@ -1,0 +1,34 @@
+{
+  "decisions": {
+    "d1": "paths",
+    "d2": "always",
+    "d3": "evolve",
+    "d4": "frame",
+    "d5": "perstage",
+    "d6": "button"
+  },
+  "comments": [],
+  "batches": [
+    {
+      "round": 1,
+      "ts": "2026-09-27T02:32:42.067036+00:00",
+      "commentIds": [],
+      "decisions": {
+        "d1": "paths",
+        "d2": "always",
+        "d3": "evolve",
+        "d4": "frame",
+        "d5": "perstage",
+        "d6": "button"
+      }
+    }
+  ],
+  "groups": [
+    "d1",
+    "d2",
+    "d3",
+    "d4",
+    "d5",
+    "d6"
+  ]
+}

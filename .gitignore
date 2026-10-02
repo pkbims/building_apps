@@ -4,3 +4,18 @@ practice_*/
 
 .DS_Store
 .claude/skills/app-maker/prefs.json
+
+# Large or machine-specific: never commit (added 2026-10-01)
+video/
+*.mp4
+*.mov
+*.m4a
+*.wav
+*.mp3
+*.webm
+node_modules/
+.port
+.appserver.port
+.pages.port
+*.log
+research/interior-decor

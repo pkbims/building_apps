@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Daily Tasks</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<style>
+  :root{--bg:#f4eee2;--panel:#fdf9f1;--ink:#2a2521;--muted:#6a6157;--line:#e3d9c7;--accent:#b0523a;
+    --soft:#f5e4dc;--ok:#3a9a5b;color-scheme:light}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#1b1916;--panel:#242019;
+    --ink:#ede4d6;--muted:#a89e8f;--line:#38322a;--accent:#e28f72;--soft:#3b2a24;--ok:#5cc07f}}
+  :root[data-theme="dark"]{color-scheme:dark;--bg:#1b1916;--panel:#242019;--ink:#ede4d6;--muted:#a89e8f;
+    --line:#38322a;--accent:#e28f72;--soft:#3b2a24;--ok:#5cc07f}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 "IBM Plex Sans",-apple-system,sans-serif}
+  header{position:sticky;top:0;z-index:10;background:var(--panel);border-bottom:1px solid var(--line);
+    padding:10px 24px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  header h1{font-size:15px;margin:0;font-weight:650}
+  .spacer{flex:1}
+  select,button,input,textarea{font:inherit}
+  select{font-size:13.5px;padding:5px 8px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+  .btn{font-size:13.5px;padding:6px 12px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
+  .btn:hover{border-color:var(--accent);color:var(--accent)}
+  main{max-width:1000px;margin:0 auto;padding:24px 16px 120px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px 24px;margin-bottom:20px}
+  h2{margin:0 0 8px;font-size:19px}
+  .speak{display:flex;gap:10px;flex-wrap:wrap}
+  .speak textarea{flex:1;min-width:240px;min-height:80px;border:1px solid var(--line);border-radius:10px;padding:10px 12px;
+    font-size:15px;background:var(--bg);color:var(--ink)}
+  .gen{background:var(--accent);color:#fff;border:0;border-radius:10px;padding:0 18px;font-size:14px;font-weight:650;cursor:pointer;min-height:46px}
+  .gen:disabled{opacity:.6;cursor:wait}
+  .sub{color:var(--muted);font-size:13.5px;margin:6px 0 0}
+  .prog{font-weight:500;color:var(--muted);font-size:13px;margin-left:6px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+  .t{border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:var(--bg);position:relative}
+  .t.done{opacity:.72}
+  .head{display:flex;gap:10px;align-items:flex-start}
+  .icon{font-size:24px;line-height:1.15}
+  .ttl{flex:1;display:flex;flex-direction:column;font-size:15.5px;line-height:1.35}
+  .why{font-size:12.5px;color:var(--muted)}
+  .count{font-size:12px;color:var(--muted);font-weight:650;white-space:nowrap}
+  .bar{height:4px;background:var(--line);border-radius:2px;margin:10px 0 6px;overflow:hidden}
+  .bar i{display:block;height:100%;background:var(--accent);transition:width .3s}
+  .t.done .bar i{background:var(--ok)}
+  ul{list-style:none;padding:0;margin:0}
+  li{display:flex;gap:8px;align-items:center;font-size:14.5px;padding:3px 0}
+  li input{accent-color:var(--accent);width:16px;height:16px;flex:none}
+  li.done span{color:var(--muted);text-decoration:line-through}
+  li span{flex:1}
+  .x{border:0;background:none;color:var(--muted);cursor:pointer;opacity:0;font-size:15px;padding:0 4px}
+  li:hover .x,.head:hover .x{opacity:1}
+  .grip{cursor:grab;color:var(--muted);opacity:0;user-select:none;font-size:14px;line-height:1.6;padding:0 2px;flex:none}
+  li:hover>.grip,.head:hover>.grip{opacity:1}
+  .dragging{opacity:.35}
+  .t ul{min-height:8px}
+  .add{border:0;background:none;color:var(--accent);cursor:pointer;font-size:13.5px;padding:4px 0 0}
+  .adder{grid-column:1/-1;display:flex;gap:10px;flex-wrap:wrap}
+  .adder textarea{flex:1;min-width:220px;min-height:60px;border:1px solid var(--line);border-radius:10px;padding:8px 10px;
+    font-size:14px;background:var(--bg);color:var(--ink);resize:vertical}
+  .inl{width:100%;border:1px solid var(--line);border-radius:8px;padding:5px 8px;font-size:14px;background:var(--panel);color:var(--ink)}
+  [data-edit]{cursor:text;border-radius:4px}
+  [data-edit]:hover{background:var(--line)}
+  .why:empty::before{content:'+ add why';opacity:0}
+  .head:hover .why:empty::before{opacity:.7}
+  .goals li{font-size:15px;padding:4px 0}
+  .newtask{border:1px dashed var(--line);border-radius:12px;display:grid;place-items:center;color:var(--accent);
+    cursor:pointer;min-height:120px;font-weight:650;background:none}
+  .empty{color:var(--muted);text-align:center;padding:20px 0}
+  .mv{font-size:13px}
+  .movebox{position:absolute;z-index:20;background:var(--panel);border:1px solid var(--line);border-radius:10px;
+    padding:8px;box-shadow:0 10px 30px rgba(0,0,0,.18);width:214px;display:flex;flex-direction:column;gap:3px}
+  .movebox b{font-size:11.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);font-weight:650;padding:2px 6px}
+  .movebox button.day{text-align:left;border:0;background:none;color:var(--ink);font-size:14px;padding:6px 8px;
+    border-radius:7px;cursor:pointer}
+  .movebox button.day:hover{background:var(--soft);color:var(--accent)}
+  .movebox .pick{display:flex;gap:6px;border-top:1px solid var(--line);margin-top:4px;padding-top:6px}
+  .movebox input[type=date]{flex:1;min-width:0;border:1px solid var(--line);border-radius:7px;padding:4px 6px;
+    font-size:13px;background:var(--bg);color:var(--ink)}
+  .movebox .pick button{border:0;background:var(--accent);color:#fff;border-radius:7px;padding:4px 10px;
+    font-size:13px;font-weight:650;cursor:pointer}
+  #toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);
+    padding:9px 16px;border-radius:8px;font-size:13.5px;opacity:0;transition:opacity .25s;pointer-events:none}
+  #toast.on{opacity:1}
+</style>
+</head>
+<body>
+<header>
+  <h1>📋 Daily Tasks</h1>
+  <select id="datesel" aria-label="Date"></select>
+  <div class="spacer"></div>
+  <button class="btn" id="theme" title="Auto → Light → Dark">Auto</button>
+</header>
+<main>
+  <div class="card">
+    <h2>🎙️ Say what you're doing today</h2>
+    <div class="speak">
+      <textarea id="speak" placeholder="Press Fn twice to dictate. e.g. 'Today I want to test the hourly recap, build the Remotion edit, and finish the daily page.'"></textarea>
+      <button class="gen" id="gen">✨ Make my task list</button>
+    </div>
+    <p class="sub">Claude turns it into a few big tasks, each with small steps. To add one thing later, use <b>+ Add task</b> below: it makes one new card and leaves the rest alone.</p>
+  </div>
+  <div class="card">
+    <h2>🎯 Today's goals</h2>
+    <ul class="goals" id="goals"></ul>
+    <div id="goaladd"></div>
+  </div>
+  <div class="card">
+    <h2>Today's tasks <span class="prog" id="prog"></span></h2>
+    <div class="grid" id="grid"></div>
+  </div>
+</main>
+<div id="toast"></div>
+
+<script>
+const $=s=>document.querySelector(s), esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let S=null, cur=null;
+const api=async(p,b)=>{const r=await fetch(p,b?{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b)}:{});
+  const j=await r.json(); if(!r.ok) throw new Error(j.error||r.status); return j};
+const toast=m=>{const t=$('#toast');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),2600)};
+
+(()=>{const R=document.documentElement,L={'':'Auto',light:'Light',dark:'Dark'},b=$('#theme');
+  const set=v=>{v?R.dataset.theme=v:delete R.dataset.theme;try{v?localStorage.setItem('theme',v):localStorage.removeItem('theme')}catch(e){}b.textContent=L[v]};
+  let v='';try{v=localStorage.getItem('theme')||''}catch(e){} set(v);
+  b.onclick=()=>{const c=['','light','dark'];set(c[(c.indexOf(R.dataset.theme||'')+1)%3])}})();
+
+const nice=d=>new Date(d+'T12:00').toLocaleDateString([],{weekday:'short',day:'numeric',month:'short'});
+async function load(d){S=await api('/api/state'+(d?`?date=${d}`:''));cur=S.list.date;render()}
+const tasks=()=>S.list.tasks;
+const goals=()=>(S.list.goals??=[]);
+async function saveGoals(){await api('/api/goals',{date:cur,goals:goals()});render()}
+async function persist(){await api('/api/tasks',{date:cur,tasks:tasks()});render()}
+
+function render(){
+  $('#datesel').innerHTML=S.dates.map(d=>`<option value="${d}" ${d===cur?'selected':''}>${d===S.today?'Today · ':''}${nice(d)}</option>`).join('');
+  $('#goals').innerHTML=goals().map((g,i)=>`<li class="${g.done?'done':''}"><input type="checkbox" data-g="${i}" ${g.done?'checked':''}>
+    <span data-edit="goal" data-i="${i}">${esc(g.text)}</span><button class="x" data-dg="${i}" title="Remove goal">×</button></li>`).join('')
+    ||'<li class="empty" style="padding:4px 0">No goals yet. Type what would make today a win.</li>';
+  $('#goaladd').innerHTML='<button class="add" id="addgoal">+ goal</button>';
+  let dn=0,all=0;
+  $('#grid').innerHTML=tasks().map((t,i)=>{const ok=t.steps.filter(s=>s.done).length;dn+=ok;all+=t.steps.length;
+    const full=t.steps.length&&ok===t.steps.length;
+    return `<div class="t ${full?'done':''}" data-drag="task" data-i="${i}">
+      <div class="head"><span class="grip" title="Drag to move">⠿</span><span class="icon">${esc(t.icon)}</span><div class="ttl"><b data-edit="title" data-t="${i}">${esc(t.title)}</b><span class="why" data-edit="why" data-t="${i}">${esc(t.why)}</span></div>
+        <span class="count">${ok}/${t.steps.length}</span><button class="x mv" data-mv="${i}" title="Move to another day">→</button><button class="x" data-dt="${i}" title="Remove task">×</button></div>
+      <div class="bar"><i style="width:${t.steps.length?100*ok/t.steps.length:0}%"></i></div>
+      <ul>${t.steps.map((s,j)=>`<li class="${s.done?'done':''}" data-drag="step" data-t="${i}" data-s="${j}"><span class="grip" title="Drag to move">⠿</span><input type="checkbox" data-t="${i}" data-s="${j}" ${s.done?'checked':''}>
+        <span data-edit="step" data-t="${i}" data-s="${j}">${esc(s.text)}</span><button class="x" data-t="${i}" data-ds="${j}" title="Remove step">×</button></li>`).join('')}</ul>
+      <button class="add" data-add="${i}">+ step</button></div>`}).join('')
+    +`<button class="newtask" id="newtask">+ Add task</button>`;
+  $('#prog').textContent=all?`· ${dn} of ${all} steps done`:'';
+  if(!tasks().length) $('#grid').insertAdjacentHTML('afterbegin','<p class="empty" style="grid-column:1/-1">No tasks yet. Say your plan above, or add one by hand.</p>');
+  wire();
+}
+
+// val pre-fills the box when editing; empty=true lets a field be cleared (the "why" line).
+function inline(host,ph,done,val='',empty=false){const i=document.createElement('input');i.className='inl';i.placeholder=ph;i.value=val;host.replaceWith(i);i.focus();
+  let fired=false;const fin=()=>{if(fired)return;fired=true;const v=i.value.trim();(v||empty)&&v!==val?done(v):render()};
+  i.onkeydown=e=>{if(e.key==='Enter')fin();if(e.key==='Escape'){fired=true;render()}};i.onblur=fin}
+
+// Move a card to another day. The shortcuts cover what's actually used (next/previous day,
+// back to today); the date box handles anything else, including a day with no file yet.
+const shift=(d,n)=>{const x=new Date(d+'T12:00');x.setDate(x.getDate()+n);return x.toISOString().slice(0,10)};
+function moveBox(btn,i){
+  document.querySelector('.movebox')?.remove();
+  // Candidates are the days either side of the one being viewed, plus today. They're
+  // de-duplicated and named against the real today, so viewing the 23rd never offers
+  // "Tomorrow" and "Today" as two buttons for the same date.
+  const rel=d=>d===S.today?'Today':d===shift(S.today,1)?'Tomorrow':d===shift(S.today,-1)?'Yesterday':'';
+  const opts=[...new Set([S.today,shift(cur,1),shift(cur,-1)])].filter(d=>d!==cur)
+    .map(d=>[rel(d),d]).sort((a,b)=>a[1].localeCompare(b[1]));
+  const box=document.createElement('div');
+  box.className='movebox';
+  box.innerHTML=`<b>Move “${esc(tasks()[i].title)}” to</b>`
+    +opts.map(([lab,d])=>`<button class="day" data-to="${d}">${lab?lab+' · ':''}${nice(d)}</button>`).join('')
+    +`<div class="pick"><input type="date" value="${shift(cur,1)}"><button>Move</button></div>`;
+  const card=btn.closest('.t');
+  card.appendChild(box);
+  box.style.top=(btn.offsetTop+btn.offsetHeight+6)+'px';
+  box.style.right='10px';
+  const go=async to=>{
+    if(!to) return;
+    box.remove();
+    try{ S=await api('/api/move',{date:cur,to,index:i}); render(); toast(`Moved to ${nice(to)}`); }
+    catch(e){ toast(e.message); }
+  };
+  box.querySelectorAll('[data-to]').forEach(b=>b.onclick=e=>{e.stopPropagation();go(b.dataset.to)});
+  const inp=box.querySelector('input[type=date]');
+  box.querySelector('.pick button').onclick=e=>{e.stopPropagation();go(inp.value)};
+  inp.onkeydown=e=>{if(e.key==='Enter')go(inp.value)};
+  box.onclick=e=>e.stopPropagation();
+  setTimeout(()=>document.addEventListener('click',function off(){box.remove();document.removeEventListener('click',off)}),0);
+}
+
+function wire(){
+  document.querySelectorAll('#grid input[type=checkbox]').forEach(c=>c.onchange=()=>{tasks()[c.dataset.t].steps[c.dataset.s].done=c.checked;persist()});
+  document.querySelectorAll('[data-ds]').forEach(b=>b.onclick=()=>{tasks()[b.dataset.t].steps.splice(+b.dataset.ds,1);persist()});
+  document.querySelectorAll('[data-dt]').forEach(b=>b.onclick=()=>{tasks().splice(+b.dataset.dt,1);persist()});
+  document.querySelectorAll('[data-add]').forEach(b=>b.onclick=()=>inline(b,'New step, then Enter',v=>{tasks()[b.dataset.add].steps.push({text:v,done:false});persist()}));
+  $('#newtask').onclick=e=>adder(e.currentTarget);
+  document.querySelectorAll('[data-g]').forEach(c=>c.onchange=()=>{goals()[c.dataset.g].done=c.checked;saveGoals()});
+  document.querySelectorAll('[data-dg]').forEach(b=>b.onclick=()=>{goals().splice(+b.dataset.dg,1);saveGoals()});
+  // Click any text to edit it in place: Enter or clicking away saves, Esc cancels.
+  document.querySelectorAll('[data-edit]').forEach(el=>el.onclick=()=>{const k=el.dataset.edit,t=tasks()[el.dataset.t];
+    if(k==='goal') inline(el,'Goal',v=>{goals()[el.dataset.i].text=v;saveGoals()},goals()[el.dataset.i].text);
+    if(k==='title') inline(el,'Task title',v=>{t.title=v;persist()},t.title);
+    if(k==='why') inline(el,"What it's for (optional)",v=>{t.why=v;persist()},t.why,true);
+    if(k==='step') inline(el,'Step',v=>{t.steps[el.dataset.s].text=v;persist()},t.steps[el.dataset.s].text)});
+  $('#addgoal').onclick=e=>inline(e.currentTarget,'Type a goal, then Enter',v=>{goals().push({text:v,done:false});saveGoals()});
+  document.querySelectorAll('[data-mv]').forEach(b=>b.onclick=e=>{e.stopPropagation();moveBox(b,+b.dataset.mv)});
+  // Only the grip starts a drag, so ticking and selecting text still work normally.
+  document.querySelectorAll('.grip').forEach(g=>{const el=g.closest('[data-drag]');
+    g.onmousedown=()=>el.draggable=true; g.onmouseup=()=>el.draggable=false});
+}
+
+// Drag and drop: cards reorder among cards; steps reorder within a card or move to another.
+// The DOM is rearranged live while dragging, then the new order is read back and saved.
+let drag=null;
+const grid=$('#grid');
+grid.addEventListener('dragstart',e=>{const el=e.target.closest?.('[data-drag]');if(!el||!el.draggable)return;
+  e.stopPropagation();drag=el;el.classList.add('dragging');e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/plain','')});
+grid.addEventListener('dragover',e=>{if(!drag)return;e.preventDefault();
+  if(drag.dataset.drag==='task'){const t=e.target.closest('.t');if(!t||t===drag)return;
+    const r=t.getBoundingClientRect();t.parentNode.insertBefore(drag,e.clientX<r.left+r.width/2?t:t.nextSibling)}
+  else{const li=e.target.closest('li[data-drag]');
+    if(li&&li!==drag){const r=li.getBoundingClientRect();li.parentNode.insertBefore(drag,e.clientY<r.top+r.height/2?li:li.nextSibling)}
+    else if(!li){const ul=e.target.closest('.t')?.querySelector('ul');if(ul&&drag.parentNode!==ul)ul.appendChild(drag)}}});
+grid.addEventListener('drop',e=>{if(drag)e.preventDefault()});
+grid.addEventListener('dragend',()=>{if(!drag)return;drag.draggable=false;drag.classList.remove('dragging');drag=null;
+  const old=tasks();
+  S.list.tasks=[...grid.querySelectorAll('.t[data-drag]')].map(c=>({...old[c.dataset.i],
+    steps:[...c.querySelectorAll('li[data-drag]')].map(l=>old[l.dataset.t].steps[l.dataset.s])}));
+  persist()});
+
+// Dictate one task; Claude turns just that into a card with steps and appends it.
+function adder(host){
+  const w=document.createElement('div');w.className='adder';
+  w.innerHTML=`<textarea placeholder="Press Fn twice and say the task. e.g. 'Fix the login bug on app 4.'"></textarea>
+    <button class="gen">✨ Add</button><button class="btn">Cancel</button>`;
+  host.replaceWith(w);const [ta,go,no]=w.children;ta.focus();
+  no.onclick=render;ta.onkeydown=e=>{if(e.key==='Escape')render()};
+  go.onclick=async()=>{const text=ta.value.trim();if(!text)return toast('Say the task first');
+    go.disabled=ta.disabled=true;go.textContent='✨ Writing…';
+    try{S=await api('/api/add',{date:cur,text});render();toast('Task added')}
+    catch(e){toast(e.message);go.disabled=ta.disabled=false;go.textContent='✨ Add'}};
+}
+
+$('#gen').onclick=async()=>{const text=$('#speak').value.trim(); if(!text) return toast('Say or type your plan first');
+  const b=$('#gen'); b.disabled=true; b.textContent='✨ Writing your tasks…';
+  try{S=await api('/api/generate',{date:cur,text});$('#speak').value='';render();toast('Task list ready')}catch(e){toast(e.message)}
+  b.disabled=false; b.textContent='✨ Make my task list'};
+$('#datesel').onchange=e=>{$('#speak').value='';load(e.target.value)};
+load();
+</script>
+</body>
+</html>

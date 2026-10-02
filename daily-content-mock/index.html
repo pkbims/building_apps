@@ -1,0 +1,558 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Daily content page (mockup)</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<style>
+  :root{--bg:#f4eee2;--panel:#fdf9f1;--ink:#2a2521;--muted:#6a6157;--faint:#978d82;
+    --line:#e3d9c7;--accent:#b0523a;--soft:#f5e4dc;--warn:#7a5a1e;--warnsoft:#f3ead3;
+    --quote:#efe7d6;--s1:6px;--s2:8px;--s3:10px;--s4:12px;--s5:16px;--s6:24px;--s7:32px;
+    --r:10px;--r2:14px}
+  :root{color-scheme:light}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;
+    --bg:#1b1916;--panel:#242019;--ink:#ede4d6;--muted:#a89e8f;--faint:#766d60;
+    --line:#38322a;--accent:#e28f72;--soft:#3b2a24;--warn:#dcb66e;--warnsoft:#302a1c;
+    --quote:#2a2620}}
+  :root[data-theme="dark"]{color-scheme:dark;
+    --bg:#1b1916;--panel:#242019;--ink:#ede4d6;--muted:#a89e8f;--faint:#766d60;
+    --line:#38322a;--accent:#e28f72;--soft:#3b2a24;--warn:#dcb66e;--warnsoft:#302a1c;
+    --quote:#2a2620}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:18px/1.7 "IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+  h1,h2,h3{letter-spacing:-.015em}
+  header{position:sticky;top:0;z-index:60;background:var(--panel);
+    border-bottom:1px solid var(--line);padding:var(--s4) var(--s6);
+    display:flex;align-items:center;gap:var(--s5)}
+  header h1{font-size:15px;margin:0;font-weight:650}
+  .tag{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);
+    background:var(--soft);padding:3px var(--s2);border-radius:var(--s1);font-weight:650}
+  .spacer{flex:1}.count{font-size:13px;color:var(--muted)}
+  button.theme{background:var(--bg);border:1px solid var(--line);color:var(--muted);font:inherit;
+    font-size:12px;padding:4px var(--s3);border-radius:var(--s2);cursor:pointer}
+  button.theme:hover{color:var(--accent);border-color:var(--accent)}
+  .layout{display:grid;grid-template-columns:206px minmax(0,1fr) 316px;gap:var(--s7);
+    max-width:1400px;margin:0 auto;padding:var(--s6) var(--s6) 140px}
+  @media(max-width:1200px){.layout{grid-template-columns:186px minmax(0,1fr)}aside.right{display:none}}
+  @media(max-width:820px){.layout{grid-template-columns:1fr}nav.toc{display:none}}
+  nav.toc{position:sticky;top:78px;align-self:start;max-height:calc(100vh - 110px);
+    overflow-y:auto;font-size:13px}
+  nav.toc .grp{color:var(--faint);text-transform:uppercase;letter-spacing:.07em;
+    font-size:10.5px;font-weight:700;margin:var(--s5) 0 var(--s2)}
+  nav.toc .grp:first-child{margin-top:0}
+  nav.toc a{display:block;color:var(--muted);text-decoration:none;padding:5px var(--s3);
+    border-left:2px solid transparent;border-radius:0 var(--s1) var(--s1) 0}
+  nav.toc a.on{color:var(--accent);border-left-color:var(--accent);background:var(--soft);font-weight:600}
+  section{background:var(--panel);border:1px solid var(--line);border-radius:var(--r2);
+    padding:var(--s6) 28px;margin-bottom:var(--s6);position:relative;scroll-margin-top:84px}
+  section:hover > .cbtn{opacity:1}
+  section > h2{font-size:21px;margin:0 0 var(--s1)}
+  .num{color:var(--faint);font-weight:600;font-size:14px;margin-right:var(--s2)}
+  .sub{color:var(--muted);font-size:13.5px;margin:0 0 var(--s5)}
+  blockquote{margin:var(--s3) 0;padding:var(--s3) var(--s5);background:var(--quote);
+    border-left:2px solid var(--line);border-radius:0 var(--s2) var(--s2) 0;font-size:13.5px}
+  .plain{background:var(--soft);border-left:3px solid var(--accent);padding:var(--s3) var(--s5);
+    border-radius:0 var(--s2) var(--s2) 0;margin:var(--s4) 0;font-size:13.5px}
+  .plain b{color:var(--accent)}
+  .risk{background:var(--warnsoft);border-left:3px solid var(--warn);padding:var(--s3) var(--s5);
+    border-radius:0 var(--s2) var(--s2) 0;margin:var(--s4) 0;font-size:13.5px}
+  .risk b{color:var(--warn)}
+  .cbtn{position:absolute;top:var(--s5);right:var(--s5);opacity:0;transition:opacity .15s;
+    background:var(--bg);border:1px solid var(--line);color:var(--muted);font:inherit;
+    font-size:12px;padding:4px var(--s3);border-radius:var(--s2);cursor:pointer}
+  .cbtn:hover{color:var(--accent);border-color:var(--accent)}
+  .cbtn.has{opacity:1;color:var(--accent);border-color:var(--accent);background:var(--soft)}
+  .d{border:1px solid var(--line);border-radius:var(--r);padding:var(--s5) 18px;
+    margin:var(--s5) 0;position:relative}
+  .d:hover .cbtn{opacity:1}
+  .d.open{border-left:3px solid var(--accent)}
+  .q{font-weight:650;font-size:14.5px;margin-bottom:3px}
+  .why{color:var(--muted);font-size:13px;margin-bottom:var(--s4)}
+  label.opt{display:flex;gap:var(--s3);align-items:flex-start;padding:9px var(--s4);
+    border:1px solid transparent;border-radius:var(--s2);cursor:pointer;font-size:14px}
+  label.opt:hover{background:var(--bg)}
+  label.opt.sel{border-color:var(--accent);background:var(--soft)}
+  label.opt input{margin-top:3px;accent-color:var(--accent);flex:none}
+  .oh{font-weight:550}.od{color:var(--muted);font-size:12.5px;display:block;margin-top:1px}
+  .mm{background:var(--bg);border:1px solid var(--line);border-radius:var(--r);
+    padding:18px;margin:var(--s4) 0;overflow-x:auto;text-align:center}
+  table.t{width:100%;border-collapse:collapse;font-size:13px;margin:var(--s4) 0}
+  table.t th,table.t td{border:1px solid var(--line);padding:var(--s2) var(--s3);
+    text-align:left;vertical-align:top}
+  table.t th{background:var(--bg);font-weight:650}
+  code{background:var(--quote);padding:1px 5px;border-radius:5px;font-size:12.5px}
+  pre.code{background:var(--quote);padding:var(--s5);border-radius:var(--r);
+    overflow-x:auto;font-size:12.5px;margin:var(--s4) 0}
+  details.ref{border:1px solid var(--line);border-radius:var(--r);padding:var(--s4) 18px;
+    margin:var(--s4) 0;background:var(--bg)}
+  details.ref summary{cursor:pointer;font-weight:650;font-size:14px;color:var(--accent)}
+  aside.right{position:sticky;top:78px;align-self:start;background:var(--panel);
+    border:1px solid var(--line);border-radius:var(--r2);padding:var(--s5) 18px;
+    max-height:calc(100vh - 110px);display:flex;flex-direction:column}
+  aside.right h2{font-size:15px;margin:0}
+  .bar{height:4px;background:var(--line);border-radius:2px;overflow:hidden;margin-top:9px}
+  .bar i{display:block;height:100%;background:var(--accent);transition:width .3s}
+  .dlist{overflow-y:auto;max-height:30vh;margin:var(--s3) -4px 0;padding:0 4px}
+  .dr{display:flex;gap:9px;align-items:center;padding:5px var(--s2);border-radius:var(--s1);
+    cursor:pointer;font-size:12.5px}
+  .dr:hover{background:var(--bg)}
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--line);flex:none}
+  .dr.done .dot{background:var(--accent)}
+  .dn{color:var(--muted);font-weight:700;flex:none}
+  .dr.todo .dv{color:var(--muted);font-style:italic}
+  #queue{flex:1;overflow-y:auto;margin:var(--s4) -4px;padding:0 4px;min-height:60px}
+  .qi{border:1px solid var(--line);border-radius:var(--s2);padding:var(--s3) var(--s4);
+    margin-bottom:9px;font-size:13px;background:var(--bg)}
+  .qa{color:var(--accent);font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;
+    font-weight:700;margin-bottom:5px}
+  .qx{float:right;cursor:pointer;color:var(--muted);border:0;background:none;font-size:15px}
+  .empty{color:var(--muted);font-size:13px;text-align:center;padding:var(--s6) var(--s3)}
+  button.primary{width:100%;background:var(--accent);color:#fff;border:0;padding:11px;
+    border-radius:var(--r);font:inherit;font-size:13.5px;font-weight:650;cursor:pointer}
+  #pop{position:absolute;z-index:100;width:328px;background:var(--panel);
+    border:1px solid var(--line);border-radius:var(--r);padding:var(--s4);
+    box-shadow:0 10px 34px rgba(0,0,0,.18);display:none}
+  #pop .pa{font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;
+    color:var(--accent);font-weight:700;margin-bottom:var(--s2)}
+  #pop .kind{display:flex;gap:var(--s2);margin-bottom:var(--s2)}
+  #pop .kind label{flex:1;display:flex;gap:6px;align-items:center;font-size:12.5px;
+    padding:5px var(--s2);border:1px solid var(--line);border-radius:var(--s2);cursor:pointer;color:var(--muted)}
+  #pop .kind label.sel{border-color:var(--accent);background:var(--soft);color:var(--accent)}
+  #pop .kind input{margin:0;accent-color:var(--accent)}
+  #pop textarea{width:100%;min-height:88px;border:1px solid var(--line);border-radius:var(--s2);
+    padding:9px;font:inherit;font-size:13.5px;background:var(--bg);color:var(--ink)}
+  #pop .row{display:flex;gap:var(--s2);margin-top:var(--s3)}
+  #pop button{flex:1;padding:var(--s2);border-radius:var(--s2);font:inherit;font-size:13px;
+    cursor:pointer;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+  #pop button.add{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:650}
+  #toast{position:fixed;bottom:var(--s6);left:50%;transform:translateX(-50%);
+    background:var(--ink);color:var(--bg);padding:var(--s3) 18px;border-radius:var(--s2);
+    font-size:13.5px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:200}
+  #toast.on{opacity:1}
+  .flash{animation:fl 1.1s ease-out}
+  @keyframes fl{0%{background:var(--soft)}100%{background:transparent}}
+  [data-changed]{box-shadow:inset 3px 0 0 var(--warn)}
+  [data-changed]::before{content:"changed · round " attr(data-changed);position:absolute;top:-9px;left:12px;
+    font-size:10px;letter-spacing:.06em;text-transform:uppercase;font-weight:700;color:var(--warn);
+    background:var(--warnsoft);padding:2px 7px;border-radius:5px;z-index:1}
+  nav.toc .chg a{color:var(--warn)} nav.toc .chg a.on{color:var(--warn);border-left-color:var(--warn);background:var(--warnsoft)}
+  nav.toc .chg .grp{color:var(--warn)}
+</style>
+<script id="theme">
+(()=>{const K='theme',R=document.documentElement,L={'':'Auto',light:'Light',dark:'Dark'};
+const set=v=>{v?R.dataset.theme=v:delete R.dataset.theme;try{v?localStorage.setItem(K,v):localStorage.removeItem(K)}catch(e){}};
+try{set(localStorage.getItem(K)||'')}catch(e){}
+addEventListener('DOMContentLoaded',()=>{const h=document.querySelector('header');if(!h)return;
+  const b=document.createElement('button');b.className='theme';b.title='Auto → Light → Dark';
+  const show=()=>b.textContent=L[R.dataset.theme||''];
+  b.onclick=()=>{const c=['','light','dark'];set(c[(c.indexOf(R.dataset.theme||'')+1)%3]);show()};
+  show();h.appendChild(b)})})();
+</script>
+</head>
+<body>
+<header>
+  <h1>Daily content page (mockup)</h1>
+  <span class="tag" id="round">Round 1</span>
+  <div class="spacer"></div>
+  <span class="count" id="dcount">—</span>
+</header>
+
+<div class="layout">
+<nav class="toc" id="toc"></nav>
+<main>
+<style>
+  .daybar{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .daybar .pill{font-size:12px;padding:3px 10px;border-radius:99px;background:var(--soft);color:var(--accent);font-weight:650}
+  .tasks{list-style:none;padding:0;margin:8px 0 0}
+  .tasks li{display:flex;gap:10px;align-items:center;padding:6px 0;border-bottom:1px solid var(--line);font-size:15px}
+  .tasks li:last-child{border-bottom:0}
+  .tasks li.done span{color:var(--muted);text-decoration:line-through}
+  .tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin:4px 0 0;flex-wrap:wrap}
+  .tab{border:1px solid var(--line);border-bottom:0;background:var(--bg);color:var(--muted);font:inherit;font-size:13.5px;
+    padding:7px 14px;border-radius:8px 8px 0 0;cursor:pointer;display:flex;gap:6px;align-items:center}
+  .tab.on{background:var(--panel);color:var(--ink);font-weight:650;position:relative;top:1px}
+  .tab .st{width:7px;height:7px;border-radius:50%;background:var(--line)}
+  .tab .st.rec{background:#3a9a5b}
+  .tab.add{color:var(--accent);font-weight:700;font-size:16px;padding:5px 14px}
+  .pane{display:none;padding:18px 2px 4px}.pane.on{display:block}
+  .pane h4{margin:14px 0 4px;font-size:14px}
+  .pane ul,.pane ol{margin:4px 0;padding-left:22px;font-size:15px}
+  .recrow{display:flex;gap:12px;align-items:center;flex-wrap:wrap;background:var(--bg);border:1px solid var(--line);
+    border-radius:10px;padding:10px 14px;font-size:13.5px}
+  .recrow .ok{color:#3a9a5b;font-weight:650}
+  .mock{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--warn);background:var(--warnsoft);
+    padding:2px 8px;border-radius:5px;font-weight:700}
+  .loading{color:var(--muted);font-style:italic}
+  ol.script{padding-left:26px;margin:14px 0 0}
+  ol.script li{font-size:16.5px;line-height:1.55;margin:0 0 12px;padding-left:4px}
+  ol.script li::marker{color:var(--accent);font-weight:700}
+  ol.script .act{display:inline-block;font-size:13px;font-weight:650;color:var(--accent);background:var(--soft);
+    padding:1px 8px;border-radius:6px;margin-right:4px}
+  .speak{display:flex;gap:10px;align-items:stretch;flex-wrap:wrap}
+  .speak textarea{flex:1;min-width:240px;min-height:70px;border:1px solid var(--line);border-radius:10px;padding:10px 12px;font:inherit;font-size:14.5px;background:var(--bg);color:var(--ink)}
+  .gen{background:var(--accent);color:#fff;border:0;border-radius:10px;padding:0 18px;font:inherit;font-size:14px;font-weight:650;cursor:pointer;min-height:44px}
+  .tgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+  .tcard{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--bg)}
+  .tcard.alldone{opacity:.7}
+  .thead{display:flex;gap:10px;align-items:flex-start}
+  .ticon{font-size:22px;line-height:1.2}
+  .ttl{flex:1;display:flex;flex-direction:column;font-size:15px;line-height:1.35}
+  .twhy{font-size:12.5px;color:var(--muted)}
+  .tprog{font-size:12px;color:var(--muted);font-weight:650;white-space:nowrap}
+  .tbar{height:4px;background:var(--line);border-radius:2px;margin:10px 0 6px;overflow:hidden}
+  .tbar i{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
+  .tcard.alldone .tbar i{background:#3a9a5b}
+  .tsubs{list-style:none;padding:0;margin:0}
+  .tsubs li{display:flex;gap:8px;align-items:center;font-size:14px;padding:3px 0}
+  .tsubs li.done span{color:var(--muted);text-decoration:line-through}
+  .dayprog{font-weight:500;color:var(--muted);font-size:12.5px;margin-left:6px}
+  ol.show>li{margin:0 0 12px;font-size:15.5px}
+  ol.show li.how{color:var(--accent);list-style:none;margin-left:-18px}
+  ol.show li.det{list-style:none;margin-left:-18px;color:var(--muted)}
+  ol.show li.det ul li{color:var(--ink)}
+  textarea.notes{width:100%;min-height:110px;border:1px solid var(--line);border-radius:10px;padding:10px 12px;
+    font:inherit;font-size:14.5px;background:var(--bg);color:var(--ink)}
+  .lastrun{font-size:13.5px;color:var(--muted);margin:0 0 10px}
+  .nudge{margin-left:8px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--warn);background:var(--warnsoft);padding:2px 8px;border-radius:5px}
+  .tab.add.due{animation:pulse 1.6s ease-in-out infinite}
+  @keyframes pulse{50%{background:var(--warnsoft);color:var(--warn)}}
+  .plusbox{display:none;border:1px solid var(--accent);border-radius:10px;padding:14px 16px;margin:12px 0;background:var(--panel);position:relative;font-size:14px}
+  .plusbox.on{display:block}
+  .plusbox select{font:inherit;font-size:13.5px;padding:2px 6px;border-radius:6px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+  .row2{display:flex;gap:8px;margin-top:10px}.row2 button{font:inherit;font-size:13.5px;padding:6px 14px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
+  .row2 .go{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:650}
+</style>
+
+<section id="s-day" data-anchor="day" data-label="Day header + tasks" data-group="The day page" data-title="Day + tasks">
+  <button class="cbtn">comment</button>
+  <div class="daybar">
+    <h2 style="margin:0">Practice Day 1 · Tue 22 Sep</h2>
+    <span class="pill">Series starts Fri 25 Sep</span>
+    <span class="mock">mockup</span>
+  </div>
+  <p class="sub" style="margin-top:6px">Today's work: building and testing the content pipeline</p>
+
+  <div data-anchor="speak" data-label="Speak your plan box" data-changed="2" style="position:relative">
+    <button class="cbtn">comment</button>
+    <h4 style="margin:10px 0 4px;font-size:14px">🎙️ Say what you're doing today</h4>
+    <div class="speak">
+      <textarea id="speak" placeholder="Press Fn twice to dictate. e.g. 'Today I want to test the hourly recap, build the Remotion edit, and finish the daily page…'"></textarea>
+      <button id="gen" class="gen">✨ Make my task list</button>
+    </div>
+    <p class="sub" style="margin:4px 0 0">Claude turns what you said into the tasks below: a few big tasks, each with small steps. You can tick and edit them afterwards.</p>
+  </div>
+
+  <div data-anchor="tasks" data-label="Task cards" data-changed="2" style="position:relative">
+    <button class="cbtn">comment</button>
+    <h4 style="margin:14px 0 8px;font-size:14px">📋 Today's tasks <span class="dayprog" id="dayprog"></span></h4>
+    <div class="tgrid">
+      <div class="tcard">
+        <div class="thead"><span class="ticon">🧭</span><div class="ttl"><b>Lock the content pipeline</b><span class="twhy">so every day runs the same way</span></div><span class="tprog"></span></div>
+        <div class="tbar"><i></i></div>
+        <ul class="tsubs"><li class="sub done"><input type="checkbox" checked onchange="subTick(event,this)"><span>Choose the daily loop</span></li><li class="sub done"><input type="checkbox" checked onchange="subTick(event,this)"><span>Pick the tools</span></li><li class="sub done"><input type="checkbox" checked onchange="subTick(event,this)"><span>Answer every decision</span></li></ul>
+      </div>
+      <div class="tcard">
+        <div class="thead"><span class="ticon">🎬</span><div class="ttl"><b>Test the hourly recap</b><span class="twhy">does recording feel natural?</span></div><span class="tprog"></span></div>
+        <div class="tbar"><i></i></div>
+        <ul class="tsubs"><li class="sub"><input type="checkbox" onchange="subTick(event,this)"><span>Set up iPhone camera + mic</span></li><li class="sub"><input type="checkbox" onchange="subTick(event,this)"><span>Record hour-01</span></li><li class="sub"><input type="checkbox" onchange="subTick(event,this)"><span>Watch it back</span></li></ul>
+      </div>
+      <div class="tcard">
+        <div class="thead"><span class="ticon">✂️</span><div class="ttl"><b>Build the Remotion edit</b><span class="twhy">so the end-of-day edit is one command</span></div><span class="tprog"></span></div>
+        <div class="tbar"><i></i></div>
+        <ul class="tsubs"><li class="sub"><input type="checkbox" onchange="subTick(event,this)"><span>Join the recaps in order</span></li><li class="sub"><input type="checkbox" onchange="subTick(event,this)"><span>Cut ums and pauses</span></li><li class="sub"><input type="checkbox" onchange="subTick(event,this)"><span>Captions + title cards</span></li></ul>
+      </div>
+      <div class="tcard">
+        <div class="thead"><span class="ticon">🖥️</span><div class="ttl"><b>Build this daily page</b><span class="twhy">one place to see the day</span></div><span class="tprog"></span></div>
+        <div class="tbar"><i></i></div>
+        <ul class="tsubs"><li class="sub done"><input type="checkbox" checked onchange="subTick(event,this)"><span>Review the mockup</span></li><li class="sub"><input type="checkbox" onchange="subTick(event,this)"><span>Build the real page</span></li><li class="sub"><input type="checkbox" onchange="subTick(event,this)"><span>Save it as the daily-content-system skill</span></li></ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="s-hours" data-anchor="hours" data-label="Hour tabs" data-group="The day page" data-title="Hour tabs">
+  <button class="cbtn">comment</button>
+  <h2 style="margin:0 0 4px">⏱️ Hourly recaps</h2>
+  <p class="sub">One tab per recap. The dot turns green once the recording exists. <b>+</b> makes the next recap.</p>
+  <div class="lastrun" data-anchor="lastrun" data-label="Last recap line" data-changed="1" style="position:relative">
+    <button class="cbtn">comment</button>
+    ⏱️ Last recap covered up to <b>16:15</b>, which was <b id="ago">1 h 25 min</b> ago. <span class="nudge">Time for a recap</span>
+  </div>
+
+  <div class="tabs" id="tabs" data-anchor="tabbar" data-label="Tab bar + plus button" style="position:relative">
+    <button class="tab on" data-t="h1"><span class="st"></span>1 · 14:30–16:15 · Pipeline</button>
+    <button class="tab" data-t="h2"><span class="st"></span>2 · example</button>
+    <button class="tab add due" id="addtab" title="Recap since the last one">+</button>
+  </div>
+
+  <div class="plusbox" id="plusbox" data-anchor="plusbox" data-label="What + shows" data-changed="1">
+    <button class="cbtn">comment</button>
+    <div class="q">New recap</div>
+    <p style="margin:4px 0">Covers <b>16:15</b> (where the last recap ended) → <b>until</b>
+      <select id="until"><option>now (17:40)</option><option>17:00</option><option>16:45</option></select></p>
+    <div id="long" class="plain" style="margin:8px 0">That's <b>1 h 25 min</b>, a bit more than an hour. Want it as one recap, or split?
+      <label style="display:block;margin-top:4px"><input type="radio" name="split" checked onchange="event.stopPropagation()"> One recap (1–2 min to record)</label>
+      <label style="display:block"><input type="radio" name="split" onchange="event.stopPropagation()"> Split into 2 recaps (16:15–17:15, 17:15–17:40)</label>
+    </div>
+    <div class="row2"><button id="plusgo" class="go">Create recap</button><button id="pluscancel">Cancel</button></div>
+  </div>
+
+  <div class="pane on" id="h1" data-anchor="hour-pane" data-label="One hour tab's content" style="position:relative">
+    <button class="cbtn">comment</button>
+    <div class="recrow">
+      <span>🎬 <b>Record:</b> Screen Studio, camera + mic, 1–2 min</span>
+      <span>Save as <code>hours/hour-01.mp4</code></span>
+      <span>Status: not recorded yet</span>
+    </div>
+    <div data-anchor="script" data-label="Recap script" data-changed="3" style="position:relative">
+    <button class="cbtn">comment</button>
+    <ol class="script"><li>"Practice day 1. I'm building 10 apps in 30 days, and today I'm building how I'll film it."</li><li>"Hey folks, here's what I did in the past hour."</li><li><span class=act>[open localhost:7781]</span> "First, I turned a messy brainstorm into one page. 10 apps, 30 days, a long video and a short every day."</li><li><span class=act>[point at the right rail]</span> "Every decision is answered here. Three practice days, and Day 1 is this Friday."</li><li><span class=act>[open the daily-loop diagram]</span> "My first plan was to talk over clips later. I tried it, and it didn't feel natural."</li><li><span class=act>[same diagram]</span> "So now I do a quick recap like this one every hour."</li><li><span class=act>[terminal → python3 content/hour.py]</span> "Here's how Claude knows what my agents did. It reads the last hour of every agent's log."</li><li>"Lesson: the first plan didn't survive one real try. Test before you commit."</li><li>"Next hour: building the edit that joins all of these. See you then."</li></ol>
+    <p class="sub" style="margin:6px 0 0">Line 1 is only in the day's first recap. Say each line in your own words; [brackets] = what to click.</p>
+    </div>
+    <details class="ref"><summary>What Claude saw (the raw digest from hour.py)</summary>
+      <pre class="code">## Agent 1 — building_apps
+- asked: I like this content pipeline for now…
+- wrote: content/hour.py, video/day.ts …
+- said: (agent summary) setting up a content pipeline…</pre></details>
+  </div>
+
+  <div class="pane" id="h2" style="position:relative">
+    <div class="recrow"><span>🎬 Save as <code>hours/hour-02.mp4</code></span><span class="ok">● Recorded (example)</span></div>
+    <h4>✅ What got done</h4>
+    <ul><li>Example tab: shows what a recorded hour looks like</li><li>The green dot on the tab means the .mp4 exists</li></ul>
+  </div>
+</section>
+
+<section id="s-q" data-anchor="questions" data-label="Questions" data-group="Decide" data-title="Questions">
+  <button class="cbtn">comment</button>
+  <h2><span class="num">?</span>Questions before I build it</h2>
+  <p class="sub">The first option is my recommendation.</p>
+
+  <div class="d open" data-anchor="d-plus" data-label="Q1 what + does">
+    <button class="cbtn">comment</button>
+    <div class="q">Q1: What happens when you press +?</div>
+    <div class="why">A web page can't wake up this Claude session, so the + has to start the recap some other way.</div>
+    <div data-radio="q1">
+      <label class="opt"><input type="radio" name="q1" value="headless"><span><span class="oh">It runs the recap by itself; the tab fills in within about a minute</span><span class="od">The page's server runs <code>hour.py</code>, then a one-off background Claude (<code>claude -p</code>) writes the bullets. Nothing to type. The cost: every press uses Claude usage, just like saying "recap" would.</span></span></label>
+      <label class="opt"><input type="radio" name="q1" value="placeholder"><span><span class="oh">It adds an empty "waiting" tab; you then say "recap" in the terminal</span><span class="od">Simplest to build, but it's two steps every hour.</span></span></label>
+    </div>
+  </div>
+
+  <div class="d open" data-anchor="d-tasks" data-label="Q2 where tasks live">
+    <button class="cbtn">comment</button>
+    <div class="q">Q2: Where does the task list sit?</div>
+    <div data-radio="q2">
+      <label class="opt"><input type="radio" name="q2" value="top"><span><span class="oh">Always visible at the top, above the tabs (as shown)</span><span class="od">You see the plan while recording any hour. It takes space.</span></span></label>
+      <label class="opt"><input type="radio" name="q2" value="tab"><span><span class="oh">Its own "Tasks" tab, first in the row</span><span class="od">Cleaner, but hidden while you look at an hour.</span></span></label>
+    </div>
+  </div>
+
+  <div class="d open" data-anchor="d-days" data-label="Q3 one page per day">
+    <button class="cbtn">comment</button>
+    <div class="q">Q3: How do days work?</div>
+    <div data-radio="q3">
+      <label class="opt"><input type="radio" name="q3" value="one-page-switcher"><span><span class="oh">One page for the whole series, with a day switcher at the top</span><span class="od">One URL to bookmark for 30 days. Past days stay one click away.</span></span></label>
+      <label class="opt"><input type="radio" name="q3" value="page-per-day"><span><span class="oh">A new page (and URL) each day</span><span class="od">Each day is separate, but that's a new link every morning.</span></span></label>
+    </div>
+  </div>
+
+  <div class="d open" data-anchor="d-edit-tasks" data-label="Q4 who edits the tasks">
+    <button class="cbtn">comment</button>
+    <div class="q">Q4: Can you tick and add tasks on the page itself?</div>
+    <div data-radio="q4">
+      <label class="opt"><input type="radio" name="q4" value="tick-and-add"><span><span class="oh">Yes: tick tasks off and add new ones right there; it saves to disk</span><span class="od">The page becomes your daily to-do list too.</span></span></label>
+      <label class="opt"><input type="radio" name="q4" value="read-only"><span><span class="oh">No: Claude writes the tasks, the page only shows them</span><span class="od">Less to build, but every change goes through the terminal.</span></span></label>
+    </div>
+  </div>
+</section>
+
+<script>
+function refreshTasks(){let d=0,t=0;
+  document.querySelectorAll('.tcard').forEach(c=>{const all=c.querySelectorAll('input'),ok=c.querySelectorAll('input:checked');
+    d+=ok.length;t+=all.length;c.querySelector('.tprog').textContent=ok.length+'/'+all.length;
+    c.querySelector('.tbar i').style.width=(100*ok.length/all.length)+'%';c.classList.toggle('alldone',ok.length===all.length)});
+  document.getElementById('dayprog').textContent=`· ${d} of ${t} steps done`}
+function subTick(e,i){e.stopPropagation();i.parentElement.classList.toggle('done',i.checked);refreshTasks()}
+refreshTasks();
+document.getElementById('gen').onclick=()=>{const b=document.getElementById('gen');b.textContent='✨ Mockup: Claude would write the cards below';setTimeout(()=>b.textContent='✨ Make my task list',2500)};
+document.querySelectorAll('.tab[data-t]').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('on',x===b));
+  document.querySelectorAll('.pane').forEach(p=>p.classList.toggle('on',p.id===b.dataset.t));
+});
+document.querySelector('#s-hours .tab[data-t="h2"] .st').classList.add('rec');
+document.getElementById('addtab').onclick=()=>document.getElementById('plusbox').classList.add('on');
+document.getElementById('pluscancel').onclick=()=>document.getElementById('plusbox').classList.remove('on');
+document.getElementById('until').onchange=e=>{e.stopPropagation();
+  document.getElementById('long').style.display=e.target.selectedIndex===0?'':'none'};
+document.getElementById('plusgo').onclick=()=>{document.getElementById('plusbox').classList.remove('on');
+  const n=document.querySelectorAll('.tab[data-t]').length+1, id='h'+n;
+  const b=document.createElement('button'); b.className='tab'; b.dataset.t=id;
+  b.innerHTML=`<span class="st"></span>${n} · 16:15–17:40 · …`;
+  document.getElementById('addtab').before(b);
+  const p=document.createElement('div'); p.className='pane'; p.id=id;
+  p.innerHTML=`<p class="loading">Mockup: reading the last hour of every agent's log, then writing the recap. In the real page this fills in by itself.</p>`;
+  document.getElementById('h2').after(p);
+  b.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('on',x===b));
+    document.querySelectorAll('.pane').forEach(q=>q.classList.toggle('on',q.id===id))};
+  b.click();
+};
+</script>
+</main>
+
+<aside class="right">
+  <h2>Decisions</h2>
+  <p class="sub" style="margin:2px 0 0" id="dprog">—</p>
+  <div class="bar"><i id="dbar" style="width:0"></i></div>
+  <div class="dlist" id="dlist"></div>
+  <h2 style="margin-top:16px">Feedback queue</h2>
+  <p class="sub" style="margin:2px 0 0">Nothing is sent until you confirm.</p>
+  <div id="queue"></div>
+  <button class="primary" id="send">Confirm &amp; send</button>
+</aside>
+</div>
+
+<div id="pop">
+  <div class="pa" id="popanchor"></div>
+  <div class="kind">
+    <label class="sel"><input type="radio" name="kind" value="question" checked> Ask a question</label>
+    <label><input type="radio" name="kind" value="change"> Change this</label>
+    <label><input type="radio" name="kind" value="note"> Comment</label>
+  </div>
+  <textarea id="poptext" placeholder="What do you want to know? Answered in the terminal, not on the page."></textarea>
+  <div class="row"><button id="popcancel">Cancel</button><button id="popadd" class="add">Add to queue</button></div>
+</div>
+<div id="toast"></div>
+
+<!-- optional: <script src="vendor/mermaid.min.js"></script> for <pre class="mermaid"> diagrams -->
+<script>
+const S={decisions:{},comments:[],batches:[]}; let ROUND=1;
+const $=s=>document.querySelector(s);
+const esc=t=>String(t).replace(/[<>&]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
+const toast=m=>{const t=$('#toast');t.textContent=m;t.classList.add('on');
+  setTimeout(()=>t.classList.remove('on'),1700)};
+const post=(u,b)=>fetch(u,{method:'POST',headers:{'Content-Type':'application/json'},
+  body:JSON.stringify(b)}).then(r=>r.json());
+const D=k=>S.decisions[k];
+function groups(){return [...document.querySelectorAll('[data-radio],[data-check]')]}
+
+function buildChanged(){
+  // Blocks the author marked data-changed="N" (N = the round they were revised in).
+  // The rail lists the latest round's blocks so the reviewer can find what moved.
+  const els=[...document.querySelectorAll('[data-changed]')]; if(!els.length) return;
+  const latest=Math.max(...els.map(e=>+e.dataset.changed));
+  const mine=els.filter(e=>+e.dataset.changed===latest);
+  $('#toc').insertAdjacentHTML('afterbegin',`<div class="chg"><div class="grp">Changed in round ${latest} (${mine.length})</div>`+
+    mine.map((e,i)=>{ if(!e.id) e.id='chg-'+latest+'-'+i;
+      return `<a href="#${e.id}" data-id="${e.id}">${esc(e.dataset.label||e.dataset.title||e.id)}</a>`}).join('')+
+    `<div class="grp" style="margin-top:10px">Contents</div></div>`);
+  document.querySelectorAll('#toc .chg a').forEach(a=>a.onclick=ev=>{ev.preventDefault();
+    const el=document.getElementById(a.dataset.id); el.scrollIntoView({behavior:'smooth',block:'center'});
+    el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash')});
+}
+function buildToc(){
+  let last='';
+  $('#toc').innerHTML=[...document.querySelectorAll('main section')].map(s=>{
+    let out=''; if(s.dataset.group!==last){out+=`<div class="grp">${s.dataset.group}</div>`;last=s.dataset.group}
+    return out+`<a href="#${s.id}" data-id="${s.id}">${s.dataset.title}</a>`}).join('');
+  const links=[...document.querySelectorAll('#toc a')];
+  const io=new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting)
+    links.forEach(l=>l.classList.toggle('on',l.dataset.id===e.target.id)) }),
+    {rootMargin:'-84px 0px -70% 0px'});
+  document.querySelectorAll('main section').forEach(s=>io.observe(s));
+}
+function renderDecisions(){
+  const gs=groups(); let done=0;
+  $('#dlist').innerHTML=gs.map(g=>{
+    const id=g.dataset.radio||g.dataset.check, blk=g.closest('.d');
+    const ch=[...g.querySelectorAll('input:checked')]; if(ch.length) done++;
+    const val=ch.map(i=>i.closest('label').querySelector('.oh').textContent).join(', ');
+    return `<div class="dr ${ch.length?'done':'todo'}" data-goto="${blk.dataset.anchor}">
+      <span class="dot"></span><span class="dn">${id.toUpperCase()}</span>
+      <span class="dv">${esc(val||'not decided')}</span></div>`}).join('');
+  $('#dprog').textContent=`${done} of ${gs.length} decided`;
+  $('#dbar').style.width=(gs.length?done/gs.length*100:0)+'%';
+  $('#dcount').textContent=`${done}/${gs.length} decided · ${S.comments.filter(c=>c.status==='queued').length} queued`;
+  document.querySelectorAll('.dr').forEach(r=>r.onclick=()=>{
+    const el=document.querySelector(`[data-anchor="${r.dataset.goto}"]`); if(!el)return;
+    el.scrollIntoView({behavior:'smooth',block:'center'});
+    el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash')});
+}
+function renderQueue(){
+  const q=S.comments.filter(c=>c.status==='queued');
+  $('#send').textContent=`Confirm & send round ${ROUND}`+(q.length?` — ${q.length} comment${q.length===1?'':'s'}`:'');
+  $('#queue').innerHTML=q.length?q.map(c=>
+    `<div class="qi"><button class="qx" data-id="${c.id}">×</button>
+     <div class="qa">${{question:'Question',note:'Comment'}[c.kind]||'Change'} · ${esc(c.anchorLabel)}</div>${esc(c.text)}</div>`).join('')
+    :'<div class="empty">No comments.<br>Hover any block and hit <em>comment</em>.</div>';
+  document.querySelectorAll('.qx').forEach(b=>b.onclick=async()=>{
+    const r=await post('/api/comment/delete',{id:b.dataset.id});
+    S.comments=r.comments; renderQueue(); markAnchors(); renderDecisions()});
+}
+function markAnchors(){
+  document.querySelectorAll('[data-anchor]').forEach(el=>{
+    const has=S.comments.some(c=>c.anchor===el.dataset.anchor&&c.status==='queued');
+    const b=el.querySelector(':scope > .cbtn');
+    if(b){b.classList.toggle('has',has); b.textContent=has?'commented':'comment'}});
+}
+const PH={change:'What is wrong, missing, or should change here?',
+          question:'What do you want to know? Answered in the terminal, not on the page.',
+          note:'A thought, context or reaction. Taken on board; the page only changes if you ask.'};
+const kind=()=>$('#pop input[name=kind]:checked').value;
+function setKind(k){$(`#pop input[name=kind][value="${k}"]`).checked=true;
+  document.querySelectorAll('#pop .kind label').forEach(l=>l.classList.toggle('sel',l.querySelector('input').value===k));
+  $('#poptext').placeholder=PH[k]}
+let target=null;
+document.addEventListener('click',e=>{
+  const btn=e.target.closest('.cbtn');
+  if(!btn){ if(!e.target.closest('#pop')) $('#pop').style.display='none'; return }
+  const el=btn.closest('[data-anchor]');
+  target={anchor:el.dataset.anchor,label:el.dataset.label,
+          text:(el.querySelector('h2,.q')||{}).textContent||''};
+  const p=$('#pop'),r=btn.getBoundingClientRect();
+  $('#popanchor').textContent=target.label; $('#poptext').value=''; setKind('question');
+  p.style.display='block'; p.style.top=(window.scrollY+r.bottom+8)+'px';
+  p.style.left=Math.max(12,Math.min(r.right-328+window.scrollX,document.body.clientWidth-340))+'px';
+  $('#poptext').focus();
+});
+$('#popcancel').onclick=()=>$('#pop').style.display='none';
+$('#popadd').onclick=async()=>{
+  const t=$('#poptext').value.trim(); if(!t||!target)return;
+  const r=await post('/api/comment',{id:'c'+Date.now(),anchor:target.anchor,
+    anchorLabel:target.label,anchorText:target.text,text:t,kind:kind()});
+  S.comments=r.comments; $('#pop').style.display='none';
+  renderQueue(); markAnchors(); renderDecisions(); toast('Queued — not sent yet')};
+$('#send').onclick=async()=>{
+  const r=await post('/api/send',{});
+  S.comments.forEach(c=>{if(c.status==='queued')c.status='sent'});
+  ROUND+=1; $('#round').textContent=`Round ${ROUND}`;
+  renderQueue(); markAnchors(); renderDecisions();
+  toast(`Round ${ROUND-1} sent — ${r.sent} comment${r.sent===1?'':'s'} + decisions`)};
+document.addEventListener('change',async e=>{
+  const i=e.target;
+  if(i.closest('#pop')){ if(i.name==='kind') setKind(i.value); return }
+  if(i.type==='radio'){S.decisions[i.name]=i.value; await post('/api/decision',{id:i.name,value:i.value})}
+  else if(i.type==='checkbox'){
+    const v=[...document.querySelectorAll(`input[name="${i.name}"]:checked`)].map(x=>x.value);
+    S.decisions[i.name]=v; await post('/api/decision',{id:i.name,value:v})}
+  else return;
+  document.querySelectorAll('label.opt').forEach(l=>l.classList.toggle('sel',l.querySelector('input').checked));
+  renderDecisions(); toast('Saved')});
+
+fetch('/api/state').then(r=>r.json()).then(async st=>{
+  S.decisions=st.decisions||{}; S.comments=st.comments||[]; S.batches=st.batches||[];
+  ROUND=S.batches.length+1; $('#round').textContent=`Round ${ROUND}`;
+  for(const [k,v] of Object.entries(S.decisions))
+    (Array.isArray(v)?v:[v]).forEach(val=>{
+      const i=document.querySelector(`input[name="${k}"][value="${val}"]`); if(i)i.checked=true});
+  document.querySelectorAll('label.opt').forEach(l=>l.classList.toggle('sel',l.querySelector('input').checked));
+  post('/api/groups',{groups:groups().map(g=>g.dataset.radio||g.dataset.check)});
+  buildToc(); buildChanged(); renderQueue(); markAnchors(); renderDecisions();
+  if(window.mermaid){mermaid.initialize({startOnLoad:false,
+    theme:matchMedia('(prefers-color-scheme: dark)').matches?'dark':'neutral',securityLevel:'loose'});
+    try{await mermaid.run({nodes:[...document.querySelectorAll('pre.mermaid')]})}catch(e){}}
+});
+</script>
+</body>
+</html>

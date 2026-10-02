@@ -1,0 +1,27 @@
+{
+  "decisions": {},
+  "comments": [
+    {
+      "id": "c1790230515307",
+      "anchor": "st0",
+      "anchorLabel": "Stage 0 Set up",
+      "anchorText": "0Set up the app",
+      "text": "how is setup done before the research?",
+      "kind": "question",
+      "status": "sent",
+      "ts": "2026-09-24T06:15:15.323838+00:00",
+      "addressed": true
+    }
+  ],
+  "batches": [
+    {
+      "round": 1,
+      "ts": "2026-09-24T06:36:38.876508+00:00",
+      "commentIds": [
+        "c1790230515307"
+      ],
+      "decisions": {}
+    }
+  ],
+  "groups": []
+}

@@ -1,0 +1,68 @@
+{
+  "date": "2026-09-30",
+  "tasks": [
+    {
+      "icon": "🗺️",
+      "title": "Decide the full 30-day plan",
+      "why": "Know exactly what the series is",
+      "steps": [
+        {
+          "text": "Write the goal in simple words",
+          "done": false
+        },
+        {
+          "text": "Set the daily schedule and format",
+          "done": false
+        }
+      ]
+    },
+    {
+      "icon": "💡",
+      "title": "Find ideas on what to build",
+      "why": "Fill the series with strong ideas",
+      "steps": [
+        {
+          "text": "Block 1 to 2 hours for this",
+          "done": false
+        },
+        {
+          "text": "Collect ideas using an AI workflow",
+          "done": false
+        },
+        {
+          "text": "Pick the best ideas for the list",
+          "done": false
+        }
+      ]
+    },
+    {
+      "icon": "🛠️",
+      "title": "Create a repeatable build process",
+      "why": "Make each daily build fast",
+      "steps": [
+        {
+          "text": "List the steps from idea to post",
+          "done": false
+        },
+        {
+          "text": "Write them as a simple checklist",
+          "done": false
+        },
+        {
+          "text": "Note tools and prompts to reuse",
+          "done": false
+        }
+      ]
+    }
+  ],
+  "goals": [
+    {
+      "text": "1 idea built with content",
+      "done": false
+    },
+    {
+      "text": "×  pipeline ready with other ideas.",
+      "done": false
+    }
+  ]
+}

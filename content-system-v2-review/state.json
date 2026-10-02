@@ -1,0 +1,62 @@
+{
+  "decisions": {
+    "d1": "full",
+    "d2": "tab",
+    "d3": "auto",
+    "d4": "button",
+    "d5": "all",
+    "d7": "fixed",
+    "d6": "day"
+  },
+  "comments": [
+    {
+      "id": "c1790182440043",
+      "anchor": "d-home",
+      "anchorLabel": "D6 where past-work chunks live",
+      "anchorText": "D6: Where do past-work chunks go?",
+      "text": "For now I am okay with it being in a tab. As it feels simple and gives me a direction on what I have added or not. \n\nProject level daily work can be done later I think.",
+      "kind": "change",
+      "status": "sent",
+      "ts": "2026-09-23T16:54:00.054407+00:00",
+      "addressed": true
+    },
+    {
+      "id": "c1790182502562",
+      "anchor": "flow-diagram",
+      "anchorLabel": "Flow diagram",
+      "anchorText": "",
+      "text": "confirmthing that 1 hourly recap will produce one chunk.\nAnd one recap project can provide many chunks correct?",
+      "kind": "question",
+      "status": "sent",
+      "ts": "2026-09-23T16:55:02.570292+00:00",
+      "addressed": true
+    }
+  ],
+  "batches": [
+    {
+      "round": 1,
+      "ts": "2026-09-23T16:55:05.983288+00:00",
+      "commentIds": [
+        "c1790182440043",
+        "c1790182502562"
+      ],
+      "decisions": {
+        "d1": "full",
+        "d2": "tab",
+        "d3": "auto",
+        "d4": "button",
+        "d5": "all",
+        "d7": "fixed"
+      }
+    }
+  ],
+  "groups": [
+    "d1",
+    "d2",
+    "d3",
+    "d4",
+    "d5",
+    "d6",
+    "d7"
+  ]
+}

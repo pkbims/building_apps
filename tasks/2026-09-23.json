@@ -1,0 +1,88 @@
+{
+  "date": "2026-09-23",
+  "tasks": [
+    {
+      "icon": "📝",
+      "title": "Write recap script instructions",
+      "why": "keep chain of thought for hourly recaps",
+      "steps": [
+        {
+          "text": "Draft script structure rules",
+          "done": true
+        },
+        {
+          "text": "Cover hourly recap format",
+          "done": true
+        }
+      ]
+    },
+    {
+      "icon": "➕",
+      "title": "Add preview to plus button",
+      "why": "review Claude output before adding",
+      "steps": [
+        {
+          "text": "Generate html-worker from output",
+          "done": true
+        },
+        {
+          "text": "Review then confirm add",
+          "done": true
+        }
+      ]
+    },
+    {
+      "icon": "💬",
+      "title": "Confirm content system for recap",
+      "why": "plan video for work already completed",
+      "steps": [
+        {
+          "text": "Discuss via html-worker",
+          "done": true
+        },
+        {
+          "text": "Use conversation-based inputs",
+          "done": true
+        },
+        {
+          "text": "Break work into bits",
+          "done": true
+        }
+      ]
+    },
+    {
+      "icon": "🛠️",
+      "title": "Build App Creation Pipeline UI",
+      "why": "Prep before decorMyRoom recording",
+      "steps": [
+        {
+          "text": "Design pipeline UI screens",
+          "done": true
+        },
+        {
+          "text": "Build App Creation Pipeline UI",
+          "done": true
+        },
+        {
+          "text": "Confirm ready before recording",
+          "done": true
+        }
+      ]
+    }
+  ],
+  "spoken": "Early morning tomorrow, I want to focus on laying down instructions for a better script that is created for the hourly recaps because if script is not there I lose the chain of thoughts. \n\nThen I once that is ready, I will start working on my Day 1 of the app building. \n\nPlease note that I have already built one of the apps like the Decor thingy so what I can do is go through the work that I have completed so far. \n\nSo I will go through my pipeline once again, like the research phase and well and will just skip the implementation. \n\nSo folks will think like the app is being built. \n\nAnd I will stop the video till the work I have completed. \n\nSo this is not like 1 hour recap thingy but recap of things that I have already completed breaken down apart. \n\nSo we probably need to add a feature to our content system to help us build content for the work I've already done. \n\nSo we should talk about this first, after the scripting agreement is done. \nLike we will talk using the html worker that how do I shoot a daily video for the work that i have already done. \nI will probably want the inputs be conversation based and then we can divide the work in bits like we do.\nOne feature I want to add is that when I press on + and the claude session just outputs, I would rather have it generate a html-worker on the output so I can review and once I confirm only then it is added. \n\nHence, the main goal for tomorrow is that. \n\nConfirm the content system in the first 1 hour. \nMake yourself presentable and be confident and high energy.\nShoot videos for decorMyRoom and complete Day1 10-20 minute clip.\nShoot the first 2 reels.",
+  "goals": [
+    {
+      "text": "Confirm Scripting and Long Form Video",
+      "done": true
+    },
+    {
+      "text": "Make sure your pipeline works fine so we can showcase easily",
+      "done": true
+    },
+    {
+      "text": "Shoot  Long form Video for Decor Room",
+      "done": false
+    }
+  ]
+}

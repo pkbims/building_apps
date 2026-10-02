@@ -1,0 +1,152 @@
+{
+  "decisions": {
+    "d13": "v1-plus",
+    "d14": "derived-merge",
+    "d15": "no-contract",
+    "d16": "flatten",
+    "d17": "beside",
+    "d18": "onclose",
+    "d1": "b-a-c",
+    "d2": "under",
+    "d3": "derived",
+    "d4": "none-agents",
+    "d5": "derive",
+    "d6": "live",
+    "d7": "read",
+    "d8": "app1",
+    "d9": "keep",
+    "d10": "skill",
+    "d11": "apv"
+  },
+  "comments": [
+    {
+      "id": "c1790193395978",
+      "anchor": "mockB",
+      "anchorLabel": "Mockup B \u2014 all-apps board",
+      "anchorText": "BAll apps \u2014 the board",
+      "text": "I like this for a top level page.",
+      "kind": "note",
+      "status": "sent",
+      "ts": "2026-09-23T19:56:35.997982+00:00",
+      "addressed": true
+    },
+    {
+      "id": "c1790193950222",
+      "anchor": "d18",
+      "anchorLabel": "D18 when copies are made",
+      "anchorText": "D18 \u2014 When does a read-only copy get made?",
+      "text": "we can add a button in our html-workers to mention that the review is completed",
+      "kind": "change",
+      "status": "sent",
+      "ts": "2026-09-23T20:05:50.248503+00:00",
+      "addressed": true
+    },
+    {
+      "id": "c1790193998571",
+      "anchor": "shape",
+      "anchorLabel": "Shape decisions",
+      "anchorText": "What the dashboard is",
+      "text": "It is hard to visualize can you create a clickable version where I visualize this?",
+      "kind": "note",
+      "status": "sent",
+      "ts": "2026-09-23T20:06:38.584381+00:00",
+      "addressed": true
+    },
+    {
+      "id": "c1790194126036",
+      "anchor": "d10",
+      "anchorLabel": "D10 where it lives",
+      "anchorText": "D10 \u2014 Where does it live, and how does it start?",
+      "text": "skill should be named as app-progress-visualizer",
+      "kind": "question",
+      "status": "sent",
+      "ts": "2026-09-23T20:08:46.045882+00:00",
+      "addressed": true
+    },
+    {
+      "id": "c1790194154920",
+      "anchor": "d11",
+      "anchorLabel": "D11 the name",
+      "anchorText": "D11 \u2014 What is it called?",
+      "text": "App-progress-visualizer or something",
+      "kind": "change",
+      "status": "sent",
+      "ts": "2026-09-23T20:09:14.930534+00:00",
+      "addressed": true
+    }
+  ],
+  "batches": [
+    {
+      "round": 1,
+      "ts": "2026-09-23T20:09:54.360495+00:00",
+      "commentIds": [
+        "c1790193395978",
+        "c1790193950222",
+        "c1790193998571",
+        "c1790194126036",
+        "c1790194154920"
+      ],
+      "decisions": {
+        "d13": "v1-plus",
+        "d14": "derived-merge",
+        "d15": "no-contract",
+        "d16": "flatten",
+        "d17": "beside",
+        "d18": "onclose",
+        "d1": "b-a-c",
+        "d2": "under",
+        "d3": "derived",
+        "d4": "none-agents",
+        "d5": "derive",
+        "d6": "live",
+        "d7": "read",
+        "d8": "app1",
+        "d9": "keep"
+      }
+    },
+    {
+      "round": 2,
+      "ts": "2026-09-23T20:38:46.975323+00:00",
+      "commentIds": [],
+      "decisions": {
+        "d13": "v1-plus",
+        "d14": "derived-merge",
+        "d15": "no-contract",
+        "d16": "flatten",
+        "d17": "beside",
+        "d18": "onclose",
+        "d1": "b-a-c",
+        "d2": "under",
+        "d3": "derived",
+        "d4": "none-agents",
+        "d5": "derive",
+        "d6": "live",
+        "d7": "read",
+        "d8": "app1",
+        "d9": "keep",
+        "d10": "skill",
+        "d11": "apv"
+      }
+    }
+  ],
+  "groups": [
+    "d13",
+    "d14",
+    "d15",
+    "d16",
+    "d17",
+    "d18",
+    "d1",
+    "d2",
+    "d3",
+    "d4",
+    "d5",
+    "d6",
+    "d7",
+    "d8",
+    "d9",
+    "d10",
+    "d11",
+    "d12"
+  ]
+}

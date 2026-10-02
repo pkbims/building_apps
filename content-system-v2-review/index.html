@@ -1,0 +1,529 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Content system v2 — review</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<style>
+  :root{--bg:#f4eee2;--panel:#fdf9f1;--ink:#2a2521;--muted:#6a6157;--faint:#978d82;
+    --line:#e3d9c7;--accent:#b0523a;--soft:#f5e4dc;--warn:#7a5a1e;--warnsoft:#f3ead3;
+    --quote:#efe7d6;--s1:6px;--s2:8px;--s3:10px;--s4:12px;--s5:16px;--s6:24px;--s7:32px;
+    --r:10px;--r2:14px}
+  :root{color-scheme:light}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;
+    --bg:#1b1916;--panel:#242019;--ink:#ede4d6;--muted:#a89e8f;--faint:#766d60;
+    --line:#38322a;--accent:#e28f72;--soft:#3b2a24;--warn:#dcb66e;--warnsoft:#302a1c;
+    --quote:#2a2620}}
+  :root[data-theme="dark"]{color-scheme:dark;
+    --bg:#1b1916;--panel:#242019;--ink:#ede4d6;--muted:#a89e8f;--faint:#766d60;
+    --line:#38322a;--accent:#e28f72;--soft:#3b2a24;--warn:#dcb66e;--warnsoft:#302a1c;
+    --quote:#2a2620}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:18px/1.7 "IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+  h1,h2,h3{letter-spacing:-.015em}
+  header{position:sticky;top:0;z-index:60;background:var(--panel);
+    border-bottom:1px solid var(--line);padding:var(--s4) var(--s6);
+    display:flex;align-items:center;gap:var(--s5)}
+  header h1{font-size:15px;margin:0;font-weight:650}
+  .tag{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);
+    background:var(--soft);padding:3px var(--s2);border-radius:var(--s1);font-weight:650}
+  .spacer{flex:1}.count{font-size:13px;color:var(--muted)}
+  button.theme{background:var(--bg);border:1px solid var(--line);color:var(--muted);font:inherit;
+    font-size:12px;padding:4px var(--s3);border-radius:var(--s2);cursor:pointer}
+  button.theme:hover{color:var(--accent);border-color:var(--accent)}
+  .layout{display:grid;grid-template-columns:206px minmax(0,1fr) 316px;gap:var(--s7);
+    max-width:1400px;margin:0 auto;padding:var(--s6) var(--s6) 140px}
+  @media(max-width:1200px){.layout{grid-template-columns:186px minmax(0,1fr)}aside.right{display:none}}
+  @media(max-width:820px){.layout{grid-template-columns:1fr}nav.toc{display:none}}
+  nav.toc{position:sticky;top:78px;align-self:start;max-height:calc(100vh - 110px);
+    overflow-y:auto;font-size:13px}
+  nav.toc .grp{color:var(--faint);text-transform:uppercase;letter-spacing:.07em;
+    font-size:10.5px;font-weight:700;margin:var(--s5) 0 var(--s2)}
+  nav.toc .grp:first-child{margin-top:0}
+  nav.toc a{display:block;color:var(--muted);text-decoration:none;padding:5px var(--s3);
+    border-left:2px solid transparent;border-radius:0 var(--s1) var(--s1) 0}
+  nav.toc a.on{color:var(--accent);border-left-color:var(--accent);background:var(--soft);font-weight:600}
+  section{background:var(--panel);border:1px solid var(--line);border-radius:var(--r2);
+    padding:var(--s6) 28px;margin-bottom:var(--s6);position:relative;scroll-margin-top:84px}
+  section:hover > .cbtn{opacity:1}
+  section > h2{font-size:21px;margin:0 0 var(--s1)}
+  .num{color:var(--faint);font-weight:600;font-size:14px;margin-right:var(--s2)}
+  .sub{color:var(--muted);font-size:13.5px;margin:0 0 var(--s5)}
+  blockquote{margin:var(--s3) 0;padding:var(--s3) var(--s5);background:var(--quote);
+    border-left:2px solid var(--line);border-radius:0 var(--s2) var(--s2) 0;font-size:13.5px}
+  .plain{background:var(--soft);border-left:3px solid var(--accent);padding:var(--s3) var(--s5);
+    border-radius:0 var(--s2) var(--s2) 0;margin:var(--s4) 0;font-size:13.5px}
+  .plain b{color:var(--accent)}
+  .risk{background:var(--warnsoft);border-left:3px solid var(--warn);padding:var(--s3) var(--s5);
+    border-radius:0 var(--s2) var(--s2) 0;margin:var(--s4) 0;font-size:13.5px}
+  .risk b{color:var(--warn)}
+  .cbtn{position:absolute;top:var(--s5);right:var(--s5);opacity:0;transition:opacity .15s;
+    background:var(--bg);border:1px solid var(--line);color:var(--muted);font:inherit;
+    font-size:12px;padding:4px var(--s3);border-radius:var(--s2);cursor:pointer}
+  .cbtn:hover{color:var(--accent);border-color:var(--accent)}
+  .cbtn.has{opacity:1;color:var(--accent);border-color:var(--accent);background:var(--soft)}
+  .d{border:1px solid var(--line);border-radius:var(--r);padding:var(--s5) 18px;
+    margin:var(--s5) 0;position:relative}
+  .d:hover .cbtn{opacity:1}
+  .d.open{border-left:3px solid var(--accent)}
+  .q{font-weight:650;font-size:14.5px;margin-bottom:3px}
+  .why{color:var(--muted);font-size:13px;margin-bottom:var(--s4)}
+  label.opt{display:flex;gap:var(--s3);align-items:flex-start;padding:9px var(--s4);
+    border:1px solid transparent;border-radius:var(--s2);cursor:pointer;font-size:14px}
+  label.opt:hover{background:var(--bg)}
+  label.opt.sel{border-color:var(--accent);background:var(--soft)}
+  label.opt input{margin-top:3px;accent-color:var(--accent);flex:none}
+  .oh{font-weight:550}.od{color:var(--muted);font-size:12.5px;display:block;margin-top:1px}
+  .mm{background:var(--bg);border:1px solid var(--line);border-radius:var(--r);
+    padding:18px;margin:var(--s4) 0;overflow-x:auto;text-align:center}
+  table.t{width:100%;border-collapse:collapse;font-size:13px;margin:var(--s4) 0}
+  table.t th,table.t td{border:1px solid var(--line);padding:var(--s2) var(--s3);
+    text-align:left;vertical-align:top}
+  table.t th{background:var(--bg);font-weight:650}
+  code{background:var(--quote);padding:1px 5px;border-radius:5px;font-size:12.5px}
+  pre.code{background:var(--quote);padding:var(--s5);border-radius:var(--r);
+    overflow-x:auto;font-size:12.5px;margin:var(--s4) 0}
+  details.ref{border:1px solid var(--line);border-radius:var(--r);padding:var(--s4) 18px;
+    margin:var(--s4) 0;background:var(--bg)}
+  details.ref summary{cursor:pointer;font-weight:650;font-size:14px;color:var(--accent)}
+  aside.right{position:sticky;top:78px;align-self:start;background:var(--panel);
+    border:1px solid var(--line);border-radius:var(--r2);padding:var(--s5) 18px;
+    max-height:calc(100vh - 110px);display:flex;flex-direction:column}
+  aside.right h2{font-size:15px;margin:0}
+  .bar{height:4px;background:var(--line);border-radius:2px;overflow:hidden;margin-top:9px}
+  .bar i{display:block;height:100%;background:var(--accent);transition:width .3s}
+  .dlist{overflow-y:auto;max-height:30vh;margin:var(--s3) -4px 0;padding:0 4px}
+  .dr{display:flex;gap:9px;align-items:center;padding:5px var(--s2);border-radius:var(--s1);
+    cursor:pointer;font-size:12.5px}
+  .dr:hover{background:var(--bg)}
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--line);flex:none}
+  .dr.done .dot{background:var(--accent)}
+  .dn{color:var(--muted);font-weight:700;flex:none}
+  .dr.todo .dv{color:var(--muted);font-style:italic}
+  #queue{flex:1;overflow-y:auto;margin:var(--s4) -4px;padding:0 4px;min-height:60px}
+  .qi{border:1px solid var(--line);border-radius:var(--s2);padding:var(--s3) var(--s4);
+    margin-bottom:9px;font-size:13px;background:var(--bg)}
+  .qa{color:var(--accent);font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;
+    font-weight:700;margin-bottom:5px}
+  .qx{float:right;cursor:pointer;color:var(--muted);border:0;background:none;font-size:15px}
+  .empty{color:var(--muted);font-size:13px;text-align:center;padding:var(--s6) var(--s3)}
+  button.primary{width:100%;background:var(--accent);color:#fff;border:0;padding:11px;
+    border-radius:var(--r);font:inherit;font-size:13.5px;font-weight:650;cursor:pointer}
+  #pop{position:absolute;z-index:100;width:328px;background:var(--panel);
+    border:1px solid var(--line);border-radius:var(--r);padding:var(--s4);
+    box-shadow:0 10px 34px rgba(0,0,0,.18);display:none}
+  #pop .pa{font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;
+    color:var(--accent);font-weight:700;margin-bottom:var(--s2)}
+  #pop .kind{display:flex;gap:var(--s2);margin-bottom:var(--s2)}
+  #pop .kind label{flex:1;display:flex;gap:6px;align-items:center;font-size:12.5px;
+    padding:5px var(--s2);border:1px solid var(--line);border-radius:var(--s2);cursor:pointer;color:var(--muted)}
+  #pop .kind label.sel{border-color:var(--accent);background:var(--soft);color:var(--accent)}
+  #pop .kind input{margin:0;accent-color:var(--accent)}
+  #pop textarea{width:100%;min-height:88px;border:1px solid var(--line);border-radius:var(--s2);
+    padding:9px;font:inherit;font-size:13.5px;background:var(--bg);color:var(--ink)}
+  #pop .row{display:flex;gap:var(--s2);margin-top:var(--s3)}
+  #pop button{flex:1;padding:var(--s2);border-radius:var(--s2);font:inherit;font-size:13px;
+    cursor:pointer;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+  #pop button.add{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:650}
+  #toast{position:fixed;bottom:var(--s6);left:50%;transform:translateX(-50%);
+    background:var(--ink);color:var(--bg);padding:var(--s3) 18px;border-radius:var(--s2);
+    font-size:13.5px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:200}
+  #toast.on{opacity:1}
+  .flash{animation:fl 1.1s ease-out}
+  @keyframes fl{0%{background:var(--soft)}100%{background:transparent}}
+  [data-changed]{box-shadow:inset 3px 0 0 var(--warn)}
+  [data-changed]::before{content:"changed · round " attr(data-changed);position:absolute;top:-9px;left:12px;
+    font-size:10px;letter-spacing:.06em;text-transform:uppercase;font-weight:700;color:var(--warn);
+    background:var(--warnsoft);padding:2px 7px;border-radius:5px;z-index:1}
+  nav.toc .chg a{color:var(--warn)} nav.toc .chg a.on{color:var(--warn);border-left-color:var(--warn);background:var(--warnsoft)}
+  nav.toc .chg .grp{color:var(--warn)}
+</style>
+<script id="theme">
+(()=>{const K='theme',R=document.documentElement,L={'':'Auto',light:'Light',dark:'Dark'};
+const set=v=>{v?R.dataset.theme=v:delete R.dataset.theme;try{v?localStorage.setItem(K,v):localStorage.removeItem(K)}catch(e){}};
+try{set(localStorage.getItem(K)||'')}catch(e){}
+addEventListener('DOMContentLoaded',()=>{const h=document.querySelector('header');if(!h)return;
+  const b=document.createElement('button');b.className='theme';b.title='Auto → Light → Dark';
+  const show=()=>b.textContent=L[R.dataset.theme||''];
+  b.onclick=()=>{const c=['','light','dark'];set(c[(c.indexOf(R.dataset.theme||'')+1)%3]);show()};
+  show();h.appendChild(b)})})();
+</script>
+</head>
+<body>
+<header>
+  <h1>Content system v2 — review</h1>
+  <span class="tag" id="round">Round 1</span>
+  <div class="spacer"></div>
+  <span class="count" id="dcount">—</span>
+</header>
+
+<div class="layout">
+<nav class="toc" id="toc"></nav>
+<main>
+<style>
+  .cmp{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:12px 0}
+  @media(max-width:900px){.cmp{grid-template-columns:1fr}}
+  .cmp>div{border:1px solid var(--line);border-radius:10px;padding:12px 16px;background:var(--bg);font-size:14.5px}
+  .cmp h4{margin:0 0 6px;font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--faint)}
+  .show{display:inline-block;font-size:12px;font-weight:650;color:var(--accent);background:var(--soft);padding:1px 8px;border-radius:6px;margin:6px 0 2px}
+  .say{margin:0 0 4px;line-height:1.55}
+  ul.b{margin:6px 0;padding-left:20px} ul.b li{margin:3px 0}
+</style>
+
+<section id="s-asks" data-anchor="asks" data-label="What you asked for" data-group="Your asks" data-title="What you asked for">
+  <button class="cbtn">comment</button>
+  <h2><span class="num">1</span>What you asked for</h2>
+  <p class="sub">Three changes to the content system. Correct anything I got wrong.</p>
+  <ul class="b">
+    <li><b>A real script.</b> Keep "What happened" and "Open these first". Replace the bullet-style script with the exact words to say, so you have direction while the camera is on.</li>
+    <li><b>Review before recording.</b> Pressing + opens a draft in its own window, where you comment, it revises, and you approve it.</li>
+    <li><b>You choose what the video is about, with a prompt.</b>
+      <ul class="b">
+        <li><b>Recap with a focus:</b> "only the decorMyRoom work from the last hour", even if you touched 5–6 apps.</li>
+        <li><b>Past work:</b> "make chunks showing how I built the shopping prototype last week". There's no time window; it digs through old work.</li>
+      </ul></li>
+  </ul>
+  <div class="plain"><b>One change of mind to note:</b> on day 1 you chose "bullets for everything, nothing word for word" (D6).
+    Recording showed that bullets don't give enough direction on camera. So this page replaces that decision.</div>
+</section>
+
+<section id="s-flow" data-anchor="flow" data-label="The new + flow" data-group="The proposal" data-title="The new + flow">
+  <button class="cbtn">comment</button>
+  <h2><span class="num">2</span>The new + flow, in one picture</h2>
+  <p class="sub">Every kind of chunk goes through the same four steps: prompt → draft → review → approve.</p>
+  <div class="mm" data-anchor="flow-diagram" data-label="Flow diagram">
+    <button class="cbtn">comment</button>
+<pre class="mermaid">
+flowchart TB
+  P["Press +"] --> K{"What kind?"}
+  K -->|"⏱️ Recap"| R["Time window<br/>+ optional focus prompt<br/>'only decorMyRoom'"]
+  K -->|"📦 Past work"| W["A prompt, no time window<br/>'how I built the shopping prototype'"]
+  K -->|"🎬 Intro / 🏁 Outro"| B["Written from the day's<br/>approved chunks"]
+  R --> D["Claude writes a DRAFT<br/>What happened · Open these first · Script"]
+  W --> O["Claude digs through old work<br/>and proposes an OUTLINE of chunks"]
+  O --> RV
+  B --> D
+  D --> RV["Review window opens<br/>you comment on any line"]
+  RV -->|"Send comments"| REV["Claude revises<br/>(round 2, 3…)"]
+  REV --> RV
+  RV -->|"Approve"| A["✅ Approved: the tab shows the final script<br/>and a Record view"]
+</pre>
+  </div>
+</section>
+
+<section id="s-script" data-anchor="script" data-label="1. A proper script" data-group="The proposal" data-title="1 · A proper script">
+  <button class="cbtn">comment</button>
+  <h2><span class="num">3</span>Change 1: a proper script</h2>
+  <p class="sub">The exact words, cut into short beats, with what to show before each one.</p>
+
+  <div class="cmp" data-anchor="script-compare" data-label="Before vs after example">
+    <button class="cbtn">comment</button>
+    <div><h4>Now (what you don't like)</h4>
+      <ol style="margin:0;padding-left:20px">
+        <li><span class="act" style="color:var(--accent)">[open localhost:7781]</span> First, I turned a messy brainstorm into one page. 10 apps, 30 days…</li>
+        <li><span class="act" style="color:var(--accent)">[point at the right rail]</span> Every decision is answered here…</li>
+      </ol>
+      <p class="sub" style="margin-top:8px">A summary of what happened, not something you can say out loud.</p></div>
+    <div><h4>Proposed</h4>
+      <span class="show">SHOW · the pipeline page, top of "The goal"</span>
+      <p class="say">"Okay folks, so this morning I had a messy brainstorm about how I'm going to film all of this. And instead of keeping it in my head, I asked Claude to turn it into one page I can actually click through."</p>
+      <span class="show">SHOW · scroll to the decision rail on the right</span>
+      <p class="say">"And every decision is answered right here. Three practice days, and Day 1 starts this Friday. So nothing's in my head anymore, it's all on this page."</p>
+      <p class="sub" style="margin-top:8px">Words you can read out as they are, with the screen cue in front.</p></div>
+  </div>
+
+  <ul class="b" data-anchor="script-rules" data-label="Script rules">
+    <li><b>Written in your voice.</b> Your recordings are already transcribed, and they open with "Hey folks, this is day one…" and use "so what happens is…". The script learns your phrasing from them, so it sounds like you and not like a blog post.</li>
+    <li><b>Short beats:</b> 1–3 sentences each, one screen action per beat.</li>
+    <li><b>Transitions written in</b> ("Now let me show you…"), so you never stop to think how to move on.</li>
+    <li><b>Length is set by the target:</b> ~250 words is about 1:45 spoken. The draft shows its estimated time.</li>
+  </ul>
+
+  <div class="d open" data-anchor="d-style" data-label="D1 how word-for-word">
+    <button class="cbtn">comment</button>
+    <div class="q">D1: How word-for-word should it be?</div>
+    <div data-radio="d1">
+      <label class="opt"><input type="radio" name="d1" value="full"><span><span class="oh">Every word written, in your voice</span><span class="od">Maximum direction. You can still change words as you go; nobody sees the script. It can sound read if you stare at it, which D2 helps with.</span></span></label>
+      <label class="opt"><input type="radio" name="d1" value="anchors"><span><span class="oh">Opener, transitions and closing written; key points between</span><span class="od">More natural, but that's close to what you have now, and you said it lacks direction.</span></span></label>
+    </div>
+  </div>
+
+  <div class="d open" data-anchor="d-prompter" data-label="D2 teleprompter view">
+    <button class="cbtn">comment</button>
+    <div class="q">D2: A "Record" view for reading while filming?</div>
+    <div class="why">Reading from a long tab while clicking through your screen is hard.</div>
+    <div data-radio="d2">
+      <label class="opt"><input type="radio" name="d2" value="prompter"><span><span class="oh">Yes: big text, one beat at a time, spacebar for the next beat</span><span class="od">Put it in a small window near the camera. You always know the next line and the next thing to show. It means one more window on screen, which you'd keep out of the recorded area.</span></span></label>
+      <label class="opt"><input type="radio" name="d2" value="tab"><span><span class="oh">No: read from the tab as it is</span><span class="od">Nothing new, but you'll scroll and lose your place mid-take.</span></span></label>
+    </div>
+  </div>
+</section>
+
+<section id="s-review" data-anchor="review" data-label="2. Review the draft" data-group="The proposal" data-title="2 · Review the draft">
+  <button class="cbtn">comment</button>
+  <h2><span class="num">4</span>Change 2: review the draft before recording</h2>
+  <p class="sub">Like this page: comment on any line, send, get a revision, approve.</p>
+  <ul class="b">
+    <li><b>After +,</b> the draft opens in its own review window: What happened, Open these first, and the Script, with every beat commentable.</li>
+    <li><b>Your comment options are the same three as here:</b> Change this / Ask a question / Comment.</li>
+    <li><b>Send comments</b> → it revises and shows "Round 2", with the changed beats marked.</li>
+    <li><b>Approve</b> → the tab on the content page shows the final script, and the tab gets a ✅.</li>
+    <li><b>Progress rail:</b> "Hourly recaps" counts only approved and recorded chunks.</li>
+  </ul>
+
+  <div class="d open" data-anchor="d-revise" data-label="D3 who does the revising">
+    <button class="cbtn">comment</button>
+    <div class="q">D3: Who revises the draft when you send comments?</div>
+    <div data-radio="d3">
+      <label class="opt"><input type="radio" name="d3" value="auto"><span><span class="oh">It happens by itself: the page sends your comments to Claude and the revision appears in ~30 s</span><span class="od">No terminal needed. The same background Claude that writes the recap reads your comments and rewrites. Questions get answered in a reply box on the page.</span></span></label>
+      <label class="opt"><input type="radio" name="d3" value="session"><span><span class="oh">A Claude chat session picks up your comments, like this page works</span><span class="od">Smarter back-and-forth, but you need a session open and have to say "sent".</span></span></label>
+    </div>
+  </div>
+
+  <div class="d open" data-anchor="d-window" data-label="D4 how the draft opens">
+    <button class="cbtn">comment</button>
+    <div class="q">D4: How does the review window open?</div>
+    <div data-radio="d4">
+      <label class="opt"><input type="radio" name="d4" value="auto-window"><span><span class="oh">Automatically in a new browser window once the draft is written</span><span class="od">What you described. The content page stays where it was.</span></span></label>
+      <label class="opt"><input type="radio" name="d4" value="button"><span><span class="oh">A "Review draft" button on the tab</span><span class="od">Nothing pops up by surprise, but it's one more click.</span></span></label>
+    </div>
+  </div>
+</section>
+
+<section id="s-prompt" data-anchor="prompt" data-label="3. Prompt-based chunks" data-group="The proposal" data-title="3 · Prompt-based chunks">
+  <button class="cbtn">comment</button>
+  <h2><span class="num">5</span>Change 3: you say what the video is about</h2>
+  <p class="sub">Two ways to make chunks, and both start with a prompt.</p>
+
+  <h3>A · ⏱️ Recap with a focus</h3>
+  <ul class="b" data-anchor="focus" data-label="Recap with focus">
+    <li>+ → Recap still gives the time window (from the last recap until now), plus a new <b>"What should this cover?"</b> box.</li>
+    <li>Example: <i>"only the decorMyRoom work, skip the content-system stuff"</i>.</li>
+    <li><b>How it filters:</b> if the prompt names an app or folder, agents working elsewhere are dropped from the log summary before Claude sees it. Claude then keeps only what matches the prompt.</li>
+    <li><b>Empty box</b> means everything, the same as today.</li>
+    <li>The draft's "What Claude saw" box shows which agents were kept, so you can tell if it missed one.</li>
+  </ul>
+
+  <h3>B · 📦 Past work</h3>
+  <ul class="b" data-anchor="past" data-label="Past work chunks">
+    <li>+ → Past work, then a prompt: <i>"make 4 chunks showing how I built the shopping prototype in decorMyRoom"</i>.</li>
+    <li><b>Step 1, an outline:</b> Claude digs through the old conversation logs, git history and the files themselves. It then proposes an outline: N chunks, each with a title, what it covers, and what you'd show.</li>
+    <li><b>You review the outline</b> in the same review window. You can drop a chunk, merge two, or ask for another.</li>
+    <li><b>Step 2, scripts:</b> once you approve the outline, each chunk becomes a draft script, reviewed the same way.</li>
+    <li><b>The cost:</b> digging takes 1–3 minutes, not 30 seconds, and uses more Claude usage. It only reads; it never changes files.</li>
+  </ul>
+
+  <div class="d open" data-anchor="d-dig" data-label="D5 what past-work may read">
+    <button class="cbtn">comment</button>
+    <div class="q">D5: What may the past-work search read?</div>
+    <div data-radio="d5">
+      <label class="opt"><input type="radio" name="d5" value="all"><span><span class="oh">Old agent logs, git history and the files in the app folder (read-only)</span><span class="od">The full story: what you asked, what changed, what it looks like now. Slower.</span></span></label>
+      <label class="opt"><input type="radio" name="d5" value="logs"><span><span class="oh">Only old agent logs</span><span class="od">Faster, but it can't see what the code or screens look like today.</span></span></label>
+    </div>
+  </div>
+
+  <div class="d open" data-anchor="d-home" data-label="D6 where past-work chunks live" data-changed="1">
+    <button class="cbtn">comment</button>
+    <div class="q">D6: Where do past-work chunks go?</div>
+    <div data-radio="d6">
+      <label class="opt"><input type="radio" name="d6" value="day"><span><span class="oh">Into the current day, as tabs beside the recaps</span><span class="od">They end up in that day's long video, and the progress rail and edit already work. The day's video then mixes today's and old work.</span></span></label>
+      <label class="opt"><input type="radio" name="d6" value="project"><span><span class="oh">Into their own "project video", separate from days</span><span class="od">A clean standalone video, for example "How I built decorMyRoom's shopping flow". Needs a second kind of page and edit.</span></span></label>
+    </div>
+    <div class="plain"><b>Decided:</b> tabs in the current day for now. They're simple, and you can see what's been added. Project-level videos come later.</div>
+  </div>
+</section>
+
+<section id="s-panel" data-anchor="panel" data-label="The new + panel" data-group="The proposal" data-title="The new + panel">
+  <button class="cbtn">comment</button>
+  <h2><span class="num">6</span>What the + panel will look like</h2>
+  <pre class="code" data-anchor="panel-mock" data-label="+ panel mock (no length row)" data-changed="1" style="position:relative">┌──────────────────────────────────────────────────────────────┐
+│  ⏱️ Recap      📦 Past work      🎬 Intro      🏁 Outro        │
+├──────────────────────────────────────────────────────────────┤
+│  Covers 16:15 → until [ now ▾ ]                              │
+│                                                              │
+│  What should this cover?  (optional)                         │
+│  ┌────────────────────────────────────────────────────────┐  │
+│  │ only the decorMyRoom work, skip the content system     │  │
+│  └────────────────────────────────────────────────────────┘  │
+│  [ Write draft ]   Cancel                                    │
+└──────────────────────────────────────────────────────────────┘</pre>
+  <div class="d open" data-anchor="d-length" data-label="D7 length choice" data-changed="1">
+    <button class="cbtn">comment</button>
+    <div class="q">D7: Choose the length per chunk?</div>
+    <div data-radio="d7">
+      <label class="opt"><input type="radio" name="d7" value="pick"><span><span class="oh">Yes: ~1 / ~2 / ~3 min, default ~2</span><span class="od">A focused recap might only deserve 1 minute, and a past-work chunk 3.</span></span></label>
+      <label class="opt"><input type="radio" name="d7" value="fixed"><span><span class="oh">No: always ~2 min</span><span class="od">One fewer choice each time.</span></span></label>
+    </div>
+  </div>
+</section>
+
+<section id="s-order" data-anchor="order" data-label="Build order" data-group="Plan" data-title="Build order">
+  <button class="cbtn">comment</button>
+  <h2><span class="num">7</span>Build order</h2>
+  <ol>
+    <li><b>Script in your voice</b> (+ the Record view if D2 is yes). Every chunk benefits immediately.</li>
+    <li><b>Draft → review → approve window.</b> Everything else runs through it.</li>
+    <li><b>Focus prompt on recaps.</b> Small once 1 and 2 exist.</li>
+    <li><b>Past work.</b> The biggest piece: the outline step, the digging, and D6.</li>
+  </ol>
+  <p class="sub">Unchanged: time windows never overlap, the intro and outro come at the end of the day, the edit, the progress rail and the tasks page.</p>
+</section>
+</main>
+
+<aside class="right">
+  <h2>Decisions</h2>
+  <p class="sub" style="margin:2px 0 0" id="dprog">—</p>
+  <div class="bar"><i id="dbar" style="width:0"></i></div>
+  <div class="dlist" id="dlist"></div>
+  <h2 style="margin-top:16px">Feedback queue</h2>
+  <p class="sub" style="margin:2px 0 0">Nothing is sent until you confirm.</p>
+  <div id="queue"></div>
+  <button class="primary" id="send">Confirm &amp; send</button>
+</aside>
+</div>
+
+<div id="pop">
+  <div class="pa" id="popanchor"></div>
+  <div class="kind">
+    <label class="sel"><input type="radio" name="kind" value="question" checked> Ask a question</label>
+    <label><input type="radio" name="kind" value="change"> Change this</label>
+    <label><input type="radio" name="kind" value="note"> Comment</label>
+  </div>
+  <textarea id="poptext" placeholder="What do you want to know? Answered in the terminal, not on the page."></textarea>
+  <div class="row"><button id="popcancel">Cancel</button><button id="popadd" class="add">Add to queue</button></div>
+</div>
+<div id="toast"></div>
+
+<script src="vendor/mermaid.min.js"></script>
+<script>
+const S={decisions:{},comments:[],batches:[]}; let ROUND=1;
+const $=s=>document.querySelector(s);
+const esc=t=>String(t).replace(/[<>&]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
+const toast=m=>{const t=$('#toast');t.textContent=m;t.classList.add('on');
+  setTimeout(()=>t.classList.remove('on'),1700)};
+const post=(u,b)=>fetch(u,{method:'POST',headers:{'Content-Type':'application/json'},
+  body:JSON.stringify(b)}).then(r=>r.json());
+const D=k=>S.decisions[k];
+function groups(){return [...document.querySelectorAll('[data-radio],[data-check]')]}
+
+function buildChanged(){
+  // Blocks the author marked data-changed="N" (N = the round they were revised in).
+  // The rail lists the latest round's blocks so the reviewer can find what moved.
+  const els=[...document.querySelectorAll('[data-changed]')]; if(!els.length) return;
+  const latest=Math.max(...els.map(e=>+e.dataset.changed));
+  const mine=els.filter(e=>+e.dataset.changed===latest);
+  $('#toc').insertAdjacentHTML('afterbegin',`<div class="chg"><div class="grp">Changed in round ${latest} (${mine.length})</div>`+
+    mine.map((e,i)=>{ if(!e.id) e.id='chg-'+latest+'-'+i;
+      return `<a href="#${e.id}" data-id="${e.id}">${esc(e.dataset.label||e.dataset.title||e.id)}</a>`}).join('')+
+    `<div class="grp" style="margin-top:10px">Contents</div></div>`);
+  document.querySelectorAll('#toc .chg a').forEach(a=>a.onclick=ev=>{ev.preventDefault();
+    const el=document.getElementById(a.dataset.id); el.scrollIntoView({behavior:'smooth',block:'center'});
+    el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash')});
+}
+function buildToc(){
+  let last='';
+  $('#toc').innerHTML=[...document.querySelectorAll('main section')].map(s=>{
+    let out=''; if(s.dataset.group!==last){out+=`<div class="grp">${s.dataset.group}</div>`;last=s.dataset.group}
+    return out+`<a href="#${s.id}" data-id="${s.id}">${s.dataset.title}</a>`}).join('');
+  const links=[...document.querySelectorAll('#toc a')];
+  const io=new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting)
+    links.forEach(l=>l.classList.toggle('on',l.dataset.id===e.target.id)) }),
+    {rootMargin:'-84px 0px -70% 0px'});
+  document.querySelectorAll('main section').forEach(s=>io.observe(s));
+}
+function renderDecisions(){
+  const gs=groups(); let done=0;
+  $('#dlist').innerHTML=gs.map(g=>{
+    const id=g.dataset.radio||g.dataset.check, blk=g.closest('.d');
+    const ch=[...g.querySelectorAll('input:checked')]; if(ch.length) done++;
+    const val=ch.map(i=>i.closest('label').querySelector('.oh').textContent).join(', ');
+    return `<div class="dr ${ch.length?'done':'todo'}" data-goto="${blk.dataset.anchor}">
+      <span class="dot"></span><span class="dn">${id.toUpperCase()}</span>
+      <span class="dv">${esc(val||'not decided')}</span></div>`}).join('');
+  $('#dprog').textContent=`${done} of ${gs.length} decided`;
+  $('#dbar').style.width=(gs.length?done/gs.length*100:0)+'%';
+  $('#dcount').textContent=`${done}/${gs.length} decided · ${S.comments.filter(c=>c.status==='queued').length} queued`;
+  document.querySelectorAll('.dr').forEach(r=>r.onclick=()=>{
+    const el=document.querySelector(`[data-anchor="${r.dataset.goto}"]`); if(!el)return;
+    el.scrollIntoView({behavior:'smooth',block:'center'});
+    el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash')});
+}
+function renderQueue(){
+  const q=S.comments.filter(c=>c.status==='queued');
+  $('#send').textContent=`Confirm & send round ${ROUND}`+(q.length?` — ${q.length} comment${q.length===1?'':'s'}`:'');
+  $('#queue').innerHTML=q.length?q.map(c=>
+    `<div class="qi"><button class="qx" data-id="${c.id}">×</button>
+     <div class="qa">${{question:'Question',note:'Comment'}[c.kind]||'Change'} · ${esc(c.anchorLabel)}</div>${esc(c.text)}</div>`).join('')
+    :'<div class="empty">No comments.<br>Hover any block and hit <em>comment</em>.</div>';
+  document.querySelectorAll('.qx').forEach(b=>b.onclick=async()=>{
+    const r=await post('/api/comment/delete',{id:b.dataset.id});
+    S.comments=r.comments; renderQueue(); markAnchors(); renderDecisions()});
+}
+function markAnchors(){
+  document.querySelectorAll('[data-anchor]').forEach(el=>{
+    const has=S.comments.some(c=>c.anchor===el.dataset.anchor&&c.status==='queued');
+    const b=el.querySelector(':scope > .cbtn');
+    if(b){b.classList.toggle('has',has); b.textContent=has?'commented':'comment'}});
+}
+const PH={change:'What is wrong, missing, or should change here?',
+          question:'What do you want to know? Answered in the terminal, not on the page.',
+          note:'A thought, context or reaction. Taken on board; the page only changes if you ask.'};
+const kind=()=>$('#pop input[name=kind]:checked').value;
+function setKind(k){$(`#pop input[name=kind][value="${k}"]`).checked=true;
+  document.querySelectorAll('#pop .kind label').forEach(l=>l.classList.toggle('sel',l.querySelector('input').value===k));
+  $('#poptext').placeholder=PH[k]}
+let target=null;
+document.addEventListener('click',e=>{
+  const btn=e.target.closest('.cbtn');
+  if(!btn){ if(!e.target.closest('#pop')) $('#pop').style.display='none'; return }
+  const el=btn.closest('[data-anchor]');
+  target={anchor:el.dataset.anchor,label:el.dataset.label,
+          text:(el.querySelector('h2,.q')||{}).textContent||''};
+  const p=$('#pop'),r=btn.getBoundingClientRect();
+  $('#popanchor').textContent=target.label; $('#poptext').value=''; setKind('question');
+  p.style.display='block'; p.style.top=(window.scrollY+r.bottom+8)+'px';
+  p.style.left=Math.max(12,Math.min(r.right-328+window.scrollX,document.body.clientWidth-340))+'px';
+  $('#poptext').focus();
+});
+$('#popcancel').onclick=()=>$('#pop').style.display='none';
+$('#popadd').onclick=async()=>{
+  const t=$('#poptext').value.trim(); if(!t||!target)return;
+  const r=await post('/api/comment',{id:'c'+Date.now(),anchor:target.anchor,
+    anchorLabel:target.label,anchorText:target.text,text:t,kind:kind()});
+  S.comments=r.comments; $('#pop').style.display='none';
+  renderQueue(); markAnchors(); renderDecisions(); toast('Queued — not sent yet')};
+$('#send').onclick=async()=>{
+  const r=await post('/api/send',{});
+  S.comments.forEach(c=>{if(c.status==='queued')c.status='sent'});
+  ROUND+=1; $('#round').textContent=`Round ${ROUND}`;
+  renderQueue(); markAnchors(); renderDecisions();
+  toast(`Round ${ROUND-1} sent — ${r.sent} comment${r.sent===1?'':'s'} + decisions`)};
+document.addEventListener('change',async e=>{
+  const i=e.target;
+  if(i.closest('#pop')){ if(i.name==='kind') setKind(i.value); return }
+  if(i.type==='radio'){S.decisions[i.name]=i.value; await post('/api/decision',{id:i.name,value:i.value})}
+  else if(i.type==='checkbox'){
+    const v=[...document.querySelectorAll(`input[name="${i.name}"]:checked`)].map(x=>x.value);
+    S.decisions[i.name]=v; await post('/api/decision',{id:i.name,value:v})}
+  else return;
+  document.querySelectorAll('label.opt').forEach(l=>l.classList.toggle('sel',l.querySelector('input').checked));
+  renderDecisions(); toast('Saved')});
+
+fetch('/api/state').then(r=>r.json()).then(async st=>{
+  S.decisions=st.decisions||{}; S.comments=st.comments||[]; S.batches=st.batches||[];
+  ROUND=S.batches.length+1; $('#round').textContent=`Round ${ROUND}`;
+  for(const [k,v] of Object.entries(S.decisions))
+    (Array.isArray(v)?v:[v]).forEach(val=>{
+      const i=document.querySelector(`input[name="${k}"][value="${val}"]`); if(i)i.checked=true});
+  document.querySelectorAll('label.opt').forEach(l=>l.classList.toggle('sel',l.querySelector('input').checked));
+  post('/api/groups',{groups:groups().map(g=>g.dataset.radio||g.dataset.check)});
+  buildToc(); buildChanged(); renderQueue(); markAnchors(); renderDecisions();
+  if(window.mermaid){mermaid.initialize({startOnLoad:false,
+    theme:matchMedia('(prefers-color-scheme: dark)').matches?'dark':'neutral',securityLevel:'loose'});
+    try{await mermaid.run({nodes:[...document.querySelectorAll('pre.mermaid')]})}catch(e){}}
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,52 @@
+{
+  "decisions": {},
+  "comments": [
+    {
+      "id": "c1789885443976",
+      "anchor": "flow",
+      "anchorLabel": "The flow",
+      "anchorText": "The pipeline as it stands today",
+      "text": "No where in the pipeline we are keeping tracks of steps we need to do and steps we have completed. \n\nSimilar thing goes for the tasks, we are not keeping a track of tasks that agent needs to complete and all.",
+      "kind": "question",
+      "status": "sent",
+      "ts": "2026-09-20T06:24:03.998053+00:00",
+      "addressed": true
+    },
+    {
+      "id": "c1789885486610",
+      "anchor": "flow",
+      "anchorLabel": "The flow",
+      "anchorText": "The pipeline as it stands today",
+      "text": "Every step should mention the goal of the step, the inputs and the outputs so we understand why are we doing this.",
+      "kind": "change",
+      "status": "sent",
+      "ts": "2026-09-20T06:24:46.622560+00:00",
+      "addressed": true
+    }
+  ],
+  "batches": [
+    {
+      "round": 1,
+      "ts": "2026-09-20T06:25:15.019767+00:00",
+      "commentIds": [
+        "c1789885443976",
+        "c1789885486610"
+      ],
+      "decisions": {}
+    }
+  ],
+  "groups": [
+    "d1",
+    "d7",
+    "d2",
+    "d3",
+    "d4",
+    "d5",
+    "d6",
+    "d8",
+    "d9",
+    "d11",
+    "d12",
+    "d13"
+  ]
+}

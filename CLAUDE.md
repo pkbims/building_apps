@@ -38,7 +38,7 @@ never in CI, and as rarely as possible — record real responses once and replay
 
 ## Stack
 
-Settled by app_1. Reused across the series so viewers build muscle memory; only the domain
+Settled by practice_1. Reused across the series so viewers build muscle memory; only the domain
 changes. Deviate only with a stated reason in that app's CLAUDE.md.
 
 - **Backend:** Python 3.12 + FastAPI, pinned exactly (the frozen OpenAPI contract is
@@ -70,11 +70,15 @@ changes. Deviate only with a stated reason in that app's CLAUDE.md.
 building_apps/
 ├── CLAUDE.md       this file — always-on series doctrine
 ├── PIPELINE.md     the stages, in order
+├── PIPELINE_EXAMPLE.md  the stages as a worked walkthrough (practice_2)
+├── APP_GUIDE.md    how to run stages 0-5 for one app: prerequisites, skills, exact prompts
 ├── PROGRESS.md     where each app stands
 ├── .claude/
 │   ├── skills/     shared procedures, extracted from real work
 │   └── agents/     reusable agent definitions
-└── app_N/          each app is its own git repo
+├── app_N/          each series app is its own git repo (app_1 is the first real one)
+└── practice_N/     the four apps built before the series started — own repos, kept as
+                    reference and precedent, not series episodes
 ```
 
 Each app is its own repo: its own CI, its own deploy, and viewers can clone one without

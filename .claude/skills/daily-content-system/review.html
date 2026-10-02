@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Draft Review</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<style>
+  :root{--bg:#f4eee2;--panel:#fdf9f1;--ink:#2a2521;--muted:#6a6157;--faint:#978d82;--line:#e3d9c7;
+    --accent:#b0523a;--soft:#f5e4dc;--warn:#7a5a1e;--warnsoft:#f3ead3;--ok:#3a9a5b;--oksoft:#e3f1e7;color-scheme:light}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#1b1916;--panel:#242019;
+    --ink:#ede4d6;--muted:#a89e8f;--faint:#766d60;--line:#38322a;--accent:#e28f72;--soft:#3b2a24;--warn:#dcb66e;
+    --warnsoft:#302a1c;--ok:#5cc07f;--oksoft:#1f2e23}}
+  :root[data-theme="dark"]{color-scheme:dark;--bg:#1b1916;--panel:#242019;--ink:#ede4d6;--muted:#a89e8f;--faint:#766d60;
+    --line:#38322a;--accent:#e28f72;--soft:#3b2a24;--warn:#dcb66e;--warnsoft:#302a1c;--ok:#5cc07f;--oksoft:#1f2e23}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 "IBM Plex Sans",-apple-system,sans-serif}
+  header{position:sticky;top:0;z-index:10;background:var(--panel);border-bottom:1px solid var(--line);
+    padding:10px 22px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  header h1{font-size:15px;margin:0;font-weight:650}
+  .tag{font-size:11px;letter-spacing:.06em;text-transform:uppercase;font-weight:700;padding:3px 8px;border-radius:6px;
+    color:var(--accent);background:var(--soft)}
+  .tag.ok{color:var(--ok);background:var(--oksoft)} .tag.busy{color:var(--warn);background:var(--warnsoft)}
+  .spacer{flex:1}
+  .btn{font:inherit;font-size:13.5px;padding:7px 14px;border-radius:9px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
+  .btn:hover{border-color:var(--accent);color:var(--accent)}
+  .btn.go{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:650}
+  .btn.okb{background:var(--ok);border-color:var(--ok);color:#fff;font-weight:650}
+  .btn:disabled{opacity:.5;cursor:not-allowed}
+  .layout{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:22px;max-width:1260px;margin:0 auto;padding:22px 16px 100px}
+  @media(max-width:980px){.layout{grid-template-columns:1fr}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 22px;margin-bottom:16px}
+  .blk{position:relative;border-radius:10px;padding:10px 12px;margin:0 -12px}
+  .blk:hover{background:var(--bg)}
+  .blk.changed{box-shadow:inset 3px 0 0 var(--warn);background:var(--warnsoft)}
+  .blk.changed::before{content:"changed";position:absolute;top:-8px;right:10px;font-size:10px;font-weight:700;letter-spacing:.06em;
+    text-transform:uppercase;color:var(--warn);background:var(--warnsoft);padding:1px 7px;border-radius:5px}
+  .cbtn{position:absolute;top:8px;right:8px;opacity:0;font:inherit;font-size:12px;padding:3px 10px;border-radius:7px;
+    border:1px solid var(--line);background:var(--panel);color:var(--muted);cursor:pointer}
+  .blk:hover .cbtn,.cbtn.has{opacity:1} .cbtn.has{color:var(--accent);border-color:var(--accent)}
+  h2{font-size:14px;text-transform:uppercase;letter-spacing:.06em;color:var(--faint);margin:0 0 6px}
+  .story{font-size:16px;line-height:1.7;margin:0}
+  .beatno{font-size:12px;font-weight:700;color:var(--faint);margin-bottom:2px}
+  .show{display:inline-block;font-size:12.5px;font-weight:650;color:var(--accent);background:var(--soft);padding:1px 9px;border-radius:6px}
+  .say{font-size:18px;line-height:1.6;margin:6px 0 0}
+  .meta{font-size:13px;color:var(--muted)}
+  ul.open{list-style:none;padding:0;margin:0} ul.open li{padding:3px 0;font-size:15px}
+  code{background:var(--bg);padding:1px 6px;border-radius:5px;font-size:12.5px}
+  aside{position:sticky;top:70px;align-self:start;max-height:calc(100vh - 90px);overflow:auto}
+  .q{border:1px solid var(--line);border-radius:10px;padding:9px 12px;margin-bottom:8px;font-size:13.5px;background:var(--bg)}
+  .qk{font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
+  .qx{float:right;border:0;background:none;color:var(--muted);cursor:pointer;font-size:15px}
+  .ans{margin-top:6px;padding:6px 10px;border-left:3px solid var(--ok);background:var(--oksoft);border-radius:0 8px 8px 0;font-size:13px}
+  .empty{color:var(--muted);font-size:13.5px;text-align:center;padding:14px}
+  #pop{position:absolute;z-index:50;width:340px;background:var(--panel);border:1px solid var(--line);border-radius:12px;
+    padding:12px;box-shadow:0 12px 34px rgba(0,0,0,.2);display:none}
+  #pop .pa{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);margin-bottom:8px}
+  .kinds{display:flex;gap:6px;margin-bottom:8px}
+  .kinds label{flex:1;font-size:12.5px;padding:5px 6px;border:1px solid var(--line);border-radius:8px;cursor:pointer;text-align:center;color:var(--muted)}
+  .kinds label.on{border-color:var(--accent);background:var(--soft);color:var(--accent)} .kinds input{display:none}
+  #pop textarea{width:100%;min-height:90px;border:1px solid var(--line);border-radius:9px;padding:9px;font:inherit;font-size:14px;background:var(--bg);color:var(--ink)}
+  .row{display:flex;gap:8px;margin-top:10px}
+  .busy{position:fixed;inset:auto 0 0 0;background:var(--warnsoft);color:var(--warn);text-align:center;padding:10px;font-weight:650;font-size:14px}
+  .err{color:#c0392b;font-size:14px;margin:0 0 10px}
+  #toast{position:fixed;bottom:60px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);
+    padding:9px 16px;border-radius:8px;font-size:13.5px;opacity:0;transition:opacity .25s;pointer-events:none}
+  #toast.on{opacity:1}
+</style>
+</head>
+<body>
+<header>
+  <h1 id="ttl">Draft review</h1>
+  <span class="tag" id="state">…</span>
+  <span class="meta" id="info"></span>
+  <div class="spacer"></div>
+  <button class="btn" id="general">💬 General comment</button>
+  <button class="btn okb" id="approve">✅ Approve</button>
+</header>
+<div class="layout">
+  <main id="main"><p class="empty">Loading…</p></main>
+  <aside>
+    <div class="card">
+      <h2>Your comments</h2>
+      <div id="queue"></div>
+      <button class="btn go" id="send" style="width:100%;margin-top:6px">Send comments</button>
+      <p class="meta" style="margin:8px 0 0">Changes revise the draft. Questions get an answer here and change nothing.</p>
+    </div>
+    <div class="card" id="pastcard" style="display:none"><h2>Earlier rounds</h2><div id="past"></div></div>
+  </aside>
+</div>
+<div id="pop">
+  <div class="pa" id="popfor"></div>
+  <div class="kinds">
+    <label data-k="change"><input type="radio" name="k" value="change">Change this</label>
+    <label data-k="question"><input type="radio" name="k" value="question">Ask a question</label>
+    <label data-k="note"><input type="radio" name="k" value="note">Comment</label>
+  </div>
+  <textarea id="poptext" placeholder="What should change?"></textarea>
+  <div class="row"><button class="btn" id="popno">Cancel</button><button class="btn go" id="popadd">Add to queue</button></div>
+</div>
+<div id="toast"></div>
+<div class="busy" id="busy" style="display:none"></div>
+<script>
+const $=s=>document.querySelector(s), esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const P=new URLSearchParams(location.search), DAY=P.get('day'), N=+P.get('n');
+let R=null, target=null, kind='change', timer=null;
+const api=async(path,body)=>{const r=await fetch(path,body?{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}:{});
+  const j=await r.json(); if(!r.ok) throw new Error(j.error||r.status); return j};
+const toast=m=>{const t=$('#toast');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),2800)};
+if(localStorage.getItem('theme')) document.documentElement.dataset.theme=localStorage.getItem('theme');
+const PH={change:'What should change?',question:'What do you want to know? Answered here; the draft stays as it is.',
+  note:'A thought or context. Taken into account; changes only if it clearly calls for it.'};
+const KIND={recap:'⏱️ Recap',chunk:'📦 Chunk',intro:'🎬 Intro',outro:'🏁 Outro',outline:'🗂️ Past-work outline'};
+
+async function load(){
+  const S=await api(`/api/state?day=${DAY}`); R=S.day.recaps.find(r=>r.n===N);
+  if(!R){$('#main').innerHTML='<p class="empty">This draft no longer exists.</p>';return}
+  render(); clearTimeout(timer); if(['writing','revising'].includes(R.status)) timer=setTimeout(load,3000);
+}
+const isChanged=t=>(R.changed||[]).some(c=>c.toLowerCase().replace(/\s+/g,' ').trim()===t);
+const has=t=>(R.comments||[]).some(c=>c.status==='queued'&&c.target===t);
+function blk(t,label,inner){return `<div class="blk ${isChanged(t)?'changed':''}" data-t="${t}" data-l="${esc(label)}">
+  <button class="cbtn ${has(t)?'has':''}">comment</button>${inner}</div>`}
+
+function render(){
+  document.title=`Review · ${R.title||KIND[R.kind||'recap']}`;
+  $('#ttl').textContent=`${KIND[R.kind||'recap']} · ${R.title||'…'}`;
+  const st=R.status, round=R.round||1;
+  $('#state').className='tag '+(st==='approved'?'ok':['writing','revising'].includes(st)?'busy':'');
+  $('#state').textContent=st==='approved'?'Approved':st==='revising'?`Revising → round ${round}`:st==='writing'?'Writing first draft':st==='error'?'Error':`Draft · round ${round}`;
+  $('#info').textContent=R.kind==='outline'?`${(R.chunks||[]).length} chunks proposed`:R.words?`${R.words} words · about ${Math.max(1,Math.round(R.words/140*10)/10)} min spoken`:'';
+  const busy=['writing','revising'].includes(st);
+  $('#busy').style.display=busy?'':'none';
+  $('#busy').textContent=st==='writing'?(R.kind==='outline'?'Digging through your past work… usually 1–3 minutes':'Writing the first draft… usually under a minute')
+    :'Revising from your comments… usually under a minute';
+  const queued=(R.comments||[]).filter(c=>c.status==='queued');
+  $('#approve').disabled=st!=='draft'||queued.length>0; $('#approve').title=queued.length?'Send or delete your queued comments first':'';
+  $('#send').disabled=st!=='draft'||!queued.length; $('#send').textContent=`Send comments${queued.length?` (${queued.length})`:''}`;
+  $('#general').disabled=st!=='draft';
+  if(st==='writing'){$('#main').innerHTML='<p class="empty">The first draft is being written. This page updates by itself.</p>';renderQueue();return}
+  let h=R.error?`<p class="err">${esc(R.error)}</p>`:'';
+  if(st==='approved') h+=`<div class="card" style="border-color:var(--ok)"><b>✅ Approved.</b> ${R.kind==='outline'
+      ?`Its ${(R.made||[]).length} chunks are now tabs on the content page, each with its own draft to review.`
+      :'The content page now shows this as final. You can close this window.'}</div>`;
+  if(R.focus) h+=`<div class="card"><h2>${R.kind==='outline'?'What you asked for':'Focus'}</h2><p class="story">${esc(R.focus)}</p></div>`;
+  h+=`<div class="card"><h2>📖 What happened</h2>${blk('summary','What happened',`<p class="story">${esc(R.summary)}</p>`)}</div>`;
+  if(R.kind==='outline'){
+    h+=`<div class="card"><h2>🗂️ Proposed chunks</h2>${(R.chunks||[]).map((c,i)=>blk(`chunk ${i+1}`,`Chunk ${i+1}`,
+      `<div class="beatno">CHUNK ${i+1}</div><div style="font-weight:650;font-size:17px">${esc(c.title)}</div>
+       <p style="margin:4px 0">${esc(c.covers)}</p><div class="meta">🖱️ Show: ${esc(c.show)}</div>
+       <div class="meta">🔎 Found in: ${esc(c.sources)}</div>`)).join('')}</div>`;
+  } else {
+    h+=`<div class="card"><h2>🧰 Open these first</h2>${blk('open','Open these first',(R.open||[]).length
+      ?`<ul class="open">${R.open.map(o=>`<li><b>${esc(o.what)}</b> <code>${esc(o.where)}</code></li>`).join('')}</ul>`:'<p class="meta">Nothing to open: this one is face to camera.</p>')}</div>`;
+    h+=`<div class="card"><h2>🎬 Script</h2>${(R.lines||[]).map((l,i)=>blk(`beat ${i+1}`,`Beat ${i+1}`,
+      `<div class="beatno">BEAT ${i+1}</div><span class="show">SHOW · ${esc(l.act||'camera')}</span><p class="say">“${esc(l.say)}”</p>`)).join('')}</div>`;
+  }
+  $('#main').innerHTML=h; renderQueue();
+  document.querySelectorAll('.blk .cbtn').forEach(b=>b.onclick=e=>{e.stopPropagation();if(R.status!=='draft')return toast('Wait for the draft to finish');
+    const bl=b.closest('.blk');openPop(bl.dataset.t,bl.dataset.l,b)});
+}
+function renderQueue(){
+  const cs=R.comments||[], queued=cs.filter(c=>c.status==='queued'||c.status==='sending');
+  const K={change:'Change',question:'Question',note:'Comment'};
+  $('#queue').innerHTML=queued.length?queued.map(c=>`<div class="q">${c.status==='queued'?`<button class="qx" data-del="${c.id}" title="Delete">×</button>`:''}
+    <div class="qk">${K[c.kind]} · ${esc(c.label||c.target)}${c.status==='sending'?' · sending':''}</div>${esc(c.text)}</div>`).join('')
+    :'<p class="empty">No comments yet.<br>Hover any part and press <b>comment</b>.</p>';
+  const past=cs.filter(c=>c.status==='sent');
+  $('#pastcard').style.display=past.length?'':'none';
+  $('#past').innerHTML=[...past].reverse().map(c=>`<div class="q"><div class="qk">Round ${c.round} · ${K[c.kind]} · ${esc(c.label||c.target)}</div>${esc(c.text)}
+    ${c.answer?`<div class="ans">${esc(c.answer)}</div>`:''}</div>`).join('');
+  document.querySelectorAll('[data-del]').forEach(b=>b.onclick=async()=>{await api('/api/review/comment',{day:DAY,n:N,delete:b.dataset.del});load()});
+}
+function setKind(k){kind=k;document.querySelectorAll('.kinds label').forEach(l=>l.classList.toggle('on',l.dataset.k===k));$('#poptext').placeholder=PH[k]}
+function openPop(t,label,anchor){
+  target={t,label}; $('#popfor').textContent=label; $('#poptext').value=''; setKind('change');
+  const r=anchor.getBoundingClientRect(), pop=$('#pop'); pop.style.display='block';
+  pop.style.top=(window.scrollY+r.bottom+6)+'px'; pop.style.left=Math.max(8,Math.min(window.scrollX+r.right-340,innerWidth-356))+'px';
+  $('#poptext').focus();
+}
+document.querySelectorAll('.kinds label').forEach(l=>l.onclick=()=>setKind(l.dataset.k));
+$('#popno').onclick=()=>$('#pop').style.display='none';
+$('#popadd').onclick=async()=>{const text=$('#poptext').value.trim(); if(!text) return toast('Write the comment first');
+  try{await api('/api/review/comment',{day:DAY,n:N,kind,target:target.t,label:target.label,text});$('#pop').style.display='none';load()}catch(e){toast(e.message)}};
+$('#general').onclick=e=>openPop('general','General',e.currentTarget);
+$('#send').onclick=async()=>{try{await api('/api/review/send',{day:DAY,n:N});toast('Sent: revising…');load()}catch(e){toast(e.message)}};
+$('#approve').onclick=async()=>{try{await api('/api/review/approve',{day:DAY,n:N});toast('Approved');load()}catch(e){toast(e.message)}};
+document.addEventListener('keydown',e=>{if(e.key==='Escape')$('#pop').style.display='none'});
+load();
+</script>
+</body>
+</html>

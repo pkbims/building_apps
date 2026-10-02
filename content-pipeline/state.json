@@ -1,0 +1,244 @@
+{
+  "decisions": {
+    "d2": "live",
+    "d3": "hourly",
+    "d4": "1",
+    "d7": "iphone",
+    "d8": "external",
+    "d5": [
+      "instagram",
+      "tiktok",
+      "x",
+      "yt-shorts",
+      "threads"
+    ],
+    "d1": "after-practice",
+    "d6": "bullets-all",
+    "d10": [
+      "join",
+      "fillers",
+      "captions",
+      "titles",
+      "progress"
+    ]
+  },
+  "comments": [
+    {
+      "id": "c1790102583682",
+      "anchor": "goal-unclear",
+      "anchorLabel": "Something I didn't catch",
+      "anchorText": "",
+      "text": "Yes, I meant that here I will use the remotion recorder to edit my videos basically. The screen studio should give me... Yeah, so this editing is depending on what I'm recording side. My editor is basically the remotion recorder.",
+      "kind": "change",
+      "status": "sent",
+      "ts": "2026-09-22T18:43:03.691463+00:00",
+      "addressed": true
+    },
+    {
+      "id": "c1790102781782",
+      "anchor": "loop",
+      "anchorLabel": "The daily loop",
+      "anchorText": "2The daily loop: four steps",
+      "text": "This is what I want your opinion about the most. So you're saying that I work on the screen and I record the screen, which I can easily do through the apps that I have. For the community like this 20 minute recaps, is it beneficial that I record myself doing the work as well or do the recap of the work that I have done?\n I feel that I agree with you that I should always record my screen and even during the screen I can talk about what I was doing here and what I did. So I don't actually have to do it live, right? So I think I feel that's better because in that case I will be able to work off it.\n So I record in like some small steps and then rename those screen recordings in a way which for me is easier to identify and everything. So this is what I want the most focus on and I want detailed steps. So I agree with your daily loop. I think it makes sense.\n So this is something that I should do one day before not in that one morning. So that is easier for me to follow, but I would like a detailed steps and like examples of how it would work.\n Does that make sense to you? Does that make sense to you? If yes, then make changes and let me know.",
+      "kind": "change",
+      "status": "sent",
+      "ts": "2026-09-22T18:46:21.786891+00:00",
+      "addressed": true
+    },
+    {
+      "id": "c1790102974633",
+      "anchor": "short",
+      "anchorLabel": "Short-video outline",
+      "anchorText": "3The 40-second outline",
+      "text": "In those 40 second videos, I'm usually talking about progresses, which I like, lessons, and then the launch demo as well. Mainly what I'm trying to show is that the progress of what's happening each day. And then also like how quick, yeah, what's the progress of each day. And then I don't really need to sell\n the app. What I really need to sell is that how quick the process is and then what's my pipeline like so that I make sure that it runs perfectly or something. That's my unintentional selling. So that doesn't need to be on the screen. But basically the 40 second timeline is usually about the progress day update, progress update, lessons learned, and then\n here are like 20-30 minutes videos where I go through, where I went through all this and how I did it. So something that you can also take off from this and if you send link, I'll send you this community where I'm posting all every day, 3 to 4 20 minute videos to talk about what I'm building, how I'm building and how it will work and everything. So yeah, I wouldn't, I wouldn't\n I wouldn't make it too complex. Let's just stick to like a progress update. And then I talk about the app, the steps I did and like lessons and then also the community.",
+      "kind": "change",
+      "status": "sent",
+      "ts": "2026-09-22T18:49:34.641165+00:00",
+      "addressed": true
+    },
+    {
+      "id": "c1790103047783",
+      "anchor": "long",
+      "anchorLabel": "Long-video outline",
+      "anchorText": "4The 20-minute outline",
+      "text": "I like this.",
+      "kind": "change",
+      "status": "sent",
+      "ts": "2026-09-22T18:50:47.791410+00:00",
+      "addressed": true
+    },
+    {
+      "id": "c1790103109784",
+      "anchor": "d-start",
+      "anchorLabel": "D1 day 1",
+      "anchorText": "D1: When is Day 1 of the 30?",
+      "text": "Today is my day one and I will record and prepare for 3 days and then start the series so I am comfortbale with my process.",
+      "kind": "change",
+      "status": "sent",
+      "ts": "2026-09-22T18:51:49.797456+00:00",
+      "addressed": true
+    },
+    {
+      "id": "c1790103452062",
+      "anchor": "d-script",
+      "anchorLabel": "D6 script depth",
+      "anchorText": "D6: How detailed should the day card be?",
+      "text": "I need bullet points for everything",
+      "kind": "change",
+      "status": "sent",
+      "ts": "2026-09-22T18:57:32.070957+00:00",
+      "addressed": true
+    },
+    {
+      "id": "c1790103602211",
+      "anchor": "d-long",
+      "anchorLabel": "D3 how the long video is made",
+      "anchorText": "D3: How is the 20-minute video made?",
+      "text": "No, I think what I should do is record my screen into clips and then later on I can just talk through those clips at the end of the day and then we just join them in the end. I think I would prefer that more.",
+      "kind": "change",
+      "status": "sent",
+      "ts": "2026-09-22T19:00:02.227614+00:00",
+      "addressed": true
+    },
+    {
+      "id": "c1790103716115",
+      "anchor": "loop-rename",
+      "anchorLabel": "Don't rename clips",
+      "anchorText": "",
+      "text": "For the one clip per step or something, what we decided is that I will keep on working and I will record my screen throughout the time and save it into different clips, right? And later on, I can just talk through those clips and we can merge that.\n This evening, I will have 10-20 clips I need to talk about, which will be like one minute long clips. And then I just talk about all the clips at the end of the day using my camera and then we merge both the screens, half and half, and work through it. What do you think? I think this is the option that we are going towards.\n Daily loop is the one thing that is really important for me. So what I would like you to do is, uh, uh, create, uh, explain everything using a diagram. So this, I like what you're doing here, but also explain using a diagram because I want to be really sure of this first.",
+      "kind": "change",
+      "status": "sent",
+      "ts": "2026-09-22T19:01:56.123254+00:00",
+      "addressed": true
+    },
+    {
+      "id": "c1790104599120",
+      "anchor": "loop-rename",
+      "anchorLabel": "Renaming is fine now",
+      "anchorText": "",
+      "text": "What does this join half and half mean? \n\nWhat if I record a clip and I only want some parts of those clips obviously. How will we edit out the useless parts? \n\nCan I use screen-studio to record my screen so trim and removing parts is easier? \n\nSimilary I can record myself on the screen studio as well after the clip I want to showcase is ready. \n\nI will then use remotion to join those both? \nWhat do you think? \n\nOr can I join both in screenStudio? \n\nI want good clarity on this.",
+      "kind": "question",
+      "status": "sent",
+      "ts": "2026-09-22T19:16:39.132706+00:00",
+      "addressed": true
+    },
+    {
+      "id": "c1790104683671",
+      "anchor": "loop-rename",
+      "anchorLabel": "Renaming is fine now",
+      "anchorText": "",
+      "text": "The short instagram reel should be separate. \n\nLong video is important for now. \n\nOnce the long video is completed. We can create a short video from that. \n\nLike using the screen clips and I can talk the script 40 sec.",
+      "kind": "change",
+      "status": "sent",
+      "ts": "2026-09-22T19:18:03.683758+00:00",
+      "addressed": true
+    }
+  ],
+  "batches": [
+    {
+      "round": 1,
+      "ts": "2026-09-22T18:53:36.087847+00:00",
+      "commentIds": [
+        "c1790102583682",
+        "c1790102781782",
+        "c1790102974633",
+        "c1790103047783",
+        "c1790103109784"
+      ],
+      "decisions": {
+        "": [],
+        "d2": "live",
+        "d3": "recap"
+      }
+    },
+    {
+      "round": 2,
+      "ts": "2026-09-22T19:02:16.270045+00:00",
+      "commentIds": [
+        "c1790103452062",
+        "c1790103602211",
+        "c1790103716115"
+      ],
+      "decisions": {
+        "d2": "live",
+        "d3": "clips",
+        "d4": "1",
+        "d7": "iphone",
+        "d8": "external",
+        "d9": "external",
+        "d5": [
+          "instagram",
+          "tiktok",
+          "x",
+          "yt-shorts",
+          "threads"
+        ],
+        "d1": "after-practice"
+      }
+    },
+    {
+      "round": 3,
+      "ts": "2026-09-22T19:18:25.082508+00:00",
+      "commentIds": [
+        "c1790104599120",
+        "c1790104683671"
+      ],
+      "decisions": {
+        "d2": "live",
+        "d3": "talk-over",
+        "d4": "1",
+        "d7": "iphone",
+        "d8": "external",
+        "d5": [
+          "instagram",
+          "tiktok",
+          "x",
+          "yt-shorts",
+          "threads"
+        ],
+        "d1": "after-practice",
+        "d6": "bullets-all",
+        "d9": "per-clip"
+      }
+    },
+    {
+      "round": 4,
+      "ts": "2026-09-22T20:15:13.079366+00:00",
+      "commentIds": [],
+      "decisions": {
+        "d2": "live",
+        "d3": "hourly",
+        "d4": "1",
+        "d7": "iphone",
+        "d8": "external",
+        "d5": [
+          "instagram",
+          "tiktok",
+          "x",
+          "yt-shorts",
+          "threads"
+        ],
+        "d1": "after-practice",
+        "d6": "bullets-all",
+        "d10": [
+          "join",
+          "fillers",
+          "captions",
+          "titles",
+          "progress"
+        ]
+      }
+    }
+  ],
+  "groups": [
+    "d1",
+    "d3",
+    "d2",
+    "d4",
+    "d5",
+    "d6",
+    "d10",
+    "d7",
+    "d8"
+  ]
+}

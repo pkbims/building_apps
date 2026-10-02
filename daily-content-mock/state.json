@@ -1,0 +1,149 @@
+{
+  "decisions": {
+    "q1": "headless",
+    "q2": "top",
+    "q3": "one-page-switcher",
+    "q4": "tick-and-add"
+  },
+  "comments": [
+    {
+      "id": "c1790109010825",
+      "anchor": "day",
+      "anchorLabel": "Day header + tasks",
+      "anchorText": "Practice Day 1 \u00b7 Tue 22 Sep",
+      "text": "I like this but I like some box where I can type and store my thoughts as well below. So a text box below where I can add this for details.",
+      "kind": "change",
+      "status": "sent",
+      "ts": "2026-09-22T20:30:10.839762+00:00",
+      "addressed": true
+    },
+    {
+      "id": "c1790109305807",
+      "anchor": "hours",
+      "anchorLabel": "Hour tabs",
+      "anchorText": "\u23f1\ufe0f Hourly recaps",
+      "text": "Does this recap feel easy to understand and to record along the way. I feel it should be a numbered list of what I to show. \n\nI like the what got done \nand click through \n\nbut objective is to show what got done using the click through and talking about it \nso it should be part of one thing.",
+      "kind": "question",
+      "status": "sent",
+      "ts": "2026-09-22T20:35:05.813949+00:00",
+      "addressed": true
+    },
+    {
+      "id": "c1790109409640",
+      "anchor": "d-plus",
+      "anchorLabel": "Q1 what + does",
+      "anchorText": "Q1: What happens when you press +?",
+      "text": "We must make sure there is no overlap. \n\nLike I can press + whenever I want. \nIt should tell me that the last time you ran the recap was X \nSo till what time you want the summary. \n\nIdea is that I can forget and all to press + and all. \n\nSo think about this and give me a suggestion on how the + will work",
+      "kind": "change",
+      "status": "sent",
+      "ts": "2026-09-22T20:36:49.645616+00:00",
+      "addressed": true
+    },
+    {
+      "id": "c1790109730786",
+      "anchor": "day",
+      "anchorLabel": "Day header + tasks",
+      "anchorText": "Practice Day 1 \u00b7 Tue 22 Sep",
+      "text": "Remove the thoughts and all thingy I dont like it.",
+      "kind": "change",
+      "status": "sent",
+      "ts": "2026-09-22T20:42:10.798960+00:00",
+      "addressed": true
+    },
+    {
+      "id": "c1790109886735",
+      "anchor": "day",
+      "anchorLabel": "Day header + tasks",
+      "anchorText": "Practice Day 1 \u00b7 Tue 22 Sep",
+      "text": "I dont feel the tasks lists is descriptive and easy to undertand. \nHow can we improve this. \n\nSome way like Parent bullet list and sub lists. \n\nOr such that it is really intuitive.\n\nAlso I want like a text box where I can come and speak and it can generate a tasks list using claude. \n\nI feel I am going too much in depth of the taks list. \n\nI feel just make it more visually pleasing with parent and sub tasks so its more intutive of what I am trying to do.",
+      "kind": "change",
+      "status": "sent",
+      "ts": "2026-09-22T20:44:46.751911+00:00",
+      "addressed": true
+    },
+    {
+      "id": "c1790109992601",
+      "anchor": "hours",
+      "anchorLabel": "Hour tabs",
+      "anchorText": "\u23f1\ufe0f Hourly recaps",
+      "text": "I still feel we can improve this show and tell. \n\nCan you make it like like more script like with numbered bullet points only. \n\nSo folks this what I did in past hour. \nX YZ\n\nSomething easy that I can follow through and all.",
+      "kind": "question",
+      "status": "sent",
+      "ts": "2026-09-22T20:46:32.611581+00:00",
+      "addressed": true
+    },
+    {
+      "id": "c1790110997536",
+      "anchor": "hours",
+      "anchorLabel": "Hour tabs",
+      "anchorText": "\u23f1\ufe0f Hourly recaps",
+      "text": "I still feel this is not intutive. \n\nImagine I want to create content. How is this easy to read and follow, what do I require? \n\nI feel I would need a recap as well as no? \nLike a detailed paragraph of something.\n\nI feel the details are missing.",
+      "kind": "change",
+      "status": "sent",
+      "ts": "2026-09-22T21:03:17.548206+00:00"
+    }
+  ],
+  "batches": [
+    {
+      "round": 1,
+      "ts": "2026-09-22T20:37:02.488852+00:00",
+      "commentIds": [
+        "c1790109010825",
+        "c1790109305807",
+        "c1790109409640"
+      ],
+      "decisions": {
+        "q1": "headless",
+        "q2": "top",
+        "q3": "one-page-switcher",
+        "q4": "tick-and-add"
+      }
+    },
+    {
+      "round": 2,
+      "ts": "2026-09-22T20:44:47.874096+00:00",
+      "commentIds": [
+        "c1790109730786",
+        "c1790109886735"
+      ],
+      "decisions": {
+        "q1": "headless",
+        "q2": "top",
+        "q3": "one-page-switcher",
+        "q4": "tick-and-add"
+      }
+    },
+    {
+      "round": 3,
+      "ts": "2026-09-22T20:46:37.108842+00:00",
+      "commentIds": [
+        "c1790109992601"
+      ],
+      "decisions": {
+        "q1": "headless",
+        "q2": "top",
+        "q3": "one-page-switcher",
+        "q4": "tick-and-add"
+      }
+    },
+    {
+      "round": 4,
+      "ts": "2026-09-22T21:03:18.593034+00:00",
+      "commentIds": [
+        "c1790110997536"
+      ],
+      "decisions": {
+        "q1": "headless",
+        "q2": "top",
+        "q3": "one-page-switcher",
+        "q4": "tick-and-add"
+      }
+    }
+  ],
+  "groups": [
+    "q1",
+    "q2",
+    "q3",
+    "q4"
+  ]
+}

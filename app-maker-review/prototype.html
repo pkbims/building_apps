@@ -1,0 +1,431 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>App Progress Visualizer — prototype</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<style>
+  :root{--bg:#f4eee2;--panel:#fdf9f1;--ink:#2a2521;--muted:#6a6157;--faint:#978d82;
+    --line:#e3d9c7;--accent:#b0523a;--soft:#f5e4dc;--warn:#7a5a1e;--warnsoft:#f3ead3;--quote:#efe7d6;--r:10px;--r2:14px}
+  :root{color-scheme:light}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;
+    --bg:#1b1916;--panel:#242019;--ink:#ede4d6;--muted:#a89e8f;--faint:#766d60;
+    --line:#38322a;--accent:#e28f72;--soft:#3b2a24;--warn:#dcb66e;--warnsoft:#302a1c;--quote:#2a2620}}
+  :root[data-theme="dark"]{color-scheme:dark;--bg:#1b1916;--panel:#242019;--ink:#ede4d6;--muted:#a89e8f;
+    --faint:#766d60;--line:#38322a;--accent:#e28f72;--soft:#3b2a24;--warn:#dcb66e;--warnsoft:#302a1c;--quote:#2a2620}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 "IBM Plex Sans",-apple-system,BlinkMacSystemFont,sans-serif}
+  a{color:inherit}
+  header{position:sticky;top:0;z-index:50;background:var(--panel);border-bottom:1px solid var(--line);
+    padding:11px 20px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  header .logo{font-weight:700;font-size:15px;letter-spacing:-.01em}
+  header .logo span{color:var(--accent)}
+  .views{display:flex;gap:4px;background:var(--bg);border:1px solid var(--line);border-radius:9px;padding:3px}
+  .views button{background:none;border:0;font:inherit;font-size:12.5px;padding:4px 12px;border-radius:6px;
+    cursor:pointer;color:var(--muted)}
+  .views button.on{background:var(--accent);color:#fff;font-weight:600}
+  .sp{flex:1}
+  .meta{font-size:11.5px;color:var(--faint)}
+  .tbtn{background:var(--bg);border:1px solid var(--line);color:var(--muted);font:inherit;font-size:11.5px;
+    padding:4px 10px;border-radius:7px;cursor:pointer}
+  main{max-width:1080px;margin:0 auto;padding:22px 20px 80px}
+  h2{font-size:20px;margin:0 0 3px;letter-spacing:-.015em}
+  .sub{color:var(--muted);font-size:13px;margin:0 0 18px}
+  .banner{background:var(--warnsoft);border-left:3px solid var(--warn);padding:9px 14px;border-radius:0 8px 8px 0;
+    font-size:12.5px;margin-bottom:18px}
+  .banner b{color:var(--warn)}
+  /* board */
+  .bwrap{overflow-x:auto;background:var(--panel);border:1px solid var(--line);border-radius:var(--r2);padding:16px}
+  table.b{border-collapse:separate;border-spacing:0;width:100%;min-width:700px}
+  table.b th{font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--faint);font-weight:700;
+    padding:0 5px 9px;text-align:left;white-space:nowrap}
+  table.b td{border-top:1px solid var(--line);padding:8px 5px;vertical-align:top}
+  .appc{font-weight:650;font-size:13.5px;white-space:nowrap;padding-right:14px;cursor:pointer}
+  .appc:hover{color:var(--accent)}
+  .appc small{display:block;font-weight:400;color:var(--muted);font-size:11px;white-space:normal;max-width:165px}
+  .cell{border-radius:8px;padding:7px 8px;min-height:44px;cursor:pointer;border:1px solid transparent;transition:.12s}
+  .cell:hover{border-color:var(--accent)}
+  .cell.done{background:var(--soft)}
+  .cell.now{background:var(--accent);color:#fff}
+  .cell.todo{background:var(--quote);opacity:.5;cursor:default}
+  .cell.todo:hover{border-color:transparent}
+  .cell .cn{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;opacity:.8}
+  .cell .cd{font-size:11.5px;margin-top:2px}
+  /* rail */
+  .rail .st{display:grid;grid-template-columns:28px 1fr;gap:13px}
+  .gut{display:flex;flex-direction:column;align-items:center}
+  .bub{width:24px;height:24px;border-radius:50%;border:2px solid var(--line);background:var(--bg);display:flex;
+    align-items:center;justify-content:center;font-size:10.5px;font-weight:700;color:var(--faint);flex:none}
+  .st.done .bub{background:var(--accent);border-color:var(--accent);color:#fff}
+  .st.now .bub{border-color:var(--accent);color:var(--accent);box-shadow:0 0 0 3px var(--soft)}
+  .ln{flex:1;width:2px;background:var(--line);min-height:16px}
+  .st.done .ln{background:var(--accent)}
+  .st.skip .snm{color:var(--faint)}
+  .st.skip .bub{border-style:dashed}
+  .bd{padding-bottom:18px;min-width:0}
+  .snm{font-weight:650;font-size:15px;display:flex;align-items:center;gap:9px;flex-wrap:wrap;cursor:pointer}
+  .snm:hover{color:var(--accent)}
+  .sdt{font-size:11px;color:var(--faint);font-weight:400}
+  .gates{margin:7px 0 0;font-size:12px;color:var(--muted)}
+  .gate{display:flex;gap:7px;align-items:baseline;padding:1px 0}
+  .gate i{font-style:normal;color:var(--accent);font-weight:700;width:12px;flex:none}
+  .gate.no i{color:var(--faint)}
+  .gate.no{color:var(--faint)}
+  .gate em{font-style:normal;color:var(--faint);font-size:11px}
+  .docs{margin-top:8px}
+  .doc{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;border:1px solid var(--line);
+    background:var(--bg);border-radius:6px;padding:3px 9px;margin:3px 5px 0 0;cursor:pointer;transition:.12s}
+  .doc:hover{border-color:var(--accent);color:var(--accent)}
+  .doc.hw{border-color:var(--accent);color:var(--accent);background:var(--soft)}
+  .doc .r{color:var(--faint);font-size:10.5px}
+  .doc.hw .r{color:var(--accent);opacity:.75}
+  .side{margin-top:9px;padding:8px 11px;border-left:2px solid var(--warn);background:var(--warnsoft);
+    border-radius:0 7px 7px 0;font-size:11.5px}
+  .side b{color:var(--warn);font-size:10.5px;text-transform:uppercase;letter-spacing:.05em}
+  /* v1 + features */
+  .v1{border:1px solid var(--accent);border-radius:10px;padding:12px 14px;background:var(--soft);margin:10px 0 14px}
+  .v1 .h{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px}
+  .v1 .t{font-weight:700;font-size:14px;color:var(--accent)}
+  .v1 .l{font-size:11.5px;color:var(--muted);margin-top:5px}
+  .v1 .l b{color:var(--ink);font-weight:600}
+  .flab{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--faint);margin:0 0 7px}
+  .feat{border:1px solid var(--line);border-radius:9px;padding:10px 13px;background:var(--panel);margin-bottom:7px}
+  .feat .h{display:flex;justify-content:space-between;gap:9px;flex-wrap:wrap;align-items:baseline}
+  .feat .t{font-weight:650;font-size:13.5px}
+  .feat .t i{font-style:normal;color:var(--accent);margin-right:6px}
+  .feat .w{font-size:11.5px;color:var(--faint)}
+  .feat .s{font-size:12px;color:var(--muted);margin-top:2px}
+  /* journal */
+  .tl{position:relative;padding-left:20px}
+  .tl::before{content:"";position:absolute;left:4px;top:5px;bottom:5px;width:2px;background:var(--line)}
+  .ev{position:relative;padding-bottom:16px}
+  .ev::before{content:"";position:absolute;left:-20px;top:6px;width:9px;height:9px;border-radius:50%;
+    background:var(--accent);border:2px solid var(--bg)}
+  .ev.side::before{background:var(--warn)}
+  .ev.turn::before{background:var(--bg);border-color:var(--accent);width:12px;height:12px;left:-21px}
+  .ev .d{font-size:10.5px;color:var(--faint);font-weight:700;letter-spacing:.04em}
+  .ev .h{font-weight:650;font-size:14px}
+  .ev.turn .h{color:var(--accent)}
+  .ev .w{font-size:12.5px;color:var(--muted)}
+  /* doc panel */
+  #scrim{position:fixed;inset:0;background:rgba(0,0,0,.34);opacity:0;pointer-events:none;transition:.2s;z-index:80}
+  #scrim.on{opacity:1;pointer-events:auto}
+  #panel{position:fixed;top:0;right:0;bottom:0;width:min(560px,100%);background:var(--panel);z-index:90;
+    border-left:1px solid var(--line);transform:translateX(100%);transition:transform .22s;overflow-y:auto}
+  #panel.on{transform:none}
+  .ph{position:sticky;top:0;background:var(--panel);border-bottom:1px solid var(--line);padding:14px 18px;
+    display:flex;align-items:flex-start;gap:12px}
+  .ph h3{margin:0;font-size:16px;letter-spacing:-.01em}
+  .ph .w{font-size:11.5px;color:var(--faint);margin-top:2px}
+  .x{background:var(--bg);border:1px solid var(--line);color:var(--muted);font:inherit;font-size:16px;
+    width:28px;height:28px;border-radius:7px;cursor:pointer;flex:none;line-height:1}
+  .pb{padding:16px 18px 40px}
+  .ro{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
+    background:var(--warnsoft);color:var(--warn);padding:2px 8px;border-radius:20px;margin-bottom:10px}
+  .kk{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin:10px 0 14px;
+    padding:10px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .kk b{display:block;color:var(--ink);font-size:16px;font-weight:650}
+  .dl{margin-top:4px}
+  .dq{display:flex;gap:10px;padding:7px 0;border-bottom:1px solid var(--line);font-size:13px;align-items:baseline}
+  .dq .id{font-size:10.5px;font-weight:700;color:var(--faint);min-width:34px;flex:none;text-transform:uppercase}
+  .dq .qq{flex:1;color:var(--muted)}
+  .dq .vv{font-weight:600;color:var(--accent);text-align:right}
+  .note{font-size:12px;color:var(--muted);background:var(--bg);border:1px solid var(--line);
+    border-radius:8px;padding:10px 12px;margin-top:14px}
+  .parked{background:var(--warnsoft);border-color:var(--warn)}
+  .empty{color:var(--faint);font-size:12.5px;font-style:italic}
+  .foot{margin-top:26px;font-size:11.5px;color:var(--faint);text-align:center}
+  .ghero{background:var(--panel);border:1px solid var(--line);border-radius:var(--r2);padding:26px 28px;margin-bottom:6px}
+  .ghero h2{font-size:27px;margin:0 0 6px}
+  .ghero p{margin:0;color:var(--muted);font-size:14.5px;max-width:60ch}
+  .gmeta{display:flex;gap:26px;margin-top:16px;padding-top:15px;border-top:1px solid var(--line);font-size:12px;color:var(--muted)}
+  .gmeta b{color:var(--accent);font-size:19px;font-weight:700;margin-right:5px}
+  .gcard,.gafter{display:grid;grid-template-columns:52px 1fr;gap:18px;background:var(--panel);border:1px solid var(--line);
+    border-radius:var(--r2);padding:20px 24px;margin:0}
+  .gafter{margin-top:6px;border-color:var(--warn);background:var(--warnsoft)}
+  .gn{width:42px;height:42px;border-radius:12px;background:var(--accent);color:#fff;display:flex;align-items:center;
+    justify-content:center;font-weight:700;font-size:17px;flex:none}
+  .gtop{display:flex;align-items:baseline;gap:11px;flex-wrap:wrap}
+  .gtop h3{margin:0;font-size:19px;letter-spacing:-.015em}
+  .gskill{font-size:11.5px;font-weight:650;color:var(--accent);background:var(--soft);padding:3px 10px;border-radius:20px;
+    font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+  .gskill.none{color:var(--faint);background:var(--quote);font-family:inherit;font-weight:600}
+  .glead{margin:5px 0 13px;font-size:14.5px;color:var(--ink)}
+  .gl{display:block;font-size:9.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--faint);margin-bottom:5px}
+  .gpre{margin-bottom:13px}
+  .gp{display:inline-block;font-size:12px;color:var(--muted);border:1px dashed var(--line);border-radius:6px;
+    padding:2px 9px;margin:0 5px 4px 0}
+  .gterm{background:#1e1b17;color:#e8dfd0;border-radius:9px;padding:11px 15px;font-size:13px;
+    font-family:ui-monospace,SFMono-Regular,Menlo,monospace;display:flex;gap:10px;align-items:baseline;
+    overflow-x:auto;white-space:pre;margin-bottom:13px}
+  .gprompt{color:#c8703f;font-weight:700;flex:none}
+  .gtext{margin:0 0 13px;font-size:13.5px;color:var(--muted);line-height:1.62}
+  .gtext b{color:var(--ink)} .gtext code{background:var(--quote);color:var(--ink)}
+  .gout{margin-bottom:13px}
+  .gf{display:inline-block;font-size:11.5px;color:var(--accent);background:var(--soft);border-radius:6px;
+    padding:3px 9px;margin:0 5px 4px 0;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+  .ggate{border-left:3px solid var(--accent);background:var(--bg);border-radius:0 8px 8px 0;padding:9px 14px;font-size:13.5px}
+  .gafter .ggate{border-left-color:var(--warn)}
+  .garrow{text-align:center;color:var(--line);font-size:19px;line-height:1;padding:7px 0}
+  @media(max-width:700px){.gcard,.gafter{grid-template-columns:1fr;gap:12px}.ghero{padding:20px}.ghero h2{font-size:22px}
+    main{padding:16px 14px 60px}.rail .st{grid-template-columns:22px 1fr;gap:10px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">App <span>Progress</span> Visualizer</div>
+  <div class="views" id="views">
+    <button data-v="board" class="on">Board</button>
+    <button data-v="app">app_1</button>
+    <button data-v="journal">Journal</button>
+    <button data-v="guide">Guide</button>
+  </div>
+  <div class="sp"></div>
+  <span class="meta" id="stamp"></span>
+  <button class="tbtn" id="theme">Theme</button>
+</header>
+<main id="main"></main>
+<div id="scrim"></div>
+<aside id="panel" aria-hidden="true"></aside>
+<script src="proto-data.js"></script>
+<script>
+const $=s=>document.querySelector(s), E=(t,c,h)=>{const e=document.createElement(t);if(c)e.className=c;if(h!=null)e.innerHTML=h;return e};
+const esc=t=>String(t).replace(/[<>&]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
+let VIEW='board', SCROLL_TO=null;
+const SHOW_DATES=false;   // flip to true to bring every date back
+const D=t=>SHOW_DATES?t:'';
+$('#stamp').textContent=SHOW_DATES?('derived from disk · '+DATA.generated):'derived from disk';
+
+/* ---------- board ---------- */
+function board(){
+  const m=E('div');
+  m.append(E('h2',null,'All apps'),
+    E('p','sub',`${DATA.apps.length} apps · ${DATA.apps.filter(a=>a.stage===5).length} in build · `+
+      `${DATA.apps.reduce((n,a)=>n+a.pages,0)} review pages · ${DATA.apps.reduce((n,a)=>n+a.decisions,0)} decisions recorded`));
+  const w=E('div','bwrap'), t=E('table','b');
+  let head='<tr><th></th>'+DATA.stages.map((s,i)=>`<th>${i+1} ${esc(s)}</th>`).join('')+'</tr>';
+  t.innerHTML=head;
+  DATA.apps.forEach(a=>{
+    const tr=E('tr');
+    const td=E('td','appc',`${esc(a.id)}<small>${esc(a.problem)}</small>`);
+    td.onclick=()=>a.detail?go('app'):flash(`${a.id} has no detail view in this prototype — app_1 only (D8)`);
+    tr.append(td);
+    DATA.board[a.id].forEach((c,i)=>{
+      const st=i+1<a.stage?'done':(i+1===a.stage?'now':'todo');
+      const cell=E('div','cell '+st,
+        `<span class="cn">${st==='done'?'done':st==='now'?'in progress':'—'}</span>`+
+        (c?`<div class="cd">${c.n} doc${c.n===1?'':'s'}</div>`:''));
+      if(st!=='todo') cell.onclick=()=>{ if(a.detail){SCROLL_TO='stage-'+(i+1); go('app');} else flash(`${a.id} detail is not in this prototype (D8: app_1 only)`) };
+      const cd=E('td'); cd.append(cell); tr.append(cd);
+    });
+    t.append(tr);
+  });
+  w.append(t); m.append(w);
+  m.append(E('p','foot','Click an app or any stage cell → that app&rsquo;s detail. Only app_1 has detail here, matching D8.'));
+  return m;
+}
+
+/* ---------- app detail ---------- */
+function docChip(d){
+  const meta=DATA.docs[d.id]||{};
+  const hw=meta.k==='html-worker';
+  const r=hw?`<span class="r">${meta.rounds} rd${meta.rounds===1?'':'s'}${meta.dec?' · '+meta.dec+' dec':''}</span>`:'';
+  const c=E('span','doc'+(hw?' hw':''),`${hw?'🖱':meta.k==='markdown'?'📄':'⚙'} ${esc(d.t)} ${r}`);
+  c.onclick=e=>{e.stopPropagation(); openDoc(d.id)};
+  return c;
+}
+function app(){
+  const A=DATA.app_1, a=DATA.apps[0], m=E('div');
+  m.append(E('h2',null,`${esc(a.name)} <span style="font-weight:400;color:var(--muted);font-size:15px">${esc(a.tag)}</span>`),
+    E('p','sub',`${esc(a.problem)}${D(' · started '+a.started)} · ${a.commits} commits · ${a.pages} review pages · ${a.decisions} decisions`));
+  const rail=E('div','rail');
+  A.stages.forEach((s,idx)=>{
+    const st=E('div','st '+s.state); st.id='stage-'+String(s.n).replace(/\W/g,'');
+    const g=E('div','gut'); g.append(E('div','bub',s.repeats?'↻':s.state==='skip'?'–':(s.state==='done'?'✓':String(s.n))));
+    if(idx<A.stages.length-1) g.append(E('div','ln'));
+    const bd=E('div','bd');
+    const nm=E('div','snm',`${s.n} · ${esc(s.name)} <span class="sdt">${esc(D(s.dates))}</span>`+
+      (s.state==='now'?' <span style="font-size:10px;background:var(--accent);color:#fff;padding:2px 8px;border-radius:20px;font-weight:700;text-transform:uppercase;letter-spacing:.04em">here now</span>':'')+
+      (s.repeats?' <span style="font-size:10px;background:var(--warnsoft);color:var(--warn);padding:2px 8px;border-radius:20px;font-weight:700;text-transform:uppercase;letter-spacing:.04em">repeats</span>':'')+
+      (s.state==='skip'?' <span style="font-size:10px;background:var(--quote);color:var(--faint);padding:2px 8px;border-radius:20px;font-weight:700;text-transform:uppercase;letter-spacing:.04em">not run</span>':''));
+    bd.append(nm);
+    const gates=E('div','gates');
+    s.gates.forEach(([txt,ok,extra])=>gates.append(E('div','gate'+(ok?'':' no'),
+      `<i>${ok?'✓':'○'}</i><span>${esc(txt)}${extra?` <em>— ${esc(extra)}</em>`:''}</span>`)));
+    bd.append(gates);
+    if(s.docs.length){const d=E('div','docs'); s.docs.forEach(x=>d.append(docChip(x))); bd.append(d)}
+    if(s.v1){
+      const v=E('div','v1',`<div class="h"><div class="t">v1 — the initial build</div>
+        <div style="font-size:11px;color:var(--muted)">${D(A.v1.date+' · ')}${A.v1.commits} commits · both halves</div></div>
+        <div class="l"><b>Backend:</b> ${esc(A.v1.backend)}</div><div class="l"><b>iOS:</b> ${esc(A.v1.ios)}</div>`);
+      bd.append(v);
+    }
+    if(s.features){
+      bd.append(E('div','flab',`${A.features.length} features since v1 — this stage repeats`));
+      A.features.forEach(f=>{
+        const el=E('div','feat',`<div class="h"><div class="t"><i>${f.id}</i>${esc(f.t)}</div><div class="w">${esc(D(f.when))}</div></div>`+
+          (f.sub?`<div class="s">${esc(f.sub)}</div>`:''));
+        if(f.docs.length){const d=E('div','docs'); f.docs.forEach(x=>d.append(docChip(x))); el.append(d)}
+        else el.append(E('div','docs','<span class="empty">no review page</span>'));
+        bd.append(el);
+      });
+    }
+    if(s.side){
+      const sd=E('div','side','<b>Side work during this stage</b><div class="docs"></div>');
+      s.side.forEach(x=>sd.querySelector('.docs').append(docChip(x)));
+      bd.append(sd);
+    }
+    st.append(g,bd); rail.append(st);
+  });
+  m.append(rail);
+  return m;
+}
+
+/* ---------- journal ---------- */
+function journal(){
+  const m=E('div');
+  m.append(E('h2',null,'DesignMyRoom — how it got made'),
+    E('p','sub','Everything in the order it happened, including the work that was not a stage. ● stage · ● side work · ○ turning point'));
+  const tl=E('div','tl');
+  DATA.app_1.journal.forEach(e=>{
+    const ev=E('div','ev'+(e.side?' side':'')+(e.turn?' turn':''));
+    if(SHOW_DATES) ev.append(E('div','d',e.d));
+    ev.append(E('div','h',esc(e.h)), E('div','w',esc(e.w)));
+    if(e.docs.length){const d=E('div','docs'); e.docs.forEach(id=>d.append(docChip({id,t:(DATA.docs[id]||{}).t||id}))); ev.append(d)}
+    tl.append(ev);
+  });
+  m.append(tl);
+  return m;
+}
+
+/* ---------- guide ---------- */
+const GUIDE=[
+ {n:"0", t:"Set up the app", skill:null, lead:"Name the constraints before you research anything.",
+  pre:["A problem you can say in one line","A platform"],
+  type:"mkdir app_N && git init",
+  body:"Write <code>app_N/CLAUDE.md</code> first: one paragraph on what it is, the stack, and <b>the decisions that constrain everything downstream</b> &mdash; the handful of things that must stay true, each naming the finding behind it.",
+  out:["app_N/CLAUDE.md"], gate:"The constraints are written down."},
+ {n:"1", t:"Research", skill:"/research", lead:"Find out what exists and what people actually hate about it.",
+  pre:["The problem in one line","Any hard limit &mdash; which phone, must it fit the stack"],
+  type:"/research knowledge workers on iPhone who lose focus to social media",
+  body:"Finds every existing solution, how each one works step by step, who it serves, what it earns. Then pulls <b>verbatim</b> complaints from the stores. Three people saying the same thing is a pattern; one is a bad day. <b>Never a quote it did not read</b> &mdash; every one is checked against the raw pulled text.",
+  out:["research/&lt;niche&gt;.md","research/reviewer/ &mdash; a review page"],
+  gate:"It names the strongest option and stops. <b>You pick.</b>"},
+ {n:"2", t:"Positioning", skill:null, lead:"One paragraph that constrains the whole PRD.",
+  pre:["The research file, with a chosen option"],
+  type:"Positioning for app_N, from the research.",
+  body:"Proposes 2&ndash;3 candidates, each writable as <b>&ldquo;it&rsquo;s basically X, but Y&rdquo;</b> where X is a real shipping product. Too novel to fit that sentence gets cut &mdash; you want adjacent and sellable, not original.",
+  out:["positioning.md + the Anchored-to block"],
+  gate:"One paragraph survives. Without Anchored-to, stage 3 refuses to start."},
+ {n:"3", t:"Spec", skill:"/create-prd + html-worker", lead:"The argument: this problem is real, therefore this, therefore this.",
+  pre:["positioning.md <b>with</b> its Anchored-to block"],
+  type:"/create-prd          ← then say “HTML mode”",
+  body:"One page, fixed order: <b>the case → the experience → the build</b>. Requirements R1&hellip;Rn come with the evidence that forces them. <b>Every technical choice is yours</b> &mdash; three plain lines per option, nothing pre-selected. A clickable prototype is built before a line of Part 3, because reading a flow and feeling it are different things.",
+  out:["spec/ &mdash; the page","spec/prototype.html","PRD.md &mdash; exported, never hand-written"],
+  gate:"You say &ldquo;done&rdquo; after 3&ndash;6 rounds."},
+ {n:"3½", t:"Design direction", skill:"create-ui-design-direction", lead:"The output is a prompt, not a design.",
+  pre:["positioning.md","spec/ with §7 and §8 through a round","spec/prototype.html"],
+  type:"Design brief for app_N.",
+  body:"<b>Constrain the product, free the surface.</b> Flow, screens, states and strings are fixed; vibe and references are a compass, not a cage. A brief that specifies hex values instead of constraints kills the tool&rsquo;s best work.",
+  out:["design/BRIEF.md + references"],
+  gate:"<b>You</b> paste it into Claude Design and bring the handoff back."},
+ {n:"4", t:"Contract freeze", skill:null, lead:"Lock the API so two workers can build at once.",
+  pre:["PRD §15 data model and §16 API contract"],
+  type:"Freeze the contract from PRD §15-16.",
+  body:"The contract is <b>code, not a document</b>: schemas and empty route signatures generate the JSON, which is never hand-edited. Enforced three ways &mdash; CI fails on drift, the formatter is kept out, and workers may not touch it.",
+  out:["contract/openapi.json","the CI drift check"],
+  gate:"You read the <b>endpoint list</b>, not the code. Does it match the screens?"},
+ {n:"5", t:"Build v1", skill:"none yet — skill candidate", lead:"Three sessions, not one.",
+  pre:["A frozen contract","PRD §17 operations and §18 build order"],
+  type:"Read AGENT.md and start.          ← in each worker session",
+  body:"One orchestrator, two workers in their own worktrees. <b>The orchestrator writes no app code</b> &mdash; it writes the briefs, answers questions, and <b>verifies what workers claim rather than relaying it</b>, because an orchestrator that also codes stops checking. A worker that hits a contract problem appends to <code>ORCH-QUESTIONS.md</code> and keeps moving; it never patches around it.",
+  out:["main, both halves merged","the app running end to end"],
+  gate:"The orchestrator ran the tests itself. <b>That day is v1.</b>"}
+];
+function guide(){
+  const m=E('div');
+  m.append(E('div','ghero',`<h2>How to build one of these</h2>
+    <p>Everything from an empty folder to a working app. Seven steps, each one ending on a decision only you can make.</p>
+    <div class="gmeta"><span><b>${GUIDE.length}</b> steps</span><span><b>4</b> skills</span><span><b>1</b> app, start to v1</span></div></div>`));
+  GUIDE.forEach((g,i)=>{
+    const c=E('div','gcard');
+    c.innerHTML=`<div class="gn">${g.n}</div>
+      <div class="gbody">
+        <div class="gtop"><h3>${g.t}</h3>${g.skill?`<span class="gskill">${esc(g.skill)}</span>`:'<span class="gskill none">no skill</span>'}</div>
+        <p class="glead">${g.lead}</p>
+        <div class="gpre"><span class="gl">Needs</span>${g.pre.map(x=>`<span class="gp">${x}</span>`).join('')}</div>
+        <div class="gterm"><span class="gprompt">&rsaquo;</span>${esc(g.type)}</div>
+        <p class="gtext">${g.body}</p>
+        <div class="gout"><span class="gl">Leaves behind</span>${g.out.map(x=>`<span class="gf">${x}</span>`).join('')}</div>
+        <div class="ggate"><span class="gl">Your call</span>${g.gate}</div>
+      </div>`;
+    m.append(c);
+    if(i<GUIDE.length-1) m.append(E('div','garrow','↓'));
+  });
+  m.append(E('div','gafter',`<div class="gn" style="background:var(--warn)">↻</div>
+    <div class="gbody"><div class="gtop"><h3>After v1 — Features</h3><span class="gskill none">the loop</span></div>
+    <p class="glead">Not a step you pass through. The one stage you re-enter.</p>
+    <p class="gtext">Each feature is named first, reviewed on its own page <b>if it deserves a review</b> &mdash; four of app_1&rsquo;s six were, two were not &mdash; then built in the same worktrees and merged on the same checkpoint rule. <b>The contract stays frozen</b>, and features are what test that: two of the six needed it changed, and both went through <code>ORCH-QUESTIONS.md</code> rather than around it.</p>
+    <div class="ggate"><span class="gl">Done when</span>Never. A feature is done when it is merged; the stage is a list that grows.</div></div>`));
+  m.append(E('p','foot','The full version, with the gaps named honestly, is <code>building_apps/APP_GUIDE.md</code>.'));
+  return m;
+}
+
+/* ---------- read-only document ---------- */
+function openDoc(id){
+  const d=DATA.docs[id]; if(!d) return;
+  const p=$('#panel');
+  const kk=d.k==='html-worker'
+    ? `<div class="kk"><div>rounds<b>${d.rounds}</b></div><div>decisions<b>${d.dec}</b></div>${SHOW_DATES?`<div>reviewed<b>${d.when}</b></div>`:''}</div>`
+    : `<div class="kk"><div>kind<b style="font-size:13px">${esc(d.k)}</b></div>${SHOW_DATES?`<div>written<b style="font-size:13px">${esc(d.when)}</b></div>`:''}</div>`;
+  let list='';
+  if(d.list && d.list.length){
+    list='<div class="flab" style="margin-top:6px">Decisions recorded</div><div class="dl">'+
+      d.list.map(([i,q,v])=>`<div class="dq"><span class="id">${esc(i)}</span><span class="qq">${esc(q)}</span><span class="vv">${esc(v)}</span></div>`).join('')+
+      '</div>'+(d.more?`<p class="empty" style="margin-top:8px">+ ${d.more} more decisions on the full page</p>`:'');
+  } else if(d.more){ list=`<p class="empty">${d.more} decision${d.more===1?'':'s'} recorded — shown on the full page.</p>` }
+  else if(d.k==='html-worker'){ list='<p class="empty">No decisions recorded on this page.</p>' }
+  p.innerHTML=`<div class="ph"><div style="flex:1"><h3>${esc(d.t)}</h3><div class="w">${esc(d.where)}</div></div>
+      <button class="x" id="px">×</button></div>
+    <div class="pb"><span class="ro">Read-only copy</span>
+      <p style="font-size:13.5px;margin:0 0 4px">${esc(d.what)}</p>${kk}${list}
+      ${d.parked?'<div class="note parked"><b>Parked.</b> This page was built and opened, but no review round was ever sent. Nothing was decided on it.</div>':''}
+      ${d.note?`<div class="note">${esc(d.note)}</div>`:''}
+      <div class="note">Generated from <code>${esc(d.where)}state.json</code>. Taps here are not saved — the live page is only reachable when its own server is running.</div>
+    </div>`;
+  p.classList.add('on'); p.setAttribute('aria-hidden','false'); $('#scrim').classList.add('on');
+  $('#px').onclick=closeDoc;
+}
+function closeDoc(){$('#panel').classList.remove('on');$('#panel').setAttribute('aria-hidden','true');$('#scrim').classList.remove('on')}
+$('#scrim').onclick=closeDoc;
+addEventListener('keydown',e=>{if(e.key==='Escape')closeDoc()});
+
+/* ---------- shell ---------- */
+function flash(msg){
+  const t=E('div',null,esc(msg));
+  t.style.cssText='position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:8px;font-size:13px;z-index:200';
+  document.body.append(t); setTimeout(()=>t.remove(),2200);
+}
+function go(v){
+  VIEW=v;
+  document.querySelectorAll('#views button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
+  const m=$('#main'); m.innerHTML='';
+  m.append(E('div','banner','<b>Prototype — not live.</b> Every number and document here was read off disk once and baked into this page. '+
+    'It does not re-scan, so new work will not appear until the real scanner is built (D5/D6). The document copies are sketches of what D16 would generate.'));
+  m.append(v==='board'?board():v==='app'?app():v==='guide'?guide():journal());
+  if(SCROLL_TO){const el=document.getElementById(SCROLL_TO);
+    if(el){el.scrollIntoView({behavior:'smooth',block:'center'});
+      el.style.transition='background .8s'; el.style.background='var(--soft)';
+      setTimeout(()=>el.style.background='',1100)} SCROLL_TO=null}
+  else scrollTo({top:0});
+}
+document.querySelectorAll('#views button').forEach(b=>b.onclick=()=>go(b.dataset.v));
+(()=>{const K='theme',R=document.documentElement;
+  const set=v=>{v?R.dataset.theme=v:delete R.dataset.theme; try{v?localStorage.setItem(K,v):localStorage.removeItem(K)}catch(e){}};
+  try{set(localStorage.getItem(K)||'')}catch(e){}
+  $('#theme').onclick=()=>{const c=['','light','dark'];set(c[(c.indexOf(R.dataset.theme||'')+1)%3])}})();
+go('board');
+</script>
+</body>
+</html>

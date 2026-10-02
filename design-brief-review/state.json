@@ -1,0 +1,94 @@
+{
+  "decisions": {
+    "d1": "file",
+    "d2": "after-part2",
+    "d3": "two",
+    "d4": "handoff",
+    "d5": "later",
+    "d6": "none",
+    "d7": "brief"
+  },
+  "comments": [
+    {
+      "id": "c1789885901441",
+      "anchor": "p2",
+      "anchorLabel": "P2 \u2014 the checklist",
+      "anchorText": "5A designer's checklist against the app_1 brief",
+      "text": "Are you sure this the complete checklist a designers rquires, what about anything else like a mascot, animations etc etc. \n\nThemes like futruistic, what vibe etc?",
+      "kind": "question",
+      "status": "sent",
+      "ts": "2026-09-20T06:31:41.451913+00:00",
+      "addressed": true
+    },
+    {
+      "id": "c1789885931574",
+      "anchor": "p2",
+      "anchorLabel": "P2 \u2014 the checklist",
+      "anchorText": "5A designer's checklist against the app_1 brief",
+      "text": "I want the checklist to be complete but also not so much controlling that we miss out on the magic that claude design can create",
+      "kind": "question",
+      "status": "sent",
+      "ts": "2026-09-20T06:32:11.585015+00:00",
+      "addressed": true
+    },
+    {
+      "id": "c1789886064206",
+      "anchor": "d2",
+      "anchorLabel": "D2 \u2014 when in the pipeline",
+      "anchorText": "D2 \u2014 When in the pipeline does Claude Design run?",
+      "text": "I will run it myself, I would just need the designers checklist",
+      "kind": "change",
+      "status": "sent",
+      "ts": "2026-09-20T06:34:24.218648+00:00",
+      "addressed": true
+    },
+    {
+      "id": "c1789886088207",
+      "anchor": "d2",
+      "anchorLabel": "D2 \u2014 when in the pipeline",
+      "anchorText": "D2 \u2014 When in the pipeline does Claude Design run?",
+      "text": "So you can think that after part2, our job is to create that prompt or the checklist",
+      "kind": "change",
+      "status": "sent",
+      "ts": "2026-09-20T06:34:48.215210+00:00",
+      "addressed": true
+    }
+  ],
+  "batches": [
+    {
+      "round": 1,
+      "ts": "2026-09-20T06:32:13.947999+00:00",
+      "commentIds": [
+        "c1789885901441",
+        "c1789885931574"
+      ],
+      "decisions": {}
+    },
+    {
+      "round": 2,
+      "ts": "2026-09-20T06:36:38.731573+00:00",
+      "commentIds": [
+        "c1789886064206",
+        "c1789886088207"
+      ],
+      "decisions": {
+        "d1": "file",
+        "d2": "after-part2",
+        "d3": "two",
+        "d4": "handoff",
+        "d5": "later",
+        "d6": "none",
+        "d7": "brief"
+      }
+    }
+  ],
+  "groups": [
+    "d1",
+    "d2",
+    "d3",
+    "d4",
+    "d5",
+    "d6",
+    "d7"
+  ]
+}

@@ -1,0 +1,4042 @@
+{
+  "day": "day-01",
+  "badge": "Practice Day 1",
+  "clips": [
+    {
+      "n": 1,
+      "title": "Pipeline",
+      "src": "day-01/hours/hour-01.mp4",
+      "width": 3840,
+      "height": 2160,
+      "segments": [
+        {
+          "fromMs": 0,
+          "toMs": 386
+        },
+        {
+          "fromMs": 1150,
+          "toMs": 1459
+        },
+        {
+          "fromMs": 1789,
+          "toMs": 8703
+        },
+        {
+          "fromMs": 9013,
+          "toMs": 13747
+        },
+        {
+          "fromMs": 14453,
+          "toMs": 16605
+        },
+        {
+          "fromMs": 17030,
+          "toMs": 21753
+        },
+        {
+          "fromMs": 22137,
+          "toMs": 30115
+        },
+        {
+          "fromMs": 30791,
+          "toMs": 31042
+        },
+        {
+          "fromMs": 31387,
+          "toMs": 51821
+        },
+        {
+          "fromMs": 52157,
+          "toMs": 58783
+        },
+        {
+          "fromMs": 59727,
+          "toMs": 63891
+        },
+        {
+          "fromMs": 64202,
+          "toMs": 68693
+        },
+        {
+          "fromMs": 69014,
+          "toMs": 72948
+        },
+        {
+          "fromMs": 73268,
+          "toMs": 81839
+        },
+        {
+          "fromMs": 82150,
+          "toMs": 84109
+        },
+        {
+          "fromMs": 84379,
+          "toMs": 85399
+        },
+        {
+          "fromMs": 85813,
+          "toMs": 89179
+        },
+        {
+          "fromMs": 90073,
+          "toMs": 95128
+        },
+        {
+          "fromMs": 95559,
+          "toMs": 102263
+        },
+        {
+          "fromMs": 102524,
+          "toMs": 107288
+        },
+        {
+          "fromMs": 107607,
+          "toMs": 109116
+        },
+        {
+          "fromMs": 109419,
+          "toMs": 113067
+        },
+        {
+          "fromMs": 113334,
+          "toMs": 118673
+        },
+        {
+          "fromMs": 119008,
+          "toMs": 121874
+        },
+        {
+          "fromMs": 122162,
+          "toMs": 139541
+        },
+        {
+          "fromMs": 139829,
+          "toMs": 148971
+        },
+        {
+          "fromMs": 149307,
+          "toMs": 154875
+        },
+        {
+          "fromMs": 155130,
+          "toMs": 161336
+        },
+        {
+          "fromMs": 161759,
+          "toMs": 162009
+        },
+        {
+          "fromMs": 162471,
+          "toMs": 162752
+        }
+      ],
+      "words": [
+        {
+          "text": "Hey",
+          "ms": 1806
+        },
+        {
+          "text": " folks",
+          "ms": 2126
+        },
+        {
+          "text": ",",
+          "ms": 2206
+        },
+        {
+          "text": " this",
+          "ms": 2426
+        },
+        {
+          "text": " is",
+          "ms": 2646
+        },
+        {
+          "text": " day",
+          "ms": 2806
+        },
+        {
+          "text": " one",
+          "ms": 3026
+        },
+        {
+          "text": " and",
+          "ms": 3166
+        },
+        {
+          "text": " I",
+          "ms": 3306
+        },
+        {
+          "text": "'m",
+          "ms": 3346
+        },
+        {
+          "text": " building",
+          "ms": 3586
+        },
+        {
+          "text": " 10",
+          "ms": 3866
+        },
+        {
+          "text": " apps",
+          "ms": 4126
+        },
+        {
+          "text": " in",
+          "ms": 4386
+        },
+        {
+          "text": " 30",
+          "ms": 4646
+        },
+        {
+          "text": " days",
+          "ms": 5266
+        },
+        {
+          "text": ".",
+          "ms": 6446
+        },
+        {
+          "text": " And",
+          "ms": 6526
+        },
+        {
+          "text": " today",
+          "ms": 6846
+        },
+        {
+          "text": " I",
+          "ms": 7086
+        },
+        {
+          "text": " woke",
+          "ms": 8736
+        },
+        {
+          "text": " up",
+          "ms": 8996
+        },
+        {
+          "text": " and",
+          "ms": 9116
+        },
+        {
+          "text": " I",
+          "ms": 9276
+        },
+        {
+          "text": " wanted",
+          "ms": 9576
+        },
+        {
+          "text": " to",
+          "ms": 9776
+        },
+        {
+          "text": " build",
+          "ms": 9936
+        },
+        {
+          "text": " a",
+          "ms": 10136
+        },
+        {
+          "text": " content",
+          "ms": 10416
+        },
+        {
+          "text": " system",
+          "ms": 10876
+        },
+        {
+          "text": " that",
+          "ms": 11236
+        },
+        {
+          "text": " when",
+          "ms": 11436
+        },
+        {
+          "text": " I",
+          "ms": 11556
+        },
+        {
+          "text": "'m",
+          "ms": 11716
+        },
+        {
+          "text": " building",
+          "ms": 12076
+        },
+        {
+          "text": " I",
+          "ms": 12630
+        },
+        {
+          "text": " also",
+          "ms": 12890
+        },
+        {
+          "text": " want",
+          "ms": 13070
+        },
+        {
+          "text": " to",
+          "ms": 13130
+        },
+        {
+          "text": " create",
+          "ms": 13370
+        },
+        {
+          "text": " these",
+          "ms": 13570
+        },
+        {
+          "text": " videos",
+          "ms": 13930
+        },
+        {
+          "text": " for",
+          "ms": 14190
+        },
+        {
+          "text": " to",
+          "ms": 15145
+        },
+        {
+          "text": " showcase",
+          "ms": 15605
+        },
+        {
+          "text": " what",
+          "ms": 16305
+        },
+        {
+          "text": "'s",
+          "ms": 16445
+        },
+        {
+          "text": " my",
+          "ms": 16565
+        },
+        {
+          "text": " process",
+          "ms": 16985
+        },
+        {
+          "text": " like",
+          "ms": 17385
+        },
+        {
+          "text": ",",
+          "ms": 17385
+        },
+        {
+          "text": " what",
+          "ms": 17745
+        },
+        {
+          "text": " I",
+          "ms": 17885
+        },
+        {
+          "text": "'m",
+          "ms": 17965
+        },
+        {
+          "text": " building",
+          "ms": 18245
+        },
+        {
+          "text": " throughout",
+          "ms": 18565
+        },
+        {
+          "text": " the",
+          "ms": 18805
+        },
+        {
+          "text": " day",
+          "ms": 19145
+        },
+        {
+          "text": " and",
+          "ms": 19561
+        },
+        {
+          "text": " to",
+          "ms": 19721
+        },
+        {
+          "text": " give",
+          "ms": 20081
+        },
+        {
+          "text": " a",
+          "ms": 20241
+        },
+        {
+          "text": " recap",
+          "ms": 20541
+        },
+        {
+          "text": " of",
+          "ms": 20741
+        },
+        {
+          "text": " the",
+          "ms": 20921
+        },
+        {
+          "text": " decisions",
+          "ms": 21241
+        },
+        {
+          "text": " I",
+          "ms": 21441
+        },
+        {
+          "text": "'m",
+          "ms": 21521
+        },
+        {
+          "text": " making",
+          "ms": 21921
+        },
+        {
+          "text": " just",
+          "ms": 23501
+        },
+        {
+          "text": " to",
+          "ms": 23721
+        },
+        {
+          "text": " document",
+          "ms": 24141
+        },
+        {
+          "text": " everything",
+          "ms": 24621
+        },
+        {
+          "text": ".",
+          "ms": 24701
+        },
+        {
+          "text": " So",
+          "ms": 25101
+        },
+        {
+          "text": ",",
+          "ms": 25281
+        },
+        {
+          "text": " to",
+          "ms": 25341
+        },
+        {
+          "text": " document",
+          "ms": 25701
+        },
+        {
+          "text": " everything",
+          "ms": 26121
+        },
+        {
+          "text": " I",
+          "ms": 26301
+        },
+        {
+          "text": " was",
+          "ms": 26401
+        },
+        {
+          "text": " going",
+          "ms": 26621
+        },
+        {
+          "text": " through",
+          "ms": 27161
+        },
+        {
+          "text": ",",
+          "ms": 27700
+        },
+        {
+          "text": " I",
+          "ms": 27780
+        },
+        {
+          "text": " came",
+          "ms": 28040
+        },
+        {
+          "text": " up",
+          "ms": 28320
+        },
+        {
+          "text": " and",
+          "ms": 28580
+        },
+        {
+          "text": " gave",
+          "ms": 28800
+        },
+        {
+          "text": " this",
+          "ms": 29200
+        },
+        {
+          "text": " huge",
+          "ms": 29820
+        },
+        {
+          "text": " prompt",
+          "ms": 30260
+        },
+        {
+          "text": " to",
+          "ms": 30800
+        },
+        {
+          "text": " my",
+          "ms": 32320
+        },
+        {
+          "text": " cloud",
+          "ms": 32500
+        },
+        {
+          "text": " session",
+          "ms": 32980
+        },
+        {
+          "text": " and",
+          "ms": 33240
+        },
+        {
+          "text": " then",
+          "ms": 33380
+        },
+        {
+          "text": " I",
+          "ms": 33520
+        },
+        {
+          "text": " asked",
+          "ms": 33960
+        },
+        {
+          "text": " to",
+          "ms": 34460
+        },
+        {
+          "text": " invoke",
+          "ms": 35000
+        },
+        {
+          "text": " my",
+          "ms": 35340
+        },
+        {
+          "text": " HTML",
+          "ms": 35780
+        },
+        {
+          "text": " worker",
+          "ms": 36080
+        },
+        {
+          "text": " skill",
+          "ms": 36520
+        },
+        {
+          "text": " to",
+          "ms": 37720
+        },
+        {
+          "text": " go",
+          "ms": 38020
+        },
+        {
+          "text": " and",
+          "ms": 38220
+        },
+        {
+          "text": " talk",
+          "ms": 38440
+        },
+        {
+          "text": " through",
+          "ms": 38640
+        },
+        {
+          "text": " that",
+          "ms": 38860
+        },
+        {
+          "text": ".",
+          "ms": 39000
+        },
+        {
+          "text": " The",
+          "ms": 39080
+        },
+        {
+          "text": " HTML",
+          "ms": 39400
+        },
+        {
+          "text": " worker",
+          "ms": 39640
+        },
+        {
+          "text": " skill",
+          "ms": 40360
+        },
+        {
+          "text": " is",
+          "ms": 40700
+        },
+        {
+          "text": " really",
+          "ms": 41260
+        },
+        {
+          "text": " useful",
+          "ms": 41680
+        },
+        {
+          "text": " for",
+          "ms": 42040
+        },
+        {
+          "text": " me",
+          "ms": 42680
+        },
+        {
+          "text": " because",
+          "ms": 44100
+        },
+        {
+          "text": " what",
+          "ms": 44340
+        },
+        {
+          "text": " happens",
+          "ms": 44840
+        },
+        {
+          "text": " is",
+          "ms": 45140
+        },
+        {
+          "text": " that",
+          "ms": 45340
+        },
+        {
+          "text": " it",
+          "ms": 45520
+        },
+        {
+          "text": " gives",
+          "ms": 45760
+        },
+        {
+          "text": " me",
+          "ms": 45940
+        },
+        {
+          "text": " everything",
+          "ms": 46320
+        },
+        {
+          "text": " like",
+          "ms": 46720
+        },
+        {
+          "text": " this",
+          "ms": 47020
+        },
+        {
+          "text": " and",
+          "ms": 47200
+        },
+        {
+          "text": " then",
+          "ms": 47340
+        },
+        {
+          "text": " I",
+          "ms": 47480
+        },
+        {
+          "text": " click",
+          "ms": 48484
+        },
+        {
+          "text": " on",
+          "ms": 48804
+        },
+        {
+          "text": " comments",
+          "ms": 49204
+        },
+        {
+          "text": " and",
+          "ms": 49784
+        },
+        {
+          "text": " give",
+          "ms": 49984
+        },
+        {
+          "text": " some",
+          "ms": 50204
+        },
+        {
+          "text": " comments",
+          "ms": 50544
+        },
+        {
+          "text": " on",
+          "ms": 50724
+        },
+        {
+          "text": " the",
+          "ms": 50724
+        },
+        {
+          "text": " plans",
+          "ms": 51224
+        },
+        {
+          "text": " that",
+          "ms": 52204
+        },
+        {
+          "text": " it",
+          "ms": 52344
+        },
+        {
+          "text": " generated",
+          "ms": 52804
+        },
+        {
+          "text": " for",
+          "ms": 53104
+        },
+        {
+          "text": " me",
+          "ms": 53564
+        },
+        {
+          "text": ".",
+          "ms": 54284
+        },
+        {
+          "text": " So",
+          "ms": 54284
+        },
+        {
+          "text": " yeah",
+          "ms": 55200
+        },
+        {
+          "text": ",",
+          "ms": 55340
+        },
+        {
+          "text": " so",
+          "ms": 55440
+        },
+        {
+          "text": " like",
+          "ms": 55700
+        },
+        {
+          "text": " I",
+          "ms": 55920
+        },
+        {
+          "text": " went",
+          "ms": 56120
+        },
+        {
+          "text": " through",
+          "ms": 56560
+        },
+        {
+          "text": " two",
+          "ms": 57220
+        },
+        {
+          "text": " to",
+          "ms": 57380
+        },
+        {
+          "text": " three",
+          "ms": 57560
+        },
+        {
+          "text": " iterations",
+          "ms": 58040
+        },
+        {
+          "text": " of",
+          "ms": 58300
+        },
+        {
+          "text": " this",
+          "ms": 58560
+        },
+        {
+          "text": " to",
+          "ms": 59129
+        },
+        {
+          "text": " make",
+          "ms": 59349
+        },
+        {
+          "text": " sure",
+          "ms": 59589
+        },
+        {
+          "text": " I",
+          "ms": 59829
+        },
+        {
+          "text": " understand",
+          "ms": 60249
+        },
+        {
+          "text": " everything",
+          "ms": 60729
+        },
+        {
+          "text": " we",
+          "ms": 61329
+        },
+        {
+          "text": " are",
+          "ms": 62089
+        },
+        {
+          "text": " doing",
+          "ms": 62249
+        },
+        {
+          "text": " in",
+          "ms": 62429
+        },
+        {
+          "text": " the",
+          "ms": 62549
+        },
+        {
+          "text": " right",
+          "ms": 62749
+        },
+        {
+          "text": " way",
+          "ms": 63049
+        },
+        {
+          "text": ".",
+          "ms": 63288
+        },
+        {
+          "text": " So",
+          "ms": 63408
+        },
+        {
+          "text": " this",
+          "ms": 63648
+        },
+        {
+          "text": " is",
+          "ms": 63788
+        },
+        {
+          "text": " the",
+          "ms": 63988
+        },
+        {
+          "text": " daily",
+          "ms": 64268
+        },
+        {
+          "text": " loop",
+          "ms": 64668
+        },
+        {
+          "text": " that",
+          "ms": 65388
+        },
+        {
+          "text": " I",
+          "ms": 65508
+        },
+        {
+          "text": "'ve",
+          "ms": 65768
+        },
+        {
+          "text": " come",
+          "ms": 66068
+        },
+        {
+          "text": " up",
+          "ms": 66528
+        },
+        {
+          "text": " with",
+          "ms": 66888
+        },
+        {
+          "text": ".",
+          "ms": 67628
+        },
+        {
+          "text": " So",
+          "ms": 67868
+        },
+        {
+          "text": " yeah",
+          "ms": 68068
+        },
+        {
+          "text": ",",
+          "ms": 68128
+        },
+        {
+          "text": " let",
+          "ms": 68228
+        },
+        {
+          "text": " me",
+          "ms": 68388
+        },
+        {
+          "text": " go",
+          "ms": 68688
+        },
+        {
+          "text": " through",
+          "ms": 68968
+        },
+        {
+          "text": " this",
+          "ms": 69188
+        },
+        {
+          "text": " and",
+          "ms": 69368
+        },
+        {
+          "text": " help",
+          "ms": 69628
+        },
+        {
+          "text": " you",
+          "ms": 69768
+        },
+        {
+          "text": " explain",
+          "ms": 70188
+        },
+        {
+          "text": " this",
+          "ms": 70428
+        },
+        {
+          "text": ".",
+          "ms": 70828
+        },
+        {
+          "text": " So",
+          "ms": 70828
+        },
+        {
+          "text": " every",
+          "ms": 71748
+        },
+        {
+          "text": " morning",
+          "ms": 72048
+        },
+        {
+          "text": " I",
+          "ms": 72228
+        },
+        {
+          "text": "'m",
+          "ms": 72308
+        },
+        {
+          "text": " going",
+          "ms": 72428
+        },
+        {
+          "text": " to",
+          "ms": 72808
+        },
+        {
+          "text": " wake",
+          "ms": 73088
+        },
+        {
+          "text": " up",
+          "ms": 73488
+        },
+        {
+          "text": " and",
+          "ms": 73928
+        },
+        {
+          "text": " decide",
+          "ms": 74448
+        },
+        {
+          "text": " on",
+          "ms": 74648
+        },
+        {
+          "text": " my",
+          "ms": 74828
+        },
+        {
+          "text": " task",
+          "ms": 75168
+        },
+        {
+          "text": " list",
+          "ms": 75528
+        },
+        {
+          "text": " and",
+          "ms": 75937
+        },
+        {
+          "text": " then",
+          "ms": 76117
+        },
+        {
+          "text": " cloud",
+          "ms": 76577
+        },
+        {
+          "text": " rise",
+          "ms": 76737
+        },
+        {
+          "text": " that",
+          "ms": 77077
+        },
+        {
+          "text": " task",
+          "ms": 77497
+        },
+        {
+          "text": ".",
+          "ms": 78627
+        },
+        {
+          "text": " What",
+          "ms": 78627
+        },
+        {
+          "text": " is",
+          "ms": 79213
+        },
+        {
+          "text": " going",
+          "ms": 79393
+        },
+        {
+          "text": " to",
+          "ms": 79533
+        },
+        {
+          "text": " happen",
+          "ms": 79773
+        },
+        {
+          "text": " is",
+          "ms": 80033
+        },
+        {
+          "text": " that",
+          "ms": 80093
+        },
+        {
+          "text": " every",
+          "ms": 80473
+        },
+        {
+          "text": " hour",
+          "ms": 80993
+        },
+        {
+          "text": " I",
+          "ms": 81313
+        },
+        {
+          "text": "'m",
+          "ms": 81473
+        },
+        {
+          "text": " going",
+          "ms": 81673
+        },
+        {
+          "text": " to",
+          "ms": 82039
+        },
+        {
+          "text": " ask",
+          "ms": 82499
+        },
+        {
+          "text": " cloud",
+          "ms": 82779
+        },
+        {
+          "text": " to",
+          "ms": 83199
+        },
+        {
+          "text": " generate",
+          "ms": 83719
+        },
+        {
+          "text": " a",
+          "ms": 83939
+        },
+        {
+          "text": " summary",
+          "ms": 84199
+        },
+        {
+          "text": " of",
+          "ms": 84439
+        },
+        {
+          "text": " whatever",
+          "ms": 84879
+        },
+        {
+          "text": " I",
+          "ms": 85499
+        },
+        {
+          "text": "'ve",
+          "ms": 85639
+        },
+        {
+          "text": " done",
+          "ms": 85799
+        },
+        {
+          "text": " and",
+          "ms": 85999
+        },
+        {
+          "text": " whatever",
+          "ms": 86299
+        },
+        {
+          "text": " we",
+          "ms": 86559
+        },
+        {
+          "text": " have",
+          "ms": 86699
+        },
+        {
+          "text": " done",
+          "ms": 86979
+        },
+        {
+          "text": ".",
+          "ms": 87268
+        },
+        {
+          "text": " Then",
+          "ms": 87388
+        },
+        {
+          "text": " I",
+          "ms": 87508
+        },
+        {
+          "text": "'m",
+          "ms": 87628
+        },
+        {
+          "text": " going",
+          "ms": 87748
+        },
+        {
+          "text": " to",
+          "ms": 88268
+        },
+        {
+          "text": " create",
+          "ms": 88548
+        },
+        {
+          "text": " a",
+          "ms": 88748
+        },
+        {
+          "text": " recap",
+          "ms": 89048
+        },
+        {
+          "text": " script",
+          "ms": 89728
+        },
+        {
+          "text": " and",
+          "ms": 90428
+        },
+        {
+          "text": " then",
+          "ms": 90588
+        },
+        {
+          "text": " what",
+          "ms": 90748
+        },
+        {
+          "text": " we",
+          "ms": 90888
+        },
+        {
+          "text": " are",
+          "ms": 90988
+        },
+        {
+          "text": " going",
+          "ms": 91088
+        },
+        {
+          "text": " to",
+          "ms": 91188
+        },
+        {
+          "text": " do",
+          "ms": 91308
+        },
+        {
+          "text": " is",
+          "ms": 91508
+        },
+        {
+          "text": " film",
+          "ms": 91788
+        },
+        {
+          "text": " exactly",
+          "ms": 92788
+        },
+        {
+          "text": " same",
+          "ms": 93108
+        },
+        {
+          "text": " this",
+          "ms": 93348
+        },
+        {
+          "text": " video",
+          "ms": 93668
+        },
+        {
+          "text": " to",
+          "ms": 94447
+        },
+        {
+          "text": " make",
+          "ms": 94647
+        },
+        {
+          "text": " sure",
+          "ms": 94827
+        },
+        {
+          "text": " that",
+          "ms": 95007
+        },
+        {
+          "text": " we",
+          "ms": 95127
+        },
+        {
+          "text": " get",
+          "ms": 95387
+        },
+        {
+          "text": " summarized",
+          "ms": 95827
+        },
+        {
+          "text": " this",
+          "ms": 96167
+        },
+        {
+          "text": " whole",
+          "ms": 96447
+        },
+        {
+          "text": " one",
+          "ms": 96787
+        },
+        {
+          "text": " hour",
+          "ms": 96947
+        },
+        {
+          "text": " of",
+          "ms": 97187
+        },
+        {
+          "text": " work",
+          "ms": 97407
+        },
+        {
+          "text": " in",
+          "ms": 97587
+        },
+        {
+          "text": " one",
+          "ms": 97747
+        },
+        {
+          "text": " to",
+          "ms": 97847
+        },
+        {
+          "text": " two",
+          "ms": 98047
+        },
+        {
+          "text": " minutes",
+          "ms": 98407
+        },
+        {
+          "text": ".",
+          "ms": 98728
+        },
+        {
+          "text": " Once",
+          "ms": 99428
+        },
+        {
+          "text": " I",
+          "ms": 99428
+        },
+        {
+          "text": "'ve",
+          "ms": 99428
+        },
+        {
+          "text": " done",
+          "ms": 99528
+        },
+        {
+          "text": " that",
+          "ms": 99928
+        },
+        {
+          "text": ",",
+          "ms": 100185
+        },
+        {
+          "text": " I",
+          "ms": 100765
+        },
+        {
+          "text": " will",
+          "ms": 101005
+        },
+        {
+          "text": " use",
+          "ms": 101445
+        },
+        {
+          "text": " cloud",
+          "ms": 101845
+        },
+        {
+          "text": " itself",
+          "ms": 102305
+        },
+        {
+          "text": " to",
+          "ms": 102605
+        },
+        {
+          "text": " join",
+          "ms": 102905
+        },
+        {
+          "text": " all",
+          "ms": 103285
+        },
+        {
+          "text": " those",
+          "ms": 103738
+        },
+        {
+          "text": " videos",
+          "ms": 104838
+        },
+        {
+          "text": " and",
+          "ms": 105218
+        },
+        {
+          "text": " screen",
+          "ms": 105538
+        },
+        {
+          "text": " shares",
+          "ms": 105878
+        },
+        {
+          "text": " and",
+          "ms": 106098
+        },
+        {
+          "text": " that",
+          "ms": 106358
+        },
+        {
+          "text": " I",
+          "ms": 106458
+        },
+        {
+          "text": "'ve",
+          "ms": 106558
+        },
+        {
+          "text": " done",
+          "ms": 106738
+        },
+        {
+          "text": " so",
+          "ms": 107018
+        },
+        {
+          "text": " that",
+          "ms": 107178
+        },
+        {
+          "text": " we",
+          "ms": 107358
+        },
+        {
+          "text": " can",
+          "ms": 107618
+        },
+        {
+          "text": " come",
+          "ms": 107878
+        },
+        {
+          "text": " up",
+          "ms": 108038
+        },
+        {
+          "text": " with",
+          "ms": 108178
+        },
+        {
+          "text": " a",
+          "ms": 108358
+        },
+        {
+          "text": " long",
+          "ms": 108538
+        },
+        {
+          "text": " video",
+          "ms": 108938
+        },
+        {
+          "text": " and",
+          "ms": 109303
+        },
+        {
+          "text": " the",
+          "ms": 109443
+        },
+        {
+          "text": " editing",
+          "ms": 109703
+        },
+        {
+          "text": " will",
+          "ms": 109903
+        },
+        {
+          "text": " be",
+          "ms": 110063
+        },
+        {
+          "text": " done",
+          "ms": 110263
+        },
+        {
+          "text": " using",
+          "ms": 110823
+        },
+        {
+          "text": " re",
+          "ms": 111083
+        },
+        {
+          "text": "-",
+          "ms": 111083
+        },
+        {
+          "text": "motion",
+          "ms": 111343
+        },
+        {
+          "text": " skill",
+          "ms": 111743
+        },
+        {
+          "text": ".",
+          "ms": 112555
+        },
+        {
+          "text": " I",
+          "ms": 112555
+        },
+        {
+          "text": " will",
+          "ms": 112695
+        },
+        {
+          "text": " be",
+          "ms": 112895
+        },
+        {
+          "text": " invoking",
+          "ms": 113215
+        },
+        {
+          "text": " that",
+          "ms": 113495
+        },
+        {
+          "text": " later",
+          "ms": 113775
+        },
+        {
+          "text": " in",
+          "ms": 113975
+        },
+        {
+          "text": " the",
+          "ms": 114075
+        },
+        {
+          "text": " day",
+          "ms": 114315
+        },
+        {
+          "text": " and",
+          "ms": 114415
+        },
+        {
+          "text": " I",
+          "ms": 114515
+        },
+        {
+          "text": "'ll",
+          "ms": 114635
+        },
+        {
+          "text": " show",
+          "ms": 114795
+        },
+        {
+          "text": " you",
+          "ms": 115015
+        },
+        {
+          "text": " guys",
+          "ms": 115335
+        },
+        {
+          "text": ",",
+          "ms": 115375
+        },
+        {
+          "text": " but",
+          "ms": 115575
+        },
+        {
+          "text": " this",
+          "ms": 115775
+        },
+        {
+          "text": " is",
+          "ms": 115915
+        },
+        {
+          "text": " the",
+          "ms": 116075
+        },
+        {
+          "text": " whole",
+          "ms": 116275
+        },
+        {
+          "text": " plan",
+          "ms": 116575
+        },
+        {
+          "text": " that",
+          "ms": 116775
+        },
+        {
+          "text": " I",
+          "ms": 116915
+        },
+        {
+          "text": " came",
+          "ms": 117075
+        },
+        {
+          "text": " up",
+          "ms": 117295
+        },
+        {
+          "text": " with",
+          "ms": 117615
+        },
+        {
+          "text": ".",
+          "ms": 118075
+        },
+        {
+          "text": " What",
+          "ms": 118395
+        },
+        {
+          "text": " it",
+          "ms": 118655
+        },
+        {
+          "text": " really",
+          "ms": 118915
+        },
+        {
+          "text": " helps",
+          "ms": 119235
+        },
+        {
+          "text": " with",
+          "ms": 119495
+        },
+        {
+          "text": " is",
+          "ms": 119695
+        },
+        {
+          "text": " that",
+          "ms": 120055
+        },
+        {
+          "text": " once",
+          "ms": 120695
+        },
+        {
+          "text": " I",
+          "ms": 120895
+        },
+        {
+          "text": " understand",
+          "ms": 121475
+        },
+        {
+          "text": " the",
+          "ms": 121695
+        },
+        {
+          "text": " plan",
+          "ms": 122015
+        },
+        {
+          "text": " and",
+          "ms": 122735
+        },
+        {
+          "text": " then",
+          "ms": 122815
+        },
+        {
+          "text": " it",
+          "ms": 122915
+        },
+        {
+          "text": "'s",
+          "ms": 123095
+        },
+        {
+          "text": " easier",
+          "ms": 123295
+        },
+        {
+          "text": " for",
+          "ms": 123495
+        },
+        {
+          "text": " me",
+          "ms": 123635
+        },
+        {
+          "text": " to",
+          "ms": 123735
+        },
+        {
+          "text": " just",
+          "ms": 123935
+        },
+        {
+          "text": " follow",
+          "ms": 124235
+        },
+        {
+          "text": " it",
+          "ms": 124475
+        },
+        {
+          "text": ".",
+          "ms": 124655
+        },
+        {
+          "text": " I",
+          "ms": 124955
+        },
+        {
+          "text": " try",
+          "ms": 125095
+        },
+        {
+          "text": " to",
+          "ms": 125235
+        },
+        {
+          "text": " spend",
+          "ms": 125475
+        },
+        {
+          "text": " as",
+          "ms": 125655
+        },
+        {
+          "text": " much",
+          "ms": 125895
+        },
+        {
+          "text": " time",
+          "ms": 126275
+        },
+        {
+          "text": " as",
+          "ms": 126515
+        },
+        {
+          "text": " I",
+          "ms": 126675
+        },
+        {
+          "text": " can",
+          "ms": 127075
+        },
+        {
+          "text": " in",
+          "ms": 127595
+        },
+        {
+          "text": " deciding",
+          "ms": 128095
+        },
+        {
+          "text": " and",
+          "ms": 128375
+        },
+        {
+          "text": " creating",
+          "ms": 128715
+        },
+        {
+          "text": " this",
+          "ms": 128935
+        },
+        {
+          "text": " plan",
+          "ms": 129195
+        },
+        {
+          "text": " and",
+          "ms": 129527
+        },
+        {
+          "text": " this",
+          "ms": 129707
+        },
+        {
+          "text": " skill",
+          "ms": 129907
+        },
+        {
+          "text": " is",
+          "ms": 130047
+        },
+        {
+          "text": " really",
+          "ms": 130287
+        },
+        {
+          "text": " helpful",
+          "ms": 130607
+        },
+        {
+          "text": " for",
+          "ms": 130947
+        },
+        {
+          "text": " me",
+          "ms": 131147
+        },
+        {
+          "text": " when",
+          "ms": 131367
+        },
+        {
+          "text": " I",
+          "ms": 131487
+        },
+        {
+          "text": "'m",
+          "ms": 131567
+        },
+        {
+          "text": " doing",
+          "ms": 131727
+        },
+        {
+          "text": " this",
+          "ms": 131967
+        },
+        {
+          "text": ".",
+          "ms": 132407
+        },
+        {
+          "text": " I",
+          "ms": 133167
+        },
+        {
+          "text": " took",
+          "ms": 133367
+        },
+        {
+          "text": " all",
+          "ms": 133547
+        },
+        {
+          "text": " these",
+          "ms": 133727
+        },
+        {
+          "text": " decisions",
+          "ms": 134207
+        },
+        {
+          "text": " that",
+          "ms": 134447
+        },
+        {
+          "text": " you",
+          "ms": 134527
+        },
+        {
+          "text": " can",
+          "ms": 134707
+        },
+        {
+          "text": " see",
+          "ms": 134927
+        },
+        {
+          "text": " here",
+          "ms": 135247
+        },
+        {
+          "text": " and",
+          "ms": 135407
+        },
+        {
+          "text": " I",
+          "ms": 135567
+        },
+        {
+          "text": " can",
+          "ms": 135827
+        },
+        {
+          "text": " do",
+          "ms": 136127
+        },
+        {
+          "text": " and",
+          "ms": 136267
+        },
+        {
+          "text": " click",
+          "ms": 136567
+        },
+        {
+          "text": " those",
+          "ms": 136847
+        },
+        {
+          "text": " decisions",
+          "ms": 137227
+        },
+        {
+          "text": " and",
+          "ms": 137447
+        },
+        {
+          "text": " send",
+          "ms": 137647
+        },
+        {
+          "text": " to",
+          "ms": 137787
+        },
+        {
+          "text": " my",
+          "ms": 138007
+        },
+        {
+          "text": " cloud",
+          "ms": 138227
+        },
+        {
+          "text": " session",
+          "ms": 138811
+        },
+        {
+          "text": " and",
+          "ms": 139471
+        },
+        {
+          "text": " then",
+          "ms": 139591
+        },
+        {
+          "text": " iter",
+          "ms": 139871
+        },
+        {
+          "text": "ates",
+          "ms": 140031
+        },
+        {
+          "text": " and",
+          "ms": 140251
+        },
+        {
+          "text": " show",
+          "ms": 140431
+        },
+        {
+          "text": " me",
+          "ms": 140631
+        },
+        {
+          "text": " those",
+          "ms": 141551
+        },
+        {
+          "text": " changes",
+          "ms": 141931
+        },
+        {
+          "text": " again",
+          "ms": 142671
+        },
+        {
+          "text": " and",
+          "ms": 142871
+        },
+        {
+          "text": " again",
+          "ms": 143331
+        },
+        {
+          "text": ".",
+          "ms": 143731
+        },
+        {
+          "text": " Something",
+          "ms": 144796
+        },
+        {
+          "text": " really",
+          "ms": 145096
+        },
+        {
+          "text": " helpful",
+          "ms": 145556
+        },
+        {
+          "text": " I",
+          "ms": 147116
+        },
+        {
+          "text": " wanted",
+          "ms": 147356
+        },
+        {
+          "text": " to",
+          "ms": 147556
+        },
+        {
+          "text": " share",
+          "ms": 147816
+        },
+        {
+          "text": " and",
+          "ms": 148256
+        },
+        {
+          "text": " this",
+          "ms": 149016
+        },
+        {
+          "text": " is",
+          "ms": 149176
+        },
+        {
+          "text": " what",
+          "ms": 149316
+        },
+        {
+          "text": " I",
+          "ms": 149456
+        },
+        {
+          "text": "'m",
+          "ms": 149496
+        },
+        {
+          "text": " going",
+          "ms": 149656
+        },
+        {
+          "text": " through",
+          "ms": 149776
+        },
+        {
+          "text": ".",
+          "ms": 149776
+        },
+        {
+          "text": "BL",
+          "ms": 150591
+        },
+        {
+          "text": "ANK",
+          "ms": 150591
+        },
+        {
+          "text": "_",
+          "ms": 150591
+        },
+        {
+          "text": "AUD",
+          "ms": 150591
+        },
+        {
+          "text": "IO",
+          "ms": 150591
+        },
+        {
+          "text": "]",
+          "ms": 150591
+        }
+      ],
+      "durationMs": 150723
+    },
+    {
+      "n": 2,
+      "title": "Splitting the Content Skills",
+      "src": "day-01/hours/hour-02.mp4",
+      "width": 3560,
+      "height": 2160,
+      "segments": [
+        {
+          "fromMs": 0,
+          "toMs": 125
+        },
+        {
+          "fromMs": 936,
+          "toMs": 1212
+        },
+        {
+          "fromMs": 1487,
+          "toMs": 2232
+        },
+        {
+          "fromMs": 2541,
+          "toMs": 3020
+        },
+        {
+          "fromMs": 3804,
+          "toMs": 8807
+        },
+        {
+          "fromMs": 9208,
+          "toMs": 15408
+        },
+        {
+          "fromMs": 15809,
+          "toMs": 20412
+        },
+        {
+          "fromMs": 20914,
+          "toMs": 23719
+        },
+        {
+          "fromMs": 24936,
+          "toMs": 26053
+        },
+        {
+          "fromMs": 26415,
+          "toMs": 27159
+        },
+        {
+          "fromMs": 27646,
+          "toMs": 32691
+        },
+        {
+          "fromMs": 33086,
+          "toMs": 34240
+        },
+        {
+          "fromMs": 34536,
+          "toMs": 44116
+        },
+        {
+          "fromMs": 44532,
+          "toMs": 47303
+        },
+        {
+          "fromMs": 47653,
+          "toMs": 53063
+        },
+        {
+          "fromMs": 53392,
+          "toMs": 65542
+        },
+        {
+          "fromMs": 65825,
+          "toMs": 71783
+        },
+        {
+          "fromMs": 72941,
+          "toMs": 77296
+        },
+        {
+          "fromMs": 77588,
+          "toMs": 89839
+        },
+        {
+          "fromMs": 90466,
+          "toMs": 106172
+        },
+        {
+          "fromMs": 106509,
+          "toMs": 112716
+        },
+        {
+          "fromMs": 113117,
+          "toMs": 114197
+        },
+        {
+          "fromMs": 114462,
+          "toMs": 115311
+        },
+        {
+          "fromMs": 115631,
+          "toMs": 121635
+        },
+        {
+          "fromMs": 121982,
+          "toMs": 129570
+        },
+        {
+          "fromMs": 130048,
+          "toMs": 130708
+        },
+        {
+          "fromMs": 131081,
+          "toMs": 134327
+        },
+        {
+          "fromMs": 134921,
+          "toMs": 136164
+        },
+        {
+          "fromMs": 136436,
+          "toMs": 138284
+        },
+        {
+          "fromMs": 138676,
+          "toMs": 144292
+        },
+        {
+          "fromMs": 144547,
+          "toMs": 149998
+        },
+        {
+          "fromMs": 150295,
+          "toMs": 152097
+        },
+        {
+          "fromMs": 152979,
+          "toMs": 153386
+        }
+      ],
+      "words": [
+        {
+          "text": "Ok",
+          "ms": 2021
+        },
+        {
+          "text": " folks",
+          "ms": 2401
+        },
+        {
+          "text": ",",
+          "ms": 2881
+        },
+        {
+          "text": " so",
+          "ms": 3061
+        },
+        {
+          "text": " this",
+          "ms": 3441
+        },
+        {
+          "text": " is",
+          "ms": 3601
+        },
+        {
+          "text": " something",
+          "ms": 3941
+        },
+        {
+          "text": " that",
+          "ms": 4181
+        },
+        {
+          "text": " I",
+          "ms": 4281
+        },
+        {
+          "text": "'ve",
+          "ms": 4401
+        },
+        {
+          "text": " been",
+          "ms": 4461
+        },
+        {
+          "text": " working",
+          "ms": 4761
+        },
+        {
+          "text": " for",
+          "ms": 5081
+        },
+        {
+          "text": " the",
+          "ms": 5241
+        },
+        {
+          "text": " past",
+          "ms": 5501
+        },
+        {
+          "text": " 45",
+          "ms": 6001
+        },
+        {
+          "text": " minutes",
+          "ms": 6441
+        },
+        {
+          "text": ",",
+          "ms": 7140
+        },
+        {
+          "text": " like",
+          "ms": 7300
+        },
+        {
+          "text": " I",
+          "ms": 7520
+        },
+        {
+          "text": " told",
+          "ms": 7680
+        },
+        {
+          "text": " you",
+          "ms": 7940
+        },
+        {
+          "text": " that",
+          "ms": 8180
+        },
+        {
+          "text": " I",
+          "ms": 8320
+        },
+        {
+          "text": " wanted",
+          "ms": 8540
+        },
+        {
+          "text": " to",
+          "ms": 8700
+        },
+        {
+          "text": " create",
+          "ms": 8900
+        },
+        {
+          "text": " a",
+          "ms": 9040
+        },
+        {
+          "text": " system",
+          "ms": 9360
+        },
+        {
+          "text": " which",
+          "ms": 9780
+        },
+        {
+          "text": " I",
+          "ms": 10520
+        },
+        {
+          "text": " can",
+          "ms": 10700
+        },
+        {
+          "text": " follow",
+          "ms": 11120
+        },
+        {
+          "text": " to",
+          "ms": 11440
+        },
+        {
+          "text": " create",
+          "ms": 11760
+        },
+        {
+          "text": " content",
+          "ms": 12200
+        },
+        {
+          "text": " like",
+          "ms": 12420
+        },
+        {
+          "text": ".",
+          "ms": 13819
+        },
+        {
+          "text": " So",
+          "ms": 13919
+        },
+        {
+          "text": " for",
+          "ms": 14139
+        },
+        {
+          "text": " that",
+          "ms": 14399
+        },
+        {
+          "text": " to",
+          "ms": 14639
+        },
+        {
+          "text": " happen",
+          "ms": 15099
+        },
+        {
+          "text": ",",
+          "ms": 15939
+        },
+        {
+          "text": " like",
+          "ms": 16199
+        },
+        {
+          "text": " I",
+          "ms": 16379
+        },
+        {
+          "text": " talked",
+          "ms": 16579
+        },
+        {
+          "text": " about",
+          "ms": 16919
+        },
+        {
+          "text": " that",
+          "ms": 17399
+        },
+        {
+          "text": ",",
+          "ms": 17517
+        },
+        {
+          "text": " what",
+          "ms": 18037
+        },
+        {
+          "text": " we",
+          "ms": 18237
+        },
+        {
+          "text": " really",
+          "ms": 18497
+        },
+        {
+          "text": " need",
+          "ms": 18677
+        },
+        {
+          "text": " to",
+          "ms": 18937
+        },
+        {
+          "text": " do",
+          "ms": 19517
+        },
+        {
+          "text": " is",
+          "ms": 20197
+        },
+        {
+          "text": " every",
+          "ms": 20680
+        },
+        {
+          "text": " hour",
+          "ms": 21240
+        },
+        {
+          "text": " we",
+          "ms": 22351
+        },
+        {
+          "text": " need",
+          "ms": 22551
+        },
+        {
+          "text": " to",
+          "ms": 22731
+        },
+        {
+          "text": " come",
+          "ms": 23011
+        },
+        {
+          "text": " and",
+          "ms": 24011
+        },
+        {
+          "text": " give",
+          "ms": 24331
+        },
+        {
+          "text": " a",
+          "ms": 24531
+        },
+        {
+          "text": " summary",
+          "ms": 24871
+        },
+        {
+          "text": " of",
+          "ms": 25151
+        },
+        {
+          "text": " what",
+          "ms": 25311
+        },
+        {
+          "text": " I",
+          "ms": 25451
+        },
+        {
+          "text": "'ve",
+          "ms": 25551
+        },
+        {
+          "text": " been",
+          "ms": 25631
+        },
+        {
+          "text": " doing",
+          "ms": 25871
+        },
+        {
+          "text": " for",
+          "ms": 26211
+        },
+        {
+          "text": " that",
+          "ms": 26331
+        },
+        {
+          "text": " past",
+          "ms": 26651
+        },
+        {
+          "text": " hour",
+          "ms": 26991
+        },
+        {
+          "text": ".",
+          "ms": 27596
+        },
+        {
+          "text": " To",
+          "ms": 27656
+        },
+        {
+          "text": " do",
+          "ms": 27856
+        },
+        {
+          "text": " that",
+          "ms": 28340
+        },
+        {
+          "text": ",",
+          "ms": 28600
+        },
+        {
+          "text": " what",
+          "ms": 28680
+        },
+        {
+          "text": " I",
+          "ms": 28820
+        },
+        {
+          "text": "'ve",
+          "ms": 28900
+        },
+        {
+          "text": " built",
+          "ms": 29020
+        },
+        {
+          "text": " is",
+          "ms": 29220
+        },
+        {
+          "text": " that",
+          "ms": 29440
+        },
+        {
+          "text": " Claude",
+          "ms": 29780
+        },
+        {
+          "text": " will",
+          "ms": 30160
+        },
+        {
+          "text": " read",
+          "ms": 31060
+        },
+        {
+          "text": " the",
+          "ms": 31280
+        },
+        {
+          "text": " log",
+          "ms": 31500
+        },
+        {
+          "text": " of",
+          "ms": 31820
+        },
+        {
+          "text": " what",
+          "ms": 32520
+        },
+        {
+          "text": " my",
+          "ms": 32700
+        },
+        {
+          "text": " agents",
+          "ms": 33020
+        },
+        {
+          "text": " are",
+          "ms": 33260
+        },
+        {
+          "text": " doing",
+          "ms": 33540
+        },
+        {
+          "text": " and",
+          "ms": 33840
+        },
+        {
+          "text": " what",
+          "ms": 34020
+        },
+        {
+          "text": " I",
+          "ms": 34140
+        },
+        {
+          "text": "'ve",
+          "ms": 34260
+        },
+        {
+          "text": " done",
+          "ms": 34560
+        },
+        {
+          "text": " in",
+          "ms": 35020
+        },
+        {
+          "text": " that",
+          "ms": 35180
+        },
+        {
+          "text": " past",
+          "ms": 35460
+        },
+        {
+          "text": " one",
+          "ms": 35680
+        },
+        {
+          "text": " hour",
+          "ms": 35960
+        },
+        {
+          "text": " and",
+          "ms": 36560
+        },
+        {
+          "text": " create",
+          "ms": 36880
+        },
+        {
+          "text": " a",
+          "ms": 37060
+        },
+        {
+          "text": " script",
+          "ms": 37280
+        },
+        {
+          "text": " for",
+          "ms": 37600
+        },
+        {
+          "text": " and",
+          "ms": 38184
+        },
+        {
+          "text": " then",
+          "ms": 38324
+        },
+        {
+          "text": " I",
+          "ms": 38464
+        },
+        {
+          "text": " have",
+          "ms": 38624
+        },
+        {
+          "text": " to",
+          "ms": 38804
+        },
+        {
+          "text": " go",
+          "ms": 38984
+        },
+        {
+          "text": " through",
+          "ms": 39224
+        },
+        {
+          "text": " the",
+          "ms": 39424
+        },
+        {
+          "text": " process",
+          "ms": 39784
+        },
+        {
+          "text": " of",
+          "ms": 40344
+        },
+        {
+          "text": " creating",
+          "ms": 41794
+        },
+        {
+          "text": " this",
+          "ms": 42034
+        },
+        {
+          "text": " video",
+          "ms": 42374
+        },
+        {
+          "text": ".",
+          "ms": 42654
+        },
+        {
+          "text": " So",
+          "ms": 42754
+        },
+        {
+          "text": " for",
+          "ms": 43074
+        },
+        {
+          "text": " that",
+          "ms": 43334
+        },
+        {
+          "text": " to",
+          "ms": 43534
+        },
+        {
+          "text": " happen",
+          "ms": 43874
+        },
+        {
+          "text": " automatically",
+          "ms": 44654
+        },
+        {
+          "text": " or",
+          "ms": 45054
+        },
+        {
+          "text": " on",
+          "ms": 45354
+        },
+        {
+          "text": " demand",
+          "ms": 45834
+        },
+        {
+          "text": ",",
+          "ms": 46205
+        },
+        {
+          "text": " I",
+          "ms": 46585
+        },
+        {
+          "text": "'ve",
+          "ms": 46725
+        },
+        {
+          "text": " created",
+          "ms": 46965
+        },
+        {
+          "text": " this",
+          "ms": 47305
+        },
+        {
+          "text": " page",
+          "ms": 47785
+        },
+        {
+          "text": ",",
+          "ms": 48065
+        },
+        {
+          "text": " HTML",
+          "ms": 48285
+        },
+        {
+          "text": " page",
+          "ms": 48525
+        },
+        {
+          "text": " for",
+          "ms": 48885
+        },
+        {
+          "text": " me",
+          "ms": 49145
+        },
+        {
+          "text": ",",
+          "ms": 49305
+        },
+        {
+          "text": " this",
+          "ms": 49465
+        },
+        {
+          "text": " will",
+          "ms": 49665
+        },
+        {
+          "text": " give",
+          "ms": 49865
+        },
+        {
+          "text": " me",
+          "ms": 50105
+        },
+        {
+          "text": " some",
+          "ms": 50385
+        },
+        {
+          "text": " content",
+          "ms": 50785
+        },
+        {
+          "text": " for",
+          "ms": 51485
+        },
+        {
+          "text": " all",
+          "ms": 51705
+        },
+        {
+          "text": " the",
+          "ms": 51885
+        },
+        {
+          "text": " days",
+          "ms": 52065
+        },
+        {
+          "text": ",",
+          "ms": 52225
+        },
+        {
+          "text": " so",
+          "ms": 52245
+        },
+        {
+          "text": " this",
+          "ms": 52385
+        },
+        {
+          "text": " is",
+          "ms": 52625
+        },
+        {
+          "text": " day",
+          "ms": 52765
+        },
+        {
+          "text": " one",
+          "ms": 53025
+        },
+        {
+          "text": " and",
+          "ms": 53885
+        },
+        {
+          "text": " then",
+          "ms": 54045
+        },
+        {
+          "text": " I",
+          "ms": 54325
+        },
+        {
+          "text": " recorded",
+          "ms": 54725
+        },
+        {
+          "text": " this",
+          "ms": 55085
+        },
+        {
+          "text": " video",
+          "ms": 55425
+        },
+        {
+          "text": " for",
+          "ms": 55805
+        },
+        {
+          "text": " this",
+          "ms": 56025
+        },
+        {
+          "text": " one",
+          "ms": 56305
+        },
+        {
+          "text": " hour",
+          "ms": 56605
+        },
+        {
+          "text": ",",
+          "ms": 56945
+        },
+        {
+          "text": " the",
+          "ms": 57065
+        },
+        {
+          "text": " previous",
+          "ms": 57365
+        },
+        {
+          "text": " one",
+          "ms": 57665
+        },
+        {
+          "text": " hour",
+          "ms": 57965
+        },
+        {
+          "text": " and",
+          "ms": 58482
+        },
+        {
+          "text": " this",
+          "ms": 58682
+        },
+        {
+          "text": " is",
+          "ms": 58802
+        },
+        {
+          "text": " the",
+          "ms": 58982
+        },
+        {
+          "text": " script",
+          "ms": 59202
+        },
+        {
+          "text": " that",
+          "ms": 59362
+        },
+        {
+          "text": " it",
+          "ms": 59502
+        },
+        {
+          "text": " gave",
+          "ms": 59682
+        },
+        {
+          "text": " me",
+          "ms": 59982
+        },
+        {
+          "text": " and",
+          "ms": 60222
+        },
+        {
+          "text": " it",
+          "ms": 60462
+        },
+        {
+          "text": " told",
+          "ms": 60982
+        },
+        {
+          "text": " me",
+          "ms": 61202
+        },
+        {
+          "text": " what",
+          "ms": 61442
+        },
+        {
+          "text": " tools",
+          "ms": 61802
+        },
+        {
+          "text": " I",
+          "ms": 62142
+        },
+        {
+          "text": " need",
+          "ms": 62262
+        },
+        {
+          "text": " to",
+          "ms": 62402
+        },
+        {
+          "text": " open",
+          "ms": 62642
+        },
+        {
+          "text": " to",
+          "ms": 62962
+        },
+        {
+          "text": " showcase",
+          "ms": 63482
+        },
+        {
+          "text": " it",
+          "ms": 63722
+        },
+        {
+          "text": " better",
+          "ms": 64042
+        },
+        {
+          "text": ".",
+          "ms": 64344
+        },
+        {
+          "text": " So",
+          "ms": 64524
+        },
+        {
+          "text": " the",
+          "ms": 65264
+        },
+        {
+          "text": " exact",
+          "ms": 65644
+        },
+        {
+          "text": " thing",
+          "ms": 65884
+        },
+        {
+          "text": " that",
+          "ms": 66064
+        },
+        {
+          "text": " I",
+          "ms": 66164
+        },
+        {
+          "text": "'m",
+          "ms": 66284
+        },
+        {
+          "text": " recording",
+          "ms": 66644
+        },
+        {
+          "text": " right",
+          "ms": 66904
+        },
+        {
+          "text": " now",
+          "ms": 67124
+        },
+        {
+          "text": " is",
+          "ms": 67404
+        },
+        {
+          "text": " being",
+          "ms": 67664
+        },
+        {
+          "text": " shown",
+          "ms": 68004
+        },
+        {
+          "text": " here",
+          "ms": 68504
+        },
+        {
+          "text": " So",
+          "ms": 68712
+        },
+        {
+          "text": " it",
+          "ms": 68872
+        },
+        {
+          "text": " asked",
+          "ms": 69072
+        },
+        {
+          "text": " me",
+          "ms": 69232
+        },
+        {
+          "text": " to",
+          "ms": 69372
+        },
+        {
+          "text": " open",
+          "ms": 69612
+        },
+        {
+          "text": " up",
+          "ms": 69972
+        },
+        {
+          "text": " these",
+          "ms": 70892
+        },
+        {
+          "text": " content",
+          "ms": 71352
+        },
+        {
+          "text": " pipelines",
+          "ms": 71892
+        },
+        {
+          "text": " and",
+          "ms": 72172
+        },
+        {
+          "text": " everything",
+          "ms": 72632
+        },
+        {
+          "text": ",",
+          "ms": 73152
+        },
+        {
+          "text": " all",
+          "ms": 73372
+        },
+        {
+          "text": " the",
+          "ms": 73512
+        },
+        {
+          "text": " system",
+          "ms": 73772
+        },
+        {
+          "text": " servers",
+          "ms": 74192
+        },
+        {
+          "text": " and",
+          "ms": 74392
+        },
+        {
+          "text": " what",
+          "ms": 74672
+        },
+        {
+          "text": " my",
+          "ms": 75252
+        },
+        {
+          "text": " Claude",
+          "ms": 75432
+        },
+        {
+          "text": " thread",
+          "ms": 75912
+        },
+        {
+          "text": " was",
+          "ms": 76152
+        },
+        {
+          "text": " doing",
+          "ms": 76832
+        },
+        {
+          "text": ",",
+          "ms": 77992
+        },
+        {
+          "text": " which",
+          "ms": 78132
+        },
+        {
+          "text": " I",
+          "ms": 78252
+        },
+        {
+          "text": " can",
+          "ms": 78432
+        },
+        {
+          "text": " also",
+          "ms": 78692
+        },
+        {
+          "text": " show",
+          "ms": 79052
+        },
+        {
+          "text": " you",
+          "ms": 79772
+        },
+        {
+          "text": " here",
+          "ms": 80692
+        },
+        {
+          "text": ".",
+          "ms": 81185
+        },
+        {
+          "text": " This",
+          "ms": 81305
+        },
+        {
+          "text": " is",
+          "ms": 81465
+        },
+        {
+          "text": " the",
+          "ms": 81625
+        },
+        {
+          "text": " thread",
+          "ms": 81845
+        },
+        {
+          "text": " work",
+          "ms": 82385
+        },
+        {
+          "text": " that",
+          "ms": 82745
+        },
+        {
+          "text": " we",
+          "ms": 82905
+        },
+        {
+          "text": " did",
+          "ms": 83105
+        },
+        {
+          "text": " here",
+          "ms": 83865
+        },
+        {
+          "text": ",",
+          "ms": 84765
+        },
+        {
+          "text": " but",
+          "ms": 85005
+        },
+        {
+          "text": " eventually",
+          "ms": 85685
+        },
+        {
+          "text": " I",
+          "ms": 87025
+        },
+        {
+          "text": " really",
+          "ms": 87325
+        },
+        {
+          "text": " want",
+          "ms": 87505
+        },
+        {
+          "text": " to",
+          "ms": 87605
+        },
+        {
+          "text": " showcase",
+          "ms": 87925
+        },
+        {
+          "text": " this",
+          "ms": 88265
+        },
+        {
+          "text": " daily",
+          "ms": 88805
+        },
+        {
+          "text": " content",
+          "ms": 89225
+        },
+        {
+          "text": ",",
+          "ms": 89365
+        },
+        {
+          "text": " which",
+          "ms": 89425
+        },
+        {
+          "text": " is",
+          "ms": 89525
+        },
+        {
+          "text": " really",
+          "ms": 89745
+        },
+        {
+          "text": " nice",
+          "ms": 90005
+        },
+        {
+          "text": " system",
+          "ms": 90305
+        },
+        {
+          "text": " here",
+          "ms": 90605
+        },
+        {
+          "text": ".",
+          "ms": 90985
+        },
+        {
+          "text": " So",
+          "ms": 91165
+        },
+        {
+          "text": " next",
+          "ms": 91405
+        },
+        {
+          "text": " time",
+          "ms": 91605
+        },
+        {
+          "text": " I",
+          "ms": 91745
+        },
+        {
+          "text": " want",
+          "ms": 91865
+        },
+        {
+          "text": " to",
+          "ms": 92005
+        },
+        {
+          "text": " create",
+          "ms": 92225
+        },
+        {
+          "text": " a",
+          "ms": 92465
+        },
+        {
+          "text": " summary",
+          "ms": 92745
+        },
+        {
+          "text": " for",
+          "ms": 93025
+        },
+        {
+          "text": " the",
+          "ms": 93225
+        },
+        {
+          "text": " next",
+          "ms": 93465
+        },
+        {
+          "text": " one",
+          "ms": 93665
+        },
+        {
+          "text": " hour",
+          "ms": 93905
+        },
+        {
+          "text": ",",
+          "ms": 93985
+        },
+        {
+          "text": " I",
+          "ms": 94085
+        },
+        {
+          "text": " just",
+          "ms": 94265
+        },
+        {
+          "text": " have",
+          "ms": 94425
+        },
+        {
+          "text": " to",
+          "ms": 94665
+        },
+        {
+          "text": " click",
+          "ms": 94825
+        },
+        {
+          "text": " on",
+          "ms": 95045
+        },
+        {
+          "text": " this",
+          "ms": 95345
+        },
+        {
+          "text": " button",
+          "ms": 95965
+        },
+        {
+          "text": " here",
+          "ms": 96365
+        },
+        {
+          "text": " and",
+          "ms": 96768
+        },
+        {
+          "text": " it",
+          "ms": 96948
+        },
+        {
+          "text": " will",
+          "ms": 97108
+        },
+        {
+          "text": " give",
+          "ms": 97308
+        },
+        {
+          "text": " me",
+          "ms": 97488
+        },
+        {
+          "text": " a",
+          "ms": 97648
+        },
+        {
+          "text": " recap",
+          "ms": 98248
+        },
+        {
+          "text": " and",
+          "ms": 98608
+        },
+        {
+          "text": " also",
+          "ms": 98908
+        },
+        {
+          "text": " it",
+          "ms": 99088
+        },
+        {
+          "text": " will",
+          "ms": 99208
+        },
+        {
+          "text": " tell",
+          "ms": 99428
+        },
+        {
+          "text": " me",
+          "ms": 99948
+        },
+        {
+          "text": " what",
+          "ms": 100568
+        },
+        {
+          "text": " range",
+          "ms": 101768
+        },
+        {
+          "text": " to",
+          "ms": 101988
+        },
+        {
+          "text": " select",
+          "ms": 102228
+        },
+        {
+          "text": " from",
+          "ms": 102628
+        },
+        {
+          "text": ",",
+          "ms": 102727
+        },
+        {
+          "text": " which",
+          "ms": 102907
+        },
+        {
+          "text": " is",
+          "ms": 102947
+        },
+        {
+          "text": " really",
+          "ms": 103187
+        },
+        {
+          "text": " helpful",
+          "ms": 103587
+        },
+        {
+          "text": " in",
+          "ms": 104002
+        },
+        {
+          "text": " my",
+          "ms": 104202
+        },
+        {
+          "text": " case",
+          "ms": 104582
+        },
+        {
+          "text": ".",
+          "ms": 105702
+        },
+        {
+          "text": " Yeah",
+          "ms": 105862
+        },
+        {
+          "text": ",",
+          "ms": 105922
+        },
+        {
+          "text": " it",
+          "ms": 106062
+        },
+        {
+          "text": "'s",
+          "ms": 106062
+        },
+        {
+          "text": " really",
+          "ms": 106282
+        },
+        {
+          "text": " interesting",
+          "ms": 106702
+        },
+        {
+          "text": " work",
+          "ms": 107022
+        },
+        {
+          "text": " and",
+          "ms": 107202
+        },
+        {
+          "text": " then",
+          "ms": 107342
+        },
+        {
+          "text": " I",
+          "ms": 107562
+        },
+        {
+          "text": " just",
+          "ms": 107942
+        },
+        {
+          "text": " have",
+          "ms": 108122
+        },
+        {
+          "text": " to",
+          "ms": 108382
+        },
+        {
+          "text": " make",
+          "ms": 108862
+        },
+        {
+          "text": " sure",
+          "ms": 109062
+        },
+        {
+          "text": " that",
+          "ms": 109242
+        },
+        {
+          "text": " I",
+          "ms": 109382
+        },
+        {
+          "text": " keep",
+          "ms": 109602
+        },
+        {
+          "text": " on",
+          "ms": 109842
+        },
+        {
+          "text": " following",
+          "ms": 110222
+        },
+        {
+          "text": " and",
+          "ms": 111315
+        },
+        {
+          "text": " then",
+          "ms": 111515
+        },
+        {
+          "text": " this",
+          "ms": 111915
+        },
+        {
+          "text": " for",
+          "ms": 112715
+        },
+        {
+          "text": " the",
+          "ms": 112915
+        },
+        {
+          "text": " whole",
+          "ms": 113195
+        },
+        {
+          "text": " day",
+          "ms": 113695
+        },
+        {
+          "text": ",",
+          "ms": 114475
+        },
+        {
+          "text": " because",
+          "ms": 114855
+        },
+        {
+          "text": " eventually",
+          "ms": 115375
+        },
+        {
+          "text": " we",
+          "ms": 115555
+        },
+        {
+          "text": "'ll",
+          "ms": 115655
+        },
+        {
+          "text": " be",
+          "ms": 115735
+        },
+        {
+          "text": " creating",
+          "ms": 116115
+        },
+        {
+          "text": " a",
+          "ms": 116775
+        },
+        {
+          "text": " long",
+          "ms": 117015
+        },
+        {
+          "text": " video",
+          "ms": 117295
+        },
+        {
+          "text": " for",
+          "ms": 117495
+        },
+        {
+          "text": " the",
+          "ms": 117635
+        },
+        {
+          "text": " whole",
+          "ms": 117835
+        },
+        {
+          "text": " This",
+          "ms": 120024
+        },
+        {
+          "text": " is",
+          "ms": 120504
+        },
+        {
+          "text": " the",
+          "ms": 120884
+        },
+        {
+          "text": " whole",
+          "ms": 121084
+        },
+        {
+          "text": " process",
+          "ms": 121524
+        },
+        {
+          "text": " and",
+          "ms": 121764
+        },
+        {
+          "text": " what",
+          "ms": 122570
+        },
+        {
+          "text": " do",
+          "ms": 122670
+        },
+        {
+          "text": " you",
+          "ms": 122730
+        },
+        {
+          "text": " call",
+          "ms": 122950
+        },
+        {
+          "text": " the",
+          "ms": 123618
+        },
+        {
+          "text": " steps",
+          "ms": 124478
+        },
+        {
+          "text": " to",
+          "ms": 124698
+        },
+        {
+          "text": " go",
+          "ms": 124858
+        },
+        {
+          "text": " through",
+          "ms": 125138
+        },
+        {
+          "text": ".",
+          "ms": 125286
+        },
+        {
+          "text": " So",
+          "ms": 125706
+        },
+        {
+          "text": " out",
+          "ms": 126086
+        },
+        {
+          "text": " of",
+          "ms": 126206
+        },
+        {
+          "text": " two",
+          "ms": 126446
+        },
+        {
+          "text": " rec",
+          "ms": 126726
+        },
+        {
+          "text": "aps",
+          "ms": 126926
+        },
+        {
+          "text": ",",
+          "ms": 127026
+        },
+        {
+          "text": " I",
+          "ms": 127066
+        },
+        {
+          "text": "'ve",
+          "ms": 127146
+        },
+        {
+          "text": " recorded",
+          "ms": 127466
+        },
+        {
+          "text": " one",
+          "ms": 127826
+        },
+        {
+          "text": ",",
+          "ms": 127946
+        },
+        {
+          "text": " which",
+          "ms": 128106
+        },
+        {
+          "text": " is",
+          "ms": 128246
+        },
+        {
+          "text": " saved",
+          "ms": 128566
+        },
+        {
+          "text": " in",
+          "ms": 128846
+        },
+        {
+          "text": " my",
+          "ms": 129026
+        },
+        {
+          "text": " folder",
+          "ms": 129446
+        },
+        {
+          "text": ".",
+          "ms": 129686
+        },
+        {
+          "text": " And",
+          "ms": 129746
+        },
+        {
+          "text": " I",
+          "ms": 129886
+        },
+        {
+          "text": "'m",
+          "ms": 129986
+        },
+        {
+          "text": " going",
+          "ms": 130066
+        },
+        {
+          "text": " to",
+          "ms": 130186
+        },
+        {
+          "text": " do",
+          "ms": 130346
+        },
+        {
+          "text": " this",
+          "ms": 130706
+        },
+        {
+          "text": ".",
+          "ms": 131031
+        },
+        {
+          "text": " And",
+          "ms": 131131
+        },
+        {
+          "text": " then",
+          "ms": 131391
+        },
+        {
+          "text": " when",
+          "ms": 132011
+        },
+        {
+          "text": " I",
+          "ms": 132171
+        },
+        {
+          "text": " say",
+          "ms": 132391
+        },
+        {
+          "text": " edit",
+          "ms": 132631
+        },
+        {
+          "text": ",",
+          "ms": 132831
+        },
+        {
+          "text": " it",
+          "ms": 132871
+        },
+        {
+          "text": "'s",
+          "ms": 132951
+        },
+        {
+          "text": " going",
+          "ms": 133071
+        },
+        {
+          "text": " to",
+          "ms": 133191
+        },
+        {
+          "text": " go",
+          "ms": 133351
+        },
+        {
+          "text": " and",
+          "ms": 133471
+        },
+        {
+          "text": " edit",
+          "ms": 133691
+        },
+        {
+          "text": ",",
+          "ms": 133891
+        },
+        {
+          "text": " which",
+          "ms": 134051
+        },
+        {
+          "text": " is",
+          "ms": 134291
+        },
+        {
+          "text": " something",
+          "ms": 134631
+        },
+        {
+          "text": " which",
+          "ms": 134851
+        },
+        {
+          "text": " I",
+          "ms": 134951
+        },
+        {
+          "text": "'ll",
+          "ms": 135071
+        },
+        {
+          "text": " show",
+          "ms": 135191
+        },
+        {
+          "text": " you",
+          "ms": 135351
+        },
+        {
+          "text": " in",
+          "ms": 135471
+        },
+        {
+          "text": " the",
+          "ms": 135571
+        },
+        {
+          "text": " next",
+          "ms": 135751
+        },
+        {
+          "text": " video",
+          "ms": 136071
+        },
+        {
+          "text": ",",
+          "ms": 136654
+        },
+        {
+          "text": " sorry",
+          "ms": 137194
+        },
+        {
+          "text": ",",
+          "ms": 137294
+        },
+        {
+          "text": " next",
+          "ms": 137454
+        },
+        {
+          "text": " section",
+          "ms": 137754
+        },
+        {
+          "text": ".",
+          "ms": 137754
+        },
+        {
+          "text": "BL",
+          "ms": 138372
+        },
+        {
+          "text": "ANK",
+          "ms": 138372
+        },
+        {
+          "text": "_",
+          "ms": 138372
+        },
+        {
+          "text": "AUD",
+          "ms": 138372
+        },
+        {
+          "text": "IO",
+          "ms": 138372
+        },
+        {
+          "text": "]",
+          "ms": 138372
+        }
+      ],
+      "durationMs": 138478
+    }
+  ]
+}

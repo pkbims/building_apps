@@ -1,0 +1,5 @@
+# Video files are too big for git; only day cards and notes are tracked
+*.mp4
+*.mov
+.port
+.trash/

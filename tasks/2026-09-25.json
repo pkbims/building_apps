@@ -1,0 +1,80 @@
+{
+  "date": "2026-09-25",
+  "tasks": [
+    {
+      "icon": "🛠️",
+      "title": "Build decorMyRoom app v1",
+      "why": "main focus: finish version 1 today",
+      "steps": [
+        {
+          "text": "Follow the pipeline stages",
+          "done": true
+        },
+        {
+          "text": "Focus fully, no distractions",
+          "done": true
+        },
+        {
+          "text": "Keep improving pipeline as needed",
+          "done": true
+        },
+        {
+          "text": "Finish version 1 build today",
+          "done": false
+        }
+      ]
+    },
+    {
+      "icon": "📹",
+      "title": "Record content throughout the day",
+      "why": "capture footage for long recap video",
+      "steps": [
+        {
+          "text": "Record while you build",
+          "done": true
+        },
+        {
+          "text": "Don't aim for perfect",
+          "done": false
+        },
+        {
+          "text": "Post whatever you can",
+          "done": false
+        }
+      ]
+    },
+    {
+      "icon": "🚀",
+      "title": "Ship v1 to TestFlight",
+      "why": "post working build, share with testers",
+      "steps": [
+        {
+          "text": "Finish working build",
+          "done": false
+        },
+        {
+          "text": "Submit using TestFlight account",
+          "done": false
+        },
+        {
+          "text": "Post the build today",
+          "done": false
+        }
+      ]
+    }
+  ],
+  "goals": [
+    {
+      "text": "Learnings: 1) Record in pieces its fine. 2) Speed to 1.4    3) Dont over-explain too much.  4) Get to the point bro so people are excited and interested.",
+      "done": false
+    },
+    {
+      "text": "Build v1 quick and record quick, dont worry about it too much.",
+      "done": false
+    },
+    {
+      "text": "Main goal is that budget to decor, not decor then budget.",
+      "done": true
+    }
+  ]
+}
